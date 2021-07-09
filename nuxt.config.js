@@ -3,8 +3,10 @@ import colors from 'vuetify/es5/util/colors'
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    titleTemplate: '%s - swiss-tchoukball-website',
-    title: 'swiss-tchoukball-website',
+    titleTemplate: (titleChunk) => {
+      // If undefined or blank then we don't need the hyphen
+      return titleChunk ? `${titleChunk} - Swiss Tchoukball` : 'Swiss Tchoukball';
+    },
     htmlAttrs: {
       lang: 'en'
     },
