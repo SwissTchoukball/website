@@ -2,10 +2,10 @@ module.exports = {
   apps: [
     {
       name: 'website-nuxt',
-      script: 'npm',
+      exec_mode: 'cluster',
+      instances: 'max',
+      script: './node_modules/nuxt/bin/nuxt.js',
       args: 'start',
-      watch: false,
-      node_args: '',
       merge_logs: true,
       cwd: process.env.HOME + '/sites/tchoukball.ch',
     },
