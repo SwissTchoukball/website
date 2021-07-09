@@ -1,15 +1,10 @@
-name: ci
+name: CI/CD
 
 on: push
 
 jobs:
-  ci:
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        node: [14]
+  CI:
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout 🛎
@@ -18,7 +13,7 @@ jobs:
       - name: Setup node env 🏗
         uses: actions/setup-node@v2.2.0
         with:
-          node-version: ${{ matrix.node }}
+          node-version: 14
           check-latest: true
 
       - name: Cache node_modules 📦
@@ -37,3 +32,21 @@ jobs:
 
       - name: Build 🔨
         run: npm run build
+
+  Deploy to production:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    needs: CI
+    runs-on: ubuntu-latest
+
+    environment:
+      name: Production
+      url: https://next.tchoukball.ch
+
+    steps:
+      - name: Deploy to production 🚀
+        uses: appleboy/ssh-action@v0.1.4
+        with:
+          host: ${{secrets.SSH_HOST}}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          script: pm2 deploy production
