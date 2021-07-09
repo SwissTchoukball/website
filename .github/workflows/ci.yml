@@ -49,4 +49,9 @@ jobs:
           host: ${{secrets.SSH_HOST}}
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
-          script: pm2 deploy production
+          script: |
+            cd ~/sites/tchoukball.ch
+            git pull
+            npm ci
+            npm run build
+            pm2 restart website-nuxt
