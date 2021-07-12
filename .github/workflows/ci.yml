@@ -34,7 +34,7 @@ jobs:
         run: npm run build
 
   Deploy-to-production:
-    if: ${{ github.ref == 'refs/heads/main' }}
+    # if: ${{ github.ref == 'refs/heads/main' }}
     needs: CI
     runs-on: ubuntu-latest
 
