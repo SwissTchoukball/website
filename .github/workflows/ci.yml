@@ -53,6 +53,7 @@ jobs:
           script: |
             cd ~/sites/tchoukball.ch
             git pull
+            source ~/.nvm/.profile
             npm ci
             npm run build
             pm2 restart website-nuxt
