@@ -43,11 +43,27 @@ const config: NuxtConfig = {
   modules: [
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
+    // https://i18n.nuxtjs.org/
+    'nuxt-i18n',
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {},
 
+  // Nuxt i18n module configuration: https://i18n.nuxtjs.org/options-reference
+  i18n: {
+    locales: [
+      { code: 'fr', iso: 'fr', name: 'FR', file: 'fr.json' },
+      { code: 'de', iso: 'de', name: 'DE', file: 'de.json' },
+    ],
+    defaultLocale: 'fr',
+    langDir: 'locales/',
+    strategy: 'prefix_and_default',
+    lazy: true,
+    vueI18n: {
+      fallbackLocale: 'fr',
+    },
+  },
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
     customVariables: ['~/assets/variables.scss'],
