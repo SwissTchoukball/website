@@ -1,0 +1,15 @@
+.u-visually-hidden {
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.u-unstyled-list,
+.v-application .u-unstyled-list {
+  list-style: none;
+  margin-left: 0;
+  padding-left: 0;
+}

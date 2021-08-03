@@ -21,7 +21,7 @@ const config: NuxtConfig = {
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
-  css: [],
+  css: ['~/assets/css/variables.css', '~/assets/css/main.css'],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [],
@@ -66,25 +66,46 @@ const config: NuxtConfig = {
   },
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
-    customVariables: ['~/assets/variables.scss'],
+    customVariables: ['~/assets/css/variables.scss'],
     theme: {
-      dark: true,
+      options: { customProperties: true },
+      dark: false,
       themes: {
-        dark: {
-          primary: colors.blue.darken2,
-          accent: colors.grey.darken3,
-          secondary: colors.amber.darken3,
-          info: colors.teal.lighten1,
+        light: {
+          primary: '#FF0000', // Swiss Tchoukball Red
+          secondary: '#595959', // Dark grey
+          info: colors.blue.base,
           warning: colors.amber.base,
-          error: colors.deepOrange.accent4,
-          success: colors.green.accent3,
+          error: colors.red.accent2,
+          success: colors.green.base,
         },
       },
     },
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
-  build: {},
+  build: {
+    postcss: {
+      plugins: {
+        'postcss-custom-media': {
+          // See options: https://github.com/postcss/postcss-custom-media#options
+          importFrom: [
+            {
+              // Somehow, having those defined in variables.css doesn't work.
+              // That's why we defined the viewports here.
+              customMedia: {
+                '--xs-only': '(max-width: 600px)',
+                '--sm-and-up': '(min-width: 601px)',
+                '--md-and-up': '(min-width: 961px)',
+                '--lg-and-up': '(min-width: 1265px)',
+                '--xl-and-up': '(min-width: 1905px)',
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
 };
 
 export default config;

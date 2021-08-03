@@ -1,0 +1,39 @@
+:root {
+  /* COLORS */
+
+  /* Brand */
+  --st-color-red-swiss-tchoukball: #f00;
+
+  /* Greys */
+  --st-color-grey-very-dark: #1a1a1a;
+  --st-color-grey-dark: #595959;
+  --st-color-grey: #a6a6a6;
+  --st-color-grey-light: #d9d9d9;
+  --st-color-grey-very-light: #f2f2f2;
+
+  /* Usage */
+  --st-color-text: black;
+  --st-color-link: var(--st-color-red-swiss-tchoukball);
+  --st-color-active-lang: var(--st-color-red-swiss-tchoukball);
+
+  /* Medals */
+  --st-color-medal-gold: #ffd700;
+  --st-color-medal-silver: #c0c0c0;
+  --st-color-medal-bronze: #cd7f32;
+  --st-color-medal-chocolate: #7b3f00;
+  --st-color-medal-none: var(--st-color-grey-very-light);
+
+  /* LENGTHS */
+  --st-length-main-content-max-width: 100%;
+  --st-length-spacing-xs: 0.8rem;
+  --st-length-spacing-s: 1rem;
+  --st-length-spacing-m: 1.5rem;
+  --st-length-spacing-l: 3rem;
+  --st-length-spacing-xl: 5rem;
+}
+
+@media (--lg-and-up) {
+  :root {
+    --st-length-main-content-max-width: 1400px;
+  }
+}

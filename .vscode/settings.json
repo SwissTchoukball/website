@@ -1,4 +1,7 @@
 {
+  "css.validate": false,
+  "less.validate": false,
+  "scss.validate": false,
   "i18n-ally.localesPaths": ["locale"],
   "i18n-ally.sourceLanguage": "fr"
 }
