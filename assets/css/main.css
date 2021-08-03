@@ -1,3 +1,23 @@
+html {
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 300;
+  word-spacing: 1px;
+  line-height: 1.2;
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+}
+
 .u-visually-hidden {
   position: absolute;
   left: -10000px;
@@ -7,9 +27,17 @@
   overflow: hidden;
 }
 
-.u-unstyled-list,
-.v-application .u-unstyled-list {
+.u-unstyled-list {
   list-style: none;
   margin-left: 0;
   padding-left: 0;
+}
+
+.u-unstyled-button {
+  appearance: none;
+  border: none;
+  background-color: transparent;
+  color: inherit;
+  padding: 0;
+  margin: 0;
 }

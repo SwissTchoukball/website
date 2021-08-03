@@ -14,6 +14,8 @@
   /* Usage */
   --st-color-text: black;
   --st-color-link: var(--st-color-red-swiss-tchoukball);
+  --st-color-burger-menu: var(--st-color-red-swiss-tchoukball);
+  --st-color-navigation-drawer-background: var(--st-color-grey-very-light);
   --st-color-active-lang: var(--st-color-red-swiss-tchoukball);
 
   /* Medals */
@@ -25,6 +27,7 @@
 
   /* LENGTHS */
   --st-length-main-content-max-width: 100%;
+  --st-length-small-header-height: 50px;
   --st-length-spacing-xs: 0.8rem;
   --st-length-spacing-s: 1rem;
   --st-length-spacing-m: 1.5rem;

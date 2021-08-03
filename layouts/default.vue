@@ -1,72 +1,52 @@
 <template>
-  <v-app>
+  <div>
     <h1 class="u-visually-hidden">{{ $t('title') }}</h1>
-    <v-navigation-drawer v-model="drawer" right clipped fixed app class="c-default__navigation-drawer">
+    <div class="c-default__navigation-drawer" :class="{ 'c-default__navigation-drawer--open': isNavigationDrawerOpen }">
       <st-lang-switcher class="c-default__navigation-drawer-lang-switcher" />
-      <v-list dense nav>
-        <v-list-item v-for="(item, i) in items" :key="i" :to="item.to" router exact>
-          <v-list-item-action>
-            <v-icon>{{ item.icon }}</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title v-text="item.title" />
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
-    <v-app-bar clipped-right flat fixed app color="white" class="c-default__app-bar">
-      <div class="c-default__logo c-default__logo--small"></div>
-      <v-spacer />
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer">
-        <v-btn icon>
-          <v-icon color="primary">mdi-menu</v-icon>
-        </v-btn>
-      </v-app-bar-nav-icon>
-    </v-app-bar>
+      <ul class="u-unstyled-list">
+        <li v-for="(item, i) in items" :key="i" :to="item.to">{{ item.title }}</li>
+      </ul>
+    </div>
     <header class="c-default__header">
-      <div class="c-default__logo c-default__logo--large"></div>
+      <div class="c-default__logo"></div>
       <st-lang-switcher class="c-default__header-lang-switcher" />
-      <nav class="c-default__main-nav">
-        <v-menu
-          v-for="(item, itemIndex) in items"
-          :key="itemIndex"
-          offset-y
-          rounded="0"
-          transition="slide-y-transition"
-        >
-          <template #activator="{ on, attrs }">
-            <v-btn text tile :ripple="false" v-bind="attrs" v-on="on">{{ item.title }}</v-btn>
-            <!-- <button v-bind="attrs" v-on="on">Fédération</button> -->
-          </template>
-          <v-list>
-            <v-list-item v-for="(subitem, subItemIndex) in items" :key="subItemIndex" :to="subitem.to" router exact>
-              <v-list-item-title>{{ subitem.title }}</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
+      <st-burger-button v-model="isNavigationDrawerOpen" class="c-default__burger-button" />
+      <nav class="c-default__header-navigation">
+        <h2 class="u-visually-hidden">{{ $t('mainNavigation') }}</h2>
+        <ul class="u-unstyled-list">
+          <li v-for="(item, i1) in items" :key="i1">
+            <button class="u-unstyled-button">{{ item.title }}</button>
+            <ul class="u-unstyled-list">
+              <li v-for="(subItem, i2) in items" :key="i2">
+                <nuxt-link :to="subItem.to">{{ subItem.title }}</nuxt-link>
+              </li>
+            </ul>
+          </li>
+        </ul>
       </nav>
     </header>
-    <v-main>
-      <v-container>
-        <Nuxt />
-      </v-container>
-    </v-main>
-    <v-footer absolute app>
+    <main>
+      <Nuxt />
+    </main>
+    <footer>
       <span>&copy; {{ new Date().getFullYear() }} {{ $t('title') }}</span>
-    </v-footer>
-  </v-app>
+    </footer>
+  </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
+import StBurgerButton from '~/components/st-burger-button.vue';
 import StLangSwitcher from '~/components/st-language-switcher.vue';
+
 export default Vue.extend({
   components: {
     StLangSwitcher,
+    StBurgerButton,
   },
   data() {
     return {
-      drawer: false,
+      isNavigationDrawerOpen: false,
       items: [
         {
           icon: 'mdi-apps',
@@ -92,40 +72,46 @@ export default Vue.extend({
 
 <style scoped>
 .c-default__header {
-  display: none; /* Hidden on mobile */
-  width: 100%;
-  max-width: var(--st-length-main-content-max-width);
-  margin: auto;
-  padding: var(--st-length-spacing-xs);
-  padding-bottom: 0;
-  position: relative;
-}
-
-.c-default__header-main {
+  height: var(--st-length-small-header-height);
   display: flex;
+  justify-content: space-between;
   align-items: center;
+  padding: 0 10px;
 }
 
 .c-default__logo {
   background-image: url('/images/logo-swiss-tchoukball.svg'), url('/images/wordmark-swiss-tchoukball.svg');
   background-repeat: no-repeat, no-repeat;
-}
-
-.c-default__logo--large {
-  height: 80px;
-  background-size: contain, 400px;
-  background-position: 0, 150px;
-}
-
-.c-default__logo--small {
   width: 100%;
   height: 100%;
   background-size: 50px, 180px;
   background-position: 0, 60px;
 }
 
-.c-default__main-nav {
+.c-default__header-navigation {
+  display: none; /* Hidden on xs and sm */
   margin-top: var(--st-length-spacing-xs);
+}
+
+.c-default__burger-button {
+  margin-left: var(--st-length-spacing-m);
+}
+
+.c-default__navigation-drawer {
+  background-color: var(--st-color-navigation-drawer-background);
+  width: 100vw;
+  opacity: 0;
+  position: fixed;
+  top: var(--st-length-small-header-height);
+  left: 100vw;
+  bottom: 0;
+  transition: left 0.25s ease-in-out, opacity 0s 0.25s;
+}
+
+.c-default__navigation-drawer--open {
+  left: 0;
+  opacity: 1;
+  transition: left 0.25s ease-in-out, opacity 0s 0s;
 }
 
 .c-default__navigation-drawer-lang-switcher {
@@ -133,19 +119,51 @@ export default Vue.extend({
 }
 
 .c-default__header-lang-switcher {
-  padding: var(--st-length-spacing-xs);
-  position: absolute;
-  top: 0;
-  right: 0;
+  display: none; /* Hidden on xs */
+}
+
+@media (--sm-and-up) {
+  .c-default__header-lang-switcher {
+    display: block;
+  }
+
+  .c-default__navigation-drawer-lang-switcher {
+    display: none;
+  }
 }
 
 @media (--md-and-up) {
-  .c-default__app-bar,
+  .c-default__header {
+    height: auto;
+    width: 100%;
+    max-width: var(--st-length-main-content-max-width);
+    margin: auto;
+    padding: var(--st-length-spacing-xs);
+    padding-bottom: 0;
+    position: relative;
+    flex-wrap: wrap;
+  }
+
+  .c-default__logo {
+    height: 80px;
+    width: auto;
+    flex-grow: 2;
+    background-size: contain, 400px;
+    background-position: 0, 150px;
+  }
+
+  .c-default__header-lang-switcher {
+    align-self: flex-start;
+  }
+
+  .c-default__header-navigation {
+    display: block;
+    width: 100%;
+  }
+
+  .c-default__burger-button,
   .c-default__navigation-drawer {
     display: none;
-  }
-  .c-default__header {
-    display: block;
   }
 }
 </style>

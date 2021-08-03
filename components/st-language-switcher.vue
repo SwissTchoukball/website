@@ -33,11 +33,12 @@ export default Vue.extend({
 <style scoped>
 .c-lang-switcher__list {
   text-align: center;
+  white-space: nowrap;
 }
 
 .c-lang-switcher__lang-item {
   display: inline-block;
-  margin: 0 var(--st-length-spacing-xs);
+  margin: 0 calc(var(--st-length-spacing-xs) / 2);
 }
 
 .c-lang-switcher__lang-item:first-child {

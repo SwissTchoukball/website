@@ -1,5 +1,4 @@
 import { NuxtConfig } from '@nuxt/types/config';
-import colors from 'vuetify/es5/util/colors';
 
 const config: NuxtConfig = {
   // Global page headers: https://go.nuxtjs.dev/config-head
@@ -35,8 +34,6 @@ const config: NuxtConfig = {
     '@nuxt/typescript-build',
     // https://go.nuxtjs.dev/stylelint
     '@nuxtjs/stylelint-module',
-    // https://go.nuxtjs.dev/vuetify
-    '@nuxtjs/vuetify',
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
@@ -62,24 +59,6 @@ const config: NuxtConfig = {
     lazy: true,
     vueI18n: {
       fallbackLocale: 'fr',
-    },
-  },
-  // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
-  vuetify: {
-    customVariables: ['~/assets/css/variables.scss'],
-    theme: {
-      options: { customProperties: true },
-      dark: false,
-      themes: {
-        light: {
-          primary: '#FF0000', // Swiss Tchoukball Red
-          secondary: '#595959', // Dark grey
-          info: colors.blue.base,
-          warning: colors.amber.base,
-          error: colors.red.accent2,
-          success: colors.green.base,
-        },
-      },
     },
   },
 
