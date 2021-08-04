@@ -1,4 +1,7 @@
 {
   "title": "Swiss Tchoukball",
-  "langSwitcherTitle": "Sprache wechseln"
+  "langSwitcherTitle": "Sprache wechseln",
+  "events": {
+    "title": "Ereignisse"
+  }
 }

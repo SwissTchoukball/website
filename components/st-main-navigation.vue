@@ -3,23 +3,23 @@
     <h2 class="u-visually-hidden">{{ $t('mainNavigation') }}</h2>
     <ul v-click-outside="closeAllMenuItems" class="u-unstyled-list c-main-navigation__list">
       <li
-        v-for="(item, itemIndex) in mainNavigation"
+        v-for="(item, itemIndex) in items"
         :key="itemIndex"
         class="c-main-navigation__item-group"
-        :class="{ 'c-main-navigation__item-group--open': item.open }"
+        :class="{ 'c-main-navigation__item-group--open': openStates[itemIndex] }"
       >
         <component
-          :is="item.to ? 'nuxt-link' : 'button'"
-          :to="item.to"
+          :is="item.href ? 'nuxt-link' : 'button'"
+          :to="item.href"
           class="u-unstyled-button c-main-navigation__item-name"
           @click.stop="onItemClickStop(item, itemIndex)"
           @click.native="onItemClickNative(item)"
         >
           {{ item.name }}
         </component>
-        <ul v-if="item.open && item.children" class="u-unstyled-list c-main-navigation__sub-items">
+        <ul v-if="openStates[itemIndex] && item.children" class="u-unstyled-list c-main-navigation__sub-items">
           <li v-for="(subItem, subItemIndex) in item.children" :key="subItemIndex" class="c-main-navigation__sub-item">
-            <nuxt-link :to="subItem.to" @click.native="onItemClickNative(subItem)">{{ subItem.name }}</nuxt-link>
+            <nuxt-link :to="subItem.href" @click.native="onItemClickNative(subItem)">{{ subItem.name }}</nuxt-link>
           </li>
         </ul>
       </li>
@@ -28,8 +28,9 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import Vue, { PropType } from 'vue';
 import vClickOutside from 'v-click-outside';
+import { MenuItem } from '~/store/state';
 
 export default Vue.extend({
   directives: {
@@ -40,6 +41,10 @@ export default Vue.extend({
      * Alternative layout of the navigation to be used in the drawer.
      */
     narrow: Boolean,
+    items: {
+      type: Array as PropType<MenuItem[]>,
+      default: () => [],
+    },
   },
   data() {
     return {
@@ -110,35 +115,39 @@ export default Vue.extend({
           to: '/evenements',
         },
       ],
+      openStates: [] as boolean[],
     };
+  },
+  computed: {
+    currentLocale(): string {
+      return this.$i18n.locale;
+    },
+  },
+  created() {
+    this.closeAllMenuItems();
   },
   methods: {
     toggleMenuItem(itemIndex: number) {
-      const toggledItem = this.mainNavigation[itemIndex];
-      if (toggledItem.open) {
-        toggledItem.open = false;
+      if (this.openStates[itemIndex]) {
+        this.$set(this.openStates, itemIndex, false);
       } else {
-        this.mainNavigation.forEach((item, index) => {
-          item.open = index === itemIndex;
+        this.openStates.forEach((_openState, index) => {
+          this.$set(this.openStates, index, index === itemIndex);
         });
       }
     },
     closeAllMenuItems() {
-      this.mainNavigation.forEach((item) => {
-        item.open = false;
-      });
+      this.openStates = this.items.map(() => false);
     },
-    // TODO: replace any with future interface for menu item
-    onItemClickStop(item: any, index: number) {
-      if (!item.to) {
-        // No `item.to` means this is a `button`
+    onItemClickStop(item: MenuItem, index: number) {
+      if (!item.href) {
+        // No `item.href` means this is a `button`
         this.toggleMenuItem(index);
       }
     },
-    // TODO: replace any with future interface for menu item
-    onItemClickNative(item: any) {
-      if (item.to) {
-        // `item.to` set means this is a link
+    onItemClickNative(item: MenuItem) {
+      if (item.href) {
+        // `item.href` set means this is a link
         this.$emit('navigate');
 
         if (!this.narrow) {

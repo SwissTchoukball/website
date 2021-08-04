@@ -1,20 +1,36 @@
 # Swiss Tchoukball website - frontend
 
-This frontend is made with [Nuxt.js](https://nuxtjs.org).
+Future website of Swiss Tchoukball, made with [Nuxt.js](https://nuxtjs.org).
 
-## Build Setup
+Production is on [next.tchoukball.ch](https://next.tchoukball.ch)
 
-```bash
-# install dependencies
-$ npm install
+There is no staging yet.
 
-# serve with hot reload at localhost:3000
-$ npm run dev
+## Setup
 
-# build for production and launch server
-$ npm run build
-$ npm run start
+Production is hosted on an Infomaniak Managed Cloud Server.
 
-# generate static project
-$ npm run generate
-```
+Deployment is automated via GitHub Actions.
+
+### pm2 setup
+
+Based on [Infomaniak documentation](https://www.infomaniak.com/fr/support/faq/2201/serveur-cloud-application-nodejs-fonctionnement-permanent).
+
+[pm2 CLI doc](https://pm2.io/docs/runtime/reference/pm2-cli/)
+
+To show the list of active crons: `crontab -l`.
+
+## Development
+
+After having cloned the repository:
+
+- `nvm use`
+- `npm install`
+- Duplicate `.env.example` into `.env`
+  - The variable `CMS_URL` is already set to match a locally running Directus CMS from [swisstchoukball/cms](https://github.com/swisstchoukball/cms).
+- `npm run dev`
+
+### Run in production mode
+
+- `npm run build`
+- `npm run start`

@@ -17,10 +17,10 @@ const config: NuxtConfig = {
       { name: 'format-detection', content: 'telephone=no' },
     ],
     link: [
-      { rel: 'apple-touch-icon', sizes:'180x180', href: '/apple-touch-icon.png' },
+      { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-      { rel: 'icon', type: 'image/png', sizes:'32x32', href: '/favicon-32x32.png' },
-      { rel: 'icon', type: 'image/png', sizes:'16x16', href: '/favicon-16x16.png' },
+      { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32x32.png' },
+      { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/favicon-16x16.png' },
       { rel: 'manifest', href: '/site.webmanifest' },
       { rel: 'mask-icon', href: '/safari-pinned-tab.svg', color: '#ff0000' },
     ],
@@ -30,7 +30,7 @@ const config: NuxtConfig = {
   css: ['~/assets/css/variables.css', '~/assets/css/typography.css', '~/assets/css/main.css'],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [{ src: '~/plugins/v-click-outside.js', ssr: false }],
+  plugins: [{ src: '~/plugins/v-click-outside.js', ssr: false }, '~/plugins/directus.ts', '~/plugins/i18n.ts'],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
@@ -91,6 +91,9 @@ const config: NuxtConfig = {
         },
       },
     },
+  },
+  publicRuntimeConfig: {
+    cmsURL: process.env.CMS_URL || 'http://localhost:8055',
   },
 };
 
