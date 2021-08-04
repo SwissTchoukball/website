@@ -5,6 +5,7 @@
   "backHome": "Retour à l'accueil",
   "error": {
     "pageNotFound": "Page introuvable",
-    "otherError": "Une erreur s'est produite"
+    "otherError": "Une erreur s'est produite",
+    "imageDescription": "Dessin d'un tchoukballeur se reprenant la balle de son propre tir en pleine tête, après rebond sur le cadre"
   }
 }

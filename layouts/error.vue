@@ -4,6 +4,7 @@
       <template v-if="error.statusCode === 404">{{ $t('error.pageNotFound') }}</template>
       <template v-else>{{ $t('error.otherError') }}</template>
     </h2>
+    <img class="c-error__image" src="/images/error-illustration.jpg" :alt="$t('error.imageDescription')" />
     <nuxt-link to="/">{{ $t('backHome') }}</nuxt-link>
   </section>
 </template>
@@ -29,6 +30,12 @@ export default {
 <style scoped>
 .c-error {
   text-align: center;
+}
+
+.c-error__image {
+  display: block;
+  max-width: 100%;
+  margin: auto;
 }
 
 .c-error__title {
