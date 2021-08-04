@@ -15,5 +15,5 @@
   font-style: italic;
   /* stylelint-disable-next-line property-no-unknown */
   font-named-instance: 'Italic';
-  src: url('Inter-italic.var.woff2?v=3.19') format('woff2');
+  src: url('~assets/fonts/Inter-italic.var.woff2?v=3.19') format('woff2');
 }
