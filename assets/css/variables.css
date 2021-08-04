@@ -3,6 +3,8 @@
 
   /* Brand */
   --st-color-red-swiss-tchoukball: #f00;
+  --st-color-red-swiss-tchoukball-light: #ff9d9d;
+  --st-color-red-swiss-tchoukball-dark: #620000;
 
   /* Greys */
   --st-color-grey-very-dark: #1a1a1a;
@@ -14,8 +16,15 @@
   /* Usage */
   --st-color-text: black;
   --st-color-link: var(--st-color-red-swiss-tchoukball);
+  --st-color-link-hover: var(--st-color-red-swiss-tchoukball-light);
+  --st-color-link-visited: var(--st-color-red-swiss-tchoukball-dark);
   --st-color-burger-menu: var(--st-color-red-swiss-tchoukball);
   --st-color-navigation-drawer-background: var(--st-color-grey-very-light);
+  --st-color-wide-navigation-item: black;
+  --st-color-wide-navigation-item-active-border: var(--st-color-red-swiss-tchoukball);
+  --st-color-wide-navigation-item-active-background: var(--st-color-grey-very-light);
+  --st-color-wide-navigation-sub-items-background: rgba(255, 255, 255, 0.9); /* var(--st-color-grey-very-light); */
+  --st-color-wide-navigation-narrow-sub-item-active-background: white;
   --st-color-active-lang: var(--st-color-red-swiss-tchoukball);
 
   /* Medals */
@@ -29,10 +38,10 @@
   --st-length-main-content-max-width: 100%;
   --st-length-small-header-height: 50px;
   --st-length-spacing-xs: 0.8rem;
-  --st-length-spacing-s: 1rem;
-  --st-length-spacing-m: 1.5rem;
-  --st-length-spacing-l: 3rem;
-  --st-length-spacing-xl: 5rem;
+  --st-length-spacing-s: 1.6rem;
+  --st-length-spacing-m: 3rem;
+  --st-length-spacing-l: 5rem;
+  --st-length-spacing-xl: 8rem;
 }
 
 @media (--lg-and-up) {

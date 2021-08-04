@@ -18,6 +18,18 @@ html {
   margin: 0;
 }
 
+a {
+  color: var(--st-color-link);
+}
+
+a:hover {
+  color: var(--st-color-link-hover);
+}
+
+a:visited {
+  color: var(--st-color-link-visited);
+}
+
 .u-visually-hidden {
   position: absolute;
   left: -10000px;
@@ -34,6 +46,7 @@ html {
 }
 
 .u-unstyled-button {
+  font-family: inherit;
   appearance: none;
   border: none;
   background-color: transparent;

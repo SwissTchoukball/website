@@ -1,29 +1,15 @@
 <template>
   <div>
     <h1 class="u-visually-hidden">{{ $t('title') }}</h1>
-    <div class="c-default__navigation-drawer" :class="{ 'c-default__navigation-drawer--open': isNavigationDrawerOpen }">
-      <st-lang-switcher class="c-default__navigation-drawer-lang-switcher" />
-      <ul class="u-unstyled-list">
-        <li v-for="(item, i) in items" :key="i" :to="item.to">{{ item.title }}</li>
-      </ul>
+    <div class="c-default__drawer" :class="{ 'c-default__drawer--open': isDrawerOpen }">
+      <st-lang-switcher class="c-default__drawer-lang-switcher" />
+      <st-main-navigation narrow class="c-default__drawer-navigation" @navigate="closeDrawer()" />
     </div>
     <header class="c-default__header">
-      <div class="c-default__logo"></div>
+      <nuxt-link class="c-default__logo" to="/" @click.native="closeDrawer()"></nuxt-link>
       <st-lang-switcher class="c-default__header-lang-switcher" />
-      <st-burger-button v-model="isNavigationDrawerOpen" class="c-default__burger-button" />
-      <nav class="c-default__header-navigation">
-        <h2 class="u-visually-hidden">{{ $t('mainNavigation') }}</h2>
-        <ul class="u-unstyled-list">
-          <li v-for="(item, i1) in items" :key="i1">
-            <button class="u-unstyled-button">{{ item.title }}</button>
-            <ul class="u-unstyled-list">
-              <li v-for="(subItem, i2) in items" :key="i2">
-                <nuxt-link :to="subItem.to">{{ subItem.title }}</nuxt-link>
-              </li>
-            </ul>
-          </li>
-        </ul>
-      </nav>
+      <st-burger-button v-model="isDrawerOpen" class="c-default__burger-button" />
+      <st-main-navigation class="c-default__header-navigation" />
     </header>
     <main>
       <Nuxt />
@@ -38,37 +24,26 @@
 import Vue from 'vue';
 import StBurgerButton from '~/components/st-burger-button.vue';
 import StLangSwitcher from '~/components/st-language-switcher.vue';
+import StMainNavigation from '~/components/st-main-navigation.vue';
 
 export default Vue.extend({
   components: {
     StLangSwitcher,
     StBurgerButton,
+    StMainNavigation,
   },
   data() {
     return {
-      isNavigationDrawerOpen: false,
-      items: [
-        {
-          icon: 'mdi-apps',
-          title: 'Welcome',
-          to: '/',
-        },
-        {
-          icon: 'mdi-chart-bubble',
-          title: 'Inspire',
-          to: '/inspire',
-        },
-      ],
-      title: 'Swiss Tchoukball',
+      isDrawerOpen: false,
     };
+  },
+  methods: {
+    closeDrawer() {
+      this.isDrawerOpen = false;
+    },
   },
 });
 </script>
-
-<style>
-@import '../assets/css/main.css';
-@import '../assets/css/variables.css';
-</style>
 
 <style scoped>
 .c-default__header {
@@ -88,16 +63,11 @@ export default Vue.extend({
   background-position: 0, 60px;
 }
 
-.c-default__header-navigation {
-  display: none; /* Hidden on xs and sm */
-  margin-top: var(--st-length-spacing-xs);
-}
-
 .c-default__burger-button {
-  margin-left: var(--st-length-spacing-m);
+  margin-left: var(--st-length-spacing-s);
 }
 
-.c-default__navigation-drawer {
+.c-default__drawer {
   background-color: var(--st-color-navigation-drawer-background);
   width: 100vw;
   opacity: 0;
@@ -108,13 +78,13 @@ export default Vue.extend({
   transition: left 0.25s ease-in-out, opacity 0s 0.25s;
 }
 
-.c-default__navigation-drawer--open {
+.c-default__drawer--open {
   left: 0;
   opacity: 1;
   transition: left 0.25s ease-in-out, opacity 0s 0s;
 }
 
-.c-default__navigation-drawer-lang-switcher {
+.c-default__drawer-lang-switcher {
   padding: var(--st-length-spacing-xs);
 }
 
@@ -122,12 +92,21 @@ export default Vue.extend({
   display: none; /* Hidden on xs */
 }
 
+.c-default__header-navigation {
+  display: none; /* Hidden on xs and sm */
+  margin-top: var(--st-length-spacing-s);
+}
+
+.c-default__drawer-navigation {
+  padding: var(--st-length-spacing-xs);
+}
+
 @media (--sm-and-up) {
   .c-default__header-lang-switcher {
     display: block;
   }
 
-  .c-default__navigation-drawer-lang-switcher {
+  .c-default__drawer-lang-switcher {
     display: none;
   }
 }
@@ -162,7 +141,7 @@ export default Vue.extend({
   }
 
   .c-default__burger-button,
-  .c-default__navigation-drawer {
+  .c-default__drawer {
     display: none;
   }
 }

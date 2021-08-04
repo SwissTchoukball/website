@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="c-index">
     <NuxtLogo />
     <h2>Welcome to the Nuxt.js template</h2>
     <div>
@@ -12,3 +12,9 @@
     </div>
   </div>
 </template>
+
+<style scoped>
+.c-index {
+  padding-top: var(--st-length-spacing-m);
+}
+</style>
