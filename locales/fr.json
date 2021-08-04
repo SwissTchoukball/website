@@ -1,5 +1,10 @@
 {
   "title": "Swiss Tchoukball",
   "langSwitcherTitle": "Changer de langue",
-  "mainNavigation": "Navigation principale"
+  "mainNavigation": "Navigation principale",
+  "backHome": "Retour à l'accueil",
+  "error": {
+    "pageNotFound": "Page introuvable",
+    "otherError": "Une erreur s'est produite"
+  }
 }

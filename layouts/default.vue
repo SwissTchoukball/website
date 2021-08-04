@@ -14,9 +14,7 @@
     <main>
       <Nuxt />
     </main>
-    <footer>
-      <span>&copy; {{ new Date().getFullYear() }} {{ $t('title') }}</span>
-    </footer>
+    <st-footer />
   </div>
 </template>
 
@@ -51,7 +49,8 @@ export default Vue.extend({
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 10px;
+  padding: 0 var(--st-length-spacing-xs);
+  margin-bottom: var(--st-length-spacing-s);
 }
 
 .c-default__logo {
@@ -117,8 +116,10 @@ export default Vue.extend({
     width: 100%;
     max-width: var(--st-length-main-content-max-width);
     margin: auto;
-    padding: var(--st-length-spacing-xs);
+    margin-bottom: var(--st-length-spacing-s);
+    padding: var(--st-length-spacing-s);
     padding-bottom: 0;
+    padding-top: var(--st-length-spacing-xs);
     position: relative;
     flex-wrap: wrap;
   }

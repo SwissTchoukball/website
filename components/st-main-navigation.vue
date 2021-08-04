@@ -107,7 +107,7 @@ export default Vue.extend({
         {
           name: 'Événements',
           open: false,
-          to: '/inspire',
+          to: '/evenements',
         },
       ],
     };
