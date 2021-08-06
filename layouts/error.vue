@@ -24,6 +24,9 @@ export default {
       title,
     };
   },
+  created() {
+    console.error(this.error);
+  },
 };
 </script>
 

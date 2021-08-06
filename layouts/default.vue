@@ -11,7 +11,7 @@
       />
     </div>
     <header class="c-default__header">
-      <nuxt-link class="c-default__logo" to="/" @click.native="closeDrawer()"></nuxt-link>
+      <nuxt-link class="c-default__logo" :to="localePath('index')" @click.native="closeDrawer()"></nuxt-link>
       <st-lang-switcher class="c-default__header-lang-switcher" />
       <st-burger-button v-model="isDrawerOpen" class="c-default__burger-button" />
       <st-main-navigation :items="mainNavigation" class="c-default__header-navigation" />

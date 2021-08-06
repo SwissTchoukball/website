@@ -62,7 +62,7 @@ const config: NuxtConfig = {
     ],
     defaultLocale: 'fr',
     langDir: 'locales/',
-    strategy: 'prefix_and_default',
+    strategy: 'prefix',
     lazy: true,
     vueI18n: {
       fallbackLocale: 'fr',

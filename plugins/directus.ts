@@ -12,6 +12,16 @@ export interface DirectusMenuItem {
   children: DirectusMenuItem[];
 }
 
+export interface DirectusPage {
+  translations: {
+    // eslint-disable-next-line camelcase
+    languages_code: string;
+    path: string;
+    title: string;
+    body: string;
+  }[];
+}
+
 type CustomTypes = {
   /*
 	This type will be merged with Directus user type.
@@ -20,6 +30,7 @@ type CustomTypes = {
 	since SDK will assume it's a custom user collection.
 	*/
   menus: DirectusMenuItem;
+  pages: DirectusPage;
 };
 
 declare module 'vue/types/vue' {

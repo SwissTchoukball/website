@@ -1,14 +1,9 @@
 html {
   font-family: 'Inter', sans-serif;
-  font-size: 16px;
-  font-weight: 300;
-  word-spacing: 1px;
-  line-height: 1.2;
   -ms-text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
-  box-sizing: border-box;
 }
 
 *,
@@ -35,6 +30,10 @@ a:visited {
 }
 
 @media (--md-and-up) {
+  html {
+    font-size: 1.25em;
+  }
+
   .l-main-content-section {
     width: 100%;
     max-width: var(--st-length-main-content-max-width);
@@ -42,6 +41,8 @@ a:visited {
     padding: 0 var(--st-length-spacing-s);
   }
 }
+
+/* Utility classes */
 
 .u-visually-hidden {
   position: absolute;

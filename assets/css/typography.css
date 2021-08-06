@@ -17,3 +17,32 @@
   font-named-instance: 'Italic';
   src: url('~assets/fonts/Inter-italic.var.woff2?v=3.19') format('woff2');
 }
+
+.t-headline-1 {
+  font-size: 2em;
+  font-weight: 900;
+}
+
+.t-headline-2,
+.c-dynamic-page__body h3 {
+  font-size: 1.5em;
+  font-weight: 900;
+}
+
+.t-headline-3,
+.c-dynamic-page__body h4 {
+  font-size: 1.2em;
+  font-weight: 900;
+}
+
+.t-headline-4,
+.c-dynamic-page__body h5 {
+  font-size: 1em;
+  font-weight: 900;
+}
+
+.t-paragraph,
+.c-dynamic-page__body p {
+  font-size: 1em;
+  line-height: 1.2;
+}

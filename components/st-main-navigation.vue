@@ -10,7 +10,7 @@
       >
         <component
           :is="item.href ? 'nuxt-link' : 'button'"
-          :to="item.href"
+          :to="localePath(item.href)"
           class="u-unstyled-button c-main-navigation__item-name"
           @click.stop="onItemClickStop(item, itemIndex)"
           @click.native="onItemClickNative(item)"
@@ -19,7 +19,9 @@
         </component>
         <ul v-if="openStates[itemIndex] && item.children" class="u-unstyled-list c-main-navigation__sub-items">
           <li v-for="(subItem, subItemIndex) in item.children" :key="subItemIndex" class="c-main-navigation__sub-item">
-            <nuxt-link :to="subItem.href" @click.native="onItemClickNative(subItem)">{{ subItem.name }}</nuxt-link>
+            <nuxt-link :to="localePath(subItem.href)" @click.native="onItemClickNative(subItem)">{{
+              subItem.name
+            }}</nuxt-link>
           </li>
         </ul>
       </li>
@@ -48,73 +50,6 @@ export default Vue.extend({
   },
   data() {
     return {
-      mainNavigation: [
-        {
-          name: 'Fédération',
-          open: false,
-          children: [
-            {
-              name: 'À propos',
-              to: '/inspire',
-            },
-            {
-              name: 'Clubs',
-              to: '/clubs',
-            },
-            {
-              name: 'Associations régionales',
-              to: '/associations-regionales',
-            },
-            {
-              name: 'Comité exécutif',
-              to: '/clubs',
-            },
-            {
-              name: 'Commissions',
-              to: '/clubs',
-            },
-            {
-              name: 'Sponsoring',
-              to: '/clubs',
-            },
-            {
-              name: 'Arbitrage',
-              to: '/clubs',
-            },
-            {
-              name: 'Juniors',
-              to: '/clubs',
-            },
-            {
-              name: 'Tchoukup',
-              to: '/clubs',
-            },
-            {
-              name: "S'impliquer",
-              to: '/clubs',
-            },
-          ],
-        },
-        {
-          name: 'Compétitions',
-          open: false,
-          children: [
-            {
-              name: 'Championnat',
-              to: '/championnat',
-            },
-            {
-              name: 'Coupe suisse',
-              to: '/coupe-suisse',
-            },
-          ],
-        },
-        {
-          name: 'Événements',
-          open: false,
-          to: '/evenements',
-        },
-      ],
       openStates: [] as boolean[],
     };
   },
@@ -180,7 +115,7 @@ export default Vue.extend({
   cursor: pointer;
   text-transform: uppercase;
   text-decoration: none;
-  font-size: 1rem;
+  font-size: 1em;
   padding: 0.5rem;
   border-radius: 5px;
   font-weight: 900;

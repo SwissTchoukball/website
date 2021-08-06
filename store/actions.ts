@@ -13,9 +13,9 @@ export default {
     const mainNavigation = await this.$directus.items('menus').readMany({
       filter: { parent: { _eq: 1 } },
       deep: {
-        // @ts-ignore
+        // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
         translations: { _filter: { languages_code: { _eq: locale } } },
-        // @ts-ignore
+        // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
         children: { translations: { _filter: { languages_code: { _eq: locale } } } },
       },
       fields: [
