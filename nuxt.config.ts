@@ -60,6 +60,7 @@ const config: NuxtConfig = {
       { code: 'fr', iso: 'fr', name: 'FR', file: 'fr.json' },
       { code: 'de', iso: 'de', name: 'DE', file: 'de.json' },
     ],
+    baseUrl: 'https://tchoukball.ch',
     defaultLocale: 'fr',
     langDir: 'locales/',
     strategy: 'prefix',
