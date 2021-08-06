@@ -1,7 +1,27 @@
 {
   "title": "Swiss Tchoukball",
   "langSwitcherTitle": "Sprache wechseln",
+  "mainNavigation": "Navigation principale",
+  "backHome": "Retour à l'accueil",
+  "error": {
+    "pageNotFound": "Page introuvable",
+    "otherError": "Une erreur s'est produite",
+    "imageDescription": "Dessin d'un tchoukballeur se reprenant la balle de son propre tir en pleine tête, après rebond sur le cadre"
+  },
+  "tchoukball": {
+    "description": "Le tchoukball est un sport d’équipe <strong>tactique</strong> mélangeant volleyball, handball et pelote basque. Cinq minutes d’explications suffisent pour commencer à jouer, rendant le tchoukball très <strong>accessible</strong>. Gestes techniques, rythme soutenu et intelligence de jeu en font un sport particulièrement <strong>intense</strong>. Il préconise le <strong>fair-play</strong> en interdisant tout geste d’aggression et d’obstruction envers l’équipe adverse.",
+    "nav": {
+      "presentation": "Vorstellung",
+      "rules": "Regeln",
+      "charter": "Charta",
+      "history": "Geschichte",
+      "material": "Ausrüstung"
+    }
+  },
   "events": {
     "title": "Ereignisse"
+  },
+  "competitions": {
+    "title": "Wettbewerbe"
   }
 }

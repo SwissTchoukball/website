@@ -26,6 +26,7 @@
   --st-color-wide-navigation-sub-items-background: rgba(255, 255, 255, 0.9); /* var(--st-color-grey-very-light); */
   --st-color-wide-navigation-narrow-sub-item-active-background: white;
   --st-color-active-lang: var(--st-color-red-swiss-tchoukball);
+  --st-color-main-content-alternative-background: var(--st-color-grey-very-light);
 
   /* Medals */
   --st-color-medal-gold: #ffd700;

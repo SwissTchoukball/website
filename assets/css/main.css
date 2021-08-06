@@ -27,6 +27,7 @@ a:visited {
 
 .l-main-content-section {
   padding: 0 var(--st-length-spacing-xs);
+  padding-bottom: var(--st-length-spacing-xs);
 }
 
 @media (--md-and-up) {
@@ -36,9 +37,8 @@ a:visited {
 
   .l-main-content-section {
     width: 100%;
-    max-width: var(--st-length-main-content-max-width);
-    margin: auto;
-    padding: 0 var(--st-length-spacing-s);
+    padding: 0 max(calc((100% - var(--st-length-main-content-max-width)) / 2), var(--st-length-spacing-s));
+    padding-bottom: var(--st-length-spacing-xs);
   }
 }
 

@@ -18,31 +18,49 @@
   src: url('~assets/fonts/Inter-italic.var.woff2?v=3.19') format('woff2');
 }
 
+.t-headline-1,
+.t-headline-2,
+.t-headline-3,
+.t-headline-4,
+.directus-formatted-content h1,
+.directus-formatted-content h2,
+.directus-formatted-content h3,
+.directus-formatted-content h4,
+.directus-formatted-content h5 {
+  font-weight: 900;
+  padding-top: var(--st-length-spacing-s);
+}
+
 .t-headline-1 {
   font-size: 2em;
-  font-weight: 900;
 }
 
 .t-headline-2,
-.c-dynamic-page__body h3 {
+.directus-formatted-content h3 {
   font-size: 1.5em;
-  font-weight: 900;
 }
 
 .t-headline-3,
-.c-dynamic-page__body h4 {
+.directus-formatted-content h4 {
   font-size: 1.2em;
-  font-weight: 900;
 }
 
 .t-headline-4,
-.c-dynamic-page__body h5 {
+.directus-formatted-content h5 {
   font-size: 1em;
-  font-weight: 900;
 }
 
 .t-paragraph,
-.c-dynamic-page__body p {
+.directus-formatted-content p,
+.directus-formatted-content ul,
+.directus-formatted-content ol {
+  max-width: 45rem;
+  margin: auto;
+  margin-top: var(--st-length-spacing-xs);
   font-size: 1em;
   line-height: 1.2;
+}
+
+.t-paragraph--large {
+  font-size: 1.2em;
 }
