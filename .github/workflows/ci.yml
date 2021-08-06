@@ -54,6 +54,7 @@ jobs:
             cd ~/sites/tchoukball.ch
             git pull
             source ~/.nvm/.profile
+            echo "CMS URL: ${CMS_URL}"
             npm ci
             npm run build
             pm2 restart website-nuxt
