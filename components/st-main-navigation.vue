@@ -53,11 +53,6 @@ export default Vue.extend({
       openStates: [] as boolean[],
     };
   },
-  computed: {
-    currentLocale(): string {
-      return this.$i18n.locale;
-    },
-  },
   created() {
     this.closeAllMenuItems();
   },

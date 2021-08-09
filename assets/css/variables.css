@@ -1,5 +1,5 @@
 :root {
-  /* COLORS */
+  /* COLOR DEFINITIONS */
 
   /* Brand */
   --st-color-red-swiss-tchoukball: #f00;
@@ -13,13 +13,17 @@
   --st-color-grey-light: #d9d9d9;
   --st-color-grey-very-light: #f2f2f2;
 
-  /* Usage */
+  /* COLOR USAGE */
+
+  /* Core */
   --st-color-text: black;
   --st-color-link: var(--st-color-red-swiss-tchoukball);
   --st-color-link-hover: var(--st-color-red-swiss-tchoukball-light);
   --st-color-link-visited: var(--st-color-red-swiss-tchoukball-dark);
   --st-color-burger-menu: var(--st-color-red-swiss-tchoukball);
   --st-color-navigation-drawer-background: var(--st-color-grey-very-light);
+  --st-color-loader-background: var(--st-color-red-swiss-tchoukball);
+  --st-color-loader-foreground: white;
   --st-color-wide-navigation-item: black;
   --st-color-wide-navigation-item-active-border: var(--st-color-red-swiss-tchoukball);
   --st-color-wide-navigation-item-active-background: var(--st-color-grey-very-light);
@@ -27,6 +31,12 @@
   --st-color-wide-navigation-narrow-sub-item-active-background: white;
   --st-color-active-lang: var(--st-color-red-swiss-tchoukball);
   --st-color-main-content-alternative-background: var(--st-color-grey-very-light);
+
+  /* News */
+  --st-color-news-category-background: var(--st-color-red-swiss-tchoukball);
+  --st-color-news-category-foreground: white;
+  --st-color-news-image-background: var(--st-color-grey-very-light);
+  --st-color-news-date-foreground: var(--st-color-grey-dark);
 
   /* Medals */
   --st-color-medal-gold: #ffd700;
@@ -43,6 +53,16 @@
   --st-length-spacing-m: 3rem;
   --st-length-spacing-l: 5rem;
   --st-length-spacing-xl: 8rem;
+  --st-length-main-content-side-padding: var(--st-length-spacing-xs);
+}
+
+@media (--md-and-up) {
+  :root {
+    --st-length-main-content-side-padding: max(
+      calc((100vw - var(--st-length-main-content-max-width)) / 2),
+      var(--st-length-spacing-s)
+    );
+  }
 }
 
 @media (--lg-and-up) {

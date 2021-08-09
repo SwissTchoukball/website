@@ -41,6 +41,7 @@ export default Vue.extend({
         throw new Error('noData');
       }
 
+      // TODO: We might want to get more than just the translations as we'll possibly have more information in the page model
       return pageResponse.data[0].translations[0];
     };
 

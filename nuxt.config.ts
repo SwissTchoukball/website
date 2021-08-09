@@ -30,7 +30,12 @@ const config: NuxtConfig = {
   css: ['~/assets/css/variables.css', '~/assets/css/typography.css', '~/assets/css/main.css'],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [{ src: '~/plugins/v-click-outside.js', ssr: false }, '~/plugins/directus.ts', '~/plugins/i18n.ts'],
+  plugins: [
+    { src: '~/plugins/v-click-outside.js', ssr: false },
+    '~/plugins/directus.ts',
+    '~/plugins/i18n.ts',
+    '~/plugins/format-date.ts',
+  ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
@@ -95,6 +100,7 @@ const config: NuxtConfig = {
   },
   publicRuntimeConfig: {
     cmsURL: process.env.CMS_URL || 'http://localhost:8055',
+    newsAssetsSizes: [326, 500, 680, 1000, 1400, 2000, 2800],
   },
 };
 

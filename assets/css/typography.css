@@ -50,6 +50,18 @@
   font-size: 1em;
 }
 
+.t-headline-1 a,
+.t-headline-2 a,
+.t-headline-3 a,
+.t-headline-4 a,
+.directus-formatted-content h1 a,
+.directus-formatted-content h2 a,
+.directus-formatted-content h3 a,
+.directus-formatted-content h4 a,
+.directus-formatted-content h5 a {
+  text-decoration: none;
+}
+
 .t-paragraph,
 .directus-formatted-content p,
 .directus-formatted-content ul,

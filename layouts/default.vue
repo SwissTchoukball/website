@@ -62,7 +62,7 @@ export default Vue.extend({
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 var(--st-length-spacing-xs);
+  padding: 0 var(--st-length-main-content-side-padding);
   margin-bottom: var(--st-length-spacing-s);
 }
 
@@ -127,11 +127,7 @@ export default Vue.extend({
   .c-default__header {
     height: auto;
     width: 100%;
-    max-width: var(--st-length-main-content-max-width);
-    margin: auto;
     margin-bottom: var(--st-length-spacing-s);
-    padding: var(--st-length-spacing-s);
-    padding-bottom: 0;
     padding-top: var(--st-length-spacing-xs);
     position: relative;
     flex-wrap: wrap;

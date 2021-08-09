@@ -2,6 +2,7 @@
   <div>
     <section class="l-main-content-section">
       <p>TODO: Carousel actualités</p>
+      <nuxt-link :to="localePath('news')">{{ $t('news.readMore') }}</nuxt-link>
     </section>
     <section class="l-main-content-section">
       <h2 class="t-headline-1">{{ $t('events.title') }}</h2>
@@ -86,6 +87,7 @@ export default Vue.extend({
 .c-index__tchoukball-nav {
   display: flex;
   justify-content: center;
+  flex-wrap: wrap;
 }
 
 .c-index__tchoukball-nav-item {
