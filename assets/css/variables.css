@@ -31,6 +31,7 @@
   --st-color-wide-navigation-narrow-sub-item-active-background: white;
   --st-color-active-lang: var(--st-color-red-swiss-tchoukball);
   --st-color-main-content-alternative-background: var(--st-color-grey-very-light);
+  --st-color-pagination-page-active-background: var(--st-color-grey-very-light);
 
   /* News */
   --st-color-news-category-background: var(--st-color-red-swiss-tchoukball);

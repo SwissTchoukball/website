@@ -5,7 +5,7 @@
     <st-loader v-if="$fetchState.pending" class="c-news__loader" />
     <p v-else-if="$fetchState.error">{{ $t('error.otherError') }}</p>
     <st-news-list v-else class="c-news__list" :news="newsList" />
-    <!-- TODO: Add pagination -->
+    <st-pagination v-if="totalPages" :current-page="currentPage" :total-pages="totalPages" />
   </section>
 </template>
 
@@ -15,12 +15,15 @@ import stLoader from '~/components/st-loader.vue';
 import stNewsList from '~/components/news/st-news-list.vue';
 import { NewsEntry } from '~/components/news/st-news';
 import { DirectusNewsCategory, flattenForLanguage } from '~/plugins/directus';
+import StPagination from '~/components/st-pagination.vue';
 
 export default Vue.extend({
-  components: { stLoader, stNewsList },
+  components: { stLoader, stNewsList, StPagination },
   data() {
     return {
       newsList: [] as NewsEntry[],
+      newsEntriesPerPage: 12,
+      totalNewsEntries: undefined as number | undefined,
     };
   },
   async fetch() {
@@ -48,7 +51,9 @@ export default Vue.extend({
     }
 
     const newsResponse = await this.$directus.items('news').readMany({
-      limit: 10,
+      meta: 'filter_count',
+      limit: this.newsEntriesPerPage,
+      page: this.currentPage,
       filter,
       fields: [
         'id',
@@ -66,6 +71,11 @@ export default Vue.extend({
         categories: { news_categories_id: { translations: { _filter: { languages_code: { _eq: currentLocale } } } } },
       },
     });
+
+    if (newsResponse?.meta?.filter_count) {
+      this.totalNewsEntries = newsResponse.meta.filter_count;
+    }
+
     if (newsResponse?.data) {
       this.newsList = newsResponse.data.reduce((news, directusNewsEntry) => {
         let singleLanguageNewsEntry:
@@ -106,8 +116,23 @@ export default Vue.extend({
       }, [] as NewsEntry[]);
     }
   },
+  computed: {
+    totalPages(): number | undefined {
+      if (!this.totalNewsEntries) {
+        return;
+      }
+      return Math.ceil(this.totalNewsEntries / this.newsEntriesPerPage);
+    },
+    currentPage(): number {
+      if (this.$route.query.page && typeof this.$route.query.page === 'string') {
+        return parseInt(this.$route.query.page);
+      }
+
+      return 1;
+    },
+  },
   watch: {
-    '$route.query.category': '$fetch',
+    '$route.query': '$fetch',
   },
 });
 </script>

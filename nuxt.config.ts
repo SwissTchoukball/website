@@ -46,6 +46,7 @@ const config: NuxtConfig = {
     '@nuxt/typescript-build',
     // https://go.nuxtjs.dev/stylelint
     '@nuxtjs/stylelint-module',
+    '@nuxtjs/fontawesome',
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
@@ -72,6 +73,15 @@ const config: NuxtConfig = {
     lazy: true,
     vueI18n: {
       fallbackLocale: 'fr',
+    },
+  },
+
+  // @nuxtjs/fontawesome configuration: https://github.com/nuxt-community/fontawesome-module#module-options
+  fontawesome: {
+    component: 'fa',
+    suffix: true,
+    icons: {
+      solid: ['faAngleLeft', 'faAngleDoubleLeft', 'faAngleRight', 'faAngleDoubleRight'],
     },
   },
 

@@ -8,6 +8,13 @@
     "otherError": "Une erreur s'est produite",
     "imageDescription": "Dessin d'un tchoukballeur se reprenant la balle de son propre tir en pleine tête, après rebond sur le cadre"
   },
+  "pagination": {
+    "title": "Naviguer dans les pages",
+    "firstPage": "Première page",
+    "previousPage": "Page précédente",
+    "nextPage": "Page suivante",
+    "lastPage": "Dernière page"
+  },
   "news": {
     "readMore": "Consulter plus d'articles",
     "publishedOn": "publié le",
