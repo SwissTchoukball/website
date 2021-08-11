@@ -19,7 +19,6 @@ import Vue from 'vue';
 import stLoader from '~/components/st-loader.vue';
 import stNewsList from '~/components/news/st-news-list.vue';
 import { NewsEntry } from '~/components/news/st-news';
-import { DirectusNewsCategory, flattenForLanguage } from '~/plugins/directus';
 import StPagination from '~/components/st-pagination.vue';
 
 export default Vue.extend({
@@ -33,104 +32,19 @@ export default Vue.extend({
     };
   },
   async fetch() {
-    // We retrieve all the languages and show news in fallback locale if not available in current locale
-    const currentLocale = this.$i18n.locale;
-    const defaultLocale = this.$i18n.defaultLocale;
-
-    // Preparing the filter to retrieve the news
-    const publishedFilter = {
-      status: {
-        _eq: 'published',
-      },
-    };
-    let categoryFilter: any;
     let filteredCategoryId: number | undefined;
     if (typeof this.$route.query.category === 'string') {
       filteredCategoryId = parseInt(this.$route.query.category);
-      categoryFilter = {
-        categories: { id: { _eq: filteredCategoryId } },
-      };
     }
-    let filter: any = {};
-    if (categoryFilter) {
-      filter = { _and: [publishedFilter, categoryFilter] };
-    } else {
-      filter = publishedFilter;
-    }
-
-    const newsResponse = await this.$directus.items('news').readMany({
-      meta: 'filter_count',
+    const newsResult = await this.$cmsService.getNews({
       limit: this.newsEntriesPerPage,
       page: this.currentPage,
-      filter,
-      fields: [
-        'id',
-        'main_image.id',
-        'main_image.description',
-        'translations.languages_code',
-        'translations.slug',
-        'translations.title',
-        'categories.id',
-        'categories.news_categories_id.translations.slug',
-        'categories.news_categories_id.translations.name',
-      ],
-      deep: {
-        // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
-        categories: { news_categories_id: { translations: { _filter: { languages_code: { _eq: currentLocale } } } } },
-      },
+      categoryId: filteredCategoryId,
     });
 
-    if (newsResponse?.meta?.filter_count) {
-      this.totalNewsEntries = newsResponse.meta.filter_count;
-    }
-
-    if (newsResponse?.data) {
-      this.newsList = newsResponse.data.reduce((news, directusNewsEntry) => {
-        let singleLanguageNewsEntry:
-          | (Omit<NewsEntry, 'categories'> & { categories: DirectusNewsCategory[] })
-          | undefined;
-        if (directusNewsEntry && directusNewsEntry.translations?.length) {
-          try {
-            singleLanguageNewsEntry = flattenForLanguage(directusNewsEntry, currentLocale);
-          } catch (error) {
-            console.warn(
-              `News entry ${directusNewsEntry.id} is not available in ${currentLocale}. Falling back to default.`
-            );
-            try {
-              singleLanguageNewsEntry = flattenForLanguage(directusNewsEntry, defaultLocale);
-            } catch (error) {
-              console.warn(
-                `News entry ${directusNewsEntry.id} is not available in default locale ${defaultLocale}. Discarding news entry for display.`
-              );
-            }
-          }
-
-          if (!singleLanguageNewsEntry) {
-            return news;
-          }
-
-          // For categories, we expect them to be all translated, so we don't fallback to default locale.
-          const newsEntry: NewsEntry = {
-            ...singleLanguageNewsEntry,
-            categories: singleLanguageNewsEntry.categories.map((category) => ({
-              id: category.id,
-              ...category.news_categories_id.translations[0],
-            })),
-          };
-
-          return [...news, newsEntry];
-        }
-        return news;
-      }, [] as NewsEntry[]);
-
-      this.filteredCategoryName = undefined;
-      if (filteredCategoryId) {
-        const filteredCategory = this.newsList[0].categories.find((category) => category.id === filteredCategoryId);
-        if (filteredCategory) {
-          this.filteredCategoryName = filteredCategory.name;
-        }
-      }
-    }
+    this.newsList = newsResult.data;
+    this.totalNewsEntries = newsResult.meta.total;
+    this.filteredCategoryName = newsResult.meta.filteredCategoryName;
   },
   computed: {
     totalPages(): number | undefined {

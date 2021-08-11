@@ -10,8 +10,8 @@
           v-if="newsEntry.main_image"
           class="c-news-list__image"
           :alt="newsEntry.main_image.description"
-          :src="mainImageFallbackSrc(newsEntry)"
-          :srcset="mainImageSrcSet(newsEntry)"
+          :src="mainImageFallbackSrc(newsEntry.main_image.id)"
+          :srcset="mainImageSrcSet(newsEntry.main_image.id)"
           sizes="
             (min-width: 1400px) 326px,
             (min-width: 1100px) 30vw,
@@ -63,13 +63,13 @@ export default Vue.extend({
     getNewsLink(newsEntry: NewsEntry) {
       return this.localePath(`/news/${newsEntry.id}-${newsEntry.slug}`);
     },
-    mainImageFallbackSrc(newsEntry: NewsEntry): string {
-      return getAssetURL(this.$config.cmsURL, newsEntry.main_image.id, {
+    mainImageFallbackSrc(assetId: string): string {
+      return getAssetURL(this.$config.cmsURL, assetId, {
         width: this.$config.newsAssetsSizes[0],
       });
     },
-    mainImageSrcSet(newsEntry: NewsEntry): string {
-      return getAssetSrcSet(this.$config.cmsURL, newsEntry.main_image.id, {
+    mainImageSrcSet(assetId: string): string {
+      return getAssetSrcSet(this.$config.cmsURL, assetId, {
         widths: this.$config.newsAssetsSizes,
       });
     },

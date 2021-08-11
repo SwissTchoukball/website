@@ -1,0 +1,176 @@
+<template>
+  <div class="st-home-carousel">
+    <agile :options="options">
+      <nuxt-link
+        v-for="(item, index) in items"
+        :key="`carousel-item-${index}`"
+        :to="item.href"
+        class="st-home-carousel__item"
+      >
+        <img
+          class="st-home-carousel__image"
+          :alt="item.image.alt"
+          :src="imageFallbackSrc(item.image.directusAssetId)"
+          :srcset="imageSrcSet(item.image.directusAssetId)"
+          :sizes="imgTagSizes"
+        />
+        <div class="st-home-carousel__title-fade"></div>
+        <h3 class="t-headline-2 st-home-carousel__title">
+          {{ item.caption }}
+        </h3>
+      </nuxt-link>
+    </agile>
+  </div>
+</template>
+
+<script lang="ts">
+import Vue, { PropType } from 'vue';
+import { getAssetSrcSet, getAssetURL } from '~/plugins/directus';
+
+export interface CarouselItem {
+  image: {
+    directusAssetId: string;
+    alt: string;
+  };
+  caption: string;
+  href: string;
+}
+
+// TODO: Switch to Swiper when we'll be using Vue 3.
+//       https://swiperjs.com/vue
+
+// FIXME: There is client/server-side mismatch on the rendered DOM because of the "dots" of the carousel.
+//        We should avoid that, but it doesn't hurt. So we leave it like that for now.
+export default Vue.extend({
+  props: {
+    items: {
+      type: Array as PropType<CarouselItem[]>,
+      required: true,
+    },
+  },
+  data() {
+    return {
+      options: {
+        autoplay: true,
+        autoplaySpeed: 5000,
+        infinite: true,
+        slidesToShow: 1,
+        navButtons: false,
+      },
+      imgTagSizes: '',
+    };
+  },
+  mounted() {
+    const bodyStyles = window.getComputedStyle(document.body);
+    const lXlBreakpoint = bodyStyles.getPropertyValue('--st-breakpoing-l-xl');
+    this.imgTagSizes = `(min-width: ${lXlBreakpoint}) ${lXlBreakpoint}, 100vw`;
+  },
+  methods: {
+    imageFallbackSrc(assetId: string): string {
+      return getAssetURL(this.$config.cmsURL, assetId, {
+        width: this.$config.newsAssetsSizes[0],
+      });
+    },
+    imageSrcSet(assetId: string): string {
+      return getAssetSrcSet(this.$config.cmsURL, assetId, {
+        widths: this.$config.newsAssetsSizes,
+      });
+    },
+  },
+});
+</script>
+
+<style scoped>
+.st-home-carousel {
+  width: 100vw;
+  margin-left: calc(-1 * var(--st-length-main-content-side-padding));
+}
+
+.st-home-carousel__image {
+  display: block;
+  width: 100vw;
+  height: min(50vw, 60vh);
+  object-fit: cover;
+  background-image: linear-gradient(gray 100%, transparent 0);
+}
+
+.st-home-carousel__item {
+  position: relative;
+  display: block;
+}
+
+.st-home-carousel__title {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 0 var(--st-length-spacing-xs);
+  margin-bottom: var(--st-length-spacing-xs);
+  color: var(--st-color-home-carousel-title-foreground);
+
+  /* PostCSS doesn't support adding prefix for line-clamp yet: https://github.com/postcss/autoprefixer/issues/1322 */
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* That's weird, but the -webkit- prefix works also for Firefox */
+  -webkit-box-orient: vertical;
+  line-clamp: 2;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.st-home-carousel__title-fade {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 5rem;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.6));
+}
+
+@media (--xl-and-up) {
+  .st-home-carousel {
+    width: var(--st-breakpoing-l-xl);
+    margin-left: calc(-1 * (var(--st-breakpoing-l-xl) - var(--st-length-main-content-max-width)) / 2);
+  }
+
+  .st-home-carousel__image {
+    height: 60vh;
+  }
+}
+</style>
+
+<style>
+.agile__actions {
+  margin: var(--st-length-spacing-xs);
+}
+
+.agile__dots {
+  margin: auto;
+  list-style: none;
+  padding: 0;
+  white-space: nowrap;
+}
+
+.agile__dot {
+  margin: 0 calc(var(--st-length-spacing-xs) / 2);
+}
+
+.agile__dot button {
+  background-color: var(--st-color-home-carousel-dot);
+  border-radius: 50%;
+  font-size: 0;
+  line-height: 0;
+  margin: 0;
+  padding: 0;
+  height: 10px;
+  width: 10px;
+  border: 1px solid transparent;
+  transition: background-color 0.3s ease;
+}
+
+.agile__dot--current button {
+  background-color: var(--st-color-home-carousel-dot-active);
+  width: 12px;
+  height: 12px;
+  border: none;
+}
+</style>

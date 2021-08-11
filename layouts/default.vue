@@ -88,6 +88,7 @@ export default Vue.extend({
   left: 100vw;
   bottom: 0;
   transition: left 0.25s ease-in-out, opacity 0s 0.25s;
+  z-index: 2;
 }
 
 .c-default__drawer--open {

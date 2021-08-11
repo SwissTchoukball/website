@@ -1,5 +1,5 @@
 import { Plugin } from '@nuxt/types';
-import { Directus, PartialItem } from '@directus/sdk';
+import { Directus } from '@directus/sdk';
 
 export interface DirectusMenuItem {
   parent: number;
@@ -92,27 +92,6 @@ const directusPlugin: Plugin = (context, inject) => {
 };
 
 export default directusPlugin;
-
-export const flattenForLanguage = (
-  dataEntry: PartialItem<{ [x: string]: any; translations: { languages_code: string; [y: string]: any }[] }>,
-  languageCode: string
-) => {
-  if (!dataEntry.translations) {
-    throw new Error(`No translations`);
-  }
-  const requestedTranslation = dataEntry.translations.find(
-    (translation) => translation?.languages_code && translation.languages_code === languageCode
-  );
-  if (!requestedTranslation) {
-    throw new Error(`No ${languageCode} translation available`);
-  }
-  const flattenDataEntry: any = {
-    ...dataEntry,
-    ...requestedTranslation,
-  };
-  flattenDataEntry.translations = undefined;
-  return flattenDataEntry;
-};
 
 export const getAssetURL = (cmsURL: string, assetId: string, { width }: { width: number }) => {
   return `${cmsURL}/assets/${assetId}/?width=${width}`;

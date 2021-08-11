@@ -27,14 +27,21 @@ const config: NuxtConfig = {
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
-  css: ['~/assets/css/variables.css', '~/assets/css/typography.css', '~/assets/css/main.css'],
+  css: [
+    '~/assets/css/variables.css',
+    '~/assets/css/typography.css',
+    '~/assets/css/main.css',
+    'vue-agile/dist/VueAgile.css',
+  ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
-    { src: '~/plugins/v-click-outside.js', ssr: false },
+    { src: '~/plugins/v-click-outside.js', mode: 'client' },
     '~/plugins/directus.ts',
     '~/plugins/i18n.ts',
     '~/plugins/format-date.ts',
+    '~/plugins/vue-agile.ts',
+    '~/plugins/cms-service.ts',
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -87,6 +94,7 @@ const config: NuxtConfig = {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+    transpile: ['vue-agile'],
     postcss: {
       plugins: {
         'postcss-custom-media': {

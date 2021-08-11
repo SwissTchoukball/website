@@ -1,8 +1,8 @@
 <template>
   <div>
     <section class="l-main-content-section">
-      <p>TODO: Carousel actualités</p>
-      <nuxt-link :to="localePath('news')">{{ $t('news.readMore') }}</nuxt-link>
+      <st-home-carousel :items="carouselItems" />
+      <nuxt-link :to="localePath('news')" class="c-index__read-more-news">{{ $t('news.readMore') }}</nuxt-link>
     </section>
     <section class="l-main-content-section">
       <h2 class="t-headline-1">{{ $t('events.title') }}</h2>
@@ -33,9 +33,13 @@
 
 <script lang="ts">
 import Vue from 'vue';
+import { CarouselItem } from '~/components/st-home-carousel.vue';
+
 export default Vue.extend({
   data() {
     return {
+      amountNewsInCarousel: 5,
+      carouselItems: [] as CarouselItem[],
       // TODO: low prio: Move the navigation data to the CMS.
       tchoukballNavigation: [
         {
@@ -76,10 +80,36 @@ export default Vue.extend({
       ],
     };
   },
+  async fetch() {
+    const newsResult = await this.$cmsService.getNews({
+      limit: this.amountNewsInCarousel,
+      page: 1,
+      withImageOnly: true,
+    });
+
+    // TODO: Consider having other entities than news entries in carousel.
+    this.carouselItems = newsResult.data
+      .filter((newsEntry) => newsEntry.main_image)
+      .map((newsEntry) => {
+        return {
+          image: {
+            directusAssetId: newsEntry.main_image!.id,
+            alt: newsEntry.main_image!.description,
+          },
+          caption: newsEntry.title,
+          href: this.localePath(`/news/${newsEntry.id}-${newsEntry.slug}`),
+        };
+      });
+  },
 });
 </script>
 
 <style scoped>
+.c-index__read-more-news {
+  display: block;
+  text-align: right;
+}
+
 .c-index__competitions {
   background-color: var(--st-color-main-content-alternative-background);
 }

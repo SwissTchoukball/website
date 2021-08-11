@@ -7,7 +7,7 @@ export interface NewsEntry {
   id: number;
   title: string;
   slug: string;
-  main_image: {
+  main_image?: {
     id: string;
     description: string;
   };

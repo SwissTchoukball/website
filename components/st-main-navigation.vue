@@ -153,6 +153,7 @@ export default Vue.extend({
   grid-auto-flow: column;
   grid-template-rows: repeat(5, auto);
   column-gap: 1.5rem;
+  z-index: 2;
 }
 
 .c-main-navigation--narrow .c-main-navigation__sub-items {

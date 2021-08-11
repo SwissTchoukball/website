@@ -27,11 +27,16 @@
   --st-color-wide-navigation-item: black;
   --st-color-wide-navigation-item-active-border: var(--st-color-red-swiss-tchoukball);
   --st-color-wide-navigation-item-active-background: var(--st-color-grey-very-light);
-  --st-color-wide-navigation-sub-items-background: rgba(255, 255, 255, 0.9); /* var(--st-color-grey-very-light); */
+  --st-color-wide-navigation-sub-items-background: white;
   --st-color-wide-navigation-narrow-sub-item-active-background: white;
   --st-color-active-lang: var(--st-color-red-swiss-tchoukball);
   --st-color-main-content-alternative-background: var(--st-color-grey-very-light);
   --st-color-pagination-page-active-background: var(--st-color-grey-very-light);
+
+  /* Home */
+  --st-color-home-carousel-dot: var(--st-color-grey-light);
+  --st-color-home-carousel-dot-active: var(--st-color-red-swiss-tchoukball);
+  --st-color-home-carousel-title-foreground: white;
 
   /* News */
   --st-color-news-category-background: var(--st-color-red-swiss-tchoukball);
@@ -55,6 +60,9 @@
   --st-length-spacing-l: 5rem;
   --st-length-spacing-xl: 8rem;
   --st-length-main-content-side-padding: var(--st-length-spacing-xs);
+
+  /* Breakpoints */
+  --st-breakpoing-l-xl: 1905px;
 }
 
 @media (--md-and-up) {

@@ -8,7 +8,7 @@
       :alt="newsEntry.main_image.description"
       :src="mainImageFallbackSrc"
       :srcset="mainImageSrcSet"
-      sizes="(min-width: 1905px) 1905px, 100vw"
+      :sizes="imgTagSizes"
     />
     <!-- We have to use v-html here as we get html content directly from Directus -->
     <!-- eslint-disable-next-line vue/no-v-html -->
@@ -31,13 +31,24 @@ export default Vue.extend({
       required: true,
     },
   },
+  data() {
+    return {
+      imgTagSizes: '',
+    };
+  },
   computed: {
     mainImageFallbackSrc(): string {
+      if (!this.newsEntry.main_image) {
+        return '';
+      }
       return getAssetURL(this.$config.cmsURL, this.newsEntry.main_image.id, {
         width: this.$config.newsAssetsSizes[0],
       });
     },
     mainImageSrcSet(): string {
+      if (!this.newsEntry.main_image) {
+        return '';
+      }
       return getAssetSrcSet(this.$config.cmsURL, this.newsEntry.main_image.id, {
         widths: this.$config.newsAssetsSizes,
       });
@@ -57,6 +68,11 @@ export default Vue.extend({
 
       return dates;
     },
+  },
+  mounted() {
+    const bodyStyles = window.getComputedStyle(document.body);
+    const lXlBreakpoint = bodyStyles.getPropertyValue('--st-breakpoing-l-xl');
+    this.imgTagSizes = `(min-width: ${lXlBreakpoint}) ${lXlBreakpoint}, 100vw`;
   },
 });
 </script>
@@ -89,8 +105,8 @@ export default Vue.extend({
 
 @media (--xl-and-up) {
   .c-news-entry__image {
-    width: 1905px; /* l-xl breakpoint */
-    margin-left: calc(-1 * (1905px - var(--st-length-main-content-max-width)) / 2);
+    width: var(--st-breakpoing-l-xl);
+    margin-left: calc(-1 * (var(--st-breakpoing-l-xl) - var(--st-length-main-content-max-width)) / 2);
     height: 60vh;
   }
 }
