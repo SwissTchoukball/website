@@ -5,7 +5,7 @@
       <template v-else>{{ $t('error.otherError') }}</template>
     </h2>
     <img class="c-error__image" src="/images/error-illustration.jpg" :alt="$t('error.imageDescription')" />
-    <nuxt-link to="/">{{ $t('backHome') }}</nuxt-link>
+    <nuxt-link :to="localePath('/')">{{ $t('backHome') }}</nuxt-link>
   </section>
 </template>
 
