@@ -55,6 +55,7 @@ export default Vue.extend({
         autoplaySpeed: 5000,
         infinite: true,
         slidesToShow: 1,
+        dots: true,
         navButtons: false,
       },
       imgTagSizes: '',
