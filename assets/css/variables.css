@@ -32,6 +32,8 @@
   --st-color-active-lang: var(--st-color-red-swiss-tchoukball);
   --st-color-main-content-alternative-background: var(--st-color-grey-very-light);
   --st-color-pagination-page-active-background: var(--st-color-grey-very-light);
+  --st-color-footer-social-background: var(--st-color-grey-very-light);
+  --st-color-footer-tchouksuisse: var(--st-color-red-swiss-tchoukball);
 
   /* Home */
   --st-color-home-carousel-dot: var(--st-color-grey-light);

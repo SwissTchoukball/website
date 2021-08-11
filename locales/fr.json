@@ -2,6 +2,7 @@
   "title": "Swiss Tchoukball",
   "langSwitcherTitle": "Changer de langue",
   "mainNavigation": "Navigation principale",
+  "secondaryNavigation": "Navigation secondaire",
   "backHome": "Retour à l'accueil",
   "error": {
     "pageNotFound": "Page introuvable",
@@ -14,6 +15,12 @@
     "previousPage": "Page précédente",
     "nextPage": "Page suivante",
     "lastPage": "Dernière page"
+  },
+  "footer": {
+    "partners": "Partenaires",
+    "affiliations": "Affiliations",
+    "logoFrom": "Logo de {orgName}",
+    "allRightsReserved": "tous droits réservés"
   },
   "news": {
     "readMore": "Voir toutes les news",
