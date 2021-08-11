@@ -15,7 +15,7 @@
           :sizes="imgTagSizes"
         />
         <div class="st-home-carousel__title-fade"></div>
-        <h3 class="t-headline-2 st-home-carousel__title">
+        <h3 class="st-home-carousel__title">
           {{ item.caption }}
         </h3>
       </nuxt-link>
@@ -107,6 +107,8 @@ export default Vue.extend({
   padding: 0 var(--st-length-spacing-xs);
   margin-bottom: var(--st-length-spacing-xs);
   color: var(--st-color-home-carousel-title-foreground);
+  font-weight: 900;
+  font-size: 2em;
 
   /* PostCSS doesn't support adding prefix for line-clamp yet: https://github.com/postcss/autoprefixer/issues/1322 */
   display: -webkit-box;
@@ -124,6 +126,37 @@ export default Vue.extend({
   right: 0;
   height: 5rem;
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.6));
+}
+@media (--sm-and-up) {
+  .st-home-carousel__title {
+    font-size: 2.25em;
+  }
+
+  .st-home-carousel__title-fade {
+    height: 6rem;
+  }
+}
+
+@media (--md-and-up) {
+  .st-home-carousel__title {
+    padding: var(--st-length-spacing-xs) var(--st-length-spacing-s);
+    font-size: 2.5em;
+  }
+
+  .st-home-carousel__title-fade {
+    height: 7rem;
+  }
+}
+
+@media (--lg-and-up) {
+  .st-home-carousel__title {
+    padding: var(--st-length-spacing-xs) var(--st-length-spacing-m);
+    font-size: 3em;
+  }
+
+  .st-home-carousel__title-fade {
+    height: 8rem;
+  }
 }
 
 @media (--xl-and-up) {
