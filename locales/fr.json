@@ -16,7 +16,9 @@
     "lastPage": "Dernière page"
   },
   "news": {
-    "readMore": "Consulter plus d'articles",
+    "readMore": "Consulter plus de news",
+    "categoryFilterInfo": "Affichage des news “{categoryName}”.",
+    "showAll": "Afficher toutes les news",
     "publishedOn": "publié le",
     "updatedOn": "mis à jour le"
   },

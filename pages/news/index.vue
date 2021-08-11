@@ -1,10 +1,15 @@
 <template>
   <section class="l-main-content-section">
     <h2 class="t-headline-1">News</h2>
-    <!-- TODO: Add info about filtered category -->
     <st-loader v-if="$fetchState.pending" class="c-news__loader" />
     <p v-else-if="$fetchState.error">{{ $t('error.otherError') }}</p>
-    <st-news-list v-else class="c-news__list" :news="newsList" />
+    <template v-else>
+      <p v-if="filteredCategoryName" class="c-news__category-filter-info">
+        {{ $t('news.categoryFilterInfo', { categoryName: filteredCategoryName }) }}
+        <nuxt-link :to="''">{{ $t('news.showAll') }}</nuxt-link>
+      </p>
+      <st-news-list class="c-news__list" :news="newsList" />
+    </template>
     <st-pagination v-if="totalPages" :current-page="currentPage" :total-pages="totalPages" />
   </section>
 </template>
@@ -24,6 +29,7 @@ export default Vue.extend({
       newsList: [] as NewsEntry[],
       newsEntriesPerPage: 12,
       totalNewsEntries: undefined as number | undefined,
+      filteredCategoryName: undefined as string | undefined,
     };
   },
   async fetch() {
@@ -38,9 +44,11 @@ export default Vue.extend({
       },
     };
     let categoryFilter: any;
-    if (this.$route.query.category) {
+    let filteredCategoryId: number | undefined;
+    if (typeof this.$route.query.category === 'string') {
+      filteredCategoryId = parseInt(this.$route.query.category);
       categoryFilter = {
-        categories: { id: { _eq: this.$route.query.category } },
+        categories: { id: { _eq: filteredCategoryId } },
       };
     }
     let filter: any = {};
@@ -114,6 +122,14 @@ export default Vue.extend({
         }
         return news;
       }, [] as NewsEntry[]);
+
+      this.filteredCategoryName = undefined;
+      if (filteredCategoryId) {
+        const filteredCategory = this.newsList[0].categories.find((category) => category.id === filteredCategoryId);
+        if (filteredCategory) {
+          this.filteredCategoryName = filteredCategory.name;
+        }
+      }
     }
   },
   computed: {
@@ -141,6 +157,10 @@ export default Vue.extend({
 .c-news__loader {
   margin: auto;
   margin-top: var(--st-length-spacing-m);
+}
+
+.c-news__category-filter-info {
+  margin-top: var(--st-length-spacing-xs);
 }
 
 .c-news__list {
