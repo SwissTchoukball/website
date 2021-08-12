@@ -6,8 +6,15 @@ const i18nPlugin: Plugin = ({ app, store }) => {
     console.log(oldLocale, newLocale, isInitialSetup);
   }; */
   // onLanguageSwitched called right after a new locale has been set
-  app.i18n.onLanguageSwitched = (_oldLocale, _newLocale) => {
-    store.dispatch('loadMenu');
+  app.i18n.onLanguageSwitched = async (_oldLocale, _newLocale) => {
+    const dataLoads = [store.dispatch('loadMenu')];
+
+    // We load the categories only if we already have them in the old locale
+    if (store.state.eventCategories) {
+      dataLoads.push(store.dispatch('loadEventCategories'));
+    }
+
+    await Promise.all(dataLoads);
   };
 };
 

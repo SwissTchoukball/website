@@ -47,6 +47,39 @@ export interface DirectusNews {
   categories: DirectusNewsCategory[];
 }
 
+export interface DirectusVenue {
+  id: string;
+  name: string;
+  url?: string;
+}
+
+export interface DirectusEvent {
+  id: number;
+  name: string;
+  date_start: string;
+  time_start: string;
+  date_end: string;
+  time_end: string;
+  status: string;
+  description?: string;
+  venue?: DirectusVenue;
+  venue_other?: string;
+  image?: {
+    id: string;
+    description: string;
+  };
+  url?: string;
+  category?: number;
+}
+
+export interface DirectusEventCategory {
+  id: number;
+  name: string;
+  translations: {
+    name: string;
+  }[];
+}
+
 type CustomTypes = {
   /*
 	This type will be merged with Directus user type.
@@ -57,6 +90,8 @@ type CustomTypes = {
   menus: DirectusMenuItem;
   pages: DirectusPage;
   news: DirectusNews;
+  events: DirectusEvent;
+  event_categories: DirectusEventCategory;
 };
 
 declare module 'vue/types/vue' {

@@ -40,7 +40,9 @@
     }
   },
   "events": {
-    "title": "Événements"
+    "title": "Événements",
+    "moreInfo": "Plus d'infos",
+    "fullDay": "Toute la journée"
   },
   "competitions": {
     "title": "Compétitions"

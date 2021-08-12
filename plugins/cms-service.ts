@@ -1,7 +1,30 @@
 import { Plugin } from '@nuxt/types';
 import { PartialItem } from '@directus/sdk';
+import { set } from 'date-fns';
 import { NewsEntry } from '~/components/news/st-news';
 import { DirectusNewsCategory } from '~/plugins/directus';
+
+export interface Venue {
+  name: string;
+  address?: string;
+  url?: string;
+}
+export interface CalendarEvent {
+  name: string;
+  date_start: Date;
+  date_end: Date;
+  isFullDay: boolean;
+  showEndTime: boolean;
+  status: string;
+  description?: string;
+  venue?: Venue;
+  image?: {
+    id: string;
+    description: string;
+  };
+  url?: string;
+  category: number;
+}
 
 interface CMSService {
   getNews: (options: {
@@ -11,6 +34,12 @@ interface CMSService {
     withImageOnly?: boolean;
   }) => Promise<{ data: NewsEntry[]; meta: { total: number; filteredCategoryName?: string } }>;
   getOneNews: (newsId: number) => Promise<NewsEntry>;
+  getEvents: (options: {
+    limit: number;
+    page: number;
+    categoryId?: number;
+    month?: string;
+  }) => Promise<{ data: CalendarEvent[]; meta: { total: number; filteredCategoryName?: string } }>;
 }
 
 declare module 'vue/types/vue' {
@@ -237,7 +266,139 @@ const cmsService: Plugin = (context, inject) => {
     };
   };
 
-  inject('cmsService', { getNews, getOneNews });
+  const getEvents: CMSService['getEvents'] = async ({ limit, page, categoryId, month }) => {
+    // Preparing the filter to retrieve the events
+    const publishedFilter = {
+      status: {
+        _neq: 'draft',
+      },
+    };
+
+    let categoryFilter: any;
+    if (categoryId) {
+      categoryFilter = {
+        categories: { id: { _eq: categoryId } },
+      };
+    }
+
+    let monthFilter: any;
+    if (month) {
+      monthFilter = {
+        _and: [
+          {
+            date_start: {
+              _gte: month,
+            },
+          },
+          {
+            date_start: {
+              // It doesn't matter if not all months have 31 days. The filter still does the job as expected.
+              _lte: month + '-31',
+            },
+          },
+        ],
+      };
+    }
+
+    const filter: any = { _and: [publishedFilter] };
+    if (categoryFilter) {
+      filter._and.push(categoryFilter);
+    }
+    if (monthFilter) {
+      filter._and.push(monthFilter);
+    }
+
+    const response = await context.$directus.items('events').readMany({
+      meta: 'filter_count',
+      limit,
+      page,
+      filter,
+      fields: [
+        'id',
+        'name',
+        'date_start',
+        'time_start',
+        'date_end',
+        'time_end',
+        'status',
+        'description',
+        'venue.id',
+        'venue.name',
+        'venue_other',
+        'image.id',
+        'image.description',
+        'url',
+        'category',
+      ],
+    });
+
+    let totalEvents = 0;
+    if (response?.meta?.filter_count) {
+      totalEvents = response.meta.filter_count;
+    }
+
+    let events = [];
+    if (!response?.data) {
+      throw new Error('Error when retrieving events');
+    }
+
+    events = response.data.reduce((events, directusEvent) => {
+      if (!directusEvent || !directusEvent.name || !directusEvent.date_start) {
+        return events;
+      }
+
+      let isFullDay = true;
+      let showEndTime = false;
+
+      let startDate = new Date(directusEvent.date_start);
+      if (directusEvent.time_start) {
+        const startTime = directusEvent.time_start.split(':').map((t) => parseInt(t));
+        startDate = set(startDate, { hours: startTime[0], minutes: startTime[1] });
+        isFullDay = false;
+      }
+
+      let endDate: Date;
+      if (directusEvent.date_end) {
+        endDate = new Date(directusEvent.date_end);
+      } else {
+        endDate = startDate;
+      }
+      if (!isFullDay && directusEvent.time_end) {
+        const endTime = directusEvent.time_end.split(':').map((t) => parseInt(t));
+        endDate = set(endDate, { hours: endTime[0], minutes: endTime[1] });
+        showEndTime = true;
+      }
+
+      let venue: Venue | undefined;
+      if (directusEvent.venue) {
+        venue = directusEvent.venue;
+      } else if (directusEvent.venue_other) {
+        venue = {
+          name: directusEvent.venue_other,
+        };
+      }
+
+      const event: CalendarEvent = {
+        ...(directusEvent as any),
+        date_start: startDate,
+        date_end: endDate,
+        isFullDay,
+        showEndTime,
+        venue,
+      };
+
+      return [...events, event];
+    }, [] as CalendarEvent[]);
+
+    return {
+      data: events,
+      meta: {
+        total: totalEvents,
+      },
+    };
+  };
+
+  inject('cmsService', { getNews, getOneNews, getEvents });
 };
 
 export default cmsService;
