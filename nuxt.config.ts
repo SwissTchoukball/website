@@ -88,7 +88,15 @@ const config: NuxtConfig = {
     component: 'fa',
     suffix: true,
     icons: {
-      solid: ['faAngleLeft', 'faAngleDoubleLeft', 'faAngleRight', 'faAngleDoubleRight', 'faRss'],
+      solid: [
+        'faAngleLeft',
+        'faAngleDoubleLeft',
+        'faAngleRight',
+        'faAngleDoubleRight',
+        'faRss',
+        'faMapMarkerAlt',
+        'faClock',
+      ],
       brands: ['faTwitter', 'faInstagram', 'faFacebook', 'faFlickr', 'faYoutube'],
     },
   },

@@ -42,7 +42,11 @@
   "events": {
     "title": "Événements",
     "moreInfo": "Plus d'infos",
-    "fullDay": "Toute la journée"
+    "fullDay": "Toute la journée",
+    "monthNavigation": "Navigation mensuelle",
+    "previousMonth": "Mois précédent",
+    "nextMonth": "Mois suivant",
+    "noneThisMonth": "Il n'y a pas d'événement en {month}."
   },
   "competitions": {
     "title": "Compétitions"

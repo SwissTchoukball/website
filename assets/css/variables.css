@@ -3,8 +3,10 @@
 
   /* Brand */
   --st-color-red-swiss-tchoukball: #f00;
-  --st-color-red-swiss-tchoukball-light: #ff9d9d;
-  --st-color-red-swiss-tchoukball-dark: #620000;
+  --st-color-red-swiss-tchoukball-light: #ff4e4e;
+  --st-color-red-swiss-tchoukball-very-light: #ff9d9d;
+  --st-color-red-swiss-tchoukball-dark: #b10000;
+  --st-color-red-swiss-tchoukball-very-dark: #620000;
 
   /* Greys */
   --st-color-grey-very-dark: #1a1a1a;
@@ -17,23 +19,47 @@
 
   /* Core */
   --st-color-text: black;
+  --st-color-main-content-alternative-background: var(--st-color-grey-very-light);
+
+  /* Links */
   --st-color-link: var(--st-color-red-swiss-tchoukball);
-  --st-color-link-hover: var(--st-color-red-swiss-tchoukball-light);
+  --st-color-link-hover: var(--st-color-red-swiss-tchoukball-very-light);
   --st-color-link-visited: var(--st-color-red-swiss-tchoukball-dark);
+
+  /* Navigation */
   --st-color-burger-menu: var(--st-color-red-swiss-tchoukball);
   --st-color-navigation-drawer-background: var(--st-color-grey-very-light);
-  --st-color-loader-background: var(--st-color-red-swiss-tchoukball);
-  --st-color-loader-foreground: white;
   --st-color-wide-navigation-item: black;
   --st-color-wide-navigation-item-active-border: var(--st-color-red-swiss-tchoukball);
   --st-color-wide-navigation-item-active-background: var(--st-color-grey-very-light);
   --st-color-wide-navigation-sub-items-background: white;
   --st-color-wide-navigation-narrow-sub-item-active-background: white;
   --st-color-active-lang: var(--st-color-red-swiss-tchoukball);
-  --st-color-main-content-alternative-background: var(--st-color-grey-very-light);
+
+  /* Loader */
+  --st-color-loader-background: var(--st-color-red-swiss-tchoukball);
+  --st-color-loader-foreground: white;
+
+  /* Pagination */
   --st-color-pagination-page-active-background: var(--st-color-grey-very-light);
+
+  /* Footer */
   --st-color-footer-social-background: var(--st-color-grey-very-light);
   --st-color-footer-tchouksuisse: var(--st-color-red-swiss-tchoukball);
+
+  /* Buttons */
+  --st-color-button-base-background: white;
+  --st-color-button-base-border: var(--st-color-grey-dark);
+  --st-color-button-base-text: black;
+  --st-color-button-base-background-hover: var(--st-color-grey-very-light);
+  --st-color-button-base-border-hover: black;
+  --st-color-button-base-text-disabled: var(--st-color-grey);
+  --st-color-button-base-border-disabled: var(--st-color-grey-light);
+  --st-color-button-primary-background: var(--st-color-red-swiss-tchoukball);
+  --st-color-button-primary-text: white;
+  --st-color-button-primary-background-hover: var(--st-color-red-swiss-tchoukball-dark);
+  --st-color-button-primary-text-disabled: white;
+  --st-color-button-primary-background-disabled: var(--st-color-grey);
 
   /* Home */
   --st-color-home-carousel-dot: var(--st-color-grey-light);
@@ -46,6 +72,14 @@
   --st-color-news-image-background: var(--st-color-grey-very-light);
   --st-color-news-date-foreground: var(--st-color-grey-dark);
 
+  /* Events */
+  --st-color-event-background: var(--st-color-grey-very-light);
+  --st-color-event-month: var(--st-color-red-swiss-tchoukball);
+  --st-color-event-day-of-week: var(--st-color-grey-dark);
+  --st-color-event-category: var(--st-color-red-swiss-tchoukball);
+  --st-color-event-icon: var(--st-color-red-swiss-tchoukball);
+  --st-color-event-month-switch-link: var(--st-color-red-swiss-tchoukball);
+
   /* Medals */
   --st-color-medal-gold: #ffd700;
   --st-color-medal-silver: #c0c0c0;
@@ -56,6 +90,7 @@
   /* LENGTHS */
   --st-length-main-content-max-width: 100%;
   --st-length-small-header-height: 50px;
+  --st-length-spacing-xxs: 0.4rem;
   --st-length-spacing-xs: 0.8rem;
   --st-length-spacing-s: 1.6rem;
   --st-length-spacing-m: 3rem;

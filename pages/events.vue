@@ -1,9 +1,22 @@
 <template>
   <section class="l-main-content-section">
-    <nuxt-link :to="previousMonthLink">Previous month</nuxt-link>
-    <h2>{{ monthName }}</h2>
-    <nuxt-link :to="nextMonthLink">Next month</nuxt-link>
-    <st-event v-for="event of events" :key="`event-${event.id}`" :event="event" />
+    <h2 class="u-visually-hidden">{{ monthName }}</h2>
+    <nav class="c-events__month-navigation">
+      <h3 class="u-visually-hidden">{{ $t('events.monthNavigation') }}</h3>
+      <nuxt-link :to="previousMonthLink" :title="$t('events.previousMonth')" class="c-events__month-switch-link">
+        <fa-icon icon="angle-left" />
+      </nuxt-link>
+      <div class="t-headline-1 c-events__month-name" aria-hidden="true">{{ monthName }}</div>
+      <nuxt-link :to="nextMonthLink" :title="$t('events.nextMonth')" class="c-events__month-switch-link">
+        <fa-icon icon="angle-right" />
+      </nuxt-link>
+    </nav>
+    <st-loader v-if="$fetchState.pending" class="c-events__loader" />
+    <p v-else-if="$fetchState.error">{{ $t('error.otherError') }}</p>
+    <template v-else-if="events.length">
+      <st-event v-for="event of events" :key="`event-${event.id}`" :event="event" class="c-events__event" />
+    </template>
+    <p v-else class="c-events__no-events">{{ $t('events.noneThisMonth', { month: monthName }) }}</p>
   </section>
 </template>
 
@@ -96,3 +109,52 @@ export default Vue.extend({
   },
 });
 </script>
+
+<style scoped>
+.c-events__month-name {
+  text-transform: capitalize;
+  padding-top: 0;
+}
+
+.c-events__month-navigation {
+  width: 100%;
+  padding-top: var(--st-length-spacing-s);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.c-events__month-switch-link {
+  font-size: 2em;
+  color: var(--st-color-event-month-switch-link);
+}
+
+.c-events__month-switch-link:first-of-type {
+  margin-right: var(--st-length-spacing-s);
+}
+
+.c-events__month-switch-link:last-of-type {
+  margin-left: var(--st-length-spacing-s);
+}
+
+.c-events__loader {
+  margin: auto;
+  margin-top: var(--st-length-spacing-m);
+}
+
+.c-events__event {
+  margin-top: var(--st-length-spacing-s);
+}
+
+.c-events__no-events {
+  text-align: center;
+  padding: var(--st-length-spacing-s);
+}
+
+@media (--sm-and-up) {
+  .c-events__month-navigation {
+    width: auto;
+    justify-content: initial;
+  }
+}
+</style>
