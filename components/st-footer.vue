@@ -65,7 +65,8 @@
         </a>
       </div>
       <p class="c-footer__copyright">
-        &copy; {{ new Date().getFullYear() }} {{ $t('title') }}, {{ $t('footer.allRightsReserved') }}
+        &copy; {{ new Date().getFullYear() }} {{ $t('title') }}, {{ $t('footer.allRightsReserved') }} -
+        <nuxt-link to="impressum">Impressum</nuxt-link>
       </p>
     </section>
   </footer>
@@ -92,16 +93,12 @@ export default Vue.extend({
           href: 'https://shop.tchoukball.ch',
         },
         {
-          name: 'Documents',
-          href: '/documents',
-        },
-        {
           name: 'Contact',
           href: '/contact',
         },
         {
-          name: 'Impressum',
-          href: '/impressum',
+          name: 'Médias',
+          href: '/medias',
         },
       ],
       partners: [
