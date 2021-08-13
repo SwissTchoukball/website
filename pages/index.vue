@@ -6,6 +6,7 @@
         {{ $t('news.readMore') }}
       </st-link-action>
     </section>
+
     <section v-if="events.length" class="l-main-content-section c-index__events">
       <h2 class="t-headline-1">
         <nuxt-link :to="localePath('events')" class="c-index__section-title">{{ $t('events.title') }}</nuxt-link>
@@ -19,10 +20,12 @@
         {{ $t('events.goToEvents') }}
       </st-link-action>
     </section>
+
     <section class="l-main-content-section c-index__competitions">
       <h2 class="t-headline-1">{{ $t('competitions.title') }}</h2>
       <p>TODO: Prochains matchs et derniers résultats</p>
     </section>
+
     <section class="l-main-content-section">
       <h2 class="t-headline-1">Tchoukball</h2>
       <p class="t-paragraph t-paragraph--large" v-html="$t('tchoukball.description')"></p>
@@ -34,10 +37,15 @@
         </ul>
       </nav>
     </section>
-    <section class="l-main-content-section">
-      <h2 class="t-headline-1">Photos</h2>
-      <!-- TODO: Is the title really necessary here ? -->
-      <p>TODO: Dernières photos Flickr</p>
+
+    <section v-if="latestPhotos" class="l-main-content-section">
+      <h2 class="t-headline-1">{{ $t('photos.latest') }}</h2>
+      <div class="c-index__flickr-photos">
+        <st-flickr-photo v-for="photo of latestPhotos" :key="photo.id" :photo="photo" class="c-index__flickr-photo" />
+      </div>
+      <st-link-action href="https://flickr.com/swisstchoukball" class="c-index__see-more-photos" with-arrow>
+        {{ $t('photos.seeMore') }}
+      </st-link-action>
     </section>
   </div>
 </template>
@@ -47,6 +55,7 @@ import Vue from 'vue';
 import { CarouselItem } from '~/components/st-home-carousel.vue';
 import { CalendarEvent } from '~/plugins/cms-service';
 import stEventSmall from '~/components/events/st-event-small.vue';
+import { FlickrPhoto } from '~/plugins/flickr';
 
 export default Vue.extend({
   components: {
@@ -58,6 +67,7 @@ export default Vue.extend({
       carouselItems: [] as CarouselItem[],
       amountUpcomingEvents: 9,
       events: [] as CalendarEvent[],
+      latestPhotos: [] as FlickrPhoto[],
       // TODO: low prio: Move the navigation data to the CMS.
       tchoukballNavigation: [
         {
@@ -99,6 +109,8 @@ export default Vue.extend({
     };
   },
   async fetch() {
+    // TODO: Create dedicated components for each section and move the fetch hooks to the respective components
+
     // News for carousel
     const newsResult = await this.$cmsService.getNews({
       limit: this.amountNewsInCarousel,
@@ -128,6 +140,15 @@ export default Vue.extend({
     });
 
     this.events = eventsResult.data;
+
+    // Latest Flickr photos
+    // Doc: https://www.flickr.com/services/api/flickr.people.getPublicPhotos.html
+    const flickrResponse = await this.$flickr.people.getPublicPhotos({
+      user_id: this.$config.flickr.userId,
+      per_page: 6,
+      extras: ['url_q', 'url_m'],
+    });
+    this.latestPhotos = flickrResponse.body.photos.photo;
   },
 });
 </script>
@@ -137,6 +158,7 @@ export default Vue.extend({
   color: var(--st-color-text);
 }
 
+.c-index__see-more-photos,
 .c-index__read-more-news {
   display: block;
   text-align: right;
@@ -174,6 +196,22 @@ export default Vue.extend({
   display: none;
 }
 
+.c-index__flickr-photos {
+  margin-top: var(--st-length-spacing-s);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.c-index__flickr-photo {
+  max-width: 30%;
+  margin-bottom: var(--st-length-spacing-s);
+}
+
+.c-index__see-more-photos {
+  margin-top: var(--st-length-spacing-xs);
+}
+
 @media (--sm-and-up) {
   .c-index__event-item {
     width: 50%;
@@ -182,6 +220,9 @@ export default Vue.extend({
   .c-index__event-list {
     flex-wrap: wrap;
     max-height: 12em;
+  }
+  .c-index__flickr-photo {
+    max-width: 15%;
   }
 }
 

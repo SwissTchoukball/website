@@ -4,6 +4,10 @@
   "mainNavigation": "Navigation principale",
   "secondaryNavigation": "Navigation secondaire",
   "backHome": "Retour à l'accueil",
+  "photos": {
+    "latest": "Dernières photos",
+    "seeMore": "Voir plus de photos"
+  },
   "error": {
     "pageNotFound": "Page introuvable",
     "otherError": "Une erreur s'est produite",

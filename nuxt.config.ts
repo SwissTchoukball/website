@@ -42,6 +42,7 @@ const config: NuxtConfig = {
     '~/plugins/format-date.ts',
     '~/plugins/vue-agile.ts',
     '~/plugins/cms-service.ts',
+    '~/plugins/flickr.ts',
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -128,6 +129,12 @@ const config: NuxtConfig = {
   publicRuntimeConfig: {
     cmsURL: process.env.CMS_URL || 'http://localhost:8055',
     newsAssetsSizes: [326, 500, 680, 1000, 1400, 2000, 2800],
+    flickr: {
+      userId: '128998613@N07',
+      // It's okay to use the API key from the browser
+      // https://github.com/flickr/flickr-sdk#browser-usage
+      apiKey: process.env.FLICKR_API_KEY,
+    },
   },
 };
 
