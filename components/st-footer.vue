@@ -232,7 +232,7 @@ export default Vue.extend({
 .c-footer__org-logo {
   display: inline-block;
   margin: var(--st-length-spacing-xs) var(--st-length-spacing-s);
-  height: 3rem;
+  height: 3.5rem;
   object-fit: contain;
 }
 
@@ -247,5 +247,15 @@ export default Vue.extend({
 .c-footer__copyright {
   margin-top: var(--st-length-spacing-m);
   font-size: 0.8em;
+}
+
+@media (--lg-and-up) {
+  .c-footer__org-logo {
+    height: 4rem;
+  }
+
+  .c-footer__org-logo[src*='infomaniak'] {
+    max-width: 11.5rem;
+  }
 }
 </style>

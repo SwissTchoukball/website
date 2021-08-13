@@ -46,7 +46,11 @@
     "monthNavigation": "Navigation mensuelle",
     "previousMonth": "Mois précédent",
     "nextMonth": "Mois suivant",
-    "noneThisMonth": "Il n'y a pas d'événement en {month}."
+    "noneThisMonth": "Il n'y a pas d'événement en {month}.",
+    "noneUpcomingThisMonth": "Il n'y a pas d'événement à venir en {month}.",
+    "showPastEvents": "Afficher les événements passés en {month}",
+    "showUpcomingEventsOnly": "Afficher uniquement les événements à venir en {month}",
+    "goToEvents": "Accéder à tous les événements"
   },
   "competitions": {
     "title": "Compétitions"

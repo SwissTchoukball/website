@@ -6,10 +6,10 @@
     :href="href || to"
     v-bind="$attrs"
     class="u-unstyled-button c-link-action"
-    :class="linkClass"
     v-on="$listeners"
   >
     <slot></slot>
+    <template v-if="withArrow">&rarr;</template>
   </component>
 </template>
 
@@ -32,6 +32,7 @@ export default Vue.extend({
       required: false,
       default: null,
     },
+    withArrow: Boolean,
   },
   computed: {
     elementType() {
@@ -58,6 +59,5 @@ export default Vue.extend({
 .c-link-action {
   color: var(--st-color-link, black);
   text-decoration: underline;
-  text-align: left;
 }
 </style>

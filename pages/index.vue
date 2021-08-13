@@ -2,11 +2,22 @@
   <div>
     <section class="l-main-content-section">
       <st-home-carousel :items="carouselItems" />
-      <nuxt-link :to="localePath('news')" class="c-index__read-more-news">{{ $t('news.readMore') }}</nuxt-link>
+      <st-link-action :to="localePath('news')" class="c-index__read-more-news" with-arrow>
+        {{ $t('news.readMore') }}
+      </st-link-action>
     </section>
-    <section class="l-main-content-section">
-      <h2 class="t-headline-1">{{ $t('events.title') }}</h2>
-      <p>TODO: Prochains événements</p>
+    <section v-if="events.length" class="l-main-content-section c-index__events">
+      <h2 class="t-headline-1">
+        <nuxt-link :to="localePath('events')" class="c-index__section-title">{{ $t('events.title') }}</nuxt-link>
+      </h2>
+      <ul class="u-unstyled-list c-index__event-list">
+        <li v-for="event of events" :key="`event-${event.id}`" class="c-index__event-item">
+          <st-event-small :event="event" />
+        </li>
+      </ul>
+      <st-link-action :to="localePath('events')" class="c-index__read-more-news" with-arrow>
+        {{ $t('events.goToEvents') }}
+      </st-link-action>
     </section>
     <section class="l-main-content-section c-index__competitions">
       <h2 class="t-headline-1">{{ $t('competitions.title') }}</h2>
@@ -34,12 +45,19 @@
 <script lang="ts">
 import Vue from 'vue';
 import { CarouselItem } from '~/components/st-home-carousel.vue';
+import { CalendarEvent } from '~/plugins/cms-service';
+import stEventSmall from '~/components/events/st-event-small.vue';
 
 export default Vue.extend({
+  components: {
+    stEventSmall,
+  },
   data() {
     return {
       amountNewsInCarousel: 5,
       carouselItems: [] as CarouselItem[],
+      amountUpcomingEvents: 9,
+      events: [] as CalendarEvent[],
       // TODO: low prio: Move the navigation data to the CMS.
       tchoukballNavigation: [
         {
@@ -81,6 +99,7 @@ export default Vue.extend({
     };
   },
   async fetch() {
+    // News for carousel
     const newsResult = await this.$cmsService.getNews({
       limit: this.amountNewsInCarousel,
       page: 1,
@@ -100,11 +119,24 @@ export default Vue.extend({
           href: this.localePath(`/news/${newsEntry.id}-${newsEntry.slug}`),
         };
       });
+
+    // Upcoming events
+    const eventsResult = await this.$cmsService.getEvents({
+      limit: this.amountUpcomingEvents,
+      page: 1,
+      upcoming: true,
+    });
+
+    this.events = eventsResult.data;
   },
 });
 </script>
 
 <style scoped>
+.c-index__section-title {
+  color: var(--st-color-text);
+}
+
 .c-index__read-more-news {
   display: block;
   text-align: right;
@@ -122,5 +154,44 @@ export default Vue.extend({
 
 .c-index__tchoukball-nav-item {
   margin: var(--st-length-spacing-xs);
+}
+
+.c-index__events {
+  overflow: hidden;
+}
+
+.c-index__event-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.c-index__event-item {
+  margin-top: var(--st-length-spacing-xs);
+  width: 100%;
+}
+
+.c-index__event-item:nth-of-type(1n + 7) {
+  display: none;
+}
+
+@media (--sm-and-up) {
+  .c-index__event-item {
+    width: 50%;
+  }
+
+  .c-index__event-list {
+    flex-wrap: wrap;
+    max-height: 12em;
+  }
+}
+
+@media (--md-and-up) {
+  .c-index__event-item {
+    width: 33%;
+  }
+
+  .c-index__event-item:nth-of-type(1n + 7) {
+    display: block;
+  }
 }
 </style>

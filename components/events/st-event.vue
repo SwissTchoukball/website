@@ -1,5 +1,5 @@
 <template>
-  <div class="c-event">
+  <div class="c-event" :class="{ 'c-event--no-image': !event.image }">
     <img
       v-if="event.image"
       class="c-event__image"
@@ -14,7 +14,9 @@
       <span class="c-event__date-months">{{ months }}</span>
     </div>
     <div class="c-event__main">
-      <h3 class="t-headline-2 c-event__name">{{ event.name }}</h3>
+      <h3 class="t-headline-2 c-event__name">
+        <nuxt-link :to="{ hash: `event-${event.id}` }" class="c-event__name-link">{{ event.name }}</nuxt-link>
+      </h3>
       <div v-if="categoryName" class="c-event__category">{{ categoryName }}</div>
       <div class="directus-formatted-content c-event__description" v-html="event.description"></div>
       <div v-if="event.venue" class="c-event__venue">
@@ -57,7 +59,7 @@ export default Vue.extend({
     weekDays(): string {
       let weekDays = this.$formatDate(this.event.date_start, 'EEEE');
       if (!this.isSingleDay) {
-        weekDays = `${this.$formatDate(this.event.date_start, 'EEE')} -  ${this.$formatDate(
+        weekDays = `${this.$formatDate(this.event.date_start, 'EEE')} - ${this.$formatDate(
           this.event.date_end,
           'EEE'
         )}`;
@@ -69,7 +71,7 @@ export default Vue.extend({
     days(): string {
       let days = this.$formatDate(this.event.date_start, 'd');
       if (!this.isSingleDay) {
-        days += ` -  ${this.$formatDate(this.event.date_end, 'd')}`;
+        days += ` - ${this.$formatDate(this.event.date_end, 'd')}`;
       }
 
       return days;
@@ -77,7 +79,7 @@ export default Vue.extend({
     months(): string {
       let months = this.$formatDate(this.event.date_start, 'MMMM');
       if (!this.isWithinSingleMonth) {
-        months = `${this.$formatDate(this.event.date_start, 'MMM')} -  ${this.$formatDate(this.event.date_end, 'MMM')}`;
+        months = `${this.$formatDate(this.event.date_start, 'MMM')} - ${this.$formatDate(this.event.date_end, 'MMM')}`;
         months = months.replace(/\./g, '');
       }
 
@@ -133,6 +135,10 @@ export default Vue.extend({
   position: relative;
 }
 
+.c-event--no-image {
+  background-color: var(--st-color-event-background);
+}
+
 .c-event__image {
   position: absolute;
   top: 0;
@@ -170,6 +176,11 @@ export default Vue.extend({
 
 .c-event__name {
   padding-top: var(--st-length-spacing-xs);
+}
+
+.c-event__name-link {
+  color: var(--st-color-text);
+  text-decoration: none;
 }
 
 .c-event__main {

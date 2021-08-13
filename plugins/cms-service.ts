@@ -26,7 +26,7 @@ export interface CalendarEvent {
   category: number;
 }
 
-interface CMSService {
+export interface CMSService {
   getNews: (options: {
     limit: number;
     page: number;
@@ -39,6 +39,7 @@ interface CMSService {
     page: number;
     categoryId?: number;
     month?: string;
+    upcoming?: boolean;
   }) => Promise<{ data: CalendarEvent[]; meta: { total: number; filteredCategoryName?: string } }>;
 }
 
@@ -266,7 +267,7 @@ const cmsService: Plugin = (context, inject) => {
     };
   };
 
-  const getEvents: CMSService['getEvents'] = async ({ limit, page, categoryId, month }) => {
+  const getEvents: CMSService['getEvents'] = async ({ limit, page, categoryId, month, upcoming }) => {
     // Preparing the filter to retrieve the events
     const publishedFilter = {
       status: {
@@ -300,12 +301,24 @@ const cmsService: Plugin = (context, inject) => {
       };
     }
 
+    let upcomingFilter: any;
+    if (upcoming) {
+      upcomingFilter = {
+        date_start: {
+          _gte: new Date().toISOString(),
+        },
+      };
+    }
+
     const filter: any = { _and: [publishedFilter] };
     if (categoryFilter) {
       filter._and.push(categoryFilter);
     }
     if (monthFilter) {
       filter._and.push(monthFilter);
+    }
+    if (upcomingFilter) {
+      filter._and.push(upcomingFilter);
     }
 
     const response = await context.$directus.items('events').readMany({
