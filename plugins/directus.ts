@@ -2,6 +2,7 @@ import { Plugin } from '@nuxt/types';
 import { Directus } from '@directus/sdk';
 
 export interface DirectusMenuItem {
+  sort: number;
   parent: number;
   translations: {
     languages_code: string;
@@ -80,6 +81,49 @@ export interface DirectusEventCategory {
   }[];
 }
 
+export interface DirectusPlayerPosition {
+  id: number;
+  name: string;
+  name_feminine: string;
+  name_masculine: string;
+  translations: {
+    name: string;
+    name_feminine: string;
+    name_masculine: string;
+  }[];
+}
+
+export interface DirectusPlayer {
+  id: number;
+  first_name: string;
+  last_name: string;
+  number: number;
+  is_captain: boolean;
+  birth_year: number;
+  gender: string;
+  club: {
+    name: string;
+  };
+  positions: {
+    player_positions_id: number;
+  }[];
+  date_start: string;
+  date_end: string;
+  track_record: string;
+}
+
+export interface DirectusTeam {
+  id: number;
+  name: string;
+  slug: string;
+  gender: string;
+  translations: {
+    name: string;
+    slug: string;
+  }[];
+  players: DirectusPlayer[];
+}
+
 type CustomTypes = {
   /*
 	This type will be merged with Directus user type.
@@ -92,6 +136,8 @@ type CustomTypes = {
   news: DirectusNews;
   events: DirectusEvent;
   event_categories: DirectusEventCategory;
+  national_teams: DirectusTeam;
+  player_positions: DirectusPlayerPosition;
 };
 
 declare module 'vue/types/vue' {

@@ -1,8 +1,9 @@
 import { Plugin } from '@nuxt/types';
 import { PartialItem } from '@directus/sdk';
 import { set } from 'date-fns';
-import { NewsEntry } from '~/components/news/st-news';
 import { DirectusNewsCategory } from '~/plugins/directus';
+import { NewsEntry } from '~/components/news/st-news';
+import { Team } from '~/components/national-teams/st-national-teams.prop';
 
 export interface Venue {
   name: string;
@@ -41,6 +42,7 @@ export interface CMSService {
     month?: string;
     upcoming?: boolean;
   }) => Promise<{ data: CalendarEvent[]; meta: { total: number; filteredCategoryName?: string } }>;
+  getTeam: (teamSlug: string) => Promise<Team>;
 }
 
 declare module 'vue/types/vue' {
@@ -411,7 +413,117 @@ const cmsService: Plugin = (context, inject) => {
     };
   };
 
-  inject('cmsService', { getNews, getOneNews, getEvents });
+  const getTeam: CMSService['getTeam'] = async (teamSlug) => {
+    // We retrieve all the languages and show news in fallback locale if not available in current locale
+    const currentLocale = context.i18n.locale;
+    // const defaultLocale = context.i18n.defaultLocale;
+    const teamResponse = await context.$directus.items('national_teams').readMany({
+      limit: 1,
+      filter: {
+        _or: [
+          {
+            slug: { _eq: teamSlug },
+          },
+          {
+            translations: {
+              slug: { _eq: teamSlug },
+            },
+          },
+        ],
+      } as any, // Workaround until the _or is properly recognised. See https://github.com/directus/directus/discussions/4531#discussioncomment-480588
+      fields: [
+        'name',
+        'slug',
+        'gender',
+        'translations.name',
+        'translations.slug',
+        'players.id',
+        'players.first_name',
+        'players.last_name',
+        'players.number',
+        'players.is_captain',
+        'players.birth_year',
+        'players.gender',
+        'players.club.name',
+        'players.positions.player_positions_id',
+        'players.date_start',
+        'players.date_end',
+        'players.track_record',
+        'players.portrait_square_head',
+      ],
+      deep: {
+        // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
+        translations: { _filter: { languages_code: { _eq: currentLocale } } },
+        // TODO: uncomment the filter below once the filter on date fields is fixed https://github.com/directus/directus/issues/6494
+        // players: {
+        //   // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
+        //   _filter: {
+        //     _or: [{ date_end: { _gte: context.$formatDate(new Date(), 'yyyy-MM-dd') } }, { date_end: { _null: true } }],
+        //   },
+        // },
+      },
+    });
+
+    if (!teamResponse?.data) {
+      throw new Error('Error when retrieving team');
+    }
+
+    const rawTeam = teamResponse.data[0];
+
+    if (!rawTeam) {
+      throw new Error('No team found');
+    }
+
+    let players: any[] = [];
+    if (rawTeam.players) {
+      players = rawTeam.players.map((player) => {
+        if (player?.positions) {
+          return {
+            ...player,
+            positions: player.positions.map((position) => {
+              if (position) {
+                return position.player_positions_id;
+              }
+              return position;
+            }),
+          };
+        }
+        return player;
+      });
+    }
+
+    // We sort the players because the API can't do it yet (only at the root)
+    // Captain first, then alphabetically by last name, and then first name.
+    players = players.sort(
+      (playerA, playerB) =>
+        playerB.is_captain - playerA.is_captain ||
+        playerA.last_name.localeCompare(playerB.last_name) ||
+        playerA.first_name.localeCompare(playerB.first_name)
+    );
+
+    // Fallback for mandatory fields should not happen as we requested those fields
+    const team = {
+      name: rawTeam.name || 'No name',
+      slug: rawTeam.slug || 'unknown',
+      gender: rawTeam.gender || 'mixed',
+      players,
+    };
+
+    if (rawTeam.translations && rawTeam.translations[0]) {
+      const translations = rawTeam.translations[0];
+      team.name = translations.name || team.name;
+      team.slug = translations.slug || team.slug;
+    }
+
+    // Manually filtering players until the API filter on date fields is fixed https://github.com/directus/directus/issues/6494
+    team.players = team.players.filter(
+      (player: any) => player && (!player.date_end || player.date_end >= context.$formatDate(new Date(), 'yyyy-MM-dd'))
+    );
+
+    return team;
+  };
+
+  inject('cmsService', { getNews, getOneNews, getEvents, getTeam });
 };
 
 export default cmsService;

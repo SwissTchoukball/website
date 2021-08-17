@@ -2,19 +2,14 @@
   <div>
     <h1 class="u-visually-hidden">{{ $t('title') }}</h1>
     <div class="c-default__drawer" :class="{ 'c-default__drawer--open': isDrawerOpen }">
-      <st-lang-switcher class="c-default__drawer-lang-switcher" />
-      <st-main-navigation
-        :items="mainNavigation"
-        narrow
-        class="c-default__drawer-navigation"
-        @navigate="closeDrawer()"
-      />
+      <st-language-switcher class="c-default__drawer-lang-switcher" />
+      <st-navigation :items="mainNavigation" narrow class="c-default__drawer-navigation" @navigate="closeDrawer()" />
     </div>
     <header class="c-default__header">
       <nuxt-link class="c-default__logo" :to="localePath('index')" @click.native="closeDrawer()"></nuxt-link>
-      <st-lang-switcher class="c-default__header-lang-switcher" />
+      <st-language-switcher class="c-default__header-lang-switcher" />
       <st-burger-button v-model="isDrawerOpen" class="c-default__burger-button" />
-      <st-main-navigation :items="mainNavigation" class="c-default__header-navigation" />
+      <st-navigation :items="mainNavigation" class="c-default__header-navigation" />
     </header>
     <main>
       <Nuxt />
@@ -25,16 +20,8 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import StBurgerButton from '~/components/st-burger-button.vue';
-import StLangSwitcher from '~/components/st-language-switcher.vue';
-import StMainNavigation from '~/components/st-main-navigation.vue';
 
 export default Vue.extend({
-  components: {
-    StLangSwitcher,
-    StBurgerButton,
-    StMainNavigation,
-  },
   data() {
     return {
       isDrawerOpen: false,

@@ -14,6 +14,11 @@ const i18nPlugin: Plugin = ({ app, store }) => {
       dataLoads.push(store.dispatch('loadEventCategories'));
     }
 
+    // We load the positions only if we already have them in the old locale
+    if (store.state.playerPositions) {
+      dataLoads.push(store.dispatch('loadPlayerPositions'));
+    }
+
     await Promise.all(dataLoads);
   };
 };

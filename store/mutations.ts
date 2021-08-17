@@ -1,11 +1,14 @@
 import { MutationTree } from 'vuex/types/index';
-import { EventCategory, MenuItem, RootState } from './state';
+import { EventCategories, MenuItem, PlayerPositions, RootState } from './state';
 
 export default {
   setMainNavigation(state, mainNavigation: MenuItem[]) {
     state.mainNavigation = mainNavigation;
   },
-  setEventCategories(state, eventCategories: EventCategory[]) {
+  setEventCategories(state, eventCategories: EventCategories) {
     state.eventCategories = eventCategories;
+  },
+  setPlayerPositions(state, playerPositions: PlayerPositions) {
+    state.playerPositions = playerPositions;
   },
 } as MutationTree<RootState>;

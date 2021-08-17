@@ -58,5 +58,31 @@
   },
   "competitions": {
     "title": "Compétitions"
+  },
+  "person": {
+    "photoOf": "Photo de {name}"
+  },
+  "nationalTeams": {
+    "navigation": {
+      "title": "Navigation pour {teamName}",
+      "players": {
+        "male": "Joueurs",
+        "female": "Joueuses",
+        "mixed": "Joueur·euse·s"
+      },
+      "staff": "Encadrement",
+      "results": "Résultats"
+    },
+    "noPlayers": "Il n'y a pas de joueur·euse·s à afficher pour cette équipe",
+    "captain": "Capitaine",
+    "number": "Numéro {number}",
+    "bornIn": {
+      "male": "Né en {year}",
+      "female": "Née en {year}",
+      "other": "Né·e en {year}",
+      "undefined": "Né·e en {year}"
+    },
+    "inTeamSince": "En équipe suisse depuis {year}",
+    "trackRecord": "Palmarès"
   }
 }
