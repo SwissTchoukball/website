@@ -525,9 +525,17 @@ const cmsService: Plugin = (context, inject) => {
       team.slug = translations.slug || team.slug;
     }
 
+    const today = new Date();
+
     // Manually filtering players until the API filter on date fields is fixed https://github.com/directus/directus/issues/6494
     team.players = team.players.filter(
-      (player: any) => player && (!player.date_end || player.date_end >= context.$formatDate(new Date(), 'yyyy-MM-dd'))
+      (player: any) => player && (!player.date_end || player.date_end >= context.$formatDate(today, 'yyyy-MM-dd'))
+    );
+
+    // Manually filtering staff until the API filter on date fields is fixed https://github.com/directus/directus/issues/6494
+    team.staff = team.staff.filter(
+      (staffMember: any) =>
+        staffMember && (!staffMember.date_end || staffMember.date_end >= context.$formatDate(today, 'yyyy-MM-dd'))
     );
 
     return team;
