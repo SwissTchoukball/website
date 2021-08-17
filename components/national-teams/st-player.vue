@@ -9,7 +9,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import stPerson from '~/components/person/st-person.vue';
+import stPerson from '~/components/people/st-person.vue';
 import { Player, Gender } from '~/components/national-teams/st-national-teams.prop';
 
 export default Vue.extend({

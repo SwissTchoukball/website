@@ -30,6 +30,28 @@ a:visited {
   padding-bottom: var(--st-length-spacing-xs);
 }
 
+.l-people-list {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.l-people-list__person {
+  margin-top: var(--st-length-spacing-m);
+  width: 100%;
+}
+
+.l-blank-slate-message {
+  margin-top: var(--st-length-spacing-m);
+  text-align: center;
+}
+
+@media (--sm-and-up) {
+  .l-people-list__person {
+    width: 50%;
+  }
+}
+
 @media (--md-and-up) {
   html {
     font-size: 1.25em;

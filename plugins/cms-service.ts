@@ -450,6 +450,15 @@ const cmsService: Plugin = (context, inject) => {
         'players.date_end',
         'players.track_record',
         'players.portrait_square_head',
+        'staff.national_team_staff_id.id',
+        'staff.national_team_staff_id.first_name',
+        'staff.national_team_staff_id.last_name',
+        'staff.national_team_staff_id.gender',
+        'staff.national_team_staff_id.role',
+        'staff.national_team_staff_id.date_start',
+        'staff.national_team_staff_id.date_end',
+        'staff.national_team_staff_id.track_record',
+        'staff.national_team_staff_id.portrait_square_head',
       ],
       deep: {
         // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
@@ -507,6 +516,7 @@ const cmsService: Plugin = (context, inject) => {
       slug: rawTeam.slug || 'unknown',
       gender: rawTeam.gender || 'mixed',
       players,
+      staff: (rawTeam.staff?.map((s) => s?.national_team_staff_id) as any) || [],
     };
 
     if (rawTeam.translations && rawTeam.translations[0]) {

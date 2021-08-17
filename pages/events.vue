@@ -28,7 +28,7 @@
         class="c-events__event"
       />
     </template>
-    <p v-else class="c-events__no-events">{{ $t('events.noneThisMonth', { month: monthName }) }}</p>
+    <p v-else class="l-blank-slate-message">{{ $t('events.noneThisMonth', { month: monthName }) }}</p>
   </section>
 </template>
 
@@ -189,11 +189,6 @@ export default Vue.extend({
 
 .c-events__event {
   margin-top: var(--st-length-spacing-s);
-}
-
-.c-events__no-events {
-  text-align: center;
-  padding: var(--st-length-spacing-s);
 }
 
 @media (--sm-and-up) {

@@ -74,6 +74,7 @@
       "results": "Résultats"
     },
     "noPlayers": "Il n'y a pas de joueur·euse·s à afficher pour cette équipe",
+    "noStaff": "Il n'y a pas d'encadrement à afficher pour cette équipe",
     "captain": "Capitaine",
     "number": "Numéro {number}",
     "bornIn": {
@@ -83,6 +84,7 @@
       "undefined": "Né·e en {year}"
     },
     "inTeamSince": "En équipe suisse depuis {year}",
+    "hasRoleSince": "À ce poste depuis {year}",
     "trackRecord": "Palmarès"
   }
 }

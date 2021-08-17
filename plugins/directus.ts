@@ -110,6 +110,19 @@ export interface DirectusPlayer {
   date_start: string;
   date_end: string;
   track_record: string;
+  portrait_square_head: string;
+}
+
+export interface DirectusStaffMember {
+  id: number;
+  first_name: string;
+  last_name: string;
+  gender: string;
+  role: string;
+  date_start: string;
+  date_end: string;
+  track_record: string;
+  portrait_square_head: string;
 }
 
 export interface DirectusTeam {
@@ -122,6 +135,7 @@ export interface DirectusTeam {
     slug: string;
   }[];
   players: DirectusPlayer[];
+  staff: { national_team_staff_id: DirectusStaffMember }[];
 }
 
 type CustomTypes = {

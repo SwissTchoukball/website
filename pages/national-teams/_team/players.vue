@@ -1,11 +1,11 @@
 <template>
   <div>
-    <ul v-if="team.players.length" class="u-unstyled-list c-players__list">
-      <li v-for="player of team.players" :key="player.id" class="c-players__player">
+    <ul v-if="team.players.length" class="u-unstyled-list l-people-list">
+      <li v-for="player of team.players" :key="player.id" class="l-people-list__person">
         <st-player :player="player" />
       </li>
     </ul>
-    <p v-else class="c-players__no-players">{{ $t('nationalTeams.noPlayers') }}</p>
+    <p v-else class="l-blank-slate-message">{{ $t('nationalTeams.noPlayers') }}</p>
   </div>
 </template>
 
@@ -39,27 +39,3 @@ export default Vue.extend({
   },
 });
 </script>
-
-<style scoped>
-.c-players__list {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-}
-
-.c-players__player {
-  margin-top: var(--st-length-spacing-m);
-  width: 100%;
-}
-
-.c-players__no-players {
-  margin-top: var(--st-length-spacing-m);
-  text-align: center;
-}
-
-@media (--sm-and-up) {
-  .c-players__player {
-    width: 50%;
-  }
-}
-</style>
