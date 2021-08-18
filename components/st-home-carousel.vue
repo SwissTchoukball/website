@@ -178,79 +178,18 @@ export default Vue.extend({
   width: 100%;
   padding: 0;
   margin: 0;
+  margin-top: var(--st-length-spacing-xs);
   list-style: none;
   display: flex !important; /* Overriding inline style set by library. This possibly disables the `dots` settings from the library */
   justify-content: center;
   align-items: center;
 }
 .slick-dots li {
-  position: relative;
-  width: 20px;
-  height: 20px;
   margin: 0 calc(var(--st-length-spacing-xs) / 2);
   padding: 0;
-  cursor: pointer;
+  font-size: 0;
 }
 .slick-dots li button {
-  font-size: 0;
-  line-height: 0;
-  display: block;
-  width: 20px;
-  height: 20px;
-  padding: 5px;
-  cursor: pointer;
-  color: transparent;
-  border: 0;
-  outline: none;
-  background: transparent;
-}
-.slick-dots li button:hover,
-.slick-dots li button:focus {
-  outline: none;
-}
-.slick-dots li button::before {
-  font-size: 2rem;
-  line-height: 20px;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 20px;
-  height: 20px;
-  content: '•';
-  text-align: center;
-  color: var(--st-color-home-carousel-dot);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  transition: color 0.3s ease;
-}
-.slick-dots li button:hover::before,
-.slick-dots li button:focus::before {
-  opacity: 1;
-}
-.slick-dots li.slick-active button::before {
-  font-size: 2.5rem;
-  color: var(--st-color-home-carousel-dot-active);
-}
-</style>
-
-<style>
-/* TODO: Delete below */
-.agile__actions {
-  margin: var(--st-length-spacing-xs);
-}
-
-.agile__dots {
-  margin: auto;
-  list-style: none;
-  padding: 0;
-  white-space: nowrap;
-}
-
-.agile__dot {
-  margin: 0 calc(var(--st-length-spacing-xs) / 2);
-}
-
-.agile__dot button {
   background-color: var(--st-color-home-carousel-dot);
   border-radius: 50%;
   font-size: 0;
@@ -262,8 +201,7 @@ export default Vue.extend({
   border: 1px solid transparent;
   transition: background-color 0.3s ease;
 }
-
-.agile__dot--current button {
+.slick-dots li.slick-active button {
   background-color: var(--st-color-home-carousel-dot-active);
   width: 12px;
   height: 12px;
