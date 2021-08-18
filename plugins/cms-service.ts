@@ -3,7 +3,7 @@ import { PartialItem } from '@directus/sdk';
 import { set } from 'date-fns';
 import { DirectusNewsCategory } from '~/plugins/directus';
 import { NewsEntry } from '~/components/news/st-news';
-import { Team } from '~/components/national-teams/st-national-teams.prop';
+import { NationalTeam, NationalTeamResult } from '~/components/national-teams/st-national-teams.prop';
 
 export interface Venue {
   name: string;
@@ -42,7 +42,7 @@ export interface CMSService {
     month?: string;
     upcoming?: boolean;
   }) => Promise<{ data: CalendarEvent[]; meta: { total: number; filteredCategoryName?: string } }>;
-  getTeam: (teamSlug: string) => Promise<Team>;
+  getTeam: (teamSlug: string) => Promise<NationalTeam>;
 }
 
 declare module 'vue/types/vue' {
@@ -459,6 +459,13 @@ const cmsService: Plugin = (context, inject) => {
         'staff.national_team_staff_id.date_end',
         'staff.national_team_staff_id.track_record',
         'staff.national_team_staff_id.portrait_square_head',
+        'results.competition_id.name',
+        'results.competition_id.year',
+        'results.competition_id.logo',
+        'results.competition_id.city',
+        'results.competition_id.country',
+        'results.ranking',
+        'nations_cup_results',
       ],
       deep: {
         // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
@@ -510,6 +517,17 @@ const cmsService: Plugin = (context, inject) => {
         playerA.first_name.localeCompare(playerB.first_name)
     );
 
+    // We sort the results because the API can't do it yet (only at the root)
+    let results: NationalTeamResult[] =
+      rawTeam.results?.map(
+        (r) =>
+          ({
+            competition: r?.competition_id,
+            ranking: r?.ranking,
+          } as any)
+      ) || [];
+    results = results.sort((resultA, resultB) => resultB.competition.year - resultA.competition.year);
+
     // Fallback for mandatory fields should not happen as we requested those fields
     const team = {
       name: rawTeam.name || 'No name',
@@ -517,6 +535,8 @@ const cmsService: Plugin = (context, inject) => {
       gender: rawTeam.gender || 'mixed',
       players,
       staff: (rawTeam.staff?.map((s) => s?.national_team_staff_id) as any) || [],
+      results,
+      nationsCupResults: (rawTeam.nations_cup_results as any) || {},
     };
 
     if (rawTeam.translations && rawTeam.translations[0]) {

@@ -125,6 +125,20 @@ export interface DirectusStaffMember {
   portrait_square_head: string;
 }
 
+export interface DirectusNationalTeamCompetition {
+  name: string;
+  year: number;
+  logo: string;
+  city: string;
+  country: string;
+}
+
+export interface DirectusTeamResult {
+  national_team_id: number;
+  competition_id: DirectusNationalTeamCompetition;
+  ranking: number;
+}
+
 export interface DirectusTeam {
   id: number;
   name: string;
@@ -136,6 +150,10 @@ export interface DirectusTeam {
   }[];
   players: DirectusPlayer[];
   staff: { national_team_staff_id: DirectusStaffMember }[];
+  results: DirectusTeamResult[];
+  nations_cup_results: {
+    [year: string]: string;
+  };
 }
 
 type CustomTypes = {
@@ -188,8 +206,15 @@ const directusPlugin: Plugin = (context, inject) => {
 
 export default directusPlugin;
 
-export const getAssetURL = (cmsURL: string, assetId: string, { width }: { width: number }) => {
-  return `${cmsURL}/assets/${assetId}/?width=${width}`;
+export const getAssetURL = (cmsURL: string, assetId: string, params: { [key: string]: string | number }) => {
+  const paramsString = Object.entries(params)
+    .map(([key, value]) => `${key}=${value}`)
+    .join('&');
+  let assetUrl = `${cmsURL}/assets/${assetId}/`;
+  if (paramsString) {
+    assetUrl += `?${paramsString}`;
+  }
+  return assetUrl;
 };
 
 export const getAssetSrcSetEntry = (cmsURL: string, assetId: string, { width }: { width: number }) => {

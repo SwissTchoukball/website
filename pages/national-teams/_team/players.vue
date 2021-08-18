@@ -11,7 +11,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import { Team } from '~/components/national-teams/st-national-teams.prop';
+import { NationalTeam } from '~/components/national-teams/st-national-teams.prop';
 import StPlayer from '~/components/national-teams/st-player.vue';
 
 export default Vue.extend({
@@ -24,7 +24,7 @@ export default Vue.extend({
   },
   props: {
     team: {
-      type: Object as PropType<Team>,
+      type: Object as PropType<NationalTeam>,
       required: true,
     },
   },

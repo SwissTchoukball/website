@@ -46,6 +46,14 @@ a:visited {
   text-align: center;
 }
 
+.l-separator {
+  display: block;
+  height: 2px;
+  width: 50%;
+  margin: auto;
+  background-color: var(--st-color-separator);
+}
+
 @media (--sm-and-up) {
   .l-people-list__person {
     width: 50%;

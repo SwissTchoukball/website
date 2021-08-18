@@ -1,3 +1,5 @@
+import { DirectusNationalTeamCompetition } from '~/plugins/directus';
+
 export enum Gender {
   Male = 'male',
   Female = 'female',
@@ -33,11 +35,19 @@ export interface StaffMember {
   track_record: string;
   portrait_square_head: string;
 }
+export interface NationalTeamResult {
+  competition: DirectusNationalTeamCompetition;
+  ranking: number;
+}
 
-export interface Team {
+export interface NationalTeam {
   name: string;
   slug: string;
   gender: string;
   players: Player[];
   staff: StaffMember[];
+  results: NationalTeamResult[];
+  nationsCupResults: {
+    [year: string]: string;
+  };
 }

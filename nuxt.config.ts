@@ -135,6 +135,7 @@ const config: NuxtConfig = {
     cmsURL: process.env.CMS_URL || 'http://localhost:8055',
     newsAssetsSizes: [326, 500, 680, 1000, 1400, 2000, 2800],
     avatarAssetsSize: [200, 400],
+    competitionLogoAssetsSizes: [200, 400],
     flickr: {
       userId: '128998613@N07',
       // It's okay to use the API key from the browser

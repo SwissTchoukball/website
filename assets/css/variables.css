@@ -20,6 +20,7 @@
   /* Core */
   --st-color-text: black;
   --st-color-main-content-alternative-background: var(--st-color-grey-very-light);
+  --st-color-separator: var(--st-color-red-swiss-tchoukball);
 
   /* Links */
   --st-color-link: var(--st-color-red-swiss-tchoukball);
@@ -85,11 +86,13 @@
   --st-color-event-icon: var(--st-color-red-swiss-tchoukball);
   --st-color-event-month-switch-link: var(--st-color-red-swiss-tchoukball);
 
+  /* National teams */
+  --st-color-national-team-result-location: var(--st-color-grey-dark);
+
   /* Medals */
   --st-color-medal-gold: #ffd700;
   --st-color-medal-silver: #c0c0c0;
   --st-color-medal-bronze: #cd7f32;
-  --st-color-medal-chocolate: #7b3f00;
   --st-color-medal-none: var(--st-color-grey-very-light);
 
   /* LENGTHS */

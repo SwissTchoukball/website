@@ -10,6 +10,7 @@
   >
     <slot></slot>
     <template v-if="withArrow">&rarr;</template>
+    <template v-if="withArrowDown">&darr;</template>
   </component>
 </template>
 
@@ -33,6 +34,7 @@ export default Vue.extend({
       default: null,
     },
     withArrow: Boolean,
+    withArrowDown: Boolean,
   },
   computed: {
     elementType() {

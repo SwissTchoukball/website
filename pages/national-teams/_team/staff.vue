@@ -16,7 +16,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import { StaffMember, Team } from '~/components/national-teams/st-national-teams.prop';
+import { StaffMember, NationalTeam } from '~/components/national-teams/st-national-teams.prop';
 import stPerson from '~/components/people/st-person.vue';
 
 export default Vue.extend({
@@ -29,7 +29,7 @@ export default Vue.extend({
   },
   props: {
     team: {
-      type: Object as PropType<Team>,
+      type: Object as PropType<NationalTeam>,
       required: true,
     },
   },

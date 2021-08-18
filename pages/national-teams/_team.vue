@@ -12,7 +12,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import { Team } from '~/components/national-teams/st-national-teams.prop';
+import { NationalTeam } from '~/components/national-teams/st-national-teams.prop';
 import { MenuItem } from '~/store/state';
 
 export default Vue.extend({
@@ -24,7 +24,7 @@ export default Vue.extend({
   },
   data() {
     return {
-      team: undefined as Team | undefined,
+      team: undefined as NationalTeam | undefined,
     };
   },
   async fetch() {
@@ -51,16 +51,19 @@ export default Vue.extend({
         });
       }
 
-      teamNavigation.push(
-        {
+      if (this.team.staff.length) {
+        teamNavigation.push({
           name: this.$t(`nationalTeams.navigation.staff`).toString(),
           href: this.localePath({ name: 'national-teams-team-staff', params: { team: this.team.slug } }),
-        },
-        {
+        });
+      }
+
+      if (this.team.results.length) {
+        teamNavigation.push({
           name: this.$t(`nationalTeams.navigation.results`).toString(),
           href: this.localePath({ name: 'national-teams-team-results', params: { team: this.team.slug } }),
-        }
-      );
+        });
+      }
 
       return teamNavigation;
     },

@@ -75,6 +75,7 @@
     },
     "noPlayers": "Il n'y a pas de joueur·euse·s à afficher pour cette équipe",
     "noStaff": "Il n'y a pas d'encadrement à afficher pour cette équipe",
+    "noResults": "Il n'y a pas de résultats à afficher pour cette équipe",
     "captain": "Capitaine",
     "number": "Numéro {number}",
     "bornIn": {
@@ -85,6 +86,11 @@
     },
     "inTeamSince": "En équipe suisse depuis {year}",
     "hasRoleSince": "À ce poste depuis {year}",
-    "trackRecord": "Palmarès"
+    "trackRecord": "Palmarès",
+    "results": {
+      "logoOf": "Logo des {name} de {year}",
+      "rank": "{rank}e place",
+      "nationsCup": "Coupe des nations"
+    }
   }
 }
