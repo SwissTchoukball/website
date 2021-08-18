@@ -1,7 +1,7 @@
 <template>
   <div>
     <section class="l-main-content-section">
-      <st-home-carousel :items="carouselItems" />
+      <st-home-carousel v-if="carouselItems" :items="carouselItems" />
       <st-link-action :to="localePath('news')" class="c-index__read-more-news" with-arrow>
         {{ $t('news.readMore') }}
       </st-link-action>
@@ -162,6 +162,7 @@ export default Vue.extend({
 .c-index__read-more-news {
   display: block;
   text-align: right;
+  margin-top: var(--st-length-spacing-xs);
 }
 
 .c-index__competitions {
@@ -197,7 +198,6 @@ export default Vue.extend({
 }
 
 .c-index__flickr-photos {
-  margin-top: var(--st-length-spacing-s);
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -205,11 +205,7 @@ export default Vue.extend({
 
 .c-index__flickr-photo {
   max-width: 30%;
-  margin-bottom: var(--st-length-spacing-s);
-}
-
-.c-index__see-more-photos {
-  margin-top: var(--st-length-spacing-xs);
+  margin-top: var(--st-length-spacing-s);
 }
 
 @media (--sm-and-up) {

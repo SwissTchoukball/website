@@ -31,7 +31,7 @@ const config: NuxtConfig = {
     '~/assets/css/variables.css',
     '~/assets/css/typography.css',
     '~/assets/css/main.css',
-    'vue-agile/dist/VueAgile.css',
+    'vue-slick-carousel/dist/vue-slick-carousel.css',
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
@@ -40,7 +40,7 @@ const config: NuxtConfig = {
     '~/plugins/directus.ts',
     '~/plugins/i18n.ts',
     '~/plugins/format-date.ts',
-    '~/plugins/vue-agile.ts',
+    '~/plugins/vue-slick-carousel.ts',
     '~/plugins/cms-service.ts',
     '~/plugins/flickr.ts',
   ],
@@ -110,7 +110,6 @@ const config: NuxtConfig = {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
-    transpile: ['vue-agile'],
     postcss: {
       plugins: {
         'postcss-custom-media': {

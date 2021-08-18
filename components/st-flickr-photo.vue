@@ -1,6 +1,6 @@
 <template>
   <a :href="`https://www.flickr.com/photos/swisstchoukball/${photo.id}`">
-    <img :src="photo.url_q" :alt="photo.title" :title="photo.title" />
+    <img :src="photo.url_q" :alt="photo.title" :title="photo.title" class="c-flickr-photo" />
   </a>
 </template>
 
@@ -17,3 +17,9 @@ export default Vue.extend({
   },
 });
 </script>
+
+<style scoped>
+.c-flickr-photo {
+  width: 100%;
+}
+</style>

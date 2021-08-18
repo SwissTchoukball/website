@@ -430,7 +430,7 @@ const cmsService: Plugin = (context, inject) => {
             },
           },
         ],
-      } as any, // Workaround until the _or is properly recognised. See https://github.com/directus/directus/discussions/4531#discussioncomment-480588
+      } as any, // Workaround until the _or is properly recognised. See https://github.com/directus/directus/issues/7475
       fields: [
         'name',
         'slug',

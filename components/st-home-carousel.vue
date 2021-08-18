@@ -1,6 +1,6 @@
 <template>
   <div class="st-home-carousel">
-    <agile :options="options">
+    <vue-slick-carousel v-if="items.length > 0" v-bind="settings">
       <nuxt-link
         v-for="(item, index) in items"
         :key="`carousel-item-${index}`"
@@ -19,7 +19,7 @@
           {{ item.caption }}
         </h3>
       </nuxt-link>
-    </agile>
+    </vue-slick-carousel>
   </div>
 </template>
 
@@ -38,9 +38,6 @@ export interface CarouselItem {
 
 // TODO: Switch to Swiper when we'll be using Vue 3.
 //       https://swiperjs.com/vue
-
-// FIXME: There is client/server-side mismatch on the rendered DOM because of the "dots" of the carousel.
-//        We should avoid that, but it doesn't hurt. So we leave it like that for now.
 export default Vue.extend({
   props: {
     items: {
@@ -50,13 +47,12 @@ export default Vue.extend({
   },
   data() {
     return {
-      options: {
+      settings: {
         autoplay: true,
         autoplaySpeed: 5000,
-        infinite: true,
         slidesToShow: 1,
         dots: true,
-        navButtons: false,
+        arrows: false,
       },
       imgTagSizes: '',
     };
@@ -173,6 +169,72 @@ export default Vue.extend({
 </style>
 
 <style>
+/* Style based on the theme from the library. I didn't import the full theme as we just want to style the dots. */
+.slick-dotted.slick-slider {
+  margin-bottom: 30px;
+}
+
+.slick-dots {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  display: flex !important; /* Overriding inline style set by library. This possibly disables the `dots` settings from the library */
+  justify-content: center;
+  align-items: center;
+}
+.slick-dots li {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  margin: 0 calc(var(--st-length-spacing-xs) / 2);
+  padding: 0;
+  cursor: pointer;
+}
+.slick-dots li button {
+  font-size: 0;
+  line-height: 0;
+  display: block;
+  width: 20px;
+  height: 20px;
+  padding: 5px;
+  cursor: pointer;
+  color: transparent;
+  border: 0;
+  outline: none;
+  background: transparent;
+}
+.slick-dots li button:hover,
+.slick-dots li button:focus {
+  outline: none;
+}
+.slick-dots li button::before {
+  font-size: 2rem;
+  line-height: 20px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  content: '•';
+  text-align: center;
+  color: var(--st-color-home-carousel-dot);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: color 0.3s ease;
+}
+.slick-dots li button:hover::before,
+.slick-dots li button:focus::before {
+  opacity: 1;
+}
+.slick-dots li.slick-active button::before {
+  font-size: 2.5rem;
+  color: var(--st-color-home-carousel-dot-active);
+}
+</style>
+
+<style>
+/* TODO: Delete below */
 .agile__actions {
   margin: var(--st-length-spacing-xs);
 }
