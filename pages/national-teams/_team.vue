@@ -1,10 +1,15 @@
 <template>
   <section class="l-main-content-section">
-    <st-loader v-if="$fetchState.pending" class="c-team__loader" />
+    <st-loader v-if="$fetchState.pending" main />
     <p v-else-if="$fetchState.error">{{ $t('error.otherError') }}</p>
     <template v-else>
       <h2 class="t-headline-1">{{ team.name }}</h2>
-      <st-navigation :items="teamNavigation" class="c-team__navigation" small />
+      <st-navigation
+        :items="teamNavigation"
+        class="c-team__navigation"
+        :name="$t('otherNavigation', { name: team.name })"
+        small
+      />
       <nuxt-child :team="team" />
     </template>
   </section>
@@ -72,11 +77,6 @@ export default Vue.extend({
 </script>
 
 <style scoped>
-.c-team__loader {
-  margin: auto;
-  margin-top: var(--st-length-spacing-m);
-}
-
 .c-team__navigation {
   margin-top: var(--st-length-spacing-s);
 }

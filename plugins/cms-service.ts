@@ -4,6 +4,8 @@ import { set } from 'date-fns';
 import { DirectusNewsCategory } from '~/plugins/directus';
 import { NewsEntry } from '~/components/news/st-news';
 import { NationalTeam, NationalTeamResult } from '~/components/national-teams/st-national-teams.prop';
+import { Season } from '~/store/state';
+import { NationalCompetition, NationalCompetitionEdition } from '~/components/competitions/competitions';
 
 export interface Venue {
   name: string;
@@ -43,6 +45,9 @@ export interface CMSService {
     upcoming?: boolean;
   }) => Promise<{ data: CalendarEvent[]; meta: { total: number; filteredCategoryName?: string } }>;
   getTeam: (teamSlug: string) => Promise<NationalTeam>;
+  getSeasons: () => Promise<Season[]>;
+  getNationalCompetition: (competitionSlug: string) => Promise<NationalCompetition>;
+  getNationalCompetitionEdition: (competitionSlug: string, seasonSlug: string) => Promise<NationalCompetitionEdition>;
 }
 
 declare module 'vue/types/vue' {
@@ -561,7 +566,166 @@ const cmsService: Plugin = (context, inject) => {
     return team;
   };
 
-  inject('cmsService', { getNews, getOneNews, getEvents, getTeam });
+  const getSeasons: CMSService['getSeasons'] = async () => {
+    const seasonsResponse = await context.$directus.items('seasons').readMany({
+      fields: ['name', 'slug', 'leverade_id'],
+    });
+
+    if (!seasonsResponse?.data) {
+      throw new Error('Error when retrieving seasons');
+    }
+
+    const seasons = seasonsResponse.data.reduce((seasons, season) => {
+      // We discard seasons that don't have mandatory data.
+      if (season.id && season.name && season.slug) {
+        return [
+          ...seasons,
+          {
+            id: season.id,
+            name: season.name,
+            slug: season.slug,
+            leverade_id: season.leverade_id,
+          },
+        ];
+      }
+      console.warn('Season missing mandatory data', { season });
+      return seasons;
+    }, [] as Season[]);
+
+    return seasons;
+  };
+
+  const getNationalCompetition: CMSService['getNationalCompetition'] = async (competitionSlug) => {
+    // We retrieve all the languages and show news in fallback locale if not available in current locale
+    const currentLocale = context.i18n.locale;
+    // const defaultLocale = context.i18n.defaultLocale;
+    const response = await context.$directus.items('national_competitions').readMany({
+      limit: 1,
+      filter: {
+        _or: [
+          {
+            slug: { _eq: competitionSlug },
+          },
+          {
+            translations: {
+              slug: { _eq: competitionSlug },
+            },
+          },
+        ],
+      } as any, // Workaround until the _or is properly recognised. See https://github.com/directus/directus/issues/7475
+      fields: [
+        'name',
+        'slug',
+        'translations.name',
+        'translations.slug',
+        'editions.season.name',
+        'editions.season.slug',
+        'editions.leverade_id',
+      ],
+      deep: {
+        // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
+        translations: { _filter: { languages_code: { _eq: currentLocale } } },
+      },
+    });
+
+    if (!response?.data) {
+      throw new Error('Error when retrieving competition');
+    }
+
+    const rawCompetition = response.data[0];
+
+    if (!rawCompetition) {
+      throw new Error('No competition found');
+    }
+
+    // Because we requested data for a specific language, `translations` contain only the language we need
+    let translatedFields;
+    if (rawCompetition.translations && rawCompetition.translations[0]) {
+      translatedFields = rawCompetition.translations[0];
+    }
+
+    // Fallback for mandatory fields should not happen as we requested those fields
+    return {
+      name: translatedFields?.name || rawCompetition.name || 'No name',
+      slug: translatedFields?.slug || rawCompetition.slug || 'unknown',
+      editions: (rawCompetition.editions as any) || [],
+    };
+  };
+
+  const getNationalCompetitionEdition: CMSService['getNationalCompetitionEdition'] = async (
+    competitionSlug,
+    seasonSlug
+  ) => {
+    const response = await context.$directus.items('national_competition_editions').readMany({
+      limit: 1,
+      filter: {
+        _and: [
+          {
+            _or: [
+              {
+                competition: {
+                  slug: { _eq: competitionSlug },
+                },
+              },
+              {
+                competition: {
+                  translations: { slug: { _eq: competitionSlug } },
+                },
+              },
+            ],
+          },
+          {
+            season: {
+              slug: { _eq: seasonSlug },
+            },
+          },
+        ],
+      } as any, // Workaround until the _or is properly recognised. See https://github.com/directus/directus/issues/7475
+      fields: ['id', 'season.id', 'season.name', 'season.slug', 'competition', 'leverade_id'],
+    });
+
+    if (!response?.data) {
+      throw new Error('Error when retrieving competition edition');
+    }
+
+    const rawCompetitionEdition = response.data[0];
+
+    if (!rawCompetitionEdition) {
+      throw new Error('No competition edition found');
+    }
+
+    if (
+      !rawCompetitionEdition.id ||
+      !rawCompetitionEdition.season?.id ||
+      !rawCompetitionEdition.season?.name ||
+      !rawCompetitionEdition.season?.slug ||
+      !rawCompetitionEdition.competition
+    ) {
+      throw new Error('Missing data in competition edition');
+    }
+
+    // Fallback for mandatory fields should not happen as we requested those fields
+    return {
+      id: rawCompetitionEdition.id,
+      season: {
+        id: rawCompetitionEdition.season.id,
+        name: rawCompetitionEdition.season.name,
+        slug: rawCompetitionEdition.season.slug,
+      },
+      competition: rawCompetitionEdition.competition,
+      leverade_id: rawCompetitionEdition.leverade_id,
+    };
+  };
+
+  inject('cmsService', {
+    getNews,
+    getOneNews,
+    getEvents,
+    getTeam,
+    getSeasons,
+    getNationalCompetition,
+    getNationalCompetitionEdition,
+  });
 };
 
 export default cmsService;

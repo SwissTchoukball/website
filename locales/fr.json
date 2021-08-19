@@ -3,6 +3,7 @@
   "langSwitcherTitle": "Changer de langue",
   "mainNavigation": "Navigation principale",
   "secondaryNavigation": "Navigation secondaire",
+  "otherNavigation": "Navigation pour {name}",
   "backHome": "Retour à l'accueil",
   "photos": {
     "latest": "Dernières photos",
@@ -57,14 +58,31 @@
     "goToEvents": "Accéder à tous les événements"
   },
   "competitions": {
-    "title": "Compétitions"
+    "title": "Compétitions",
+    "phaseNavigation": {
+      "standings": "Classement",
+      "results": "Résultats",
+      "planning": "Programme"
+    },
+    "standings": {
+      "header": {
+        "team": "Équipe",
+        "played": "Joués",
+        "won": "Gagnés",
+        "drawn": "Égalités",
+        "lost": "Perdus",
+        "scored": "Marqués",
+        "received": "Reçus",
+        "diff": "Diff.",
+        "points": "Points"
+      }
+    }
   },
   "person": {
     "photoOf": "Photo de {name}"
   },
   "nationalTeams": {
     "navigation": {
-      "title": "Navigation pour {teamName}",
       "players": {
         "male": "Joueurs",
         "female": "Joueuses",

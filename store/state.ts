@@ -1,3 +1,8 @@
+import { DirectusSeason } from '~/plugins/directus';
+
+// For now, a Season in the frontend is exactly the same as in Directus.
+export type Season = DirectusSeason;
+
 export interface MenuItem {
   sort?: number;
   name: string;
@@ -29,6 +34,7 @@ export interface RootState {
   mainNavigation: MenuItem[];
   eventCategories?: EventCategories;
   playerPositions?: PlayerPositions;
+  seasons?: Season[];
 }
 
 export default (): RootState => ({

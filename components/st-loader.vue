@@ -1,5 +1,5 @@
 <template functional>
-  <div class="c-loader" :class="data.staticClass || ''">
+  <div class="c-loader" :class="{ 'c-loader--main': props.main }">
     <span class="c-loader__stripe c-loader__strip--vertical"></span>
     <span class="c-loader__stripe c-loader__strip--hotizontal"></span>
   </div>
@@ -12,6 +12,11 @@
   background: var(--st-color-loader-background);
   border-radius: 10px;
   animation: square-spin 1.2s infinite ease-in-out;
+}
+
+.c-loader--main {
+  margin: auto;
+  margin-top: var(--st-length-spacing-m);
 }
 
 .c-loader__stripe {

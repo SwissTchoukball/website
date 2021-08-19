@@ -3,13 +3,19 @@
     <h1 class="u-visually-hidden">{{ $t('title') }}</h1>
     <div class="c-default__drawer" :class="{ 'c-default__drawer--open': isDrawerOpen }">
       <st-language-switcher class="c-default__drawer-lang-switcher" />
-      <st-navigation :items="mainNavigation" narrow class="c-default__drawer-navigation" @navigate="closeDrawer()" />
+      <st-navigation
+        :items="mainNavigation"
+        :name="$t('mainNavigation')"
+        narrow
+        class="c-default__drawer-navigation"
+        @navigate="closeDrawer()"
+      />
     </div>
     <header class="c-default__header">
       <nuxt-link class="c-default__logo" :to="localePath('index')" @click.native="closeDrawer()"></nuxt-link>
       <st-language-switcher class="c-default__header-lang-switcher" />
       <st-burger-button v-model="isDrawerOpen" class="c-default__burger-button" />
-      <st-navigation :items="mainNavigation" class="c-default__header-navigation" />
+      <st-navigation :items="mainNavigation" :name="$t('mainNavigation')" class="c-default__header-navigation" />
     </header>
     <main>
       <Nuxt />
@@ -50,7 +56,6 @@ export default Vue.extend({
   justify-content: space-between;
   align-items: center;
   padding: 0 var(--st-length-main-content-side-padding);
-  margin-bottom: var(--st-length-spacing-s);
 }
 
 .c-default__logo {
@@ -115,7 +120,6 @@ export default Vue.extend({
   .c-default__header {
     height: auto;
     width: 100%;
-    margin-bottom: var(--st-length-spacing-s);
     padding-top: var(--st-length-spacing-xs);
     position: relative;
     flex-wrap: wrap;

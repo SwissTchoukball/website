@@ -1,6 +1,6 @@
 <template>
   <nav class="c-navigation" :class="{ 'c-navigation--narrow': narrow, 'c-navigation--small': small }">
-    <h2 class="u-visually-hidden">{{ $t('mainNavigation') }}</h2>
+    <h2 class="u-visually-hidden">{{ name }}</h2>
     <ul v-click-outside="closeAllMenuItems" class="u-unstyled-list c-navigation__list">
       <li
         v-for="(item, itemIndex) in items"
@@ -39,6 +39,13 @@ export default Vue.extend({
     clickOutside: vClickOutside.directive,
   },
   props: {
+    /**
+     * Name of the navigation, visible to screen readers.
+     */
+    name: {
+      type: String,
+      required: true,
+    },
     /**
      * Alternative layout to be used in the drawer.
      */
@@ -96,17 +103,27 @@ export default Vue.extend({
 <style scoped>
 .c-navigation__list {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   margin-bottom: 5px;
+
+  /* Translate to have the navigation aligned when not hovered */
+  transform: translateX(-0.5rem);
 }
 
 .c-navigation--narrow .c-navigation__list {
   flex-direction: column;
   align-items: flex-start;
+  transform: none;
+}
+
+.c-navigation--small .c-navigation__list {
+  transform: none;
 }
 
 .c-navigation__item-group {
   position: relative;
+  margin-bottom: var(--st-length-spacing-xs); /* Notably useful when a navigation gets wrapped */
 }
 
 .c-navigation__item-name {

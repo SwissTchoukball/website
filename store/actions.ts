@@ -8,6 +8,7 @@ export default {
     await dispatch('loadMenu');
   },
   async loadMenu({ commit }) {
+    // TODO: Move logic to CMSService
     const locale = this.app.i18n.locale;
 
     const mainNavigation = await this.$directus.items('menus').readMany({
@@ -55,7 +56,13 @@ export default {
 
     commit('setMainNavigation', mainNavigation.data?.map(transformForStore));
   },
+  // FIXME: `loadSeasons` is not used anywhere yet. Use it to switch between seasons.
+  async loadSeasons({ commit }) {
+    const seasons = await this.$cmsService.getSeasons();
+    commit('setSeasons', seasons);
+  },
   async loadEventCategories({ commit }) {
+    // TODO: Move logic to CMSService
     const locale = this.app.i18n.locale;
 
     const eventCategories = await this.$directus.items('event_categories').readMany({
@@ -71,7 +78,7 @@ export default {
         return categories;
       }
 
-      // Because we requested the menu for a specific language, `translations` contain only the language we need
+      // Because we requested data for a specific language, `translations` contain only the language we need
       let translatedFields;
       if (category.translations && category.translations[0]) {
         translatedFields = category.translations[0];
@@ -88,6 +95,7 @@ export default {
     commit('setEventCategories', categories);
   },
   async loadPlayerPositions({ commit }) {
+    // TODO: Move logic to CMSService
     const locale = this.app.i18n.locale;
 
     const playerPositions = await this.$directus.items('player_positions').readMany({
@@ -112,7 +120,7 @@ export default {
         return positions;
       }
 
-      // Because we requested the menu for a specific language, `translations` contain only the language we need
+      // Because we requested data for a specific language, `translations` contain only the language we need
       let translatedFields;
       if (position.translations && position.translations[0]) {
         translatedFields = position.translations[0];

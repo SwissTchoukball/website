@@ -156,6 +156,31 @@ export interface DirectusTeam {
   };
 }
 
+export interface DirectusSeason {
+  id: number;
+  name: string;
+  slug: string;
+  leverade_id?: number;
+}
+
+export interface DirectusNationalCompetitionEdition {
+  id: number;
+  season: DirectusSeason;
+  competition: number;
+  leverade_id?: number;
+}
+
+export interface DirectusNationalCompetition {
+  id: number;
+  name: string;
+  slug: string;
+  editions: DirectusNationalCompetitionEdition[];
+  translations: {
+    name: string;
+    slug: string;
+  }[];
+}
+
 type CustomTypes = {
   /*
 	This type will be merged with Directus user type.
@@ -170,6 +195,9 @@ type CustomTypes = {
   event_categories: DirectusEventCategory;
   national_teams: DirectusTeam;
   player_positions: DirectusPlayerPosition;
+  seasons: DirectusSeason;
+  national_competitions: DirectusNationalCompetition;
+  national_competition_editions: DirectusNationalCompetitionEdition;
 };
 
 declare module 'vue/types/vue' {

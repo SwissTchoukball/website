@@ -42,6 +42,7 @@ const config: NuxtConfig = {
     '~/plugins/format-date.ts',
     '~/plugins/vue-slick-carousel.ts',
     '~/plugins/cms-service.ts',
+    '~/plugins/leverade.ts',
     '~/plugins/flickr.ts',
   ],
 
@@ -133,6 +134,7 @@ const config: NuxtConfig = {
   },
   publicRuntimeConfig: {
     cmsURL: process.env.CMS_URL || 'http://localhost:8055',
+    leveradeURL: 'https://api.leverade.com',
     newsAssetsSizes: [326, 500, 680, 1000, 1400, 2000, 2800],
     avatarAssetsSize: [200, 400],
     competitionLogoAssetsSizes: [200, 400],

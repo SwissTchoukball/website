@@ -11,7 +11,7 @@
         <fa-icon icon="angle-right" />
       </nuxt-link>
     </nav>
-    <st-loader v-if="$fetchState.pending" class="c-events__loader" />
+    <st-loader v-if="$fetchState.pending" main />
     <p v-else-if="$fetchState.error">{{ $t('error.otherError') }}</p>
     <template v-else-if="events.length">
       <st-link-action v-if="showUpcoming" :to="thisMonthLink" class="c-events__past-events-link">
@@ -173,11 +173,6 @@ export default Vue.extend({
 
 .c-events__month-switch-link:last-of-type {
   margin-left: var(--st-length-spacing-s);
-}
-
-.c-events__loader {
-  margin: auto;
-  margin-top: var(--st-length-spacing-m);
 }
 
 .c-events__past-events-link {

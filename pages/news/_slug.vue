@@ -1,6 +1,6 @@
 <template>
   <section class="l-main-content-section">
-    <st-loader v-if="$fetchState.pending" class="c-news-entry__loader" />
+    <st-loader v-if="$fetchState.pending" main />
     <p v-else-if="$fetchState.error">{{ $t('error.otherError') }}</p>
     <st-news v-else :news-entry="newsEntry" />
   </section>
@@ -25,9 +25,3 @@ export default Vue.extend({
   },
 });
 </script>
-
-<style scoped>
-.c-news-entry__loader {
-  margin-top: auto;
-}
-</style>

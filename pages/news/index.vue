@@ -1,7 +1,7 @@
 <template>
   <section class="l-main-content-section">
     <h2 class="t-headline-1">News</h2>
-    <st-loader v-if="$fetchState.pending" class="c-news__loader" />
+    <st-loader v-if="$fetchState.pending" main />
     <p v-else-if="$fetchState.error">{{ $t('error.otherError') }}</p>
     <template v-else>
       <p v-if="filteredCategoryName" class="c-news__category-filter-info">
@@ -68,11 +68,6 @@ export default Vue.extend({
 </script>
 
 <style>
-.c-news__loader {
-  margin: auto;
-  margin-top: var(--st-length-spacing-m);
-}
-
 .c-news__category-filter-info {
   margin-top: var(--st-length-spacing-xs);
 }
