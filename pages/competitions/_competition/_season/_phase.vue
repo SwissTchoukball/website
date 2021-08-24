@@ -2,17 +2,18 @@
   <div>
     <st-navigation
       :items="phaseNavigation"
-      :name="$t('otherNavigation', { name: phase.attributes.name })"
+      :name="$t('otherNavigation', { name: phase.name })"
       class="c-competition-phase__navigation"
       small
     />
-    <nuxt-child />
+    <nuxt-child v-if="phase" :phase="phase" />
   </div>
 </template>
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import { LeveradeGroup } from '~/plugins/leverade';
+import Phase from '~/models/phase.model';
+import { LeveradeGroupType } from '~/plugins/leverade';
 import { MenuItem } from '~/store/state';
 
 export default Vue.extend({
@@ -23,26 +24,26 @@ export default Vue.extend({
     },
   },
   props: {
-    phases: {
-      type: Array as PropType<LeveradeGroup[]>,
+    phase: {
+      type: Object as PropType<Phase>,
       required: true,
     },
   },
   computed: {
-    phase(): LeveradeGroup {
-      const phase = this.phases.find((phase) => phase.id === this.$route.params.phase);
-      if (!phase) {
-        throw new Error('Unrecognised phase');
-      }
-      return phase;
-    },
     phaseNavigation(): MenuItem[] {
       const params = { phase: this.$route.params.phase };
-      return [
-        {
+      const phaseNavigation = [];
+
+      // We show the standings only for the league mode (i.e. not in play-off mode)
+      if (this.phase.type === LeveradeGroupType.LEAGUE) {
+        phaseNavigation.push({
           name: this.$t('competitions.phaseNavigation.standings').toString(),
           href: this.localePath({ name: 'competitions-competition-season-phase-standings', params }),
-        },
+        });
+      }
+
+      // TODO: Hide planning if no rounds planned in the future
+      phaseNavigation.push(
         {
           name: this.$t('competitions.phaseNavigation.results').toString(),
           href: this.localePath({ name: 'competitions-competition-season-phase-results', params }),
@@ -50,8 +51,10 @@ export default Vue.extend({
         {
           name: this.$t('competitions.phaseNavigation.planning').toString(),
           href: this.localePath({ name: 'competitions-competition-season-phase-planning', params }),
-        },
-      ];
+        }
+      );
+
+      return phaseNavigation;
     },
   },
 });
@@ -59,6 +62,6 @@ export default Vue.extend({
 
 <style scoped>
 .c-competition-phase__navigation {
-  padding-top: var(--st-length-spacing-xs);
+  padding-top: var(--st-length-spacing-s);
 }
 </style>

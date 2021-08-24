@@ -11,13 +11,18 @@
         <component
           :is="item.href ? 'nuxt-link' : 'button'"
           :to="localePath(item.href)"
+          :aria-haspopup="item.children && !!item.children.length"
+          :aria-expanded="openStates[itemIndex]"
           class="u-unstyled-button c-navigation__item-name"
           @click.stop="onItemClickStop(item, itemIndex)"
           @click.native="onItemClickNative(item)"
         >
           {{ item.name }}
         </component>
-        <ul v-if="openStates[itemIndex] && item.children" class="u-unstyled-list c-navigation__sub-items">
+        <ul
+          v-if="openStates[itemIndex] && item.children && item.children.length"
+          class="u-unstyled-list c-navigation__sub-items"
+        >
           <li v-for="(subItem, subItemIndex) in item.children" :key="subItemIndex" class="c-navigation__sub-item">
             <nuxt-link :to="localePath(subItem.href)" @click.native="onItemClickNative(subItem)">{{
               subItem.name

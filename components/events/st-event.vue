@@ -8,11 +8,7 @@
       :srcset="mainImageSrcSet"
       :sizes="`(min-width: 1400px) 1400px, 96vw`"
     />
-    <div class="c-event__date">
-      <span class="c-event__date-week-days">{{ weekDays }}</span>
-      <span class="c-event__date-days">{{ days }}</span>
-      <span class="c-event__date-months">{{ months }}</span>
-    </div>
+    <st-event-date :start-date="event.date_start" :end-date="event.date_end" />
     <div class="c-event__main">
       <h3 class="t-headline-2 c-event__name">
         <nuxt-link :to="{ hash: `event-${event.id}` }" class="c-event__name-link">{{ event.name }}</nuxt-link>
@@ -37,12 +33,13 @@
 <script lang="ts">
 import Vue, { PropType } from 'vue';
 import { Store } from 'vuex';
-import { isSameDay, isSameMonth } from 'date-fns';
 import { CalendarEvent } from '~/plugins/cms-service';
 import { EventCategories, RootState } from '~/store/state';
 import { getAssetSrcSet, getAssetURL } from '~/plugins/directus';
+import stEventDate from '~/components/events/st-event-date.vue';
 
 export default Vue.extend({
+  components: { stEventDate },
   props: {
     event: {
       type: Object as PropType<CalendarEvent>,
@@ -50,41 +47,6 @@ export default Vue.extend({
     },
   },
   computed: {
-    isSingleDay(): boolean {
-      return isSameDay(this.event.date_start, this.event.date_end);
-    },
-    isWithinSingleMonth(): boolean {
-      return isSameMonth(this.event.date_start, this.event.date_end);
-    },
-    weekDays(): string {
-      let weekDays = this.$formatDate(this.event.date_start, 'EEEE');
-      if (!this.isSingleDay) {
-        weekDays = `${this.$formatDate(this.event.date_start, 'EEE')} - ${this.$formatDate(
-          this.event.date_end,
-          'EEE'
-        )}`;
-        weekDays = weekDays.replace(/\./g, '');
-      }
-
-      return weekDays;
-    },
-    days(): string {
-      let days = this.$formatDate(this.event.date_start, 'd');
-      if (!this.isSingleDay) {
-        days += ` - ${this.$formatDate(this.event.date_end, 'd')}`;
-      }
-
-      return days;
-    },
-    months(): string {
-      let months = this.$formatDate(this.event.date_start, 'MMMM');
-      if (!this.isWithinSingleMonth) {
-        months = `${this.$formatDate(this.event.date_start, 'MMM')} - ${this.$formatDate(this.event.date_end, 'MMM')}`;
-        months = months.replace(/\./g, '');
-      }
-
-      return months;
-    },
     time(): string {
       if (this.event.isFullDay) {
         return this.$t('events.fullDay').toString();
@@ -153,27 +115,6 @@ export default Vue.extend({
   pointer-events: none;
 }
 
-.c-event__date {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  font-weight: 900;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.c-event__date > * {
-  margin-right: var(--st-length-spacing-xxs);
-}
-
-.c-event__date-week-days {
-  color: var(--st-color-event-day-of-week);
-}
-
-.c-event__date-months {
-  color: var(--st-color-event-month);
-}
-
 .c-event__name {
   padding-top: var(--st-length-spacing-xs);
 }
@@ -226,21 +167,6 @@ export default Vue.extend({
 @media (--sm-and-up) {
   .c-event {
     flex-direction: row;
-  }
-
-  .c-event__date {
-    flex-shrink: 0;
-    flex-direction: column;
-    margin-right: var(--st-length-spacing-s);
-    width: 7rem;
-  }
-
-  .c-event__date > * {
-    margin-right: 0;
-  }
-
-  .c-event__date-days {
-    font-size: 2em;
   }
 
   .c-event__main {

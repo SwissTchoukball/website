@@ -76,6 +76,12 @@
         "diff": "Diff.",
         "points": "Points"
       }
+    },
+    "results": {
+      "noResults": "Il n'y a pas encore de résultats à afficher."
+    },
+    "planning": {
+      "noMatches": "Il n'y a pas encore ou plus de matchs prévus."
     }
   },
   "person": {

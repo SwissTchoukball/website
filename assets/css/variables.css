@@ -95,6 +95,12 @@
   --st-color-medal-bronze: #cd7f32;
   --st-color-medal-none: var(--st-color-grey-very-light);
 
+  /* Competitions */
+  --st-color-phase-select-border: var(--st-color-grey-light);
+  --st-color-phase-select-background-hover: var(--st-color-grey-very-light);
+  --st-color-match-score: var(--st-color-red-swiss-tchoukball);
+  --st-color-match-results-separator: var(--st-color-grey-light);
+
   /* LENGTHS */
   --st-length-main-content-max-width: 100%;
   --st-length-small-header-height: 50px;

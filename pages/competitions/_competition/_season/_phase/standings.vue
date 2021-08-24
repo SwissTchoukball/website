@@ -13,9 +13,19 @@
             {{ value }}
           </th>
         </tr>
-        <tr v-for="(row, rowIndex) of rows" :key="`row-${rowIndex}`">
-          <td v-for="(cell, cellIndex) of row" :key="`cell-${rowIndex}-${cellIndex}`" class="c-standings__table-cell">
-            {{ cell }}
+        <tr v-for="standing of standings" :key="standing.team.id">
+          <td class="c-standings__table-cell">{{ standing.position }}</td>
+          <td class="c-standings__table-cell">
+            <div class="c-standings__team">
+              <img
+                :src="`https://cdn.leverade.com/thumbnails/${standing.team.avatarKey}.200x200.jpg`"
+                class="c-standings__team-avatar"
+              />
+              {{ standing.team.name }}
+            </div>
+          </td>
+          <td v-for="statKey of standingsStatKeys" :key="statKey" class="c-standings__table-cell">
+            {{ standing.stats.find((stat) => stat.type === statKey).value }}
           </td>
         </tr>
       </table>
@@ -24,7 +34,11 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import Vue, { PropType } from 'vue';
+import VueI18n from 'vue-i18n';
+import Phase from '~/models/phase.model';
+import Team from '~/models/team.model';
+import { LeveradeGroupType } from '~/plugins/leverade';
 
 export default Vue.extend({
   nuxtI18n: {
@@ -33,52 +47,45 @@ export default Vue.extend({
       de: '/wettbewerbe/:competition/:season/:phase/tabelle',
     },
   },
+  props: {
+    phase: {
+      type: Object as PropType<Phase>,
+      required: true,
+    },
+  },
   data() {
     return {
-      rows: [] as string[],
+      standings: [] as any[],
       stats: [],
     };
   },
   async fetch() {
-    const response = await this.$leverade.getStandings(this.$route.params.phase);
-    this.rows = response.data.meta.standingsrows.map((row: any) => {
-      const standing: (string | number)[] = [row.position, row.name];
-
-      row.standingsstats.forEach((stat: { type: string; value: number }) => {
-        switch (stat.type) {
-          case 'played_matches':
-            standing[2] = stat.value;
-            break;
-          case 'won_matches':
-            standing[3] = stat.value;
-            break;
-          case 'drawn_matches':
-            standing[4] = stat.value;
-            break;
-          case 'lost_matches':
-            standing[5] = stat.value;
-            break;
-          case 'value':
-            standing[6] = stat.value;
-            break;
-          case 'value_against':
-            standing[7] = stat.value;
-            break;
-          case 'value_difference':
-            standing[8] = stat.value;
-            break;
-          case 'score':
-            standing[9] = stat.value;
-            break;
-          default:
-        }
+    // If we're not in a league phase (e.g. play-off phase), we redirect to the results
+    if (this.phase.type !== LeveradeGroupType.LEAGUE) {
+      const resultsPath = this.localePath({
+        name: 'competitions-competition-season-phase-results',
       });
+      if (process.server) {
+        this.$nuxt.context.redirect(resultsPath);
+      } else if (process.client) {
+        this.$router.replace(resultsPath);
+      }
+      return;
+    }
 
+    // Retrieving standings
+    const response = await this.$leverade.getStandings(this.phase.id);
+    this.standings = response.data.meta.standingsrows.map((row: any) => {
+      const standing = {
+        position: row.position,
+        team: Team.find(row.id),
+        stats: row.standingsstats,
+      };
       return standing;
     });
   },
   computed: {
-    standingsHeader() {
+    standingsHeader(): VueI18n.TranslateResult[] {
       return [
         '',
         this.$t('competitions.standings.header.team'),
@@ -90,6 +97,18 @@ export default Vue.extend({
         this.$t('competitions.standings.header.received'),
         this.$t('competitions.standings.header.diff'),
         this.$t('competitions.standings.header.points'),
+      ];
+    },
+    standingsStatKeys(): string[] {
+      return [
+        'played_matches',
+        'won_matches',
+        'drawn_matches',
+        'lost_matches',
+        'value',
+        'value_against',
+        'value_difference',
+        'score',
       ];
     },
   },
@@ -114,7 +133,7 @@ export default Vue.extend({
 }
 
 .c-standings__table-cell {
-  padding: 0.6rem 0.8rem;
+  padding: var(--st-length-spacing-xxs);
   border-bottom: 1px solid grey;
   text-align: center;
 }
@@ -136,5 +155,16 @@ export default Vue.extend({
   color: grey;
   font-weight: bold;
   font-size: 0.8em;
+}
+
+.c-standings__team {
+  display: flex;
+  align-items: center;
+}
+
+.c-standings__team-avatar {
+  width: 50px;
+  height: 50px;
+  margin-right: var(--st-length-spacing-xs);
 }
 </style>

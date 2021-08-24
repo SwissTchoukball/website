@@ -56,6 +56,7 @@ export default Vue.extend({
   justify-content: space-between;
   align-items: center;
   padding: 0 var(--st-length-main-content-side-padding);
+  z-index: 2;
 }
 
 .c-default__logo {
