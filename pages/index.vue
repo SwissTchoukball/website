@@ -9,7 +9,7 @@
 
     <section v-if="events.length" class="l-main-content-section c-index__events">
       <h2 class="t-headline-1">
-        <nuxt-link :to="localePath('events')" class="c-index__section-title">{{ $t('events.title') }}</nuxt-link>
+        <nuxt-link :to="localePath('calendar')" class="c-index__section-title">{{ $t('events.title') }}</nuxt-link>
       </h2>
       <ul class="u-unstyled-list c-index__event-list">
         <li v-for="event of events" :key="`event-${event.id}`" class="c-index__event-item">
@@ -21,7 +21,7 @@
             :details="event.venue.name"
             :to="
               localePath({
-                name: 'events',
+                name: 'calendar',
                 query: {
                   month: $formatDate(event.date_start, 'M'),
                   year: $formatDate(event.date_start, 'yyyy'),
@@ -32,7 +32,7 @@
           />
         </li>
       </ul>
-      <st-link-action :to="localePath('events')" class="c-index__read-more-news" with-arrow>
+      <st-link-action :to="localePath('calendar')" class="c-index__read-more-news" with-arrow>
         {{ $t('events.goToEvents') }}
       </st-link-action>
     </section>

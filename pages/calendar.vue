@@ -41,8 +41,8 @@ import { isDigitsString } from '~/utils/utils';
 export default Vue.extend({
   nuxtI18n: {
     paths: {
-      fr: '/evenements',
-      de: '/ereignisse',
+      fr: '/calendrier',
+      de: '/kalendar',
     },
   },
   components: {
