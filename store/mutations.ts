@@ -1,5 +1,5 @@
 import { MutationTree } from 'vuex/types/index';
-import { EventCategories, MenuItem, PlayerPositions, RootState, Season } from './state';
+import { EventCategories, MenuItem, PlayerPositions, RootState } from './state';
 
 export default {
   setMainNavigation(state, mainNavigation: MenuItem[]) {
@@ -11,7 +11,10 @@ export default {
   setPlayerPositions(state, playerPositions: PlayerPositions) {
     state.playerPositions = playerPositions;
   },
-  setSeasons(state, seasons: Season[]) {
-    state.seasons = seasons;
+  setUpcomingMatchesAsLoaded(state) {
+    state.upcomingMatchesLoaded = true;
+  },
+  setCompetitionEditionAsFullyLoaded(state, { seasonSlug, competitionSlug }) {
+    state.fullyLoadedCompetitionEditions.push({ season: seasonSlug, competition: competitionSlug });
   },
 } as MutationTree<RootState>;

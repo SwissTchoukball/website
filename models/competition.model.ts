@@ -14,7 +14,7 @@ export default class Competition extends Model {
       id: this.string(null),
       name: this.string(null),
       slug: this.string(null),
-      editions: this.hasMany(CompetitionEdition, 'competition_edition_id'),
+      editions: this.hasMany(CompetitionEdition, 'competition_id'),
     };
   }
 }

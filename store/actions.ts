@@ -2,16 +2,27 @@ import { ActionTree } from 'vuex/types/index';
 import { PartialItem } from '@directus/sdk';
 import { isPast, parse } from 'date-fns';
 import { EventCategories, MenuItem, PlayerPositions, RootState } from './state';
-import { DirectusMenuItem } from '~/plugins/directus';
+import { DirectusMenuItem, DirectusNationalCompetition } from '~/plugins/directus';
 import CompetitionEdition from '~/models/competition-edition.model';
 import Round from '~/models/round.model';
 import Match from '~/models/match.model';
 import Facility from '~/models/facility.model';
-import { LeveradeFacility, LeveradeGroup, LeveradeMatch, LeveradeRound, LeveradeTeam } from '~/plugins/leverade';
+import {
+  LeveradeFacility,
+  LeveradeGroup,
+  LeveradeMatch,
+  LeveradeRound,
+  LeveradeTeam,
+  LeveradeTournament,
+} from '~/plugins/leverade';
+import Team from '~/models/team.model';
+import Phase from '~/models/phase.model';
+import Season from '~/models/season.model';
 
 export default {
   async nuxtServerInit({ dispatch }) {
     await dispatch('loadMenu');
+    await dispatch('loadSeasons');
   },
   async loadMenu({ commit }) {
     // TODO: Move logic to CMSService
@@ -62,10 +73,11 @@ export default {
 
     commit('setMainNavigation', mainNavigation.data?.map(transformForStore));
   },
-  // FIXME: `loadSeasons` is not used anywhere yet. Use it to switch between seasons.
-  async loadSeasons({ commit }) {
-    const seasons = await this.$cmsService.getSeasons();
-    commit('setSeasons', seasons);
+  async loadSeasons() {
+    const directusSeasons = await this.$cmsService.getSeasons();
+    Season.insert({
+      data: directusSeasons,
+    });
   },
   async loadEventCategories({ commit }) {
     // TODO: Move logic to CMSService
@@ -145,11 +157,127 @@ export default {
     commit('setPlayerPositions', positions);
   },
 
-  async loadCompetitionEdition(
+  async insertFacilities(_context, facilities: LeveradeFacility[]) {
+    await Facility.insert({
+      data: facilities.map((facility) => {
+        return {
+          id: facility.id,
+          name: facility.attributes.name,
+          latitude: facility.attributes.latitude,
+          longitude: facility.attributes.longitude,
+          address: facility.attributes.address,
+          postal_code: facility.attributes.postal_code,
+          city: facility.attributes.city,
+        };
+      }),
+    });
+  },
+
+  async insertMatches(_context, matches: LeveradeMatch[]) {
+    await Match.insert({
+      data: matches.map((match) => {
+        // TODO: Remove when we'll get an actual score
+        let home_team_score: number | null = null;
+        let away_team_score: number | null = null;
+        const matchDate = parse(match.attributes.datetime, 'yyyy-MM-dd HH:mm:ss', new Date());
+        if (isPast(matchDate)) {
+          home_team_score = Math.floor(Math.random() * 100);
+          away_team_score = Math.floor(Math.random() * 100);
+        }
+
+        return {
+          id: match.id,
+          datetime: match.attributes.datetime,
+          home_team_id: match.meta.home_team,
+          home_team_score,
+          away_team_id: match.meta.away_team,
+          away_team_score,
+          round_id: match.relationships.round.data.id,
+          facility_id: match.relationships.facility.data ? match.relationships.facility.data.id : null,
+        };
+      }),
+    });
+  },
+
+  async insertRounds(_context, rounds: LeveradeRound[]) {
+    await Round.insert({
+      data: rounds.map((round) => {
+        return {
+          id: round.id,
+          name: round.attributes.name,
+          start_date: round.attributes.start_date,
+          end_date: round.attributes.end_date,
+          order: round.attributes.order,
+          phase_id: round.relationships.group.data.id,
+        };
+      }),
+    });
+  },
+
+  async insertPhases(_context, groups: LeveradeGroup[]) {
+    await Phase.insert({
+      data: groups.map((group) => {
+        return {
+          id: group.id,
+          name: group.attributes.name,
+          type: group.attributes.type,
+          group: group.attributes.group,
+          competition_edition_id: group.relationships.tournament.data.id,
+        };
+      }),
+    });
+  },
+
+  async insertTeams(_context, teams: LeveradeTeam[]) {
+    await Team.insert({
+      data: teams.map((team) => {
+        const avatarKeyMatchArray = team.meta.avatar.large.match(/\/(\w+)\.[0-9]/);
+
+        return {
+          id: team.id,
+          name: team.attributes.name,
+          avatarKey: avatarKeyMatchArray && avatarKeyMatchArray?.length > 1 ? avatarKeyMatchArray[1] : null,
+          competition_edition_id: team.relationships.registrable.data.id,
+        };
+      }),
+    });
+  },
+
+  async insertCompetitionEditions(
     _context,
+    tournaments: (LeveradeTournament & { competition?: DirectusNationalCompetition })[]
+  ) {
+    // We insertOrUpdate because we don't have the information from Directus and don't want to override it.
+    await CompetitionEdition.insertOrUpdate({
+      data: tournaments.map((tournament) => {
+        const edition: any = {
+          leverade_id: tournament.id,
+          name: tournament.attributes.name,
+          gender: tournament.attributes.gender,
+          season_id: tournament.relationships.season.data.id,
+        };
+
+        // We do a separate check to not remove the competition_id in case
+        // it set in the store and not provided in `tournament`
+        if (tournament.competition) {
+          edition.competition = tournament.competition;
+        }
+
+        return edition;
+      }),
+    });
+  },
+
+  async loadCompetitionEdition(
+    context,
     { seasonSlug, competitionSlug }: { seasonSlug: string; competitionSlug: string }
   ) {
-    const competitionEdition = await this.$cmsService.getNationalCompetitionEdition(competitionSlug, seasonSlug);
+    const competitionEditions = await this.$cmsService.getNationalCompetitionEditions({ competitionSlug, seasonSlug });
+    if (!competitionEditions || competitionEditions.length < 1) {
+      throw new Error('No competition edition found');
+    }
+    // There should be only one edition matching the request parameters.
+    const competitionEdition = competitionEditions[0];
     if (!competitionEdition.leverade_id) {
       throw new Error('This competition edition has no Leverade ID');
     }
@@ -184,18 +312,14 @@ export default {
         }
       });
 
-      CompetitionEdition.insert({
+      await CompetitionEdition.insert({
         data: {
           leverade_id: tournament.id,
           directus_id: competitionEdition.directus_id,
           name: tournament.attributes.name,
           gender: tournament.attributes.gender,
           season: competitionEdition.season,
-          competition: {
-            id: competitionEdition.competition,
-            name: tournament.attributes.name,
-            slug: competitionSlug,
-          },
+          competition: competitionEdition.competition,
           teams: teams.map((team) => {
             const avatarKeyMatchArray = team.meta.avatar.large.match(/\/(\w+)\.[0-9]/);
 
@@ -216,56 +340,69 @@ export default {
         },
       });
 
-      Round.insert({
-        data: rounds.map((round) => {
-          return {
-            id: round.id,
-            name: round.attributes.name,
-            start_date: round.attributes.start_date,
-            end_date: round.attributes.end_date,
-            order: round.attributes.order,
-            phase_id: round.relationships.group.data.id,
-          };
-        }),
-      });
-
-      Match.insert({
-        data: matches.map((match) => {
-          // TODO: Remove when we'll get an actual score
-          let home_team_score: number | null = null;
-          let away_team_score: number | null = null;
-          const matchDate = parse(match.attributes.datetime, 'yyyy-MM-dd HH:mm:ss', new Date());
-          if (isPast(matchDate)) {
-            home_team_score = Math.floor(Math.random() * 100);
-            away_team_score = Math.floor(Math.random() * 100);
-          }
-
-          return {
-            id: match.id,
-            datetime: match.attributes.datetime,
-            home_team_id: match.meta.home_team,
-            home_team_score,
-            away_team_id: match.meta.away_team,
-            away_team_score,
-            round_id: match.relationships.round.data.id,
-            facility_id: match.relationships.facility.data ? match.relationships.facility.data.id : null,
-          };
-        }),
-      });
-
-      Facility.insert({
-        data: facilities.map((facility) => {
-          return {
-            id: facility.id,
-            name: facility.attributes.name,
-            latitude: facility.attributes.latitude,
-            longitude: facility.attributes.longitude,
-            address: facility.attributes.address,
-            postal_code: facility.attributes.postal_code,
-            city: facility.attributes.city,
-          };
-        }),
-      });
+      await context.dispatch('insertFacilities', facilities);
+      await context.dispatch('insertRounds', rounds);
+      await context.dispatch('insertMatches', matches);
+      context.commit('setCompetitionEditionAsFullyLoaded', { seasonSlug, competitionSlug });
     }
+  },
+
+  async loadUpcomingMatches(context) {
+    const matchesResponse = await this.$leverade.getUpcomingMatches();
+    const matches = matchesResponse.data.data;
+
+    if (!matchesResponse.data.included) {
+      throw new Error('Missing included data');
+    }
+
+    const teams: LeveradeTeam[] = [];
+    const groups: LeveradeGroup[] = [];
+    const rounds: LeveradeRound[] = [];
+    const tournaments: LeveradeTournament[] = [];
+    const facilities: LeveradeFacility[] = [];
+    matchesResponse.data.included.forEach((entity) => {
+      switch (entity.type) {
+        case 'team':
+          teams.push(entity);
+          break;
+        case 'group':
+          groups.push(entity);
+          break;
+        case 'round':
+          rounds.push(entity);
+          break;
+        case 'tournament':
+          tournaments.push(entity);
+          break;
+        case 'facility':
+          facilities.push(entity);
+          break;
+        default:
+      }
+    });
+
+    // Loading Directus-only data
+    const competitionEditions = await this.$cmsService.getNationalCompetitionEditions({
+      leveradeIds: tournaments.map((tournament) => tournament.id),
+    });
+
+    const tournamentsWithCompetition = tournaments.map((tournament) => {
+      const edition = competitionEditions.find((edition) => edition.leverade_id?.toString() === tournament.id);
+      if (!edition) {
+        return tournament;
+      }
+      return {
+        ...tournament,
+        competition: edition.competition,
+      };
+    });
+
+    await context.dispatch('insertFacilities', facilities);
+    await context.dispatch('insertCompetitionEditions', tournamentsWithCompetition);
+    await context.dispatch('insertTeams', teams);
+    await context.dispatch('insertPhases', groups);
+    await context.dispatch('insertRounds', rounds);
+    await context.dispatch('insertMatches', matches);
+    context.commit('setUpcomingMatchesAsLoaded');
   },
 } as ActionTree<RootState, RootState>;

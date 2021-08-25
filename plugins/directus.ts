@@ -166,7 +166,8 @@ export interface DirectusSeason {
 export interface DirectusNationalCompetitionEdition {
   id: number;
   season: DirectusSeason;
-  competition: number;
+  // eslint-disable-next-line no-use-before-define
+  competition: DirectusNationalCompetition;
   leverade_id?: number;
 }
 

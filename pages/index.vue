@@ -13,7 +13,23 @@
       </h2>
       <ul class="u-unstyled-list c-index__event-list">
         <li v-for="event of events" :key="`event-${event.id}`" class="c-index__event-item">
-          <st-event-small :event="event" />
+          <st-event-small
+            :start-date="event.date_start"
+            :end-date="event.date_end"
+            :is-full-day="event.isFullDay"
+            :name="event.name"
+            :details="event.venue.name"
+            :to="
+              localePath({
+                name: 'events',
+                query: {
+                  month: $formatDate(event.date_start, 'M'),
+                  year: $formatDate(event.date_start, 'yyyy'),
+                },
+                hash: `#event-${event.id}`,
+              })
+            "
+          />
         </li>
       </ul>
       <st-link-action :to="localePath('events')" class="c-index__read-more-news" with-arrow>
@@ -21,10 +37,7 @@
       </st-link-action>
     </section>
 
-    <section class="l-main-content-section c-index__competitions">
-      <h2 class="t-headline-1">{{ $t('competitions.title') }}</h2>
-      <p>TODO: Prochains matchs et derniers résultats</p>
-    </section>
+    <st-upcoming-matches />
 
     <section class="l-main-content-section">
       <h2 class="t-headline-1">Tchoukball</h2>
@@ -55,11 +68,13 @@ import Vue from 'vue';
 import { CarouselItem } from '~/components/st-home-carousel.vue';
 import { CalendarEvent } from '~/plugins/cms-service';
 import stEventSmall from '~/components/events/st-event-small.vue';
+import stUpcomingMatches from '~/components/competitions/st-upcoming-matches.vue';
 import { FlickrPhoto } from '~/plugins/flickr';
 
 export default Vue.extend({
   components: {
     stEventSmall,
+    stUpcomingMatches,
   },
   data() {
     return {
@@ -163,10 +178,6 @@ export default Vue.extend({
   display: block;
   text-align: right;
   margin-top: var(--st-length-spacing-xs);
-}
-
-.c-index__competitions {
-  background-color: var(--st-color-main-content-alternative-background);
 }
 
 .c-index__tchoukball-nav {

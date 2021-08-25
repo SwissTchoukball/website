@@ -13,8 +13,15 @@ export default Vue.extend({
     const competition = await app.$cmsService.getNationalCompetition(route.params.competition);
     Competition.insert({ data: competition, insertOrUpdate: ['competition-editions'] });
 
+    if (!competition.editions) {
+      throw new Error('Competition has no editions');
+    }
     // FIXME: This is a naive selection of the last edition. It might not work, i.e. when adding older editions.
     const lastEdition = competition.editions[competition.editions.length - 1];
+
+    if (typeof lastEdition.season === 'number') {
+      throw new TypeError('Season of last edition is not populated');
+    }
 
     // TODO: Also retrieve the phase data to directly redirect at the correct page
     //       instead of doing redirect over redirect.

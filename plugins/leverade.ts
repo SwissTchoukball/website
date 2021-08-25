@@ -32,6 +32,11 @@ export interface LeveradeTournament extends LeveradeEntity {
     name: string;
     gender: string;
   };
+  relationships: {
+    season: {
+      data: LeveradeBaseEntity;
+    };
+  };
   // There is more. Only the base and what we need is specified here.
 }
 
@@ -129,6 +134,12 @@ interface Leverade {
     >
   >;
   getStandings: (groupId: number | string) => Promise<any>;
+  getUpcomingMatches: () => Promise<
+    LeveradeResponse<
+      LeveradeMatch[],
+      LeveradeRound | LeveradeGroup | LeveradeTournament | LeveradeTeam | LeveradeFacility
+    >
+  >;
 }
 
 const leveradePlugin: Plugin = ({ $config, $axios }, inject) => {
@@ -142,9 +153,16 @@ const leveradePlugin: Plugin = ({ $config, $axios }, inject) => {
     return $axios.get(`${$config.leveradeURL}/groups/${groupId}/standings`);
   };
 
+  const getUpcomingMatches: Leverade['getUpcomingMatches'] = () => {
+    return $axios.get(
+      `${$config.leveradeURL}/matches?filter=!datetime:null,round.group.tournament.season.id:4818&sort=datetime&include=round.group.tournament,teams,facility`
+    );
+  };
+
   inject('leverade', {
     getFullTournament,
     getStandings,
+    getUpcomingMatches,
   });
 };
 

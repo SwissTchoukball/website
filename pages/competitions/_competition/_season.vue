@@ -27,8 +27,9 @@
 
 <script lang="ts">
 import Vue from 'vue';
+import { Store } from 'vuex';
 import { Item } from '@vuex-orm/core';
-import { MenuItem, Season } from '~/store/state';
+import { MenuItem, RootState } from '~/store/state';
 import CompetitionEdition from '~/models/competition-edition.model';
 import Phase from '~/models/phase.model';
 
@@ -49,13 +50,9 @@ export default Vue.extend({
     // We consider that if we have a competition in store and it has a gender (piece of data coming from Leverade),
     // then we have all the necessary related data.
     if (
-      !CompetitionEdition.query()
-        .where('gender', (gender: string) => !!gender)
-        .where('season', (season: Season) => season.slug === this.$route.params.season)
-        .whereHas('competition', (query) => {
-          query.where('slug', this.$route.params.competition);
-        })
-        .exists()
+      !(this.$store as Store<RootState>).state.fullyLoadedCompetitionEditions.find(
+        (entry) => entry.season === this.$route.params.season && entry.competition === this.$route.params.competition
+      )
     ) {
       await this.$store.dispatch('loadCompetitionEdition', {
         seasonSlug: this.$route.params.season,
@@ -94,7 +91,9 @@ export default Vue.extend({
         .with('competitions', (query) => {
           query.where('slug', this.$route.params.competition);
         })
-        .where('season', (season: Season) => season.slug === this.$route.params.season)
+        .with('season', (query) => {
+          query.where('slug', this.$route.params.season);
+        })
         .first();
     },
     phasesNavigation(): MenuItem[] {
