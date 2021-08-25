@@ -5,7 +5,6 @@ import { DirectusNewsCategory } from '~/plugins/directus';
 import { NewsEntry } from '~/components/news/st-news';
 import { NationalTeam, NationalTeamResult } from '~/components/national-teams/st-national-teams.prop';
 import { Season } from '~/store/state';
-import { NationalCompetition, NationalCompetitionEdition } from '~/components/competitions/competitions';
 
 export interface Venue {
   name: string;
@@ -27,6 +26,20 @@ export interface CalendarEvent {
   };
   url?: string;
   category: number;
+}
+
+interface NationalCompetitionEdition {
+  directus_id: number;
+  season: Season;
+  competition: number;
+  leverade_id?: number;
+}
+
+interface NationalCompetition {
+  id: number;
+  name: string;
+  slug: string;
+  editions: NationalCompetitionEdition[];
 }
 
 export interface CMSService {
@@ -614,6 +627,7 @@ const cmsService: Plugin = (context, inject) => {
         ],
       } as any, // Workaround until the _or is properly recognised. See https://github.com/directus/directus/issues/7475
       fields: [
+        'id',
         'name',
         'slug',
         'translations.name',
@@ -634,7 +648,7 @@ const cmsService: Plugin = (context, inject) => {
 
     const rawCompetition = response.data[0];
 
-    if (!rawCompetition) {
+    if (!rawCompetition || !rawCompetition.id) {
       throw new Error('No competition found');
     }
 
@@ -646,6 +660,7 @@ const cmsService: Plugin = (context, inject) => {
 
     // Fallback for mandatory fields should not happen as we requested those fields
     return {
+      id: rawCompetition.id,
       name: translatedFields?.name || rawCompetition.name || 'No name',
       slug: translatedFields?.slug || rawCompetition.slug || 'unknown',
       editions: (rawCompetition.editions as any) || [],
@@ -706,7 +721,7 @@ const cmsService: Plugin = (context, inject) => {
 
     // Fallback for mandatory fields should not happen as we requested those fields
     return {
-      id: rawCompetitionEdition.id,
+      directus_id: rawCompetitionEdition.id,
       season: {
         id: rawCompetitionEdition.season.id,
         name: rawCompetitionEdition.season.name,

@@ -2,30 +2,35 @@
   <div>
     <template v-if="futureMatches.length > 0">
       <ul v-for="match of futureMatches" :key="match.id" class="u-unstyled-list">
-        <li v-if="match.home_team && match.away_team" class="c-planning__match">
-          <st-event-date :start-date="match.datetime" always-one-line />
-          <div v-if="showMatchRound(match)" class="c-planning__match-round">{{ match.round.name }}</div>
-          <h4 class="c-planning__match-name">
-            <div class="c-planning__match-team c-planning__match-team--home">
-              <img
-                :src="`https://cdn.leverade.com/thumbnails/${match.home_team.avatarKey}.200x200.jpg`"
-                class="c-planning__match-team-avatar"
-              />
-              {{ match.home_team.name }}
+        <li v-if="match.home_team && match.away_team">
+          <nuxt-link
+            class="c-planning__match"
+            :to="localePath({ name: 'competitions-competition-season-match-matchId', params: { matchId: match.id } })"
+          >
+            <st-event-date :start-date="match.parsedDate()" always-one-line />
+            <div v-if="showMatchRound(match)" class="c-planning__match-round">{{ match.round.name }}</div>
+            <h4 class="c-planning__match-name">
+              <div class="c-planning__match-team c-planning__match-team--home">
+                <img
+                  :src="`https://cdn.leverade.com/thumbnails/${match.home_team.avatarKey}.200x200.jpg`"
+                  class="c-planning__match-team-avatar"
+                />
+                {{ match.home_team.name }}
+              </div>
+              <div class="c-planning__match-cross">&#9587;</div>
+              <div class="c-planning__match-team c-planning__match-team--away">
+                <img
+                  :src="`https://cdn.leverade.com/thumbnails/${match.away_team.avatarKey}.200x200.jpg`"
+                  class="c-planning__match-team-avatar"
+                />
+                {{ match.away_team.name }}
+              </div>
+            </h4>
+            <div class="c-planning__match-details">
+              <fa-icon icon="clock" class="c-planning__match-icon" /> {{ $formatDate(match.parsedDate(), 'HH:mm') }}
+              <fa-icon icon="map-marker-alt" class="c-planning__match-icon" /> {{ match.facility.name }}
             </div>
-            <div class="c-planning__match-cross">&#9587;</div>
-            <div class="c-planning__match-team c-planning__match-team--away">
-              <img
-                :src="`https://cdn.leverade.com/thumbnails/${match.away_team.avatarKey}.200x200.jpg`"
-                class="c-planning__match-team-avatar"
-              />
-              {{ match.away_team.name }}
-            </div>
-          </h4>
-          <div class="c-planning__match-details">
-            <fa-icon icon="clock" class="c-planning__match-icon" /> {{ $formatDate(match.datetime, 'HH:mm') }}
-            <fa-icon icon="map-marker-alt" class="c-planning__match-icon" /> {{ match.facility.name }}
-          </div>
+          </nuxt-link>
         </li>
       </ul>
     </template>
@@ -66,12 +71,6 @@ export default Vue.extend({
         .where('datetime', (datetime: string) => datetime >= this.$formatDate(new Date(), 'yyyy-MM-dd'))
         .get();
 
-      matches.forEach((match) => {
-        if (match.datetime) {
-          match.datetime = new Date(match.datetime);
-        }
-      });
-
       return matches;
     },
   },
@@ -92,6 +91,8 @@ export default Vue.extend({
   position: relative;
   margin-top: var(--st-length-spacing-s);
   width: 100%;
+  color: inherit;
+  text-decoration: none;
 }
 
 .c-planning__match-main {

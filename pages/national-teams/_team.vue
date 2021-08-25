@@ -1,7 +1,7 @@
 <template>
   <section class="l-main-content-section">
-    <st-loader v-if="$fetchState.pending" main />
-    <p v-else-if="$fetchState.error">{{ $t('error.otherError') }}</p>
+    <st-loader v-if="$fetchState.pending" :main="true" />
+    <p v-else-if="$fetchState.error">{{ $t('error.otherError') }} : {{ $fetchState.error.message }}</p>
     <template v-else>
       <h2 class="t-headline-1">{{ team.name }}</h2>
       <st-navigation

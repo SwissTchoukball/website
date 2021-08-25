@@ -1,7 +1,13 @@
 import { ActionTree } from 'vuex/types/index';
 import { PartialItem } from '@directus/sdk';
+import { isPast, parse } from 'date-fns';
 import { EventCategories, MenuItem, PlayerPositions, RootState } from './state';
 import { DirectusMenuItem } from '~/plugins/directus';
+import CompetitionEdition from '~/models/competition-edition.model';
+import Round from '~/models/round.model';
+import Match from '~/models/match.model';
+import Facility from '~/models/facility.model';
+import { LeveradeFacility, LeveradeGroup, LeveradeMatch, LeveradeRound, LeveradeTeam } from '~/plugins/leverade';
 
 export default {
   async nuxtServerInit({ dispatch }) {
@@ -137,5 +143,129 @@ export default {
     }, {} as PlayerPositions);
 
     commit('setPlayerPositions', positions);
+  },
+
+  async loadCompetitionEdition(
+    _context,
+    { seasonSlug, competitionSlug }: { seasonSlug: string; competitionSlug: string }
+  ) {
+    const competitionEdition = await this.$cmsService.getNationalCompetitionEdition(competitionSlug, seasonSlug);
+    if (!competitionEdition.leverade_id) {
+      throw new Error('This competition edition has no Leverade ID');
+    }
+
+    const tournamentResponse = await this.$leverade.getFullTournament(competitionEdition.leverade_id);
+    const tournament = tournamentResponse.data.data;
+
+    if (tournamentResponse.data.included) {
+      const teams: LeveradeTeam[] = [];
+      const groups: LeveradeGroup[] = [];
+      const rounds: LeveradeRound[] = [];
+      const matches: LeveradeMatch[] = [];
+      const facilities: LeveradeFacility[] = [];
+      tournamentResponse.data.included.forEach((entity) => {
+        switch (entity.type) {
+          case 'team':
+            teams.push(entity);
+            break;
+          case 'group':
+            groups.push(entity);
+            break;
+          case 'round':
+            rounds.push(entity);
+            break;
+          case 'match':
+            matches.push(entity);
+            break;
+          case 'facility':
+            facilities.push(entity);
+            break;
+          default:
+        }
+      });
+
+      CompetitionEdition.insert({
+        data: {
+          leverade_id: tournament.id,
+          directus_id: competitionEdition.directus_id,
+          name: tournament.attributes.name,
+          gender: tournament.attributes.gender,
+          season: competitionEdition.season,
+          competition: {
+            id: competitionEdition.competition,
+            name: tournament.attributes.name,
+            slug: competitionSlug,
+          },
+          teams: teams.map((team) => {
+            const avatarKeyMatchArray = team.meta.avatar.large.match(/\/(\w+)\.[0-9]/);
+
+            return {
+              id: team.id,
+              name: team.attributes.name,
+              avatarKey: avatarKeyMatchArray && avatarKeyMatchArray?.length > 1 ? avatarKeyMatchArray[1] : null,
+            };
+          }),
+          phases: groups.map((group) => {
+            return {
+              id: group.id,
+              name: group.attributes.name,
+              type: group.attributes.type,
+              group: group.attributes.group,
+            };
+          }),
+        },
+      });
+
+      Round.insert({
+        data: rounds.map((round) => {
+          return {
+            id: round.id,
+            name: round.attributes.name,
+            start_date: round.attributes.start_date,
+            end_date: round.attributes.end_date,
+            order: round.attributes.order,
+            phase_id: round.relationships.group.data.id,
+          };
+        }),
+      });
+
+      Match.insert({
+        data: matches.map((match) => {
+          // TODO: Remove when we'll get an actual score
+          let home_team_score: number | null = null;
+          let away_team_score: number | null = null;
+          const matchDate = parse(match.attributes.datetime, 'yyyy-MM-dd HH:mm:ss', new Date());
+          if (isPast(matchDate)) {
+            home_team_score = Math.floor(Math.random() * 100);
+            away_team_score = Math.floor(Math.random() * 100);
+          }
+
+          return {
+            id: match.id,
+            datetime: match.attributes.datetime,
+            home_team_id: match.meta.home_team,
+            home_team_score,
+            away_team_id: match.meta.away_team,
+            away_team_score,
+            round_id: match.relationships.round.data.id,
+            facility_id: match.relationships.facility.data ? match.relationships.facility.data.id : null,
+          };
+        }),
+      });
+
+      Facility.insert({
+        data: facilities.map((facility) => {
+          return {
+            id: facility.id,
+            name: facility.attributes.name,
+            latitude: facility.attributes.latitude,
+            longitude: facility.attributes.longitude,
+            address: facility.attributes.address,
+            postal_code: facility.attributes.postal_code,
+            city: facility.attributes.city,
+          };
+        }),
+      });
+    }
   },
 } as ActionTree<RootState, RootState>;

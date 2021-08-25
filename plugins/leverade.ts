@@ -120,8 +120,6 @@ export interface LeveradeFacility extends LeveradeEntity {
 }
 
 interface Leverade {
-  // getTournaments: (seasonId: number | string) => Promise<any>;
-  getTournament: (tournamentId: number | string) => Promise<LeveradeResponse<LeveradeTournament>>;
   getFullTournament: (
     tournamentId: number | string
   ) => Promise<
@@ -130,26 +128,14 @@ interface Leverade {
       LeveradeGroup | LeveradeMatch | LeveradeRound | LeveradeTeam | LeveradeFacility
     >
   >;
-  getGroups: (tournamentId: number | string) => Promise<LeveradeResponse<LeveradeGroup[]>>;
   getStandings: (groupId: number | string) => Promise<any>;
 }
 
 const leveradePlugin: Plugin = ({ $config, $axios }, inject) => {
-  // const getTournaments: Leverade['getTournaments'] = (seasonId) => {
-  //   return $axios.get(`${$config.leveradeURL}/tournaments/?filter=season.id:${seasonId}`);
-  // };
-  const getTournament: Leverade['getTournament'] = (tournamentId) => {
-    return $axios.get(`${$config.leveradeURL}/tournaments/${tournamentId}`);
-  };
-
   const getFullTournament: Leverade['getFullTournament'] = (tournamentId) => {
     return $axios.get(
       `${$config.leveradeURL}/tournaments/${tournamentId}?include=groups,groups.rounds,groups.rounds.matches,groups.rounds.matches.facility,teams`
     );
-  };
-
-  const getGroups: Leverade['getGroups'] = (tournamentId) => {
-    return $axios.get(`${$config.leveradeURL}/groups?filter=tournament.id:${tournamentId}`);
   };
 
   const getStandings: Leverade['getStandings'] = (groupId) => {
@@ -157,10 +143,7 @@ const leveradePlugin: Plugin = ({ $config, $axios }, inject) => {
   };
 
   inject('leverade', {
-    // getTournaments,
-    getTournament,
     getFullTournament,
-    getGroups,
     getStandings,
   });
 };

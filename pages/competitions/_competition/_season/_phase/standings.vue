@@ -1,7 +1,7 @@
 <template>
   <div>
-    <st-loader v-if="$fetchState.pending" main />
-    <p v-else-if="$fetchState.error">{{ $t('error.otherError') }}</p>
+    <st-loader v-if="$fetchState.pending" :main="true" />
+    <p v-else-if="$fetchState.error">{{ $t('error.otherError') }} : {{ $fetchState.error.message }}</p>
     <div v-else class="c-standings__table-container">
       <table class="c-standings__table">
         <tr>

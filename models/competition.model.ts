@@ -7,14 +7,14 @@ export default class Competition extends Model {
   id!: string;
   name!: string;
   slug!: string;
-  competition_editions!: CompetitionEdition[];
+  editions!: CompetitionEdition[];
 
   static fields() {
     return {
       id: this.string(null),
       name: this.string(null),
       slug: this.string(null),
-      competition_editions: this.hasMany(CompetitionEdition, 'competition_edition_id'),
+      editions: this.hasMany(CompetitionEdition, 'competition_edition_id'),
     };
   }
 }

@@ -1,8 +1,8 @@
 <template>
   <section class="l-main-content-section">
     <h2 class="t-headline-1">News</h2>
-    <st-loader v-if="$fetchState.pending" main />
-    <p v-else-if="$fetchState.error">{{ $t('error.otherError') }}</p>
+    <st-loader v-if="$fetchState.pending" :main="true" />
+    <p v-else-if="$fetchState.error">{{ $t('error.otherError') }} : {{ $fetchState.error.message }}</p>
     <template v-else>
       <p v-if="filteredCategoryName" class="c-news__category-filter-info">
         {{ $t('news.categoryFilterInfo', { categoryName: filteredCategoryName }) }}

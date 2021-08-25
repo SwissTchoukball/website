@@ -1,4 +1,5 @@
 import { Model } from '@vuex-orm/core';
+import { parse } from 'date-fns';
 import Round from '~/models/round.model';
 import Team from '~/models/team.model';
 import Facility from '~/models/facility.model';
@@ -7,7 +8,7 @@ export default class Match extends Model {
   static entity = 'matches';
 
   id!: string;
-  datetime!: string | Date | null;
+  datetime!: string | null;
   round_id!: string;
   round!: Round;
   home_team_id!: string;
@@ -34,5 +35,14 @@ export default class Match extends Model {
       facility_id: this.string(null).nullable(),
       facility: this.belongsTo(Facility, 'facility_id'),
     };
+  }
+
+  parsedDate() {
+    if (this.datetime) {
+      const parsedDate = parse(this.datetime, 'yyyy-MM-dd HH:mm:ss', new Date());
+      return parsedDate || null;
+    } else {
+      return null;
+    }
   }
 }

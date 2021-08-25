@@ -10,6 +10,7 @@ export default class Phase extends Model {
   name!: string;
   type!: LeveradeGroupType;
   group!: string;
+  competition_edition!: CompetitionEdition;
   rounds!: Round[];
 
   static fields() {

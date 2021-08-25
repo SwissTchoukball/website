@@ -190,7 +190,7 @@ export default Vue.extend({
 .c-navigation__sub-items {
   background-color: var(--st-color-wide-navigation-sub-items-background);
   backdrop-filter: blur(5px); /* Does not work yet on Firefox, but that's okay as it's only nice to have */
-  box-shadow: rgba(100, 100, 111, 0.2) 0 7px 29px 0;
+  box-shadow: var(--st-shadow-navigation);
   border-radius: 5px;
   position: absolute;
   top: 2.5rem;

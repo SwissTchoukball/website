@@ -11,8 +11,8 @@
         <fa-icon icon="angle-right" />
       </nuxt-link>
     </nav>
-    <st-loader v-if="$fetchState.pending" main />
-    <p v-else-if="$fetchState.error">{{ $t('error.otherError') }}</p>
+    <st-loader v-if="$fetchState.pending" :main="true" />
+    <p v-else-if="$fetchState.error">{{ $t('error.otherError') }} : {{ $fetchState.error.message }}</p>
     <template v-else-if="events.length">
       <st-link-action v-if="showUpcoming" :to="thisMonthLink" class="c-events__past-events-link">
         {{ $t('events.showPastEvents', { month: monthName }) }}

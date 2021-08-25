@@ -100,6 +100,7 @@
   --st-color-phase-select-background-hover: var(--st-color-grey-very-light);
   --st-color-match-score: var(--st-color-red-swiss-tchoukball);
   --st-color-match-results-separator: var(--st-color-grey-light);
+  --st-color-match-phase-round: var(--st-color-red-swiss-tchoukball);
 
   /* LENGTHS */
   --st-length-main-content-max-width: 100%;
@@ -114,6 +115,9 @@
 
   /* Breakpoints */
   --st-breakpoing-l-xl: 1905px;
+
+  /* Shadows */
+  --st-shadow-navigation: rgba(100, 100, 111, 0.2) 0 7px 29px 0;
 }
 
 @media (--md-and-up) {

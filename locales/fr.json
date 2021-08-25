@@ -116,5 +116,9 @@
       "rank": "{rank}e place",
       "nationsCup": "Coupe des nations"
     }
+  },
+  "venue": {
+    "map": "carte",
+    "openInMaps": "Voir dans Maps"
   }
 }

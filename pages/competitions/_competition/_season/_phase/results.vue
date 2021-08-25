@@ -7,30 +7,40 @@
           <h3 v-if="roundsUpToNow.length > 1" class="t-headline-2 c-results__round-name">{{ round.name }}</h3>
           <ul class="u-unstyled-list">
             <template v-for="match of round.matches">
-              <li v-if="match.home_team && match.away_team" :key="match.id" class="c-results__match">
-                <div
-                  class="c-results__match-team c-results__match-team--home"
-                  :class="{ 'c-results__match-team--winner': hasHomeTeamWon(match) }"
+              <li v-if="match.home_team && match.away_team" :key="match.id">
+                <nuxt-link
+                  class="c-results__match"
+                  :to="
+                    localePath({
+                      name: 'competitions-competition-season-match-matchId',
+                      params: { matchId: match.id },
+                    })
+                  "
                 >
-                  <img
-                    :src="`https://cdn.leverade.com/thumbnails/${match.home_team.avatarKey}.200x200.jpg`"
-                    class="c-results__match-team-avatar"
-                  />
-                  <div class="c-results__match-team-name">{{ match.home_team.name }}</div>
-                  <div class="c-results__match-score">{{ match.home_team_score }}</div>
-                </div>
-                <div class="c-results__match-score-separator">-</div>
-                <div
-                  class="c-results__match-team c-results__match-team--away"
-                  :class="{ 'c-results__match-team--winner': hasAwayTeamWon(match) }"
-                >
-                  <img
-                    :src="`https://cdn.leverade.com/thumbnails/${match.away_team.avatarKey}.200x200.jpg`"
-                    class="c-results__match-team-avatar"
-                  />
-                  <div class="c-results__match-team-name">{{ match.away_team.name }}</div>
-                  <div class="c-results__match-score">{{ match.away_team_score }}</div>
-                </div>
+                  <div
+                    class="c-results__match-team c-results__match-team--home"
+                    :class="{ 'c-results__match-team--winner': hasHomeTeamWon(match) }"
+                  >
+                    <img
+                      :src="`https://cdn.leverade.com/thumbnails/${match.home_team.avatarKey}.200x200.jpg`"
+                      class="c-results__match-team-avatar"
+                    />
+                    <div class="c-results__match-team-name">{{ match.home_team.name }}</div>
+                    <div class="c-results__match-score">{{ match.home_team_score }}</div>
+                  </div>
+                  <div class="c-results__match-score-separator">-</div>
+                  <div
+                    class="c-results__match-team c-results__match-team--away"
+                    :class="{ 'c-results__match-team--winner': hasAwayTeamWon(match) }"
+                  >
+                    <img
+                      :src="`https://cdn.leverade.com/thumbnails/${match.away_team.avatarKey}.200x200.jpg`"
+                      class="c-results__match-team-avatar"
+                    />
+                    <div class="c-results__match-team-name">{{ match.away_team.name }}</div>
+                    <div class="c-results__match-score">{{ match.away_team_score }}</div>
+                  </div>
+                </nuxt-link>
               </li>
             </template>
           </ul>
@@ -96,6 +106,12 @@ export default Vue.extend({
   width: 100%;
   padding: var(--st-length-spacing-xs) 0;
   border-bottom: 1px solid var(--st-color-match-results-separator);
+  color: inherit;
+  text-decoration: none;
+}
+
+li:last-of-type .c-results__match {
+  border-bottom: none;
 }
 
 .c-results__match-team {

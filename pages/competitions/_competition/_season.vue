@@ -1,12 +1,17 @@
 <template>
   <section class="l-main-content-section">
-    <st-loader v-if="$fetchState.pending" main />
-    <p v-else-if="$fetchState.error">{{ $t('error.otherError') }}</p>
+    <st-loader v-if="$fetchState.pending" :main="true" />
+    <p v-else-if="$fetchState.error">{{ $t('error.otherError') }} : {{ $fetchState.error.message }}</p>
     <template v-else>
-      <p class="c-competition-edition__season">{{ seasonName }}</p>
-      <h2 class="t-headline-1 c-competition-edition__title">{{ competitionEdition.name }}</h2>
+      <p class="c-competition-edition__season">{{ competitionEdition.season.name }}</p>
+      <h2 class="t-headline-1 c-competition-edition__title">
+        <nuxt-link :to="lastPhasePath">
+          {{ competitionEdition.name }}
+        </nuxt-link>
+      </h2>
       <st-select-navigation
-        :name="$t('otherNavigation', { name: `${competitionEdition.name}, ${seasonName}` })"
+        v-if="currentPhase"
+        :name="$t('otherNavigation', { name: `${competitionEdition.name}, ${competitionEdition.season.name}` })"
         :options="phasesNavigation"
         class="c-competition-edition__phase-navigation"
       >
@@ -22,13 +27,10 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import { LeveradeFacility, LeveradeGroup, LeveradeMatch, LeveradeRound, LeveradeTeam } from '~/plugins/leverade';
-import { MenuItem } from '~/store/state';
+import { Item } from '@vuex-orm/core';
+import { MenuItem, Season } from '~/store/state';
 import CompetitionEdition from '~/models/competition-edition.model';
-import Round from '~/models/round.model';
-import Match from '~/models/match.model';
 import Phase from '~/models/phase.model';
-import Facility from '~/models/facility.model';
 
 export default Vue.extend({
   nuxtI18n: {
@@ -39,128 +41,32 @@ export default Vue.extend({
   },
   data() {
     return {
-      seasonName: '',
+      lastPhasePath: undefined as string | undefined,
     };
   },
   async fetch() {
-    const competitionEdition = await this.$cmsService.getNationalCompetitionEdition(
-      this.$route.params.competition,
-      this.$route.params.season
-    );
-    if (!competitionEdition.leverade_id) {
-      throw new Error('This competition edition has no Leverade ID');
+    // We load all the competition data from Leverade only if we don't have it already.
+    // We consider that if we have a competition in store and it has a gender (piece of data coming from Leverade),
+    // then we have all the necessary related data.
+    if (
+      !CompetitionEdition.query()
+        .where('gender', (gender: string) => !!gender)
+        .where('season', (season: Season) => season.slug === this.$route.params.season)
+        .whereHas('competition', (query) => {
+          query.where('slug', this.$route.params.competition);
+        })
+        .exists()
+    ) {
+      await this.$store.dispatch('loadCompetitionEdition', {
+        seasonSlug: this.$route.params.season,
+        competitionSlug: this.$route.params.competition,
+      });
+      // TODO: Load all other editions as well (just the edition, not it relations),
+      // so that we can navigate through different editions
     }
 
-    this.seasonName = competitionEdition.season.name;
-
-    const tournamentResponse = await this.$leverade.getFullTournament(competitionEdition.leverade_id);
-    const tournament = tournamentResponse.data.data;
-
-    if (tournamentResponse.data.included) {
-      const teams: LeveradeTeam[] = [];
-      const groups: LeveradeGroup[] = [];
-      const rounds: LeveradeRound[] = [];
-      const matches: LeveradeMatch[] = [];
-      const facilities: LeveradeFacility[] = [];
-      tournamentResponse.data.included.forEach((entity) => {
-        switch (entity.type) {
-          case 'team':
-            teams.push(entity);
-            break;
-          case 'group':
-            groups.push(entity);
-            break;
-          case 'round':
-            rounds.push(entity);
-            break;
-          case 'match':
-            matches.push(entity);
-            break;
-          case 'facility':
-            facilities.push(entity);
-            break;
-          default:
-        }
-      });
-
-      CompetitionEdition.insert({
-        data: {
-          id: tournament.id,
-          name: tournament.attributes.name,
-          gender: tournament.attributes.gender,
-          season: this.$route.params.season,
-          competition: {
-            name: tournament.attributes.name,
-            slug: this.$route.params.competition,
-          },
-          teams: teams.map((team) => {
-            const avatarKeyMatchArray = team.meta.avatar.large.match(/\/(\w+)\.[0-9]/);
-
-            return {
-              id: team.id,
-              name: team.attributes.name,
-              avatarKey: avatarKeyMatchArray && avatarKeyMatchArray?.length > 1 ? avatarKeyMatchArray[1] : null,
-              // competition_edition_id: team.relationships.registrable.data.id,
-            };
-          }),
-          phases: groups.map((group) => {
-            return {
-              id: group.id,
-              name: group.attributes.name,
-              type: group.attributes.type,
-              group: group.attributes.group,
-              // competition_edition_id: group.relationships.tournament.data.id,
-            };
-          }),
-        },
-      });
-
-      Round.insert({
-        data: rounds.map((round) => {
-          return {
-            id: round.id,
-            name: round.attributes.name,
-            start_date: round.attributes.start_date,
-            end_date: round.attributes.end_date,
-            order: round.attributes.order,
-            phase_id: round.relationships.group.data.id,
-          };
-        }),
-      });
-
-      Match.insert({
-        data: matches.map((match) => {
-          return {
-            id: match.id,
-            datetime: match.attributes.datetime,
-            home_team_id: match.meta.home_team,
-            home_team_score: Math.floor(Math.random() * 100), // TODO: replace with actual score
-            away_team_id: match.meta.away_team,
-            away_team_score: Math.floor(Math.random() * 100), // TODO: replace with actual score
-            round_id: match.relationships.round.data.id,
-            facility_id: match.relationships.facility.data ? match.relationships.facility.data.id : null,
-          };
-        }),
-      });
-
-      Facility.insert({
-        data: facilities.map((facility) => {
-          return {
-            id: facility.id,
-            name: facility.attributes.name,
-            latitude: facility.attributes.latitude,
-            longitude: facility.attributes.longitude,
-            address: facility.attributes.address,
-            postal_code: facility.attributes.postal_code,
-            city: facility.attributes.city,
-          };
-        }),
-      });
-    }
-
-    // If no phase is selected, we redirect to the last one
-    if (!this.$route.params.phase && this.competitionEdition) {
-      const lastPhasePath = this.localePath({
+    if (this.competitionEdition) {
+      this.lastPhasePath = this.localePath({
         name: 'competitions-competition-season-phase',
         params: {
           competition: this.$route.params.competition,
@@ -168,15 +74,19 @@ export default Vue.extend({
           phase: this.competitionEdition.phases[this.competitionEdition.phases.length - 1].id,
         },
       });
-      if (process.server) {
-        this.$nuxt.context.redirect(lastPhasePath);
-      } else if (process.client) {
-        this.$router.replace(lastPhasePath);
+
+      // If no phase or match is set, redirect to the last phase
+      if (!this.$route.params.matchId && !this.$route.params.phase) {
+        if (process.server) {
+          this.$nuxt.context.redirect(this.lastPhasePath);
+        } else if (process.client) {
+          this.$router.replace(this.lastPhasePath);
+        }
       }
     }
   },
   computed: {
-    competitionEdition() {
+    competitionEdition(): Item<CompetitionEdition> {
       return CompetitionEdition.query()
         .with('phases')
         .with('phases.rounds', (query) => query.orderBy('order'))
@@ -184,7 +94,7 @@ export default Vue.extend({
         .with('competitions', (query) => {
           query.where('slug', this.$route.params.competition);
         })
-        .where('season', this.$route.params.season)
+        .where('season', (season: Season) => season.slug === this.$route.params.season)
         .first();
     },
     phasesNavigation(): MenuItem[] {
@@ -210,6 +120,10 @@ export default Vue.extend({
       return phase;
     },
   },
+  watch: {
+    '$route.params.competition': '$fetch',
+    '$route.params.season': '$fetch',
+  },
 });
 </script>
 
@@ -222,6 +136,10 @@ export default Vue.extend({
 
 .c-competition-edition__title {
   padding-top: var(--st-length-spacing-xs);
+}
+
+.c-competition-edition__title a {
+  color: inherit;
 }
 
 .c-competition-edition__phase-navigation {
