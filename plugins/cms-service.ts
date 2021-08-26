@@ -1,7 +1,7 @@
 import { Plugin } from '@nuxt/types';
 import { PartialItem } from '@directus/sdk';
 import { set } from 'date-fns';
-import { DirectusNewsCategory, DirectusSeason } from '~/plugins/directus';
+import { DirectusNewsDomainPivot, DirectusSeason } from '~/plugins/directus';
 import { NewsEntry } from '~/components/news/st-news';
 import { NationalTeam, NationalTeamResult } from '~/components/national-teams/st-national-teams.prop';
 
@@ -46,9 +46,9 @@ export interface CMSService {
   getNews: (options: {
     limit: number;
     page: number;
-    categoryId?: number;
+    domainId?: number;
     withImageOnly?: boolean;
-  }) => Promise<{ data: NewsEntry[]; meta: { total: number; filteredCategoryName?: string } }>;
+  }) => Promise<{ data: NewsEntry[]; meta: { total: number; filteredDomainName?: string } }>;
   getOneNews: (newsId: number) => Promise<NewsEntry>;
   getEvents: (options: {
     limit: number;
@@ -56,7 +56,7 @@ export interface CMSService {
     typeId?: number;
     month?: string;
     upcoming?: boolean;
-  }) => Promise<{ data: CalendarEvent[]; meta: { total: number; filteredCategoryName?: string } }>;
+  }) => Promise<{ data: CalendarEvent[]; meta: { total: number; filteredDomainName?: string } }>;
   getTeam: (teamSlug: string) => Promise<NationalTeam>;
   getSeasons: () => Promise<DirectusSeason[]>;
   getNationalCompetition: (competitionSlug: string) => Promise<NationalCompetition>;
@@ -119,7 +119,7 @@ const cmsService: Plugin = (context, inject) => {
     return flattenDataEntry;
   };
 
-  const getNews: CMSService['getNews'] = async ({ limit, page, categoryId, withImageOnly }) => {
+  const getNews: CMSService['getNews'] = async ({ limit, page, domainId, withImageOnly }) => {
     // We retrieve all the languages and show news in fallback locale if not available in current locale
     const currentLocale = context.i18n.locale;
     const defaultLocale = context.i18n.defaultLocale;
@@ -131,10 +131,10 @@ const cmsService: Plugin = (context, inject) => {
       },
     };
 
-    let categoryFilter: any;
-    if (categoryId) {
-      categoryFilter = {
-        categories: { id: { _eq: categoryId } },
+    let domaniFilter: any;
+    if (domainId) {
+      domaniFilter = {
+        domains: { id: { _eq: domainId } },
       };
     }
 
@@ -144,8 +144,8 @@ const cmsService: Plugin = (context, inject) => {
     }
 
     const filter: any = { _and: [publishedFilter] };
-    if (categoryFilter) {
-      filter._and.push(categoryFilter);
+    if (domaniFilter) {
+      filter._and.push(domaniFilter);
     }
     if (imageFilter) {
       filter._and.push(imageFilter);
@@ -163,13 +163,13 @@ const cmsService: Plugin = (context, inject) => {
         'translations.languages_code',
         'translations.slug',
         'translations.title',
-        'categories.id',
-        'categories.news_categories_id.translations.slug',
-        'categories.news_categories_id.translations.name',
+        'domains.id',
+        'domains.domains_id.name',
+        'domains.domains_id.translations.name',
       ],
       deep: {
         // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
-        categories: { news_categories_id: { translations: { _filter: { languages_code: { _eq: currentLocale } } } } },
+        domains: { domains_id: { translations: { _filter: { languages_code: { _eq: currentLocale } } } } },
       },
     });
 
@@ -184,7 +184,8 @@ const cmsService: Plugin = (context, inject) => {
     }
 
     newsList = newsResponse.data.reduce((news, directusNewsEntry) => {
-      let singleLanguageNewsEntry: (Omit<NewsEntry, 'categories'> & { categories: DirectusNewsCategory[] }) | undefined;
+      console.log(directusNewsEntry.domains);
+      let singleLanguageNewsEntry: (Omit<NewsEntry, 'domains'> & { domains: DirectusNewsDomainPivot[] }) | undefined;
       if (directusNewsEntry && directusNewsEntry.translations?.length) {
         try {
           singleLanguageNewsEntry = flattenForLanguage(directusNewsEntry, currentLocale);
@@ -205,13 +206,21 @@ const cmsService: Plugin = (context, inject) => {
           return news;
         }
 
-        // For categories, we expect them to be all translated, so we don't fallback to default locale.
+        // For domains, we expect them to be all translated, so we don't fallback to default locale.
         const newsEntry: NewsEntry = {
           ...singleLanguageNewsEntry,
-          categories: singleLanguageNewsEntry.categories.map((category) => ({
-            id: category.id,
-            ...category.news_categories_id.translations[0],
-          })),
+          domains: singleLanguageNewsEntry.domains.map((domain) => {
+            // Because we requested data for a specific language, `translations` contain only the language we need
+            let translatedFields;
+            if (domain.domains_id.translations && domain.domains_id.translations[0]) {
+              translatedFields = domain.domains_id.translations[0];
+            }
+
+            return {
+              id: domain.id,
+              name: translatedFields?.name || domain.domains_id.name,
+            } as any; /* Workaround until we have the news in the store as well */
+          }),
         };
 
         return [...news, newsEntry];
@@ -219,11 +228,11 @@ const cmsService: Plugin = (context, inject) => {
       return news;
     }, [] as NewsEntry[]);
 
-    let filteredCategoryName;
-    if (categoryId) {
-      const filteredCategory = newsList[0].categories.find((category) => category.id === categoryId);
-      if (filteredCategory) {
-        filteredCategoryName = filteredCategory.name;
+    let filteredDomainName;
+    if (domainId) {
+      const filteredDomain = newsList[0].domains.find((domain) => domain.id === domainId);
+      if (filteredDomain) {
+        filteredDomainName = filteredDomain.name;
       }
     }
 
@@ -231,7 +240,7 @@ const cmsService: Plugin = (context, inject) => {
       data: newsList,
       meta: {
         total: totalNewsEntries,
-        filteredCategoryName,
+        filteredDomainName,
       },
     };
   };
@@ -250,13 +259,13 @@ const cmsService: Plugin = (context, inject) => {
         'translations.slug',
         'translations.title',
         'translations.body',
-        'categories.id',
-        'categories.news_categories_id.translations.slug',
-        'categories.news_categories_id.translations.name',
+        'domains.id',
+        'domains.domains_id.name',
+        'domains.domains_id.translations.name',
       ],
       deep: {
         // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
-        categories: { news_categories_id: { translations: { _filter: { languages_code: { _eq: currentLocale } } } } },
+        domains: { domains_id: { translations: { _filter: { languages_code: { _eq: currentLocale } } } } },
       },
     });
 
@@ -268,7 +277,7 @@ const cmsService: Plugin = (context, inject) => {
       throw new Error('News has no translations');
     }
 
-    let singleLanguageNewsEntry: (Omit<NewsEntry, 'categories'> & { categories: DirectusNewsCategory[] }) | undefined;
+    let singleLanguageNewsEntry: (Omit<NewsEntry, 'domains'> & { domains: DirectusNewsDomainPivot[] }) | undefined;
     try {
       singleLanguageNewsEntry = flattenForLanguage(newsEntryResponse, currentLocale);
     } catch (error) {
@@ -285,13 +294,21 @@ const cmsService: Plugin = (context, inject) => {
       throw new Error('Unexpected error when processing news entry');
     }
 
-    // For categories, we expect them to be all translated, so we don't fallback to default locale.
+    // For domains, we expect them to be all translated, so we don't fallback to default locale.
     return {
       ...singleLanguageNewsEntry,
-      categories: singleLanguageNewsEntry.categories.map((category) => ({
-        id: category.id,
-        ...category.news_categories_id.translations[0],
-      })),
+      domains: singleLanguageNewsEntry.domains.map((domain) => {
+        // Because we requested data for a specific language, `translations` contain only the language we need
+        let translatedFields;
+        if (domain.domains_id.translations && domain.domains_id.translations[0]) {
+          translatedFields = domain.domains_id.translations[0];
+        }
+
+        return {
+          id: domain.id,
+          name: translatedFields?.name || domain.domains_id.name,
+        } as any; /* Workaround until we have the news in the store as well */
+      }),
     };
   };
 
@@ -659,6 +676,10 @@ const cmsService: Plugin = (context, inject) => {
       throw new Error('No competition found');
     }
 
+    if (!rawCompetition.name || !rawCompetition.slug) {
+      throw new Error('Competition is missing requested fields');
+    }
+
     // Because we requested data for a specific language, `translations` contain only the language we need
     let translatedFields;
     if (rawCompetition.translations && rawCompetition.translations[0]) {
@@ -668,8 +689,8 @@ const cmsService: Plugin = (context, inject) => {
     // Fallback for mandatory fields should not happen as we requested those fields
     return {
       id: rawCompetition.id,
-      name: translatedFields?.name || rawCompetition.name || 'No name',
-      slug: translatedFields?.slug || rawCompetition.slug || 'unknown',
+      name: translatedFields?.name || rawCompetition.name,
+      slug: translatedFields?.slug || rawCompetition.slug,
       editions: (rawCompetition.editions as any) || [],
     };
   };

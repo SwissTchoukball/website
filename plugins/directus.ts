@@ -21,14 +21,17 @@ export interface DirectusPage {
   }[];
 }
 
-export interface DirectusNewsCategory {
+export interface DirectusDomain {
   id: number;
-  news_categories_id: {
-    translations: {
-      name: string;
-      slug: string;
-    }[];
-  };
+  name: string;
+  translations: {
+    name: string;
+  }[];
+}
+
+export interface DirectusNewsDomainPivot {
+  id: number;
+  domains_id: DirectusDomain;
 }
 
 export interface DirectusNews {
@@ -45,7 +48,7 @@ export interface DirectusNews {
     title: string;
     body: string;
   }[];
-  categories: DirectusNewsCategory[];
+  domains: DirectusNewsDomainPivot[];
 }
 
 export interface DirectusVenue {

@@ -1,7 +1,4 @@
-export interface NewsCategory {
-  id: number;
-  name: string;
-}
+import Domain from '~/models/domain.model';
 
 export interface NewsEntry {
   id: number;
@@ -14,5 +11,5 @@ export interface NewsEntry {
   body: string;
   date_created: string;
   date_updated: string;
-  categories: NewsCategory[];
+  domains: Domain[];
 }

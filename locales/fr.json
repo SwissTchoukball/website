@@ -29,7 +29,7 @@
   },
   "news": {
     "readMore": "Voir toutes les news",
-    "categoryFilterInfo": "Affichage des news “{categoryName}”.",
+    "domainFilterInfo": "Affichage des news “{domainName}”.",
     "showAll": "Afficher toutes les news",
     "publishedOn": "publié le",
     "updatedOn": "mis à jour le"

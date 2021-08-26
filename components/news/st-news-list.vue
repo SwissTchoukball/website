@@ -20,7 +20,7 @@
           "
         />
       </nuxt-link>
-      <st-news-category-labels :categories="newsEntry.categories" class="c-news-list__categories" />
+      <st-domain-labels :domains="newsEntry.domains" class="c-news-list__domains" />
       <h3 class="c-news-list__title t-headline-2">
         <nuxt-link :to="getNewsLink(newsEntry)"> {{ newsEntry.title }} </nuxt-link>
       </h3>
@@ -32,13 +32,11 @@
 <script lang="ts">
 import Vue, { PropType } from 'vue';
 import { NewsEntry } from '~/components/news/st-news';
-import stNewsCategoryLabels from '~/components/news/st-news-category-labels.vue';
 import { getAssetSrcSet, getAssetURL } from '~/plugins/directus';
 
 const MAX_NEWS_PER_ROW = 4;
 
 export default Vue.extend({
-  components: { stNewsCategoryLabels },
   props: {
     news: {
       type: Array as PropType<NewsEntry[]>,
@@ -109,7 +107,7 @@ export default Vue.extend({
   object-fit: cover;
 }
 
-.c-news-list__categories {
+.c-news-list__domains {
   margin-top: var(--st-length-spacing-xs);
 }
 

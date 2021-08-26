@@ -73,8 +73,8 @@
   --st-color-person-detail-icon: var(--st-color-red-swiss-tchoukball);
 
   /* News */
-  --st-color-news-category-background: var(--st-color-red-swiss-tchoukball);
-  --st-color-news-category-foreground: white;
+  --st-color-news-domain-background: var(--st-color-red-swiss-tchoukball);
+  --st-color-news-domain-foreground: white;
   --st-color-news-image-background: var(--st-color-grey-very-light);
   --st-color-news-date-foreground: var(--st-color-grey-dark);
 

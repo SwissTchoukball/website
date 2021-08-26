@@ -1,6 +1,6 @@
 <template>
   <article class="c-news-entry">
-    <st-news-category-labels :categories="newsEntry.categories" />
+    <st-domain-labels :domains="newsEntry.domains" />
     <h2 class="c-news-entry__title t-headline-1">{{ newsEntry.title }}</h2>
     <img
       v-if="newsEntry.main_image"
@@ -20,11 +20,9 @@
 <script lang="ts">
 import Vue, { PropType } from 'vue';
 import { NewsEntry } from '~/components/news/st-news';
-import stNewsCategoryLabels from '~/components/news/st-news-category-labels.vue';
 import { getAssetURL, getAssetSrcSet } from '~/plugins/directus';
 
 export default Vue.extend({
-  components: { stNewsCategoryLabels },
   props: {
     newsEntry: {
       type: Object as PropType<NewsEntry>,

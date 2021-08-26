@@ -4,8 +4,8 @@
     <st-loader v-if="$fetchState.pending" :main="true" />
     <p v-else-if="$fetchState.error">{{ $t('error.otherError') }} : {{ $fetchState.error.message }}</p>
     <template v-else>
-      <p v-if="filteredCategoryName" class="c-news__category-filter-info">
-        {{ $t('news.categoryFilterInfo', { categoryName: filteredCategoryName }) }}
+      <p v-if="filteredDomainName" class="c-news__domain-filter-info">
+        {{ $t('news.domainFilterInfo', { domainName: filteredDomainName }) }}
         <nuxt-link :to="''">{{ $t('news.showAll') }}</nuxt-link>
       </p>
       <st-news-list class="c-news__list" :news="newsList" />
@@ -28,23 +28,23 @@ export default Vue.extend({
       newsList: [] as NewsEntry[],
       newsEntriesPerPage: 12,
       totalNewsEntries: undefined as number | undefined,
-      filteredCategoryName: undefined as string | undefined,
+      filteredDomainName: undefined as string | undefined,
     };
   },
   async fetch() {
-    let filteredCategoryId: number | undefined;
-    if (typeof this.$route.query.category === 'string') {
-      filteredCategoryId = parseInt(this.$route.query.category);
+    let filteredDomainId: number | undefined;
+    if (typeof this.$route.query.domain === 'string') {
+      filteredDomainId = parseInt(this.$route.query.domain);
     }
     const newsResult = await this.$cmsService.getNews({
       limit: this.newsEntriesPerPage,
       page: this.currentPage,
-      categoryId: filteredCategoryId,
+      domainId: filteredDomainId,
     });
 
     this.newsList = newsResult.data;
     this.totalNewsEntries = newsResult.meta.total;
-    this.filteredCategoryName = newsResult.meta.filteredCategoryName;
+    this.filteredDomainName = newsResult.meta.filteredDomainName;
   },
   computed: {
     totalPages(): number | undefined {
@@ -68,7 +68,7 @@ export default Vue.extend({
 </script>
 
 <style>
-.c-news__category-filter-info {
+.c-news__domain-filter-info {
   margin-top: var(--st-length-spacing-xs);
 }
 
