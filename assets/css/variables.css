@@ -82,7 +82,7 @@
   --st-color-event-background: var(--st-color-grey-very-light);
   --st-color-event-month: var(--st-color-red-swiss-tchoukball);
   --st-color-event-day-of-week: var(--st-color-grey-dark);
-  --st-color-event-category: var(--st-color-red-swiss-tchoukball);
+  --st-color-event-type: var(--st-color-red-swiss-tchoukball);
   --st-color-event-icon: var(--st-color-red-swiss-tchoukball);
   --st-color-event-month-switch-link: var(--st-color-red-swiss-tchoukball);
 

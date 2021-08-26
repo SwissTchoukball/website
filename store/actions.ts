@@ -1,7 +1,7 @@
 import { ActionTree } from 'vuex/types/index';
 import { PartialItem } from '@directus/sdk';
 import { isPast, parse } from 'date-fns';
-import { EventCategories, MenuItem, PlayerPositions, RootState } from './state';
+import { EventTypes, MenuItem, PlayerPositions, RootState } from './state';
 import { DirectusMenuItem, DirectusNationalCompetition } from '~/plugins/directus';
 import CompetitionEdition from '~/models/competition-edition.model';
 import Round from '~/models/round.model';
@@ -79,11 +79,11 @@ export default {
       data: directusSeasons,
     });
   },
-  async loadEventCategories({ commit }) {
+  async loadEventTypes({ commit }) {
     // TODO: Move logic to CMSService
     const locale = this.app.i18n.locale;
 
-    const eventCategories = await this.$directus.items('event_categories').readMany({
+    const eventTypes = await this.$directus.items('event_types').readMany({
       deep: {
         // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
         translations: { _filter: { languages_code: { _eq: locale } } },
@@ -91,26 +91,26 @@ export default {
       fields: ['id', 'name', 'translations.languages_code', 'translations.name'],
     });
 
-    const categories = eventCategories.data?.reduce((categories, category) => {
-      if (!category || !category.id || !category.name) {
-        return categories;
+    const types = eventTypes.data?.reduce((types, type) => {
+      if (!type || !type.id || !type.name) {
+        return types;
       }
 
       // Because we requested data for a specific language, `translations` contain only the language we need
       let translatedFields;
-      if (category.translations && category.translations[0]) {
-        translatedFields = category.translations[0];
+      if (type.translations && type.translations[0]) {
+        translatedFields = type.translations[0];
       }
       return {
-        ...categories,
-        [category.id]: {
-          id: category.id,
-          name: translatedFields?.name || category.name,
+        ...types,
+        [type.id]: {
+          id: type.id,
+          name: translatedFields?.name || type.name,
         },
       };
-    }, {} as EventCategories);
+    }, {} as EventTypes);
 
-    commit('setEventCategories', categories);
+    commit('setEventTypes', types);
   },
   async loadPlayerPositions({ commit }) {
     // TODO: Move logic to CMSService

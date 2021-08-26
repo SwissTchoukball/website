@@ -24,7 +24,7 @@ export interface CalendarEvent {
     description: string;
   };
   url?: string;
-  category: number;
+  type: number;
 }
 
 interface NationalCompetitionEdition {
@@ -53,7 +53,7 @@ export interface CMSService {
   getEvents: (options: {
     limit: number;
     page: number;
-    categoryId?: number;
+    typeId?: number;
     month?: string;
     upcoming?: boolean;
   }) => Promise<{ data: CalendarEvent[]; meta: { total: number; filteredCategoryName?: string } }>;
@@ -295,7 +295,7 @@ const cmsService: Plugin = (context, inject) => {
     };
   };
 
-  const getEvents: CMSService['getEvents'] = async ({ limit, page, categoryId, month, upcoming }) => {
+  const getEvents: CMSService['getEvents'] = async ({ limit, page, typeId, month, upcoming }) => {
     // Preparing the filter to retrieve the events
     const publishedFilter = {
       status: {
@@ -303,10 +303,10 @@ const cmsService: Plugin = (context, inject) => {
       },
     };
 
-    let categoryFilter: any;
-    if (categoryId) {
-      categoryFilter = {
-        categories: { id: { _eq: categoryId } },
+    let typeFilter: any;
+    if (typeId) {
+      typeFilter = {
+        type: { id: { _eq: typeId } },
       };
     }
 
@@ -339,8 +339,8 @@ const cmsService: Plugin = (context, inject) => {
     }
 
     const filter: any = { _and: [publishedFilter] };
-    if (categoryFilter) {
-      filter._and.push(categoryFilter);
+    if (typeFilter) {
+      filter._and.push(typeFilter);
     }
     if (monthFilter) {
       filter._and.push(monthFilter);
@@ -369,7 +369,7 @@ const cmsService: Plugin = (context, inject) => {
         'image.id',
         'image.description',
         'url',
-        'category',
+        'type',
       ],
     });
 

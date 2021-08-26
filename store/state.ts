@@ -5,13 +5,13 @@ export interface MenuItem {
   children?: MenuItem[];
 }
 
-export interface EventCategory {
+export interface EventType {
   id: number;
   name: string;
 }
 
-export interface EventCategories {
-  [id: number]: EventCategory;
+export interface EventTypes {
+  [id: number]: EventType;
 }
 
 export interface PlayerPosition {
@@ -27,7 +27,7 @@ export interface PlayerPositions {
 
 export interface RootState {
   mainNavigation: MenuItem[];
-  eventCategories?: EventCategories;
+  eventTypes?: EventTypes;
   playerPositions?: PlayerPositions;
   upcomingMatchesLoaded: boolean;
   fullyLoadedCompetitionEditions: { season: string; competition: string }[];
@@ -35,7 +35,7 @@ export interface RootState {
 
 export default (): RootState => ({
   mainNavigation: [],
-  eventCategories: undefined,
+  eventTypes: undefined,
   playerPositions: undefined,
   upcomingMatchesLoaded: false,
   fullyLoadedCompetitionEditions: [],

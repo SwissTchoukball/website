@@ -70,10 +70,10 @@ export interface DirectusEvent {
     description: string;
   };
   url?: string;
-  category?: number;
+  type?: number;
 }
 
-export interface DirectusEventCategory {
+export interface DirectusEventType {
   id: number;
   name: string;
   translations: {
@@ -193,7 +193,7 @@ type CustomTypes = {
   pages: DirectusPage;
   news: DirectusNews;
   events: DirectusEvent;
-  event_categories: DirectusEventCategory;
+  event_types: DirectusEventType;
   national_teams: DirectusTeam;
   player_positions: DirectusPlayerPosition;
   seasons: DirectusSeason;

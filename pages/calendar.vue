@@ -55,15 +55,15 @@ export default Vue.extend({
       totalEvents: undefined as number | undefined,
       currentPage: 1,
       events: [] as CalendarEvent[],
-      filteredCategoryId: undefined as number | undefined,
+      filteredTypeId: undefined as number | undefined,
       month: this.$formatDate(new Date(), 'MM'),
       year: this.$formatDate(new Date(), 'yyyy'),
       showUpcoming: true,
     };
   },
   async fetch() {
-    if (typeof this.$route.query.category === 'string') {
-      this.filteredCategoryId = parseInt(this.$route.query.category);
+    if (typeof this.$route.query.type === 'string') {
+      this.filteredTypeId = parseInt(this.$route.query.type);
     }
 
     // Reseting this data in case we specifically ask for it
@@ -90,9 +90,9 @@ export default Vue.extend({
     this.events = eventsResult.data;
     this.totalEvents = eventsResult.meta.total;
 
-    // We load the categories only if we don't have them already
-    if (!this.$store.state.eventCategories) {
-      await this.$store.dispatch('loadEventCategories');
+    // We load the event types only if we don't have them already
+    if (!this.$store.state.eventTypes) {
+      await this.$store.dispatch('loadEventTypes');
     }
   },
   head() {
@@ -132,14 +132,14 @@ export default Vue.extend({
   watch: {
     '$route.query.month': '$fetch',
     '$route.query.year': '$fetch',
-    '$route.query.category': '$fetch',
+    '$route.query.type': '$fetch',
   },
   methods: {
     async getEvents(): ReturnType<CMSService['getEvents']> {
       return await this.$cmsService.getEvents({
         limit: this.eventsPerPage,
         page: this.currentPage,
-        categoryId: this.filteredCategoryId,
+        typeId: this.filteredTypeId,
         month: `${this.year}-${this.month}`,
         upcoming: this.showUpcoming,
       });

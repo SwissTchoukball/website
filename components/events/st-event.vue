@@ -13,7 +13,7 @@
       <h3 class="t-headline-2 c-event__name">
         <nuxt-link :to="{ hash: `event-${event.id}` }" class="c-event__name-link">{{ event.name }}</nuxt-link>
       </h3>
-      <div v-if="categoryName" class="c-event__category">{{ categoryName }}</div>
+      <div v-if="eventTypeName" class="c-event__type">{{ eventTypeName }}</div>
       <div class="directus-formatted-content c-event__description" v-html="event.description"></div>
       <div v-if="event.venue" class="c-event__venue">
         <fa-icon icon="map-marker-alt" class="c-event__icon" />
@@ -34,7 +34,7 @@
 import Vue, { PropType } from 'vue';
 import { Store } from 'vuex';
 import { CalendarEvent } from '~/plugins/cms-service';
-import { EventCategories, RootState } from '~/store/state';
+import { EventTypes, RootState } from '~/store/state';
 import { getAssetSrcSet, getAssetURL } from '~/plugins/directus';
 import stEventDate from '~/components/events/st-event-date.vue';
 
@@ -57,12 +57,12 @@ export default Vue.extend({
       }
       return time;
     },
-    categories(): EventCategories | undefined {
-      return (this.$store as Store<RootState>).state.eventCategories;
+    eventTypes(): EventTypes | undefined {
+      return (this.$store as Store<RootState>).state.eventTypes;
     },
-    categoryName(): string | null {
-      if (this.categories && this.event.category) {
-        return this.categories[this.event.category].name;
+    eventTypeName(): string | null {
+      if (this.eventTypes && this.event.type) {
+        return this.eventTypes[this.event.type].name;
       } else {
         return null;
       }
@@ -130,8 +130,8 @@ export default Vue.extend({
   flex-direction: column;
 }
 
-.c-event__category {
-  color: var(--st-color-event-category);
+.c-event__type {
+  color: var(--st-color-event-type);
   font-weight: bold;
   font-size: 0.9em;
   padding-top: var(--st-length-spacing-xxs);
@@ -177,7 +177,7 @@ export default Vue.extend({
     padding-top: 0;
   }
 
-  .c-event__category {
+  .c-event__type {
     position: absolute;
     top: 0;
     right: 0;

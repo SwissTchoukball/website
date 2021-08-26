@@ -9,9 +9,9 @@ const i18nPlugin: Plugin = ({ app, store }) => {
   app.i18n.onLanguageSwitched = async (_oldLocale, _newLocale) => {
     const dataLoads = [store.dispatch('loadMenu')];
 
-    // We load the categories only if we already have them in the old locale
-    if (store.state.eventCategories) {
-      dataLoads.push(store.dispatch('loadEventCategories'));
+    // We load the event types only if we already have them in the old locale
+    if (store.state.eventTypes) {
+      dataLoads.push(store.dispatch('loadEventTypes'));
     }
 
     // We load the positions only if we already have them in the old locale
