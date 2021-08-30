@@ -45,6 +45,10 @@
   /* Pagination */
   --st-color-pagination-page-active-background: var(--st-color-grey-very-light);
 
+  /* Forms */
+  --st-color-select-border: var(--st-color-grey-very-light);
+  --st-color-form-search-field-background: var(--st-color-grey-very-light);
+
   /* Footer */
   --st-color-footer-social-background: var(--st-color-grey-very-light);
   --st-color-footer-tchouksuisse: var(--st-color-red-swiss-tchoukball);
@@ -101,6 +105,10 @@
   --st-color-match-score: var(--st-color-red-swiss-tchoukball);
   --st-color-match-results-separator: var(--st-color-grey-light);
   --st-color-match-phase-round: var(--st-color-red-swiss-tchoukball);
+
+  /* Resources */
+  --st-color-resource-icon: var(--st-color-red-swiss-tchoukball);
+  --st-color-resource-details: var(--st-color-grey-dark);
 
   /* LENGTHS */
   --st-length-main-content-max-width: 100%;

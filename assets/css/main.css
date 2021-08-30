@@ -54,6 +54,20 @@ a:visited {
   background-color: var(--st-color-separator);
 }
 
+.l-form-select {
+  appearance: none;
+  font-size: 1em;
+  font-family: inherit;
+  padding: var(--st-length-spacing-xxs);
+  padding-right: 1.5rem;
+  border: 1px solid var(--st-color-select-border);
+  border-radius: 10px;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z"></path></svg>');
+  background-repeat: no-repeat;
+  background-position: right var(--st-length-spacing-xxs) center;
+  background-size: 1rem;
+}
+
 @media (--sm-and-up) {
   .l-people-list__person {
     width: 50%;
@@ -90,6 +104,7 @@ a:visited {
 
 .u-unstyled-button {
   font-family: inherit;
+  font-size: inherit;
   appearance: none;
   border: none;
   background-color: transparent;

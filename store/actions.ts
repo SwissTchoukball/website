@@ -2,7 +2,7 @@ import { ActionTree } from 'vuex/types/index';
 import { PartialItem } from '@directus/sdk';
 import { isPast, parse } from 'date-fns';
 import { EventTypes, MenuItem, PlayerPositions, RootState } from './state';
-import { DirectusMenuItem, DirectusNationalCompetition } from '~/plugins/directus';
+import { DirectusMenuItem, DirectusNationalCompetition, getTranslatedFields } from '~/plugins/directus';
 import CompetitionEdition from '~/models/competition-edition.model';
 import Round from '~/models/round.model';
 import Match from '~/models/match.model';
@@ -18,11 +18,14 @@ import {
 import Team from '~/models/team.model';
 import Phase from '~/models/phase.model';
 import Season from '~/models/season.model';
+import Domain from '~/models/domain.model';
+import ResourceType from '~/models/resource-type.model';
 
 export default {
   async nuxtServerInit({ dispatch }) {
     await dispatch('loadMenu');
     await dispatch('loadSeasons');
+    await dispatch('loadDomains');
   },
   async loadMenu({ commit }) {
     // TODO: Move logic to CMSService
@@ -49,11 +52,7 @@ export default {
     });
 
     const transformForStore = (menuItem: PartialItem<DirectusMenuItem> | undefined): MenuItem => {
-      // Because we requested the menu for a specific language, `translations` contain only the language we need
-      let translatedFields;
-      if (menuItem && menuItem.translations && menuItem.translations[0]) {
-        translatedFields = menuItem.translations[0];
-      }
+      const translatedFields = menuItem ? getTranslatedFields(menuItem) : undefined;
 
       let children: MenuItem[] = [];
       if (menuItem?.children) {
@@ -79,6 +78,22 @@ export default {
       data: directusSeasons,
     });
   },
+  async loadDomains() {
+    const domainsResponse = await this.$directus.items('domains').readMany({
+      fields: ['id', 'name', 'translations.name'],
+      // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
+      deep: { translations: { _filter: { languages_code: { _eq: this.$i18n.locale } } } },
+    });
+    Domain.addManyFromDirectus(domainsResponse);
+  },
+  async loadResourceTypes() {
+    const response = await this.$directus.items('resource_types').readMany({
+      fields: ['id', 'name', 'translations.name'],
+      // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
+      deep: { translations: { _filter: { languages_code: { _eq: this.$i18n.locale } } } },
+    });
+    ResourceType.addManyFromDirectus(response);
+  },
   async loadEventTypes({ commit }) {
     // TODO: Move logic to CMSService
     const locale = this.app.i18n.locale;
@@ -96,11 +111,8 @@ export default {
         return types;
       }
 
-      // Because we requested data for a specific language, `translations` contain only the language we need
-      let translatedFields;
-      if (type.translations && type.translations[0]) {
-        translatedFields = type.translations[0];
-      }
+      const translatedFields = getTranslatedFields(type);
+
       return {
         ...types,
         [type.id]: {
@@ -138,11 +150,8 @@ export default {
         return positions;
       }
 
-      // Because we requested data for a specific language, `translations` contain only the language we need
-      let translatedFields;
-      if (position.translations && position.translations[0]) {
-        translatedFields = position.translations[0];
-      }
+      const translatedFields = getTranslatedFields(position);
+
       return {
         ...positions,
         [position.id]: {

@@ -1,7 +1,7 @@
 import { Plugin } from '@nuxt/types';
 import { PartialItem } from '@directus/sdk';
 import { set } from 'date-fns';
-import { DirectusNewsDomainPivot, DirectusSeason } from '~/plugins/directus';
+import { DirectusNewsDomainPivot, DirectusSeason, getTranslatedFields } from '~/plugins/directus';
 import { NewsEntry } from '~/components/news/st-news';
 import { NationalTeam, NationalTeamResult } from '~/components/national-teams/st-national-teams.prop';
 
@@ -25,6 +25,21 @@ export interface CalendarEvent {
   };
   url?: string;
   type: number;
+}
+
+export interface Resource {
+  id: number;
+  date?: string;
+  name: string;
+  file?: {
+    id: number;
+    type: string;
+    filesize: number;
+    filename_download: string;
+  };
+  link?: string;
+  type: number;
+  domains: number[];
 }
 
 interface NationalCompetitionEdition {
@@ -69,6 +84,7 @@ export interface CMSService {
     seasonSlug?: string;
     leveradeIds?: string[];
   }) => Promise<NationalCompetitionEdition[]>;
+  searchResources: (searchTerm: string, domainId?: number, typeId?: number) => Promise<Resource[]>;
 }
 
 declare module 'vue/types/vue' {
@@ -184,7 +200,6 @@ const cmsService: Plugin = (context, inject) => {
     }
 
     newsList = newsResponse.data.reduce((news, directusNewsEntry) => {
-      console.log(directusNewsEntry.domains);
       let singleLanguageNewsEntry: (Omit<NewsEntry, 'domains'> & { domains: DirectusNewsDomainPivot[] }) | undefined;
       if (directusNewsEntry && directusNewsEntry.translations?.length) {
         try {
@@ -210,11 +225,7 @@ const cmsService: Plugin = (context, inject) => {
         const newsEntry: NewsEntry = {
           ...singleLanguageNewsEntry,
           domains: singleLanguageNewsEntry.domains.map((domain) => {
-            // Because we requested data for a specific language, `translations` contain only the language we need
-            let translatedFields;
-            if (domain.domains_id.translations && domain.domains_id.translations[0]) {
-              translatedFields = domain.domains_id.translations[0];
-            }
+            const translatedFields = getTranslatedFields(domain.domains_id);
 
             return {
               id: domain.id,
@@ -298,11 +309,7 @@ const cmsService: Plugin = (context, inject) => {
     return {
       ...singleLanguageNewsEntry,
       domains: singleLanguageNewsEntry.domains.map((domain) => {
-        // Because we requested data for a specific language, `translations` contain only the language we need
-        let translatedFields;
-        if (domain.domains_id.translations && domain.domains_id.translations[0]) {
-          translatedFields = domain.domains_id.translations[0];
-        }
+        const translatedFields = getTranslatedFields(domain.domains_id);
 
         return {
           id: domain.id,
@@ -680,11 +687,7 @@ const cmsService: Plugin = (context, inject) => {
       throw new Error('Competition is missing requested fields');
     }
 
-    // Because we requested data for a specific language, `translations` contain only the language we need
-    let translatedFields;
-    if (rawCompetition.translations && rawCompetition.translations[0]) {
-      translatedFields = rawCompetition.translations[0];
-    }
+    const translatedFields = getTranslatedFields(rawCompetition);
 
     // Fallback for mandatory fields should not happen as we requested those fields
     return {
@@ -782,11 +785,7 @@ const cmsService: Plugin = (context, inject) => {
         return editions;
       }
 
-      // Because we requested data for a specific language, `translations` contain only the language we need
-      let translatedCompetitionFields;
-      if (rawEdition.competition.translations && rawEdition.competition.translations[0]) {
-        translatedCompetitionFields = rawEdition.competition.translations[0];
-      }
+      const translatedCompetitionFields = getTranslatedFields(rawEdition.competition);
 
       return [
         ...editions,
@@ -808,6 +807,78 @@ const cmsService: Plugin = (context, inject) => {
       ];
     }, [] as NationalCompetitionEdition[]);
   };
+  const searchResources: CMSService['searchResources'] = async (searchTerm, domainId, typeId) => {
+    // Type should be Filter<DirectusResourceType>, but there is a bug in the Directus SDK.
+    // We use any as a workaround until the _and is properly recognised. See https://github.com/directus/directus/issues/7475
+    const filter: any = {
+      _and: [
+        {
+          status: { _eq: 'visible' },
+        },
+      ],
+    };
+
+    if (domainId) {
+      filter._and.push({
+        domains: { domains_id: { _eq: domainId } },
+      });
+    }
+
+    if (typeId) {
+      filter._and.push({
+        type: { _eq: typeId },
+      });
+    }
+
+    const response = await context.$directus.items('resources').readMany({
+      search: searchTerm,
+      filter,
+      fields: [
+        'id',
+        'date',
+        'name',
+        'file.id',
+        'file.type',
+        'file.filesize',
+        'file.filename_download',
+        'link',
+        'type',
+        'domains.domains_id',
+        'translations.name',
+        'translations.file.id',
+        'translations.file.type',
+        'translations.file.filesize',
+        'translations.file.filename_download',
+        'translations.link',
+      ],
+      deep: {
+        // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
+        translations: { _filter: { languages_code: { _eq: context.i18n.locale } } },
+      },
+      sort: ['name'],
+    });
+
+    if (!response.data) {
+      throw new Error('Error when retrieving resources');
+    }
+
+    return response.data.reduce((resources, resource) => {
+      if (!resource.name) {
+        return resources;
+      }
+      const translatedFields = getTranslatedFields(resource);
+      const temp = [
+        ...resources,
+        {
+          ...resource,
+          name: translatedFields?.name || resource.name,
+          file: translatedFields?.file || resource.file,
+          link: translatedFields?.link || resource.link,
+        },
+      ] as Resource[];
+      return temp;
+    }, [] as Resource[]);
+  };
 
   inject('cmsService', {
     getNews,
@@ -817,6 +888,7 @@ const cmsService: Plugin = (context, inject) => {
     getSeasons,
     getNationalCompetition,
     getNationalCompetitionEditions,
+    searchResources,
   });
 };
 

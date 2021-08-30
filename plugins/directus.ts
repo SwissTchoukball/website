@@ -1,5 +1,5 @@
 import { Plugin } from '@nuxt/types';
-import { Directus } from '@directus/sdk';
+import { Directus, PartialItem } from '@directus/sdk';
 
 export interface DirectusMenuItem {
   sort: number;
@@ -185,6 +185,37 @@ export interface DirectusNationalCompetition {
   }[];
 }
 
+export interface DirectusFile {}
+
+export interface DirectusResourceType {
+  id: number;
+  name: string;
+  translations: {
+    name: string;
+  }[];
+}
+
+export enum DirectusResourceStatus {
+  VISIBLE = 'visible',
+  ARCHIVED = 'archived',
+}
+
+export interface DirectusResource {
+  id: number;
+  name: string;
+  file?: DirectusFile;
+  link?: string;
+  translations: {
+    name: string;
+    file?: DirectusFile;
+    link?: string;
+  }[];
+  type: DirectusResourceType;
+  domains: number[];
+  date: string;
+  status: DirectusResourceStatus;
+}
+
 type CustomTypes = {
   /*
 	This type will be merged with Directus user type.
@@ -202,6 +233,9 @@ type CustomTypes = {
   seasons: DirectusSeason;
   national_competitions: DirectusNationalCompetition;
   national_competition_editions: DirectusNationalCompetitionEdition;
+  domains: DirectusDomain;
+  resources: DirectusResource;
+  resource_types: DirectusResourceType;
 };
 
 declare module 'vue/types/vue' {
@@ -255,4 +289,18 @@ export const getAssetSrcSetEntry = (cmsURL: string, assetId: string, { width }: 
 
 export const getAssetSrcSet = (cmsURL: string, assetId: string, { widths }: { widths: number[] }) => {
   return widths.map((width) => getAssetSrcSetEntry(cmsURL, assetId, { width })).join(',');
+};
+
+/**
+ * Returns the translated fields of the first available language of the entity translations.
+ *
+ * This is useful when we requested the translations in a specific language
+ * and already know which language is the first one.
+ */
+export const getTranslatedFields = (
+  entity: PartialItem<{ [key: string]: any } & { translations: { [key: string]: any }[] }>
+) => {
+  if (entity.translations && entity.translations[0]) {
+    return entity.translations[0];
+  }
 };

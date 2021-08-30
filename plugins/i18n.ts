@@ -1,4 +1,5 @@
 import { Plugin } from '@nuxt/types';
+import ResourceType from '~/models/resource-type.model';
 
 const i18nPlugin: Plugin = ({ app, store }) => {
   // onBeforeLanguageSwitch called right before setting a new locale
@@ -7,7 +8,7 @@ const i18nPlugin: Plugin = ({ app, store }) => {
   }; */
   // onLanguageSwitched called right after a new locale has been set
   app.i18n.onLanguageSwitched = async (_oldLocale, _newLocale) => {
-    const dataLoads = [store.dispatch('loadMenu')];
+    const dataLoads = [store.dispatch('loadMenu'), store.dispatch('loadDomains')];
 
     // We load the event types only if we already have them in the old locale
     if (store.state.eventTypes) {
@@ -17,6 +18,11 @@ const i18nPlugin: Plugin = ({ app, store }) => {
     // We load the positions only if we already have them in the old locale
     if (store.state.playerPositions) {
       dataLoads.push(store.dispatch('loadPlayerPositions'));
+    }
+
+    // We load the resource types only if we already have them in the old locale
+    if (store.$db().model(ResourceType).exists()) {
+      dataLoads.push(store.dispatch('loadResourceTypes'));
     }
 
     await Promise.all(dataLoads);

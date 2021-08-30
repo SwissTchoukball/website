@@ -8,11 +8,17 @@ import Phase from '~/models/phase.model';
 import Round from '~/models/round.model';
 import Match from '~/models/match.model';
 import Facility from '~/models/facility.model';
+import Resource from '~/models/resource.model';
+import ResourceType from '~/models/resource-type.model';
+import DomainResource from '~/models/domain-resource.model';
 
 const database = new Database();
 
+// Core models
 database.register(Domain);
 database.register(Season);
+
+// Competition models
 database.register(Competition);
 database.register(CompetitionEdition);
 database.register(Team);
@@ -20,5 +26,12 @@ database.register(Phase);
 database.register(Round);
 database.register(Match);
 database.register(Facility);
+
+// Other models
+database.register(Resource);
+database.register(ResourceType);
+
+// Relationship models
+database.register(DomainResource);
 
 export default database;

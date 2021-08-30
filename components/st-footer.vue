@@ -79,6 +79,7 @@ export default Vue.extend({
   data() {
     return {
       // TODO: Eventually move all the data to the CMS
+      // TODO: i18n
       secondaryNavigation: [
         {
           name: 'Photos',
@@ -95,6 +96,10 @@ export default Vue.extend({
         {
           name: 'Contact',
           href: '/contact',
+        },
+        {
+          name: 'Ressources',
+          href: '/resources',
         },
         {
           name: 'Médias',

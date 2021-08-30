@@ -123,5 +123,30 @@
   "venue": {
     "map": "carte",
     "openInMaps": "Voir dans Maps"
+  },
+  "resources": {
+    "title": "Ressources",
+    "form": {
+      "submit": "Rechercher",
+      "placeholder": "Nom de règlement, formulaire, ...",
+      "filter": "Filtres",
+      "domain": "Domaine",
+      "type": "Type",
+      "all": "Tous",
+      "reset": "Réinitialiser la recherche"
+    },
+    "search": {
+      "resultsInfo": "Aucune ressource. | Une ressource trouvée. | {amountResults} ressources trouvées.",
+      "error": "Une erreur s'est produite pour cette recherche",
+      "tooBroad": "Veuillez entrez une recherche ou spécifier un des filtres.",
+      "noResults": "Aucune ressource ne correspond à vos critères de recherche."
+    },
+    "fileType": {
+      "pdf": "Fichier PDF",
+      "zip": "Archive ZIP",
+      "other": "Fichier"
+    },
+    "link": "Lien",
+    "missing": "Fichier manquant"
   }
 }

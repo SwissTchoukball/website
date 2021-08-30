@@ -8,6 +8,7 @@
     class="u-unstyled-button c-link-action"
     v-on="$listeners"
   >
+    <template v-if="withCross"><fa-icon icon="times" /></template>
     <slot></slot>
     <template v-if="withArrow">&rarr;</template>
     <template v-if="withArrowDown">&darr;</template>
@@ -35,6 +36,7 @@ export default Vue.extend({
     },
     withArrow: Boolean,
     withArrowDown: Boolean,
+    withCross: Boolean,
   },
   computed: {
     elementType() {
@@ -61,5 +63,6 @@ export default Vue.extend({
 .c-link-action {
   color: var(--st-color-link, black);
   text-decoration: underline;
+  cursor: pointer;
 }
 </style>
