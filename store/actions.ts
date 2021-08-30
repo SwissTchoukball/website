@@ -167,9 +167,25 @@ export default {
     commit('setPlayerPositions', positions);
   },
 
+  /**
+   * Loads all the clubs and regional associations
+   */
   async loadClubs() {
     const clubsResponse = await this.$directus.items('clubs').readMany({
       fields: ['id', 'name', 'name_full', 'name_sort', 'status', 'website', 'logo'],
+      filter: {
+        _or: [
+          {
+            status: 'passive',
+          },
+          {
+            status: 'active',
+          },
+          {
+            status: 'regional_association',
+          },
+        ],
+      } as any, // Workaround until the _or is properly recognised. See https://github.com/directus/directus/issues/7475
       sort: ['name_sort'],
     });
     Club.addManyFromDirectus(clubsResponse);
