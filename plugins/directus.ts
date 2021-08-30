@@ -185,6 +185,16 @@ export interface DirectusNationalCompetition {
   }[];
 }
 
+export interface DirectusClub {
+  id: number;
+  name: string;
+  name_full: string;
+  name_sort: string;
+  status: string;
+  website: string;
+  logo: string;
+}
+
 export interface DirectusFile {}
 
 export interface DirectusResourceType {
@@ -236,6 +246,7 @@ type CustomTypes = {
   domains: DirectusDomain;
   resources: DirectusResource;
   resource_types: DirectusResourceType;
+  clubs: DirectusClub;
 };
 
 declare module 'vue/types/vue' {

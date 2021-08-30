@@ -8,6 +8,7 @@ import Phase from '~/models/phase.model';
 import Round from '~/models/round.model';
 import Match from '~/models/match.model';
 import Facility from '~/models/facility.model';
+import Club from '~/models/club.model';
 import Resource from '~/models/resource.model';
 import ResourceType from '~/models/resource-type.model';
 import DomainResource from '~/models/domain-resource.model';
@@ -28,6 +29,7 @@ database.register(Match);
 database.register(Facility);
 
 // Other models
+database.register(Club);
 database.register(Resource);
 database.register(ResourceType);
 

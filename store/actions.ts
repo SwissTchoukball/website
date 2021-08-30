@@ -20,6 +20,7 @@ import Phase from '~/models/phase.model';
 import Season from '~/models/season.model';
 import Domain from '~/models/domain.model';
 import ResourceType from '~/models/resource-type.model';
+import Club from '~/models/club.model';
 
 export default {
   async nuxtServerInit({ dispatch }) {
@@ -164,6 +165,14 @@ export default {
     }, {} as PlayerPositions);
 
     commit('setPlayerPositions', positions);
+  },
+
+  async loadClubs() {
+    const clubsResponse = await this.$directus.items('clubs').readMany({
+      fields: ['id', 'name', 'name_full', 'name_sort', 'status', 'website', 'logo'],
+      sort: ['name_sort'],
+    });
+    Club.addManyFromDirectus(clubsResponse);
   },
 
   async insertFacilities(_context, facilities: LeveradeFacility[]) {

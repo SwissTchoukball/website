@@ -120,6 +120,11 @@
       "nationsCup": "Coupe des nations"
     }
   },
+  "clubs": {
+    "title": "Clubs",
+    "amountMembers": "Il y a {amount} clubs adhérants à Swiss Tchoukball.",
+    "logoOf": "Logo du {name}"
+  },
   "venue": {
     "map": "carte",
     "openInMaps": "Voir dans Maps"
