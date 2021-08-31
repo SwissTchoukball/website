@@ -195,6 +195,47 @@ export interface DirectusClub {
   logo: string;
 }
 
+export interface DirectusGroup {
+  id: number;
+  name: string;
+  description: string;
+  translations: {
+    name: string;
+    description: string;
+  }[];
+}
+
+export interface DirectusRole {
+  id: number;
+  name: string;
+  name_feminine: string;
+  name_masculine: string;
+  translations: {
+    name: string;
+    name_feminine: string;
+    name_masculine: string;
+  }[];
+  group: DirectusGroup;
+}
+
+export interface DirectusPerson {
+  id: number;
+  first_name: string;
+  last_name: string;
+  portrait_square_head: string;
+  gender: string;
+  email: string;
+  // eslint-disable-next-line no-use-before-define
+  roles: DirectusRolePerson[];
+}
+
+export interface DirectusRolePerson {
+  id: number;
+  roles_id: DirectusRole;
+  people_id: DirectusPerson;
+  main: boolean;
+}
+
 export interface DirectusFile {}
 
 export interface DirectusResourceType {
@@ -247,6 +288,9 @@ type CustomTypes = {
   resources: DirectusResource;
   resource_types: DirectusResourceType;
   clubs: DirectusClub;
+  groups: DirectusGroup;
+  roles: DirectusRole;
+  people: DirectusPerson;
 };
 
 declare module 'vue/types/vue' {

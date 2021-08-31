@@ -98,6 +98,8 @@ const config: NuxtConfig = {
         'faRss',
         'faMapMarkerAlt',
         'faClock',
+        'faUser',
+        'faEnvelope',
         'faAsterisk',
         'faShieldAlt',
         'faHashtag',

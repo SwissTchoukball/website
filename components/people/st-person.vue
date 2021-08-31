@@ -7,12 +7,21 @@
       :alt="$t('person.photoOf', { name })"
       class="c-person__avatar"
     />
+    <div v-else class="c-person__avatar">
+      <fa-icon icon="user" class="c-person__avatar-placeholder" />
+    </div>
     <div class="st-person__description">
       <h4 class="t-headline-3 c-person__name">{{ name }}</h4>
-      <p v-if="subName" class="c-person__sub-name">{{ subName }}</p>
+      <p v-if="subName" class="c-person__sub-name">
+        {{ subName }}
+      </p>
+      <p v-else-if="$slots.subName" class="c-person__sub-name">
+        <slot name="subName"></slot>
+      </p>
       <ul class="c-person__details u-unstyled-list">
         <li v-for="(detail, index) of details" :key="`detail-${index}`" class="c-person__detail">
-          <fa-icon :icon="detail.icon" class="c-person__detail-icon" /> {{ detail.text }}
+          <fa-icon :icon="detail.icon" class="c-person__detail-icon" />
+          <component :is="detail.href ? 'a' : 'span'" :href="detail.href">{{ detail.text }}</component>
           <div v-if="detail.body" class="directus-formatted-content c-person__detail-body" v-html="detail.body"></div>
         </li>
       </ul>
@@ -23,6 +32,13 @@
 <script lang="ts">
 import Vue, { PropType } from 'vue';
 import { getAssetURL } from '~/plugins/directus';
+
+export interface PersonDetail {
+  icon: string;
+  text: string;
+  body?: string;
+  href?: string;
+}
 
 export default Vue.extend({
   props: {
@@ -39,7 +55,7 @@ export default Vue.extend({
       default: null,
     },
     details: {
-      type: Array as PropType<string[]>,
+      type: Array as PropType<PersonDetail[]>,
       default: () => [],
     },
   },
@@ -65,6 +81,16 @@ export default Vue.extend({
   width: 150px;
   height: 150px;
   border-radius: 50%;
+  background-color: var(--st-color-person-avatar-background);
+  flex-shrink: 0;
+}
+
+.c-person__avatar-placeholder {
+  color: white;
+  width: 100%;
+  height: 100%;
+  padding: 10%;
+  padding-bottom: 0;
 }
 
 .st-person__description {

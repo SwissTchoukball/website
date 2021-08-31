@@ -75,6 +75,7 @@
   /* Person */
   --st-color-person-sub-name: var(--st-color-grey-dark);
   --st-color-person-detail-icon: var(--st-color-red-swiss-tchoukball);
+  --st-color-person-avatar-background: var(--st-color-grey-very-light);
 
   /* News */
   --st-color-news-domain-background: var(--st-color-red-swiss-tchoukball);

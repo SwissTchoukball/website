@@ -21,6 +21,8 @@ import Season from '~/models/season.model';
 import Domain from '~/models/domain.model';
 import ResourceType from '~/models/resource-type.model';
 import Club from '~/models/club.model';
+import Person from '~/models/person.model';
+import Group from '~/models/group.model';
 
 export default {
   async nuxtServerInit({ dispatch }) {
@@ -86,6 +88,54 @@ export default {
       deep: { translations: { _filter: { languages_code: { _eq: this.$i18n.locale } } } },
     });
     Domain.addManyFromDirectus(domainsResponse);
+  },
+  async loadGroups() {
+    const groupsResponse = await this.$directus.items('groups').readMany({
+      fields: ['id', 'name', 'description', 'translations.name', 'translations.description'],
+      // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
+      deep: { translations: { _filter: { languages_code: { _eq: this.$i18n.locale } } } },
+    });
+    await Group.addManyFromDirectus(groupsResponse);
+  },
+  async loadPeople(_context, { groupId }: { groupId: number }) {
+    let filter: any = {};
+
+    if (groupId) {
+      filter = { roles: { roles_id: { group: { id: groupId } } } };
+    }
+
+    const peopleResponse = await this.$directus.items('people').readMany({
+      fields: [
+        'id',
+        'first_name',
+        'last_name',
+        'portrait_square_head',
+        'gender',
+        'email',
+        'roles.main',
+        'roles.roles_id.id',
+        'roles.roles_id.name',
+        'roles.roles_id.name_masculine',
+        'roles.roles_id.name_feminine',
+        'roles.roles_id.translations.name',
+        'roles.roles_id.translations.name_feminine',
+        'roles.roles_id.translations.name_masculine',
+        'roles.roles_id.group.id',
+        'roles.roles_id.group.name',
+        'roles.roles_id.group.translations.name',
+      ],
+      filter,
+      deep: {
+        roles: {
+          // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
+          roles_id: {
+            translations: { _filter: { languages_code: { _eq: this.$i18n.locale } } },
+            group: { translations: { _filter: { languages_code: { _eq: this.$i18n.locale } } } },
+          },
+        },
+      },
+    });
+    Person.addManyFromDirectus(peopleResponse);
   },
   async loadResourceTypes() {
     const response = await this.$directus.items('resource_types').readMany({

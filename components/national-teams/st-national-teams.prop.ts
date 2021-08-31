@@ -1,10 +1,5 @@
+import { Gender } from '~/models/person.model';
 import { DirectusNationalTeamCompetition } from '~/plugins/directus';
-
-export enum Gender {
-  Male = 'male',
-  Female = 'female',
-  Other = 'other',
-}
 
 export interface Player {
   id: number;

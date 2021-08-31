@@ -9,8 +9,9 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import stPerson from '~/components/people/st-person.vue';
-import { Player, Gender } from '~/components/national-teams/st-national-teams.prop';
+import stPerson, { PersonDetail } from '~/components/people/st-person.vue';
+import { Player } from '~/components/national-teams/st-national-teams.prop';
+import { Gender } from '~/models/person.model';
 
 export default Vue.extend({
   components: { stPerson },
@@ -24,7 +25,7 @@ export default Vue.extend({
     subName(): string | null {
       return this.player.is_captain ? this.$t('nationalTeams.captain').toString() : null;
     },
-    details(): { icon: string; text: string; body?: string }[] {
+    details(): PersonDetail[] {
       const details = [];
       if (this.player.number) {
         details.push({

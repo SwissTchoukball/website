@@ -7,8 +7,8 @@ export default class DomainResource extends Model {
 
   static fields() {
     return {
-      domain_id: this.attr(null),
-      resource_id: this.attr(null),
+      domain_id: this.number(null),
+      resource_id: this.number(null),
     };
   }
 }
