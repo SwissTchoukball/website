@@ -145,17 +145,40 @@ interface Leverade {
 const leveradePlugin: Plugin = ({ $config, $axios }, inject) => {
   const getFullTournament: Leverade['getFullTournament'] = (tournamentId) => {
     return $axios.get(
-      `${$config.leveradeURL}/tournaments/${tournamentId}?include=groups,groups.rounds,groups.rounds.matches,groups.rounds.matches.facility,teams`
+      `${$config.leveradeURL}/tournaments/${tournamentId}?include=groups,groups.rounds,groups.rounds.matches,groups.rounds.matches.facility,teams`,
+      {
+        transformRequest: (data, headers) => {
+          // Removing authorization headers that are somehow added by the production server when this run server-side.
+          delete headers.common.authorization;
+          delete headers.authorization;
+          return data;
+        },
+      }
     );
   };
 
   const getStandings: Leverade['getStandings'] = (groupId) => {
-    return $axios.get(`${$config.leveradeURL}/groups/${groupId}/standings`);
+    return $axios.get(`${$config.leveradeURL}/groups/${groupId}/standings`, {
+      transformRequest: (data, headers) => {
+        // Removing authorization headers that are somehow added by the production server when this run server-side.
+        delete headers.common.authorization;
+        delete headers.authorization;
+        return data;
+      },
+    });
   };
 
   const getUpcomingMatches: Leverade['getUpcomingMatches'] = () => {
     return $axios.get(
-      `${$config.leveradeURL}/matches?filter=!datetime:null,round.group.tournament.season.id:4818&sort=datetime&include=round.group.tournament,teams,facility`
+      `${$config.leveradeURL}/matches?filter=!datetime:null,round.group.tournament.season.id:4818&sort=datetime&include=round.group.tournament,teams,facility`,
+      {
+        transformRequest: (data, headers) => {
+          // Removing authorization headers that are somehow added by the production server when this run server-side.
+          delete headers.common.authorization;
+          delete headers.authorization;
+          return data;
+        },
+      }
     );
   };
 
