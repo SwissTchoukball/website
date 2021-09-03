@@ -88,10 +88,12 @@ export default Vue.extend({
         .with('phases')
         .with('phases.rounds', (query) => query.orderBy('order'))
         .with(['phases.rounds.matches', 'phases.rounds.matches.home_team', 'phases.rounds.matches.away_team'])
-        .with('competitions', (query) => {
+        .with('competition')
+        .with('season')
+        .whereHas('competition', (query) => {
           query.where('slug', this.$route.params.competition);
         })
-        .with('season', (query) => {
+        .whereHas('season', (query) => {
           query.where('slug', this.$route.params.season);
         })
         .first();
@@ -114,6 +116,7 @@ export default Vue.extend({
       }
       const phase = this.competitionEdition.phases.find((phase) => phase.id === this.$route.params.phase);
       if (!phase) {
+        // TODO: redirect to another phase instead of throwing an error.
         throw new Error('Unrecognised phase');
       }
       return phase;
