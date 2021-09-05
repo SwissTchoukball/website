@@ -6,10 +6,10 @@ export interface NewsEntry {
   slug: string;
   main_image?: {
     id: string;
-    description: string;
+    description?: string;
   };
   body: string;
   date_created: string;
-  date_updated: string;
+  date_updated?: string;
   domains: Domain[];
 }

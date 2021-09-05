@@ -30,7 +30,7 @@ import { getAssetSrcSet, getAssetURL } from '~/plugins/directus';
 export interface CarouselItem {
   image: {
     directusAssetId: string;
-    alt: string;
+    alt?: string;
   };
   caption: string;
   href: string;

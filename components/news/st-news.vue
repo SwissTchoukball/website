@@ -54,13 +54,16 @@ export default Vue.extend({
     creationDate(): string {
       return this.$formatDate(new Date(this.newsEntry.date_created), 'PPP');
     },
-    updateDate(): string {
-      return this.$formatDate(new Date(this.newsEntry.date_updated), 'PPP');
+    updateDate(): string | undefined {
+      if (this.newsEntry.date_updated) {
+        return this.$formatDate(new Date(this.newsEntry.date_updated), 'PPP');
+      }
+      return undefined;
     },
     dates(): string {
       let dates = `${this.$t('news.publishedOn')} ${this.creationDate}`;
 
-      if (this.creationDate !== this.updateDate) {
+      if (this.updateDate && this.creationDate !== this.updateDate) {
         dates += `, ${this.$t('news.updatedOn')} ${this.updateDate}`;
       }
 

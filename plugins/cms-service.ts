@@ -1,9 +1,9 @@
 import { Plugin } from '@nuxt/types';
-import { PartialItem } from '@directus/sdk';
 import { set } from 'date-fns';
-import { DirectusNewsDomainPivot, DirectusSeason, getTranslatedFields } from '~/plugins/directus';
+import { DirectusSeason, getTranslatedFields } from '~/plugins/directus';
 import { NewsEntry } from '~/components/news/st-news';
 import { NationalTeam, NationalTeamResult } from '~/components/national-teams/st-national-teams.prop';
+import Domain from '~/models/domain.model';
 
 export interface Venue {
   name: string;
@@ -114,31 +114,9 @@ declare module 'vuex/types/index' {
 }
 
 const cmsService: Plugin = (context, inject) => {
-  const flattenForLanguage = (
-    dataEntry: PartialItem<{ [x: string]: any; translations: { languages_code: string; [y: string]: any }[] }>,
-    languageCode: string
-  ) => {
-    if (!dataEntry.translations) {
-      throw new Error(`No translations`);
-    }
-    const requestedTranslation = dataEntry.translations.find(
-      (translation) => translation?.languages_code && translation.languages_code === languageCode
-    );
-    if (!requestedTranslation) {
-      throw new Error(`No ${languageCode} translation available`);
-    }
-    const flattenDataEntry: any = {
-      ...dataEntry,
-      ...requestedTranslation,
-    };
-    flattenDataEntry.translations = undefined;
-    return flattenDataEntry;
-  };
-
   const getNews: CMSService['getNews'] = async ({ limit, page, domainId, withImageOnly }) => {
     // We retrieve all the languages and show news in fallback locale if not available in current locale
     const currentLocale = context.i18n.locale;
-    const defaultLocale = context.i18n.defaultLocale;
 
     // Preparing the filter to retrieve the news
     const publishedFilter = {
@@ -174,6 +152,11 @@ const cmsService: Plugin = (context, inject) => {
       filter,
       fields: [
         'id',
+        'title',
+        'slug',
+        'body',
+        'date_created',
+        'date_updated',
         'main_image.id',
         'main_image.description',
         'translations.languages_code',
@@ -184,6 +167,8 @@ const cmsService: Plugin = (context, inject) => {
         'domains.domains_id.translations.name',
       ],
       deep: {
+        // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
+        translations: { _filter: { languages_code: { _eq: currentLocale } } },
         // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
         domains: { domains_id: { translations: { _filter: { languages_code: { _eq: currentLocale } } } } },
       },
@@ -200,43 +185,59 @@ const cmsService: Plugin = (context, inject) => {
     }
 
     newsList = newsResponse.data.reduce((news, directusNewsEntry) => {
-      let singleLanguageNewsEntry: (Omit<NewsEntry, 'domains'> & { domains: DirectusNewsDomainPivot[] }) | undefined;
-      if (directusNewsEntry && directusNewsEntry.translations?.length) {
-        try {
-          singleLanguageNewsEntry = flattenForLanguage(directusNewsEntry, currentLocale);
-        } catch (error) {
-          console.warn(
-            `News entry ${directusNewsEntry.id} is not available in ${currentLocale}. Falling back to default.`
-          );
-          try {
-            singleLanguageNewsEntry = flattenForLanguage(directusNewsEntry, defaultLocale);
-          } catch (error) {
-            console.warn(
-              `News entry ${directusNewsEntry.id} is not available in default locale ${defaultLocale}. Discarding news entry for display.`
-            );
+      if (!directusNewsEntry) {
+        return news;
+      }
+
+      if (
+        !directusNewsEntry.id ||
+        !directusNewsEntry.title ||
+        !directusNewsEntry.slug ||
+        !directusNewsEntry.body ||
+        !directusNewsEntry.date_created
+      ) {
+        console.warn(`News entry with ID ${directusNewsEntry.id} is missing requested fields`);
+        return news;
+      }
+
+      const translatedFields = getTranslatedFields(directusNewsEntry);
+
+      const newsEntry: NewsEntry = {
+        id: directusNewsEntry.id,
+        title: translatedFields?.title || directusNewsEntry.title,
+        slug: translatedFields?.slug || directusNewsEntry.slug,
+        body: translatedFields?.body || directusNewsEntry.body,
+        date_created: directusNewsEntry.date_created,
+        date_updated: directusNewsEntry.date_updated,
+        domains: [],
+      };
+
+      if (directusNewsEntry.main_image && directusNewsEntry.main_image.id) {
+        newsEntry.main_image = {
+          id: directusNewsEntry.main_image.id,
+          description: directusNewsEntry.main_image.description,
+        };
+      }
+
+      if (directusNewsEntry.domains) {
+        newsEntry.domains = directusNewsEntry.domains.reduce((domains, domain) => {
+          if (!domain || !domain.domains_id) {
+            return domains;
           }
-        }
 
-        if (!singleLanguageNewsEntry) {
-          return news;
-        }
+          const translatedFields = getTranslatedFields(domain.domains_id);
 
-        // For domains, we expect them to be all translated, so we don't fallback to default locale.
-        const newsEntry: NewsEntry = {
-          ...singleLanguageNewsEntry,
-          domains: singleLanguageNewsEntry.domains.map((domain) => {
-            const translatedFields = getTranslatedFields(domain.domains_id);
-
-            return {
+          return [
+            ...domains,
+            {
               id: domain.id,
               name: translatedFields?.name || domain.domains_id.name,
-            } as any; /* Workaround until we have the news in the store as well */
-          }),
-        };
-
-        return [...news, newsEntry];
+            } as any /* Workaround until we have the news in the store as well */,
+          ];
+        }, [] as Domain[]);
       }
-      return news;
+
+      return [...news, newsEntry];
     }, [] as NewsEntry[]);
 
     let filteredDomainName;
@@ -256,12 +257,16 @@ const cmsService: Plugin = (context, inject) => {
     };
   };
 
+  // FIXME: `getOneNews` is almost identical to `getNews`. Make it more DRY.
   const getOneNews: CMSService['getOneNews'] = async (newsId) => {
     // We retrieve all the languages and show news in fallback locale if not available in current locale
     const currentLocale = context.i18n.locale;
-    const defaultLocale = context.i18n.defaultLocale;
-    const newsEntryResponse = await context.$directus.items('news').readOne(newsId, {
+    const directusNewsEntry = await context.$directus.items('news').readOne(newsId, {
       fields: [
+        'id',
+        'title',
+        'slug',
+        'body',
         'date_created',
         'date_updated',
         'main_image.id',
@@ -276,47 +281,64 @@ const cmsService: Plugin = (context, inject) => {
       ],
       deep: {
         // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
+        translations: { _filter: { languages_code: { _eq: currentLocale } } },
+        // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
         domains: { domains_id: { translations: { _filter: { languages_code: { _eq: currentLocale } } } } },
       },
     });
 
-    if (!newsEntryResponse) {
+    if (!directusNewsEntry) {
       throw new Error('Error when retrieving news');
     }
 
-    if (!newsEntryResponse.translations?.length) {
-      throw new Error('News has no translations');
+    if (
+      !directusNewsEntry.id ||
+      !directusNewsEntry.title ||
+      !directusNewsEntry.slug ||
+      !directusNewsEntry.body ||
+      !directusNewsEntry.date_created
+    ) {
+      throw new Error(`News entry is missing requested fields`);
     }
 
-    let singleLanguageNewsEntry: (Omit<NewsEntry, 'domains'> & { domains: DirectusNewsDomainPivot[] }) | undefined;
-    try {
-      singleLanguageNewsEntry = flattenForLanguage(newsEntryResponse, currentLocale);
-    } catch (error) {
-      console.warn(`News entry ${newsEntryResponse.id} is not available in ${currentLocale}. Falling back to default.`);
-      try {
-        singleLanguageNewsEntry = flattenForLanguage(newsEntryResponse, defaultLocale);
-      } catch (error) {
-        throw new Error('News entry not available in default locale');
-      }
+    const translatedFields = getTranslatedFields(directusNewsEntry);
+
+    const newsEntry: NewsEntry = {
+      id: directusNewsEntry.id,
+      title: translatedFields?.title || directusNewsEntry.title,
+      slug: translatedFields?.slug || directusNewsEntry.slug,
+      body: translatedFields?.body || directusNewsEntry.body,
+      date_created: directusNewsEntry.date_created,
+      date_updated: directusNewsEntry.date_updated,
+      domains: [],
+    };
+
+    if (directusNewsEntry.main_image && directusNewsEntry.main_image.id) {
+      newsEntry.main_image = {
+        id: directusNewsEntry.main_image.id,
+        description: directusNewsEntry.main_image.description,
+      };
     }
 
-    if (!singleLanguageNewsEntry) {
-      // Should not happen because if not set above, an error is thrown.
-      throw new Error('Unexpected error when processing news entry');
-    }
+    if (directusNewsEntry.domains) {
+      newsEntry.domains = directusNewsEntry.domains.reduce((domains, domain) => {
+        if (!domain || !domain.domains_id) {
+          return domains;
+        }
 
-    // For domains, we expect them to be all translated, so we don't fallback to default locale.
-    return {
-      ...singleLanguageNewsEntry,
-      domains: singleLanguageNewsEntry.domains.map((domain) => {
         const translatedFields = getTranslatedFields(domain.domains_id);
 
-        return {
-          id: domain.id,
-          name: translatedFields?.name || domain.domains_id.name,
-        } as any; /* Workaround until we have the news in the store as well */
-      }),
-    };
+        return [
+          ...domains,
+          {
+            id: domain.id,
+            name: translatedFields?.name || domain.domains_id.name,
+          } as any /* Workaround until we have the news in the store as well */,
+        ];
+      }, [] as Domain[]);
+    }
+
+    return newsEntry;
   };
 
   const getEvents: CMSService['getEvents'] = async ({ limit, page, typeId, month, upcoming }) => {
@@ -466,7 +488,6 @@ const cmsService: Plugin = (context, inject) => {
   const getTeam: CMSService['getTeam'] = async (teamSlug) => {
     // We retrieve all the languages and show news in fallback locale if not available in current locale
     const currentLocale = context.i18n.locale;
-    // const defaultLocale = context.i18n.defaultLocale;
     const teamResponse = await context.$directus.items('national_teams').readMany({
       limit: 1,
       filter: {

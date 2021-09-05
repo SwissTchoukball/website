@@ -36,6 +36,9 @@ export interface DirectusNewsDomainPivot {
 
 export interface DirectusNews {
   id: number;
+  title: string;
+  slug: string;
+  body: string;
   date_created: string;
   date_updated: string;
   main_image: {
