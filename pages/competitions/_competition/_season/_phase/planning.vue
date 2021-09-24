@@ -69,7 +69,11 @@ export default Vue.extend({
         .with('facility')
         .with('round', (query) => query.with('phase', (queryP) => queryP.where('id', this.phase.id)))
         .where('datetime', (datetime: string) => datetime >= this.$formatDate(new Date(), 'yyyy-MM-dd'))
-        .get();
+        .orderBy('datetime')
+        .get()
+        // Somehow, this query retrieves some matches from other phases, without including the phase.
+        // We filter those out here. FIXME: Find a cleaner way to fix this.
+        .filter((match) => match.round.phase);
 
       return matches;
     },

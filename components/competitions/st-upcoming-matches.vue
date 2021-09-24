@@ -76,6 +76,7 @@ export default Vue.extend({
         .with('facility')
         .with('round.phase.competition_edition.competition|season')
         .where('datetime', (datetime: string) => datetime >= this.$formatDate(new Date(), 'yyyy-MM-dd'))
+        .orderBy('datetime')
         .limit(9)
         .get();
     },
