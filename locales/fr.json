@@ -122,7 +122,7 @@
   },
   "clubs": {
     "title": "Clubs",
-    "amountMembers": "Il y a {amount} clubs adhérants à Swiss Tchoukball.",
+    "amountMembers": "Il y a {amount} clubs adhérents à Swiss Tchoukball.",
     "logoOf": "Logo du {name}"
   },
   "staff": {
