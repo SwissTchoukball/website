@@ -110,7 +110,7 @@ export default Vue.extend({
 
 @media (--sm-and-up) {
   .c-news-entry__image {
-    height: min(50vw, 60vh);
+    max-height: min(50vw, 60vh);
   }
 }
 
@@ -118,7 +118,7 @@ export default Vue.extend({
   .c-news-entry__image {
     width: var(--st-breakpoing-l-xl);
     margin-left: calc(-1 * (var(--st-breakpoing-l-xl) - var(--st-length-main-content-max-width)) / 2);
-    height: 60vh;
+    max-height: 60vh;
   }
 }
 </style>
