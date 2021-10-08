@@ -91,7 +91,7 @@ export default Vue.extend({
   width: 100vw;
   margin-left: calc(-1 * var(--st-length-main-content-side-padding));
   margin-top: var(--st-length-spacing-s);
-  height: min(50vw, 60vh);
+  height: auto;
   object-fit: cover;
 }
 
@@ -106,6 +106,12 @@ export default Vue.extend({
 
 .c-news-entry__dates::first-letter {
   text-transform: uppercase;
+}
+
+@media (--sm-and-up) {
+  .c-news-entry__image {
+    height: min(50vw, 60vh);
+  }
 }
 
 @media (--xl-and-up) {
