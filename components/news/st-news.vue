@@ -12,7 +12,7 @@
     />
     <!-- We have to use v-html here as we get html content directly from Directus -->
     <!-- eslint-disable-next-line vue/no-v-html -->
-    <div class="directus-formatted-content" v-html="newsEntry.body"></div>
+    <div class="directus-formatted-content c-news-entry__body" v-html="newsEntry.body"></div>
     <p class="c-news-entry__dates">{{ dates }}</p>
   </article>
 </template>
@@ -93,6 +93,10 @@ export default Vue.extend({
   margin-top: var(--st-length-spacing-s);
   height: min(50vw, 60vh);
   object-fit: cover;
+}
+
+.c-news-entry__body {
+  margin-top: var(--st-length-spacing-s);
 }
 
 .c-news-entry__dates {
