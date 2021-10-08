@@ -20,7 +20,17 @@ export default Vue.extend({
   },
   async fetch() {
     const slug = this.$route.params.slug;
-    const id = parseInt(slug.substr(0, slug.indexOf('-')));
+    let id: number;
+    if (slug.includes('-')) {
+      id = parseInt(slug.substr(0, slug.indexOf('-')));
+    } else {
+      id = parseInt(slug);
+    }
+
+    if (!id) {
+      throw new Error('Invalid news ID');
+    }
+
     this.newsEntry = await this.$cmsService.getOneNews(id);
   },
 });

@@ -59,7 +59,11 @@ export default Vue.extend({
   },
   methods: {
     getNewsLink(newsEntry: NewsEntry) {
-      return this.localePath(`/news/${newsEntry.id}-${newsEntry.slug}`);
+      let newsLink = `/news/${newsEntry.id}`;
+      if (newsEntry.slug) {
+        newsLink += `-${newsEntry.slug}`;
+      }
+      return this.localePath(newsLink);
     },
     mainImageFallbackSrc(assetId: string): string {
       return getAssetURL(this.$config.cmsURL, assetId, {
