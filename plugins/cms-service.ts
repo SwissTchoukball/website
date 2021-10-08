@@ -172,6 +172,7 @@ const cmsService: Plugin = (context, inject) => {
         // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
         domains: { domains_id: { translations: { _filter: { languages_code: { _eq: currentLocale } } } } },
       },
+      sort: ['-date_created'],
     });
 
     let totalNewsEntries = 0;
