@@ -192,7 +192,6 @@ const cmsService: Plugin = (context, inject) => {
       if (
         !directusNewsEntry.id ||
         !directusNewsEntry.title ||
-        !directusNewsEntry.slug ||
         !directusNewsEntry.body ||
         !directusNewsEntry.date_created
       ) {
@@ -294,7 +293,6 @@ const cmsService: Plugin = (context, inject) => {
     if (
       !directusNewsEntry.id ||
       !directusNewsEntry.title ||
-      !directusNewsEntry.slug ||
       !directusNewsEntry.body ||
       !directusNewsEntry.date_created
     ) {
