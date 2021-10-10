@@ -134,7 +134,9 @@ interface Leverade {
     >
   >;
   getStandings: (groupId: number | string) => Promise<any>;
-  getUpcomingMatches: () => Promise<
+  getUpcomingMatches: (
+    seasonLeveradeId: string
+  ) => Promise<
     LeveradeResponse<
       LeveradeMatch[],
       LeveradeRound | LeveradeGroup | LeveradeTournament | LeveradeTeam | LeveradeFacility
@@ -168,10 +170,10 @@ const leveradePlugin: Plugin = ({ $config, $axios, $formatDate }, inject) => {
     });
   };
 
-  const getUpcomingMatches: Leverade['getUpcomingMatches'] = () => {
+  const getUpcomingMatches: Leverade['getUpcomingMatches'] = (seasonLeveradeId) => {
     const today = $formatDate(new Date(), 'yyyy-MM-dd');
     return $axios.get(
-      `${$config.leveradeURL}/matches?filter=datetime>${today},round.group.tournament.season.id:4818&sort=datetime&include=round.group.tournament,teams,facility`,
+      `${$config.leveradeURL}/matches?filter=datetime>${today},round.group.tournament.season.id:${seasonLeveradeId}&sort=datetime&include=round.group.tournament,teams,facility`,
       {
         transformRequest: (data, headers) => {
           // Removing authorization headers that are somehow added by the production server when this run server-side.

@@ -1,6 +1,7 @@
 import { ActionTree } from 'vuex/types/index';
 import { PartialItem } from '@directus/sdk';
 import { isPast, parse } from 'date-fns';
+import { Item } from '@vuex-orm/core';
 import { EventTypes, MenuItem, PlayerPositions, RootState } from './state';
 import { DirectusMenuItem, DirectusNationalCompetition, getTranslatedFields } from '~/plugins/directus';
 import CompetitionEdition from '~/models/competition-edition.model';
@@ -432,7 +433,12 @@ export default {
   },
 
   async loadUpcomingMatches(context) {
-    const matchesResponse = await this.$leverade.getUpcomingMatches();
+    const currentSeason: Item<Season> = context.getters.currentSeason;
+    if (!currentSeason) {
+      throw new Error('Current season undefined');
+    }
+
+    const matchesResponse = await this.$leverade.getUpcomingMatches(currentSeason.leverade_id);
     const matches = matchesResponse.data.data;
 
     if (!matchesResponse.data.included) {

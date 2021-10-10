@@ -166,6 +166,8 @@ export interface DirectusSeason {
   id: number;
   name: string;
   slug: string;
+  date_start: string;
+  date_end: string;
   leverade_id?: number;
 }
 

@@ -633,7 +633,7 @@ const cmsService: Plugin = (context, inject) => {
 
   const getSeasons: CMSService['getSeasons'] = async () => {
     const seasonsResponse = await context.$directus.items('seasons').readMany({
-      fields: ['id', 'name', 'slug', 'leverade_id'],
+      fields: ['id', 'name', 'slug', 'date_start', 'date_end', 'leverade_id'],
     });
 
     if (!seasonsResponse?.data) {
@@ -642,13 +642,15 @@ const cmsService: Plugin = (context, inject) => {
 
     const seasons = seasonsResponse.data.reduce((seasons, season) => {
       // We discard seasons that don't have mandatory data.
-      if (season.id && season.name && season.slug) {
+      if (season.id && season.name && season.slug && season.date_start && season.date_end) {
         return [
           ...seasons,
           {
             id: season.id,
             name: season.name,
             slug: season.slug,
+            date_start: season.date_start,
+            date_end: season.date_end,
             leverade_id: season.leverade_id,
           },
         ];
@@ -772,6 +774,8 @@ const cmsService: Plugin = (context, inject) => {
         'season.id',
         'season.name',
         'season.slug',
+        'season.date_start',
+        'season.date_end',
         'season.leverade_id',
         'competition.id',
         'competition.name',
@@ -796,6 +800,8 @@ const cmsService: Plugin = (context, inject) => {
         !rawEdition.season?.id ||
         !rawEdition.season?.name ||
         !rawEdition.season?.slug ||
+        !rawEdition.season?.date_start ||
+        !rawEdition.season?.date_end ||
         !rawEdition.season?.leverade_id ||
         !rawEdition.competition?.id ||
         !rawEdition.competition?.name ||
@@ -815,6 +821,8 @@ const cmsService: Plugin = (context, inject) => {
             id: rawEdition.season.id,
             name: rawEdition.season.name,
             slug: rawEdition.season.slug,
+            date_start: rawEdition.season.date_start,
+            date_end: rawEdition.season.date_end,
             leverade_id: rawEdition.season.leverade_id,
           },
           competition: {
