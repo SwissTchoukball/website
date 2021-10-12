@@ -122,7 +122,7 @@ export default Vue.extend({
   bottom: 0;
   left: 0;
   right: 0;
-  height: 5rem;
+  height: 9rem;
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.6));
 }
 @media (--sm-and-up) {
@@ -131,7 +131,7 @@ export default Vue.extend({
   }
 
   .st-home-carousel__title-fade {
-    height: 6rem;
+    height: 10rem;
   }
 }
 
@@ -142,7 +142,7 @@ export default Vue.extend({
   }
 
   .st-home-carousel__title-fade {
-    height: 7rem;
+    height: 11rem;
   }
 }
 
@@ -153,7 +153,7 @@ export default Vue.extend({
   }
 
   .st-home-carousel__title-fade {
-    height: 8rem;
+    height: 12rem;
   }
 }
 
