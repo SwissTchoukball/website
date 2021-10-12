@@ -86,6 +86,7 @@ export default Vue.extend({
 .st-home-carousel__image {
   display: block;
   width: 100vw;
+  max-width: 100%;
   height: min(50vw, 60vh);
   object-fit: cover;
   background-image: linear-gradient(gray 100%, transparent 0);
