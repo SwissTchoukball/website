@@ -27,7 +27,7 @@
     "@nuxtjs/fontawesome": "^1.1.2",
     "@vuex-orm/core": "^0.36.4",
     "core-js": "^3.19.2",
-    "date-fns": "^2.26.0",
+    "date-fns": "^2.27.0",
     "flickr-sdk": "^4.0.0",
     "nuxt": "^2.15.8",
     "nuxt-i18n": "^6.28.1",
