@@ -87,6 +87,7 @@ export default Vue.extend({
   color: red;
   pointer-events: none;
 }
+
 .c-select-navigation__option a.nuxt-link-active:hover {
   background-color: none;
   cursor: default;

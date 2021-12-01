@@ -24,12 +24,14 @@
   background-color: var(--st-color-loader-foreground);
   display: block;
 }
+
 .c-loader__strip--vertical {
   margin-top: 12px;
   height: 40px;
   width: 12px;
   margin-left: 26px;
 }
+
 .c-loader__strip--hotizontal {
   width: 40px;
   height: 12px;
@@ -41,9 +43,11 @@
   0% {
     transform: perspective(120px) rotateX(0deg) rotateY(0deg);
   }
+
   50% {
     transform: perspective(120px) rotateX(-180.1deg) rotateY(0deg);
   }
+
   100% {
     transform: perspective(120px) rotateX(-180deg) rotateY(-179.9deg);
   }

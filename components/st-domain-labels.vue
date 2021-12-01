@@ -32,6 +32,7 @@ export default Vue.extend({
   display: inline-block;
   margin-right: 0.3em;
 }
+
 .c-news-domain-labels__domain-link {
   color: var(--st-color-news-domain-foreground);
   background-color: var(--st-color-news-domain-background);

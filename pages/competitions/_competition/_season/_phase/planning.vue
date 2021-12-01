@@ -159,6 +159,7 @@ export default Vue.extend({
 .c-planning__match-icon {
   color: var(--st-color-event-icon);
 }
+
 .c-planning__match-icon:not(:first-child) {
   margin-left: var(--st-length-spacing-xs);
 }

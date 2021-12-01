@@ -128,6 +128,7 @@ export default Vue.extend({
     flex-wrap: wrap;
     max-height: 13em;
   }
+
   .c-upcoming-matches__match {
     width: 50%;
   }

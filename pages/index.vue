@@ -228,6 +228,7 @@ export default Vue.extend({
     flex-wrap: wrap;
     max-height: 12em;
   }
+
   .c-index__flickr-photo {
     max-width: 15%;
   }
