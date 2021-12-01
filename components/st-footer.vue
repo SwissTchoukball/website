@@ -162,7 +162,7 @@ export default Vue.extend({
 
 .c-footer__social-icon {
   display: inline-block;
-  padding: 0.8rem 0.3rem 0.5rem 0.3rem;
+  padding: 0.8rem 0.3rem 0.5rem;
 }
 
 .c-footer__social-icon--twitter {

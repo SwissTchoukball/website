@@ -238,6 +238,7 @@ export default Vue.extend({
 .c-match__address {
   display: flex;
 }
+
 .c-match__address .c-match__icon {
   margin-right: var(--st-length-spacing-xxs);
 }

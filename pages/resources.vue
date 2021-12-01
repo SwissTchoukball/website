@@ -224,9 +224,8 @@ export default Vue.extend({
   padding: 0;
   border: none;
   display: flex;
-  flex-direction: column;
+  flex-flow: column wrap;
   align-items: stretch;
-  flex-wrap: wrap;
 }
 
 .c-resources__filter {
@@ -259,6 +258,7 @@ export default Vue.extend({
 
     /* align-items: flex-end; */
   }
+
   .c-resources__filter {
     width: auto;
   }

@@ -109,6 +109,7 @@ export default Vue.extend({
   font-size: 2em;
 
   /* PostCSS doesn't support adding prefix for line-clamp yet: https://github.com/postcss/autoprefixer/issues/1322 */
+  /* stylelint-disable-next-line value-no-vendor-prefix */
   display: -webkit-box;
   -webkit-line-clamp: 2; /* That's weird, but the -webkit- prefix works also for Firefox */
   -webkit-box-orient: vertical;
@@ -123,8 +124,9 @@ export default Vue.extend({
   left: 0;
   right: 0;
   height: 9rem;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.6));
+  background: linear-gradient(to bottom, rgba(0 0 0 / 0%), rgba(0 0 0 / 60%));
 }
+
 @media (--sm-and-up) {
   .st-home-carousel__title {
     font-size: 2.25em;
@@ -185,11 +187,13 @@ export default Vue.extend({
   justify-content: center;
   align-items: center;
 }
+
 .slick-dots li {
   margin: 0 calc(var(--st-length-spacing-xs) / 2);
   padding: 0;
   font-size: 0;
 }
+
 .slick-dots li button {
   background-color: var(--st-color-home-carousel-dot);
   border-radius: 50%;
@@ -202,6 +206,7 @@ export default Vue.extend({
   border: 1px solid transparent;
   transition: background-color 0.3s ease;
 }
+
 .slick-dots li.slick-active button {
   background-color: var(--st-color-home-carousel-dot-active);
   width: 12px;

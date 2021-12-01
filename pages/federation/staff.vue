@@ -98,6 +98,7 @@ export default Vue.extend({
 .c-staff__group-select {
   margin-top: var(--st-length-spacing-xs);
 }
+
 .c-staff__group-description {
   margin-top: var(--st-length-spacing-s);
 }
