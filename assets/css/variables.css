@@ -21,6 +21,8 @@
   --st-color-text: black;
   --st-color-main-content-alternative-background: var(--st-color-grey-very-light);
   --st-color-separator: var(--st-color-red-swiss-tchoukball);
+  --st-color-table-heading-border: var(--st-color-red-swiss-tchoukball);
+  --st-color-table-border: var(--st-color-grey);
 
   /* Links */
   --st-color-link: var(--st-color-red-swiss-tchoukball);

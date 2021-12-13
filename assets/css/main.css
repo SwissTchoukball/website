@@ -28,6 +28,41 @@ a:visited {
   padding-bottom: var(--st-length-spacing-xs);
 }
 
+.l-paragraph,
+.directus-formatted-content p,
+.directus-formatted-content ul,
+.directus-formatted-content ol {
+  max-width: 45rem;
+  margin: auto;
+  margin-top: var(--st-length-spacing-xs);
+  font-size: 1em;
+  line-height: 1.5;
+}
+
+.l-paragraph--large {
+  font-size: 1.2em;
+}
+
+.l-table,
+.directus-formatted-content table {
+  width: 100%;
+  margin: var(--st-length-spacing-xs) auto;
+  border-collapse: collapse;
+}
+
+.l-table__cell,
+.directus-formatted-content td,
+.directus-formatted-content th {
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--st-color-table-border);
+}
+
+.l-table__cell--heading,
+.directus-formatted-content th {
+  border-bottom: 1px solid var(--st-color-table-heading-border);
+  text-align: left;
+}
+
 .l-people-list {
   display: flex;
   justify-content: space-between;
@@ -80,6 +115,16 @@ a:visited {
   .l-main-content-section {
     width: 100%;
     padding-bottom: var(--st-length-spacing-xs);
+  }
+
+  .l-table,
+  .directus-formatted-content table {
+    width: 45rem;
+  }
+
+  .l-table--large,
+  .directus-formatted-content table.st-full-width {
+    width: 100%;
   }
 }
 

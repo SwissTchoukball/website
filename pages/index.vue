@@ -41,7 +41,7 @@
 
     <section class="l-main-content-section">
       <h2 class="t-headline-1">Tchoukball</h2>
-      <p class="t-paragraph t-paragraph--large" v-html="$t('tchoukball.description')"></p>
+      <p class="l-paragraph l-paragraph--large" v-html="$t('tchoukball.description')"></p>
       <nav>
         <ul class="c-index__tchoukball-nav u-unstyled-list">
           <li v-for="item of tchoukballNavigation" :key="item.name" class="c-index__tchoukball-nav-item">

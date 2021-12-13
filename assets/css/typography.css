@@ -61,18 +61,3 @@
 .directus-formatted-content h5 a {
   text-decoration: none;
 }
-
-.t-paragraph,
-.directus-formatted-content p,
-.directus-formatted-content ul,
-.directus-formatted-content ol {
-  max-width: 45rem;
-  margin: auto;
-  margin-top: var(--st-length-spacing-xs);
-  font-size: 1em;
-  line-height: 1.5;
-}
-
-.t-paragraph--large {
-  font-size: 1.2em;
-}
