@@ -113,6 +113,7 @@ const config: NuxtConfig = {
         'faFilePdf',
         'faFileArchive',
         'faQuestion',
+        'faNewspaper',
       ],
       brands: ['faTwitter', 'faInstagram', 'faFacebook', 'faFlickr', 'faYoutube'],
     },

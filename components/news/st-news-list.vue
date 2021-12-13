@@ -19,6 +19,9 @@
             96vw
           "
         />
+        <div v-else class="c-news-list__image c-news-list__image--placeholder">
+          <fa-icon icon="newspaper" class="c-news-list__placeholder-icon" />
+        </div>
       </nuxt-link>
       <st-domain-labels :domains="newsEntry.domains" class="c-news-list__domains" />
       <h3 class="c-news-list__title t-headline-2">
@@ -109,6 +112,18 @@ export default Vue.extend({
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.c-news-list__image--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.c-news-list__placeholder-icon {
+  width: 3rem;
+  height: 3rem;
+  color: var(--st-color-news-image-foreground);
 }
 
 .c-news-list__domains {
