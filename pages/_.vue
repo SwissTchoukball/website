@@ -26,6 +26,7 @@ export default Vue.extend({
 
     const retrievePage = async (pagePath: string, locale: string) => {
       const pageResponse = await app.$directus.items('pages').readMany({
+        // @ts-ignore Bug with Directus SDK. It's okay to filter more than one level deep.
         filter: { translations: { path: { _eq: pagePath } } },
         fields: ['id', 'translations.languages_code', 'translations.path', 'translations.title', 'translations.body'],
         // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
