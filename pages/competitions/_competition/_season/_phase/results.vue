@@ -1,7 +1,6 @@
 <template>
   <div class="c-results">
     <template v-if="roundsUpToNow.length > 0">
-      <p>⚠️ Scores aléatoires (en attendant de les obtenir depuis Leverade)</p>
       <ul class="u-unstyled-list c-results__round">
         <li v-for="round of roundsUpToNow" :key="round.id" class="c-results__round">
           <h3 v-if="roundsUpToNow.length > 1" class="t-headline-2 c-results__round-name">{{ round.name }}</h3>

@@ -124,13 +124,29 @@ export interface LeveradeFacility extends LeveradeEntity {
   };
 }
 
+export interface LeveradeResult extends LeveradeEntity {
+  type: 'result';
+  attributes: {
+    value: number | null;
+    score: number | null;
+  };
+  relationships: {
+    match: {
+      data: LeveradeBaseEntity;
+    };
+    team: {
+      data: LeveradeBaseEntity;
+    };
+  };
+}
+
 interface Leverade {
   getFullTournament: (
     tournamentId: number | string
   ) => Promise<
     LeveradeResponse<
       LeveradeTournament,
-      LeveradeGroup | LeveradeMatch | LeveradeRound | LeveradeTeam | LeveradeFacility
+      LeveradeGroup | LeveradeMatch | LeveradeRound | LeveradeTeam | LeveradeFacility | LeveradeResult
     >
   >;
   getStandings: (groupId: number | string) => Promise<any>;
@@ -147,7 +163,7 @@ interface Leverade {
 const leveradePlugin: Plugin = ({ $config, $axios, $formatDate }, inject) => {
   const getFullTournament: Leverade['getFullTournament'] = (tournamentId) => {
     return $axios.get(
-      `${$config.leveradeURL}/tournaments/${tournamentId}?include=groups,groups.rounds,groups.rounds.matches,groups.rounds.matches.facility,teams`,
+      `${$config.leveradeURL}/tournaments/${tournamentId}?include=groups,groups.rounds,groups.rounds.matches,groups.rounds.matches.facility,groups.rounds.matches.results,teams`,
       {
         transformRequest: (data, headers) => {
           // Removing authorization headers that are somehow added by the production server when this run server-side.

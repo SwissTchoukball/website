@@ -1,6 +1,5 @@
 import { ActionTree } from 'vuex/types/index';
 import { PartialItem } from '@directus/sdk';
-import { isPast, parse } from 'date-fns';
 import { Item } from '@vuex-orm/core';
 import { EventTypes, MenuItem, PlayerPositions, RootState } from './state';
 import { DirectusMenuItem, DirectusNationalCompetition, getTranslatedFields } from '~/plugins/directus';
@@ -12,6 +11,7 @@ import {
   LeveradeFacility,
   LeveradeGroup,
   LeveradeMatch,
+  LeveradeResult,
   LeveradeRound,
   LeveradeTeam,
   LeveradeTournament,
@@ -258,16 +258,28 @@ export default {
     });
   },
 
-  async insertMatches(_context, matches: LeveradeMatch[]) {
+  async insertMatches(_context, { matches, results }: { matches: LeveradeMatch[]; results?: LeveradeResult[] }) {
     await Match.insert({
       data: matches.map((match) => {
-        // TODO: Remove when we'll get an actual score
         let home_team_score: number | null = null;
         let away_team_score: number | null = null;
-        const matchDate = parse(match.attributes.datetime, 'yyyy-MM-dd HH:mm:ss', new Date());
-        if (isPast(matchDate)) {
-          home_team_score = Math.floor(Math.random() * 100);
-          away_team_score = Math.floor(Math.random() * 100);
+
+        const homeResult = results?.find((result) => {
+          return (
+            result.relationships?.match?.data?.id === match.id &&
+            result.relationships?.team?.data?.id === match.meta.home_team
+          );
+        });
+
+        const awayResult = results?.find(
+          (result) =>
+            result.relationships?.match?.data?.id === match.id &&
+            result.relationships?.team?.data?.id === match.meta.away_team
+        );
+
+        if (homeResult && awayResult) {
+          home_team_score = homeResult.attributes.value;
+          away_team_score = awayResult.attributes.value;
         }
 
         return {
@@ -376,6 +388,7 @@ export default {
       const rounds: LeveradeRound[] = [];
       const matches: LeveradeMatch[] = [];
       const facilities: LeveradeFacility[] = [];
+      const results: LeveradeResult[] = [];
       tournamentResponse.data.included.forEach((entity) => {
         switch (entity.type) {
           case 'team':
@@ -393,6 +406,10 @@ export default {
           case 'facility':
             facilities.push(entity);
             break;
+          case 'result': {
+            results.push(entity);
+            break;
+          }
           default:
         }
       });
@@ -427,7 +444,7 @@ export default {
 
       await context.dispatch('insertFacilities', facilities);
       await context.dispatch('insertRounds', rounds);
-      await context.dispatch('insertMatches', matches);
+      await context.dispatch('insertMatches', { matches, results });
       context.commit('setCompetitionEditionAsFullyLoaded', { seasonSlug, competitionSlug });
     }
   },
@@ -492,7 +509,7 @@ export default {
     await context.dispatch('insertTeams', teams);
     await context.dispatch('insertPhases', groups);
     await context.dispatch('insertRounds', rounds);
-    await context.dispatch('insertMatches', matches);
+    await context.dispatch('insertMatches', { matches });
     context.commit('setUpcomingMatchesAsLoaded');
   },
 } as ActionTree<RootState, RootState>;
