@@ -1,6 +1,7 @@
 import { Plugin } from '@nuxt/types';
 import { set } from 'date-fns';
-import { DirectusSeason, getTranslatedFields } from '~/plugins/directus';
+import { Filter } from '@directus/sdk';
+import { DirectusNationalCompetitionEdition, DirectusSeason, getTranslatedFields } from '~/plugins/directus';
 import { NewsEntry } from '~/components/news/st-news';
 import { NationalTeam, NationalTeamResult } from '~/components/national-teams/st-national-teams.prop';
 import Domain from '~/models/domain.model';
@@ -496,11 +497,12 @@ const cmsService: Plugin = (context, inject) => {
           },
           {
             translations: {
+              // @ts-ignore This should be accepted. To be fixed in Directus SDK
               slug: { _eq: teamSlug },
             },
           },
         ],
-      } as any, // Workaround until the _or is properly recognised. See https://github.com/directus/directus/issues/7475
+      },
       fields: [
         'name',
         'slug',
@@ -674,11 +676,12 @@ const cmsService: Plugin = (context, inject) => {
           },
           {
             translations: {
+              // @ts-ignore This should be accepted. To be fixed in Directus SDK
               slug: { _eq: competitionSlug },
             },
           },
         ],
-      } as any, // Workaround until the _or is properly recognised. See https://github.com/directus/directus/issues/7475
+      },
       fields: [
         'id',
         'name',
@@ -728,14 +731,12 @@ const cmsService: Plugin = (context, inject) => {
     // We retrieve all the languages and show data in fallback locale if not available in current locale
     const currentLocale = context.i18n.locale;
 
-    // Type should be Filter<DirectusNationalCompetitionEdition>, but there is a bug in the Directus SDK.
-    // We use any as a workaround until the _or is properly recognised. See https://github.com/directus/directus/issues/7475
-    let filter: any = {};
+    let filter: Filter<DirectusNationalCompetitionEdition> = {};
 
     if (leveradeIds) {
       filter = {
         leverade_id: {
-          _in: leveradeIds,
+          _in: leveradeIds.map((id) => parseInt(id)),
         },
       };
     } else {
@@ -752,7 +753,10 @@ const cmsService: Plugin = (context, inject) => {
             },
             {
               competition: {
-                translations: { slug: { _eq: competitionSlug } },
+                translations: {
+                  // @ts-ignore This should be accepted. To be fixed in Directus SDK
+                  slug: { _eq: competitionSlug },
+                },
               },
             },
           ],

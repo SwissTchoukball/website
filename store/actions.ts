@@ -236,7 +236,7 @@ export default {
             status: 'regional_association',
           },
         ],
-      } as any, // Workaround until the _or is properly recognised. See https://github.com/directus/directus/issues/7475
+      },
       sort: ['name_sort'],
     });
     Club.addManyFromDirectus(clubsResponse);
