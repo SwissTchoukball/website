@@ -126,9 +126,9 @@ const cmsService: Plugin = (context, inject) => {
       },
     };
 
-    let domaniFilter: any;
+    let domainFilter: any;
     if (domainId) {
-      domaniFilter = {
+      domainFilter = {
         domains: { id: { _eq: domainId } },
       };
     }
@@ -139,8 +139,8 @@ const cmsService: Plugin = (context, inject) => {
     }
 
     const filter: any = { _and: [publishedFilter] };
-    if (domaniFilter) {
-      filter._and.push(domaniFilter);
+    if (domainFilter) {
+      filter._and.push(domainFilter);
     }
     if (imageFilter) {
       filter._and.push(imageFilter);
