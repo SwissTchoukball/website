@@ -63,6 +63,10 @@ a:visited {
   text-align: left;
 }
 
+.directus-formatted-content img {
+  max-width: 100%;
+}
+
 .l-people-list {
   display: flex;
   justify-content: space-between;
