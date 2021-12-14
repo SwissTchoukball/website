@@ -166,8 +166,6 @@ const cmsService: Plugin = (context, inject) => {
       ],
       deep: {
         // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
-        translations: { _filter: { languages_code: { _eq: currentLocale } } },
-        // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
         domains: { domains_id: { translations: { _filter: { languages_code: { _eq: currentLocale } } } } },
       },
       sort: ['-date_created'],
@@ -188,7 +186,7 @@ const cmsService: Plugin = (context, inject) => {
         return news;
       }
 
-      const translatedFields = getTranslatedFields(directusNewsEntry);
+      const translatedFields = getTranslatedFields(directusNewsEntry, currentLocale);
 
       if (!directusNewsEntry.id || !directusNewsEntry.date_created || !translatedFields?.title) {
         console.warn(`News entry with ID ${directusNewsEntry.id} is missing requested fields`);
@@ -270,8 +268,6 @@ const cmsService: Plugin = (context, inject) => {
       ],
       deep: {
         // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
-        translations: { _filter: { languages_code: { _eq: currentLocale } } },
-        // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
         domains: { domains_id: { translations: { _filter: { languages_code: { _eq: currentLocale } } } } },
       },
     });
@@ -280,7 +276,7 @@ const cmsService: Plugin = (context, inject) => {
       throw new Error('Error when retrieving news');
     }
 
-    const translatedFields = getTranslatedFields(directusNewsEntry);
+    const translatedFields = getTranslatedFields(directusNewsEntry, currentLocale);
 
     if (
       !directusNewsEntry.id ||

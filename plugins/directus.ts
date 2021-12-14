@@ -349,15 +349,23 @@ export const getAssetSrcSet = (cmsURL: string, assetId: string, { widths }: { wi
 };
 
 /**
- * Returns the translated fields of the first available language of the entity translations.
- *
- * This is useful when we requested the translations in a specific language
- * and already know which language is the first one.
+ * Returns the translated fields of the specified language.
+ * If the language is not specified, or if there is no translation available in the specified language,
+ * the first available language of the entity translations is returned
  */
 export const getTranslatedFields = (
-  entity: PartialItem<{ [key: string]: any } & { translations: { [key: string]: any }[] }>
+  entity: PartialItem<{ [key: string]: any } & { translations: { [key: string]: any }[] }>,
+  languageKey?: string
 ) => {
-  if (entity.translations && entity.translations[0]) {
-    return entity.translations[0];
+  if (entity.translations) {
+    if (languageKey) {
+      const translation = entity.translations.find((t) => t?.languages_code === languageKey);
+      if (translation) {
+        return translation;
+      }
+    }
+    if (entity.translations[0]) {
+      return entity.translations[0];
+    }
   }
 };
