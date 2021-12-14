@@ -122,6 +122,11 @@ export default Vue.extend({
           slug: 'infomaniak',
           href: 'https://infomaniak.ch',
         },
+        {
+          name: 'Axanova',
+          slug: 'axanova',
+          href: 'https://axanova.ch',
+        },
       ],
       affiliations: [
         {
