@@ -153,9 +153,6 @@ const cmsService: Plugin = (context, inject) => {
       filter,
       fields: [
         'id',
-        'title',
-        'slug',
-        'body',
         'date_created',
         'date_updated',
         'main_image.id',
@@ -191,23 +188,17 @@ const cmsService: Plugin = (context, inject) => {
         return news;
       }
 
-      if (
-        !directusNewsEntry.id ||
-        !directusNewsEntry.title ||
-        !directusNewsEntry.body ||
-        !directusNewsEntry.date_created
-      ) {
+      const translatedFields = getTranslatedFields(directusNewsEntry);
+
+      if (!directusNewsEntry.id || !directusNewsEntry.date_created || !translatedFields?.title) {
         console.warn(`News entry with ID ${directusNewsEntry.id} is missing requested fields`);
         return news;
       }
 
-      const translatedFields = getTranslatedFields(directusNewsEntry);
-
       const newsEntry: NewsEntry = {
         id: directusNewsEntry.id,
-        title: translatedFields?.title || directusNewsEntry.title,
-        slug: translatedFields?.slug || directusNewsEntry.slug,
-        body: translatedFields?.body || directusNewsEntry.body,
+        title: translatedFields.title,
+        slug: translatedFields.slug,
         date_created: directusNewsEntry.date_created,
         date_updated: directusNewsEntry.date_updated,
         domains: [],
@@ -265,9 +256,6 @@ const cmsService: Plugin = (context, inject) => {
     const directusNewsEntry = await context.$directus.items('news').readOne(newsId, {
       fields: [
         'id',
-        'title',
-        'slug',
-        'body',
         'date_created',
         'date_updated',
         'main_image.id',
@@ -292,22 +280,22 @@ const cmsService: Plugin = (context, inject) => {
       throw new Error('Error when retrieving news');
     }
 
+    const translatedFields = getTranslatedFields(directusNewsEntry);
+
     if (
       !directusNewsEntry.id ||
-      !directusNewsEntry.title ||
-      !directusNewsEntry.body ||
-      !directusNewsEntry.date_created
+      !directusNewsEntry.date_created ||
+      !translatedFields?.title ||
+      !translatedFields?.body
     ) {
       throw new Error(`News entry is missing requested fields`);
     }
 
-    const translatedFields = getTranslatedFields(directusNewsEntry);
-
     const newsEntry: NewsEntry = {
       id: directusNewsEntry.id,
-      title: translatedFields?.title || directusNewsEntry.title,
-      slug: translatedFields?.slug || directusNewsEntry.slug,
-      body: translatedFields?.body || directusNewsEntry.body,
+      title: translatedFields.title,
+      slug: translatedFields.slug,
+      body: translatedFields.body,
       date_created: directusNewsEntry.date_created,
       date_updated: directusNewsEntry.date_updated,
       domains: [],

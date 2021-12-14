@@ -8,7 +8,7 @@ export interface NewsEntry {
     id: string;
     description?: string;
   };
-  body: string;
+  body?: string;
   date_created: string;
   date_updated?: string;
   domains: Domain[];
