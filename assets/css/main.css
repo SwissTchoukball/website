@@ -50,14 +50,15 @@ a:visited {
   border-collapse: collapse;
 }
 
-.l-table__cell,
+.l-table td,
+.l-table th,
 .directus-formatted-content td,
 .directus-formatted-content th {
   padding: 0.5rem;
   border-bottom: 1px solid var(--st-color-table-border);
 }
 
-.l-table__cell--heading,
+.l-table th,
 .directus-formatted-content th {
   border-bottom: 1px solid var(--st-color-table-heading-border);
   text-align: left;

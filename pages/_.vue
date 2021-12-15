@@ -4,7 +4,6 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import { Await } from '~/types/types.utils';
 import stDynamicPage from '~/components/st-dynamic-page.vue';
 
 /**
@@ -24,58 +23,33 @@ export default Vue.extend({
       return;
     }
 
-    const retrievePage = async (pagePath: string, locale: string) => {
-      const pageResponse = await app.$directus.items('pages').readMany({
-        // @ts-ignore Bug with Directus SDK. It's okay to filter more than one level deep.
-        filter: { translations: { path: { _eq: pagePath } } },
-        fields: ['id', 'translations.languages_code', 'translations.path', 'translations.title', 'translations.body'],
-        // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
-        deep: { translations: { _filter: { languages_code: { _eq: locale } } } },
-        limit: 1,
-      });
-
-      if (!pageResponse.data?.length) {
-        throw new Error('pageNotFound');
-      }
-
-      if (!pageResponse.data[0].translations?.length || !pageResponse.data[0].translations[0]) {
-        throw new Error('noData');
-      }
-
-      // TODO: We might want to get more than just the translations as we'll possibly have more information in the page model
-      return pageResponse.data[0].translations[0];
-    };
-
-    let translatedFields: Await<ReturnType<typeof retrievePage>> = {};
-
     try {
-      translatedFields = await retrievePage(pagePath, i18n.locale);
+      const page = await app.$cmsService.getPage({ pagePath });
 
-      if (translatedFields.path !== pagePath) {
+      if (page.path !== pagePath) {
         // We are likely in a situation where the page was requested in a specific language,
         // but with the path in another language.
         // This can notably happen when using the language switcher.
         // We just redirect to fix the path.
-        redirect(`/${i18n.locale}${translatedFields.path}`);
+        redirect(`/${i18n.locale}${page.path}`);
       }
-    } catch (err) {
+
+      return {
+        title: page.title,
+        body: page.body,
+      };
+    } catch (err: any) {
       switch (err.message) {
         case 'pageNotFound':
           error({ statusCode: 404 });
           break;
         case 'noData':
-          console.info('No data in the requested locale. Falling back to default locale.');
-          translatedFields = await retrievePage(pagePath, i18n.defaultLocale);
+          console.info('No data either in the requested locale or the fallback locale.');
           break;
         default:
           error({ message: `Error when retrieving dynamic page: ${err}` });
       }
     }
-
-    return {
-      title: translatedFields.title,
-      body: translatedFields.body,
-    };
   },
 });
 </script>

@@ -161,5 +161,15 @@
     },
     "link": "Lien",
     "missing": "Fichier manquant"
+  },
+  "categoryDistribution": {
+    "title": "Distribution des catégories pour la saison {season}",
+    "birthYear": "Année de naissance",
+    "ageIn": "Âge en {year}",
+    "categories": "Catégories",
+    "competitions": "Compétitions",
+    "youthAndSport": "Jeunesse+Sport",
+    "federation": "Swiss Tchoukball",
+    "yearAndLess": "{year} et moins"
   }
 }

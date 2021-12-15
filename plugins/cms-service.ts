@@ -1,11 +1,18 @@
 import { Plugin } from '@nuxt/types';
 import { set } from 'date-fns';
-import { Filter } from '@directus/sdk';
+import { Filter, PartialItem } from '@directus/sdk';
+import { Await } from '~/types/types.utils';
 import { DirectusNationalCompetitionEdition, DirectusSeason, getTranslatedFields } from '~/plugins/directus';
 import { NewsEntry } from '~/components/news/st-news';
 import { NationalTeam, NationalTeamResult } from '~/components/national-teams/st-national-teams.prop';
 import Domain from '~/models/domain.model';
 
+export interface SimplePage {
+  languages_code: string;
+  title: string;
+  body: string;
+  path: string;
+}
 export interface Venue {
   name: string;
   address?: string;
@@ -59,6 +66,7 @@ interface NationalCompetition {
 }
 
 export interface CMSService {
+  getPage: (options: { pagePath: string }) => Promise<PartialItem<SimplePage>>;
   getNews: (options: {
     limit: number;
     page: number;
@@ -115,6 +123,51 @@ declare module 'vuex/types/index' {
 }
 
 const cmsService: Plugin = (context, inject) => {
+  /**
+   * Fetches the data of a simple page for a specific locale
+   */
+  const fetchPage = async (pagePath: string, locale: string) => {
+    const pageResponse = await context.$directus.items('pages').readMany({
+      // @ts-ignore Bug with Directus SDK. It's okay to filter more than one level deep.
+      filter: { translations: { path: { _eq: pagePath } } },
+      fields: ['id', 'translations.languages_code', 'translations.path', 'translations.title', 'translations.body'],
+      // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
+      deep: { translations: { _filter: { languages_code: { _eq: locale } } } },
+      limit: 1,
+    });
+
+    if (!pageResponse.data?.length) {
+      throw new Error('pageNotFound');
+    }
+
+    if (!pageResponse.data[0].translations?.length || !pageResponse.data[0].translations[0]) {
+      throw new Error('noData');
+    }
+
+    // TODO: We might want to get more than just the translations as we'll possibly have more information in the page model
+    return pageResponse.data[0].translations[0];
+  };
+
+  /**
+   * Returns the data of a simple page in the appropriate language based on context and available translations
+   */
+  const getPage: CMSService['getPage'] = async ({ pagePath }) => {
+    let translatedFields: Await<ReturnType<typeof fetchPage>> = {};
+
+    try {
+      translatedFields = await fetchPage(pagePath, context.i18n.locale);
+    } catch (err: any) {
+      if (err.message === 'noData') {
+        console.info('No data in the requested locale. Falling back to default locale.');
+        translatedFields = await fetchPage(pagePath, context.i18n.defaultLocale);
+      } else {
+        throw err;
+      }
+    }
+
+    return translatedFields;
+  };
+
   const getNews: CMSService['getNews'] = async ({ limit, page, domainId, withImageOnly }) => {
     // We retrieve all the languages and show news in fallback locale if not available in current locale
     const currentLocale = context.i18n.locale;
@@ -897,6 +950,7 @@ const cmsService: Plugin = (context, inject) => {
   };
 
   inject('cmsService', {
+    getPage,
     getNews,
     getOneNews,
     getEvents,
