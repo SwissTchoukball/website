@@ -33,13 +33,15 @@ export default Vue.extend({
   },
   computed: {
     details(): PersonDetail[] {
-      return [
-        {
+      const details = [];
+      if (this.person.email) {
+        details.push({
           icon: 'envelope',
           text: this.person.email,
           href: `mailto:${this.person.email}`,
-        },
-      ];
+        });
+      }
+      return details;
     },
     roles(): Role[] {
       if (!this.forGroupId) {

@@ -16,9 +16,9 @@ export default class Person extends Model {
   id!: number;
   first_name!: string;
   last_name!: string;
-  portrait_square_head!: string;
+  portrait_square_head?: string;
   gender!: Gender;
-  email!: string;
+  email?: string;
   roles!: Role[];
 
   static fields() {
@@ -28,7 +28,7 @@ export default class Person extends Model {
       last_name: this.string(null),
       portrait_square_head: this.string(null).nullable(),
       gender: this.string(Gender.Other),
-      email: this.string(null),
+      email: this.string(null).nullable(),
       roles: this.belongsToMany(Role, RolePerson, 'person_id', 'role_id'),
     };
   }
