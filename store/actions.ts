@@ -98,11 +98,14 @@ export default {
     });
     await Group.addManyFromDirectus(groupsResponse);
   },
-  async loadPeople(_context, { groupId }: { groupId: number }) {
+  async loadStaff(_context, { groupId }: { groupId: number }) {
     let filter: any = {};
 
     if (groupId) {
       filter = { roles: { roles_id: { group: { id: groupId } } } };
+    } else {
+      // If no group is specified, we still retrieve only people that are at least in one group
+      filter = { roles: { roles_id: { group: { _nnull: true } } } };
     }
 
     const peopleResponse = await this.$directus.items('people').readMany({
@@ -115,14 +118,10 @@ export default {
         'email',
         'roles.main',
         'roles.roles_id.id',
-        'roles.roles_id.name',
-        'roles.roles_id.name_masculine',
-        'roles.roles_id.name_feminine',
         'roles.roles_id.translations.name',
         'roles.roles_id.translations.name_feminine',
         'roles.roles_id.translations.name_masculine',
         'roles.roles_id.group.id',
-        'roles.roles_id.group.name',
         'roles.roles_id.group.translations.name',
       ],
       filter,

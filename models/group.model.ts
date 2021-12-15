@@ -26,20 +26,20 @@ export default class Group extends Model {
     }
 
     const groups = groupsResponse.data.reduce((groups, group) => {
+      const translatedFields = getTranslatedFields(group);
+
       // We discard entries that don't have mandatory data.
-      if (!group.id || !group.name) {
+      if (!group.id || !translatedFields?.name) {
         console.warn('Group missing mandatory data', { group });
         return groups;
       }
-
-      const translatedFields = getTranslatedFields(group);
 
       return [
         ...groups,
         {
           id: group.id,
-          name: translatedFields?.name || group.name,
-          description: translatedFields?.description || group.description,
+          name: translatedFields.name,
+          description: translatedFields?.description || '',
         },
       ];
     }, [] as any[]);

@@ -32,6 +32,7 @@ const config: NuxtConfig = {
     '~/assets/css/typography.css',
     '~/assets/css/main.css',
     'vue-slick-carousel/dist/vue-slick-carousel.css',
+    'v-tooltip/dist/v-tooltip.css',
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
@@ -41,6 +42,7 @@ const config: NuxtConfig = {
     '~/plugins/i18n.ts',
     '~/plugins/format-date.ts',
     '~/plugins/vue-slick-carousel.ts',
+    '~/plugins/vue-tooltip.ts',
     '~/plugins/cms-service.ts',
     '~/plugins/leverade.ts',
     '~/plugins/flickr.ts',
@@ -121,6 +123,7 @@ const config: NuxtConfig = {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+    transpile: ['vue-tooltip'],
     postcss: {
       plugins: {
         'postcss-custom-media': {

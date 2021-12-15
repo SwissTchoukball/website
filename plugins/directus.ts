@@ -199,8 +199,6 @@ export interface DirectusClub {
 
 export interface DirectusGroup {
   id: number;
-  name: string;
-  description: string;
   translations: {
     name: string;
     description: string;
@@ -209,9 +207,6 @@ export interface DirectusGroup {
 
 export interface DirectusRole {
   id: number;
-  name: string;
-  name_feminine: string;
-  name_masculine: string;
   translations: {
     name: string;
     name_feminine: string;

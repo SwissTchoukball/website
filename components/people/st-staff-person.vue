@@ -5,9 +5,8 @@
     :details="details"
   >
     <template #subName>
-      <div v-for="role of roles" :key="role.id">
+      <div v-for="role of roles" :key="role.id" v-tooltip.bottom="getTooltipForRole(role)">
         {{ role.getNameForPerson(person) }}
-        <span v-if="showGroupName && role.group" class="c-staff-person__group-name">· {{ role.group.name }}</span>
       </div>
     </template>
   </st-person>
@@ -47,11 +46,18 @@ export default Vue.extend({
       if (!this.forGroupId) {
         return this.person.roles;
       } else {
-        return this.person.roles.filter((role) => role.group.id === this.forGroupId);
+        return this.person.roles.filter((role) => role.group?.id === this.forGroupId);
       }
     },
-    showGroupName(): boolean {
-      return !this.forGroupId;
+  },
+  methods: {
+    getTooltipForRole(role: Role) {
+      if (!role.group) {
+        return;
+      }
+      return {
+        content: role.group.name,
+      };
     },
   },
 });

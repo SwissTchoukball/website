@@ -8,8 +8,8 @@ export default class Role extends Model {
 
   id!: number;
   name!: string;
-  name_feminine!: string;
-  name_masculine!: string;
+  name_feminine?: string;
+  name_masculine?: string;
   group!: Group;
   // holders!: Person[];
 

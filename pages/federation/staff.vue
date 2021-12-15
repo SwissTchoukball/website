@@ -1,7 +1,6 @@
 <template>
   <section class="l-main-content-section">
     <h2 class="t-headline-1">{{ $t('staff.title') }}</h2>
-    <!-- <pre>{{ groups }}</pre> -->
     <select v-model="groupId" name="groupId" class="l-form-select c-staff__group-select" @change="switchGroup">
       <option value="all">{{ $t('staff.all') }}</option>
       <option v-for="group of groups" :key="group.id" :value="group.id">{{ group.name }}</option>
@@ -12,7 +11,6 @@
     <ul v-if="people" class="u-unstyled-list l-people-list">
       <li v-for="person of people" :key="person.id" class="l-people-list__person">
         <st-staff-person :person="person" :for-group-id="selectedGroup ? selectedGroup.id : undefined" />
-        <!-- <pre>{{ person }}</pre> -->
       </li>
     </ul>
   </section>
@@ -50,7 +48,7 @@ export default Vue.extend({
     if (typeof this.$route.query.groupId === 'string' && isDigits(this.$route.query.groupId)) {
       this.groupId = parseInt(this.$route.query.groupId);
     }
-    await this.$store.dispatch('loadPeople', { groupId: this.groupId !== ALL_OPTION ? this.groupId : undefined });
+    await this.$store.dispatch('loadStaff', { groupId: this.groupId !== ALL_OPTION ? this.groupId : undefined });
   },
   computed: {
     Person() {
@@ -60,7 +58,9 @@ export default Vue.extend({
       return this.$store.$db().model(Group);
     },
     people(): Collection<Person> {
-      let personQuery = this.Person.query().with('roles.group');
+      let personQuery = this.Person.query().with('roles', (query) => {
+        query.with('group').orderBy((role: any) => role.group_id);
+      });
 
       if (this.groupId !== ALL_OPTION) {
         personQuery = personQuery.whereHas('roles', (query) => {
