@@ -71,7 +71,9 @@ const config: NuxtConfig = {
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
-  axios: {},
+  axios: {
+    baseURL: process.env.ST_WEBSITE_BASE_URL,
+  },
 
   // Nuxt i18n module configuration: https://i18n.nuxtjs.org/options-reference
   i18n: {
