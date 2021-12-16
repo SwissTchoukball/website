@@ -258,7 +258,7 @@ export default Vue.extend({
   margin-top: 0.2rem;
 }
 
-.c-contact-form__form__submission-error {
+.c-contact-form__submission-error {
   color: var(--st-color-error);
   text-align: center;
   font-size: 0.8em;
