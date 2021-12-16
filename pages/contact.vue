@@ -130,7 +130,7 @@ export default Vue.extend({
             this.messageBody,
           html:
             `<em>${this.senderName} (<a href="mailto:${this.senderEmail}">${this.senderEmail}</a>) a envoyé un message à Swiss Tchoukball via le formulaire de contact sur tchoukball.ch:</em><br/><br/>` +
-            this.messageBody,
+            this.messageBody.replace(/\n/g, '<br/>'),
         });
         this.isSent = true;
         this.resetForm();
