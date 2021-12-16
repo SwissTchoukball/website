@@ -19,6 +19,7 @@
 
   /* Core */
   --st-color-text: black;
+  --st-color-error: var(--st-color-red-swiss-tchoukball);
   --st-color-main-content-alternative-background: var(--st-color-grey-very-light);
   --st-color-separator: var(--st-color-red-swiss-tchoukball);
   --st-color-table-heading-border: var(--st-color-red-swiss-tchoukball);
@@ -48,6 +49,7 @@
   --st-color-pagination-page-active-background: var(--st-color-grey-very-light);
 
   /* Forms */
+  --st-color-input-border: var(--st-color-grey);
   --st-color-select-border: var(--st-color-grey-very-light);
   --st-color-form-search-field-background: var(--st-color-grey-very-light);
 

@@ -162,6 +162,18 @@
     "link": "Lien",
     "missing": "Fichier manquant"
   },
+  "contactForm": {
+    "title": "Contacter Swiss Tchoukball",
+    "name": "Votre nom",
+    "email": "Votre adresse e-mail",
+    "message": "Votre message",
+    "submit": "Envoyer votre message",
+    "captchaUnverified": "Veuillez confirmer que vous êtes bien un humain.",
+    "success": {
+      "title": "Message envoyé !",
+      "body": "Merci pour votre message. Nous vous répondrons dans les plus brefs délais."
+    }
+  },
   "categoryDistribution": {
     "title": "Distribution des catégories pour la saison {season}",
     "birthYear": "Année de naissance",

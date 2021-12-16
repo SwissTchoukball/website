@@ -66,6 +66,8 @@ const config: NuxtConfig = {
     '@nuxtjs/axios',
     // https://i18n.nuxtjs.org/
     'nuxt-i18n',
+    // https://github.com/dword-design/nuxt-mail
+    'nuxt-mail',
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
@@ -84,6 +86,23 @@ const config: NuxtConfig = {
     lazy: true,
     vueI18n: {
       fallbackLocale: 'fr',
+    },
+  },
+
+  // nuxt-mail module configuration: https://github.com/dword-design/nuxt-mail#usage
+  mail: {
+    message: {
+      to: 'info@tchoukball.ch',
+      from: `Swiss Tchoukball <no-reply@tchoukball.ch>`,
+    },
+    // TODO: Consider using a dedicated service like Mailgun or Mailtrap
+    smtp: {
+      host: 'mail.infomaniak.com',
+      port: 587,
+      auth: {
+        user: process.env.ST_SMTP_USER,
+        pass: process.env.ST_SMTP_PASSWORD,
+      },
     },
   },
 
@@ -151,6 +170,7 @@ const config: NuxtConfig = {
     newsAssetsSizes: [326, 500, 680, 1000, 1400, 2000, 2800],
     avatarAssetsSize: [200, 400],
     competitionLogoAssetsSizes: [200, 400],
+    hCaptchaSiteKey: process.env.HCAPTCHA_SITE_KEY,
     flickr: {
       userId: '128998613@N07',
       // It's okay to use the API key from the browser
