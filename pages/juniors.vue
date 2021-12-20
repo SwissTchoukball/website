@@ -11,7 +11,9 @@
 
 <script lang="ts">
 import Vue from 'vue';
+import { Store } from 'vuex';
 import CatchAllPage from '~/pages/_.vue';
+import { RootState } from '~/store/state';
 
 export default Vue.extend({
   extends: CatchAllPage,
@@ -23,16 +25,7 @@ export default Vue.extend({
   },
   computed: {
     currentSeasonStartYear(): number {
-      const now = new Date();
-      const currentMonth = now.getMonth() + 1;
-      const currentYear = now.getFullYear();
-
-      // We show the table for the next season starting from July
-      if (currentMonth > 6) {
-        return currentYear;
-      } else {
-        return currentYear - 1;
-      }
+      return (this.$store as Store<RootState>).getters.currentSeason?.year_start;
     },
     seasonName(): string {
       return `${this.currentSeasonStartYear} - ${this.currentSeasonStartYear + 1}`;

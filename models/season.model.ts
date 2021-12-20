@@ -23,4 +23,8 @@ export default class Season extends Model {
       competition_editions: this.hasMany(CompetitionEdition, 'season_id'),
     };
   }
+
+  get year_start(): number {
+    return parseInt(this.date_start.substring(0, 4));
+  }
 }
