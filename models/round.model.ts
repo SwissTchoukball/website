@@ -1,6 +1,8 @@
 import { Model } from '@vuex-orm/core';
+import { isPast } from 'date-fns';
 import Phase from '~/models/phase.model';
 import Match from '~/models/match.model';
+import { parseLeveradeDate } from '~/utils/utils';
 
 export default class Round extends Model {
   static entity = 'rounds';
@@ -24,5 +26,18 @@ export default class Round extends Model {
       phase: this.belongsTo(Phase, 'phase_id'),
       matches: this.hasMany(Match, 'round_id'),
     };
+  }
+
+  get parsedStartDate() {
+    if (this.start_date) {
+      return parseLeveradeDate(this.start_date);
+    }
+  }
+
+  get isPast(): boolean {
+    if (!this.parsedStartDate) {
+      return false;
+    }
+    return isPast(this.parsedStartDate);
   }
 }

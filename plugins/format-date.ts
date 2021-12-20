@@ -32,6 +32,9 @@ declare module 'vuex/types/index' {
 
 const locales: { [key: string]: Locale } = { fr, de };
 
+/**
+ * Plugin providing a single function to format a date according to the locale set in context
+ */
 const formatDatePlugin: Plugin = (context, inject) => {
   const formatDate = (date: number | Date, formatStr = 'PP') => {
     return format(date, formatStr, {

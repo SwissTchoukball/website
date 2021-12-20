@@ -52,7 +52,6 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import { isPast } from 'date-fns';
 import Phase from '~/models/phase.model';
 import Round from '~/models/round.model';
 import Match from '~/models/match.model';
@@ -72,9 +71,7 @@ export default Vue.extend({
   },
   computed: {
     roundsUpToNow(): Round[] {
-      return this.phase.rounds
-        .filter((round) => isPast(new Date(round.start_date)))
-        .sort((roundA, roundB) => roundB.order - roundA.order);
+      return this.phase.rounds.filter((round) => round.isPast).sort((roundA, roundB) => roundB.order - roundA.order);
     },
   },
   methods: {
