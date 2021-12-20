@@ -106,7 +106,6 @@ export default Vue.extend({
 }
 
 .c-person__details {
-  width: 100%;
   margin-top: var(--st-length-spacing-xs);
 }
 
@@ -129,14 +128,7 @@ export default Vue.extend({
   list-style-type: disc;
 }
 
-@media (--md-and-up) {
-  .c-person__avatar {
-    width: 200px;
-    height: 200px;
-  }
-}
-
-@media (--lg-and-up) {
+@media (--sm-and-up) {
   .c-person {
     flex-direction: row;
     align-items: flex-start;
@@ -152,6 +144,17 @@ export default Vue.extend({
 
   .c-person__name {
     padding-top: 0;
+  }
+
+  .c-person__details {
+    width: 100%;
+  }
+}
+
+@media (--md-and-up) {
+  .c-person__avatar {
+    width: 200px;
+    height: 200px;
   }
 }
 </style>

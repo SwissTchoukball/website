@@ -70,8 +70,11 @@ a:visited {
 
 .l-people-list {
   display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: center;
+
+  /* justify-content: space-between;
+  flex-wrap: wrap; */
 }
 
 .l-people-list__person {
@@ -108,7 +111,7 @@ a:visited {
 
 @media (--sm-and-up) {
   .l-people-list__person {
-    width: 50%;
+    width: 80%;
   }
 }
 
@@ -130,6 +133,21 @@ a:visited {
   .l-table--large,
   .directus-formatted-content table.st-full-width {
     width: 100%;
+  }
+
+  .l-people-list__person {
+    width: 70%;
+  }
+}
+
+@media (--lg-and-up) {
+  .l-people-list {
+    flex-flow: row wrap;
+    align-items: flex-start;
+  }
+
+  .l-people-list__person {
+    width: 50%;
   }
 }
 

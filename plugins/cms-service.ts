@@ -2,16 +2,23 @@ import { Plugin } from '@nuxt/types';
 import { set } from 'date-fns';
 import { Filter, PartialItem } from '@directus/sdk';
 import { Await } from '~/types/types.utils';
-import { DirectusNationalCompetitionEdition, DirectusSeason, getTranslatedFields } from '~/plugins/directus';
+import {
+  DirectusNationalCompetitionEdition,
+  DirectusRole,
+  DirectusSeason,
+  getTranslatedFields,
+} from '~/plugins/directus';
 import { NewsEntry } from '~/components/news/st-news';
 import { NationalTeam, NationalTeamResult } from '~/components/national-teams/st-national-teams.prop';
 import Domain from '~/models/domain.model';
+import Role from '~/models/role.model';
 
 export interface SimplePage {
   languages_code: string;
   title: string;
   body: string;
   path: string;
+  key_roles: number[];
 }
 export interface Venue {
   name: string;
@@ -130,9 +137,29 @@ const cmsService: Plugin = (context, inject) => {
     const pageResponse = await context.$directus.items('pages').readMany({
       // @ts-ignore Bug with Directus SDK. It's okay to filter more than one level deep.
       filter: { translations: { path: { _eq: pagePath } } },
-      fields: ['id', 'translations.languages_code', 'translations.path', 'translations.title', 'translations.body'],
-      // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
-      deep: { translations: { _filter: { languages_code: { _eq: locale } } } },
+      fields: [
+        'id',
+        'translations.languages_code',
+        'translations.path',
+        'translations.title',
+        'translations.body',
+        'key_roles.roles_id.id',
+        'key_roles.roles_id.translations.name',
+        'key_roles.roles_id.translations.name_feminine',
+        'key_roles.roles_id.translations.name_masculine',
+        'key_roles.roles_id.holders.people_id.id',
+        'key_roles.roles_id.holders.people_id.first_name',
+        'key_roles.roles_id.holders.people_id.last_name',
+        'key_roles.roles_id.holders.people_id.email',
+        'key_roles.roles_id.holders.people_id.gender',
+        'key_roles.roles_id.holders.people_id.portrait_square_head',
+      ],
+      deep: {
+        // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
+        translations: { _filter: { languages_code: { _eq: locale } } },
+        // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
+        key_roles: { roles_id: { translations: { _filter: { languages_code: { _eq: locale } } } } },
+      },
       limit: 1,
     });
 
@@ -144,28 +171,54 @@ const cmsService: Plugin = (context, inject) => {
       throw new Error('noData');
     }
 
-    // TODO: We might want to get more than just the translations as we'll possibly have more information in the page model
-    return pageResponse.data[0].translations[0];
+    if (
+      !pageResponse.data[0].translations[0].languages_code ||
+      !pageResponse.data[0].translations[0].path ||
+      !pageResponse.data[0].translations[0].title ||
+      !pageResponse.data[0].translations[0].body
+    ) {
+      throw new Error('Missing required data for simple page');
+    }
+
+    const pageData: SimplePage = {
+      languages_code: pageResponse.data[0].translations[0].languages_code,
+      path: pageResponse.data[0].translations[0].path,
+      title: pageResponse.data[0].translations[0].title,
+      body: pageResponse.data[0].translations[0].body,
+      key_roles: [],
+    };
+
+    if (pageResponse.data[0].key_roles) {
+      // We save the roles in the store and only provide the role IDs with the page data
+      pageData.key_roles.push(
+        ...(pageResponse.data[0].key_roles.map((pageRole) => pageRole?.roles_id?.id) as number[])
+      );
+      Role.addManyFromDirectus(
+        pageResponse.data[0].key_roles.map((pageRole) => pageRole?.roles_id) as PartialItem<DirectusRole>[]
+      );
+    }
+
+    return pageData;
   };
 
   /**
    * Returns the data of a simple page in the appropriate language based on context and available translations
    */
   const getPage: CMSService['getPage'] = async ({ pagePath }) => {
-    let translatedFields: Await<ReturnType<typeof fetchPage>> = {};
+    let pageData: Await<ReturnType<typeof fetchPage>>;
 
     try {
-      translatedFields = await fetchPage(pagePath, context.i18n.locale);
+      pageData = await fetchPage(pagePath, context.i18n.locale);
     } catch (err: any) {
       if (err.message === 'noData') {
         console.info('No data in the requested locale. Falling back to default locale.');
-        translatedFields = await fetchPage(pagePath, context.i18n.defaultLocale);
+        pageData = await fetchPage(pagePath, context.i18n.defaultLocale);
       } else {
         throw err;
       }
     }
 
-    return translatedFields;
+    return pageData;
   };
 
   const getNews: CMSService['getNews'] = async ({ limit, page, domainId, withImageOnly }) => {

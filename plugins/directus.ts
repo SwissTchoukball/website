@@ -1,6 +1,44 @@
 import { Plugin } from '@nuxt/types';
 import { Directus, PartialItem } from '@directus/sdk';
 
+export interface DirectusGroup {
+  id: number;
+  translations: {
+    name: string;
+    description: string;
+  }[];
+}
+
+export interface DirectusRole {
+  id: number;
+  translations: {
+    name: string;
+    name_feminine: string;
+    name_masculine: string;
+  }[];
+  group: DirectusGroup;
+  // eslint-disable-next-line no-use-before-define
+  holders: DirectusRolePerson[];
+}
+
+export interface DirectusPerson {
+  id: number;
+  first_name: string;
+  last_name: string;
+  portrait_square_head: string;
+  gender: string;
+  email: string;
+  // eslint-disable-next-line no-use-before-define
+  roles: DirectusRolePerson[];
+}
+
+export interface DirectusRolePerson {
+  id: number;
+  roles_id: DirectusRole;
+  people_id: DirectusPerson;
+  main: boolean;
+}
+
 export interface DirectusMenuItem {
   sort: number;
   parent: number;
@@ -18,6 +56,11 @@ export interface DirectusPage {
     path: string;
     title: string;
     body: string;
+  }[];
+  key_roles: {
+    id: number;
+    pages_id: DirectusPage;
+    roles_id: DirectusRole;
   }[];
 }
 
@@ -195,42 +238,6 @@ export interface DirectusClub {
   status: string;
   website: string;
   logo: string;
-}
-
-export interface DirectusGroup {
-  id: number;
-  translations: {
-    name: string;
-    description: string;
-  }[];
-}
-
-export interface DirectusRole {
-  id: number;
-  translations: {
-    name: string;
-    name_feminine: string;
-    name_masculine: string;
-  }[];
-  group: DirectusGroup;
-}
-
-export interface DirectusPerson {
-  id: number;
-  first_name: string;
-  last_name: string;
-  portrait_square_head: string;
-  gender: string;
-  email: string;
-  // eslint-disable-next-line no-use-before-define
-  roles: DirectusRolePerson[];
-}
-
-export interface DirectusRolePerson {
-  id: number;
-  roles_id: DirectusRole;
-  people_id: DirectusPerson;
-  main: boolean;
 }
 
 export interface DirectusFile {}
