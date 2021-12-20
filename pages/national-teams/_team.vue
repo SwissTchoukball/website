@@ -17,6 +17,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
+import { MetaInfo } from 'vue-meta';
 import { NationalTeam } from '~/components/national-teams/st-national-teams.prop';
 import { MenuItem } from '~/store/state';
 
@@ -41,6 +42,11 @@ export default Vue.extend({
       // We just redirect to fix the path.
       this.$router.replace(this.localePath({ name: 'national-teams-team', params: { team: this.team.slug } }));
     }
+  },
+  head(): MetaInfo {
+    return {
+      title: this.team?.name,
+    };
   },
   computed: {
     teamNavigation(): MenuItem[] {

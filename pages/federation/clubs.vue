@@ -26,6 +26,11 @@ export default Vue.extend({
       await this.$store.dispatch('loadClubs');
     }
   },
+  head() {
+    return {
+      title: this.$t('clubs.title').toString(),
+    };
+  },
   computed: {
     Club() {
       return this.$store.$db().model(Club);

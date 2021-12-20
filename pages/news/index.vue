@@ -1,6 +1,6 @@
 <template>
   <section class="l-main-content-section">
-    <h2 class="t-headline-1">News</h2>
+    <h2 class="t-headline-1">{{ $t('news.title') }}</h2>
     <st-loader v-if="$fetchState.pending" :main="true" />
     <p v-else-if="$fetchState.error">{{ $t('error.otherError') }} : {{ $fetchState.error.message }}</p>
     <template v-else>
@@ -16,6 +16,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
+import { MetaInfo } from 'vue-meta';
 import stLoader from '~/components/st-loader.vue';
 import stNewsList from '~/components/news/st-news-list.vue';
 import { NewsEntry } from '~/components/news/st-news';
@@ -45,6 +46,11 @@ export default Vue.extend({
     this.newsList = newsResult.data;
     this.totalNewsEntries = newsResult.meta.total;
     this.filteredDomainName = newsResult.meta.filteredDomainName;
+  },
+  head(): MetaInfo {
+    return {
+      title: this.$t('news.title').toString(),
+    };
   },
   computed: {
     totalPages(): number | undefined {

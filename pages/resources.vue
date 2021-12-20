@@ -63,6 +63,12 @@ const ALL_OPTION = 'all';
 
 export default Vue.extend({
   components: { stResourceList },
+  nuxtI18n: {
+    paths: {
+      fr: '/ressources',
+      de: '/mittel',
+    },
+  },
   data() {
     return {
       searchTerm: '',
@@ -80,6 +86,11 @@ export default Vue.extend({
       await this.$store.dispatch('loadResourceTypes');
     }
     // We don't need to load the domains because they are loaded in nuxtServerInit (as they are needed in multiple places)
+  },
+  head() {
+    return {
+      title: this.$t('resources.title').toString(),
+    };
   },
   computed: {
     ResourceType() {

@@ -37,5 +37,12 @@ export default Vue.extend({
       await this.$store.dispatch('loadPlayerPositions');
     }
   },
+  head() {
+    return {
+      title: this.$t(`nationalTeams.headTitle.players.${this.team.gender}`, {
+        teamName: this.team.name.toLowerCase(),
+      }).toString(),
+    };
+  },
 });
 </script>

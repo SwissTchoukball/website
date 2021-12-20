@@ -69,6 +69,15 @@ export default Vue.extend({
       required: true,
     },
   },
+  head() {
+    return {
+      title: this.$t('competitions.headTitle.results', {
+        phaseName: this.phase.name,
+        editionName: this.phase.competition_edition.name,
+        seasonName: this.phase.competition_edition.season.name,
+      }).toString(),
+    };
+  },
   computed: {
     roundsUpToNow(): Round[] {
       return this.phase.rounds.filter((round) => round.isPast).sort((roundA, roundB) => roundB.order - roundA.order);

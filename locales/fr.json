@@ -28,6 +28,7 @@
     "allRightsReserved": "tous droits réservés"
   },
   "news": {
+    "title": "News",
     "readMore": "Voir toutes les news",
     "domainFilterInfo": "Affichage des news “{domainName}”.",
     "showAll": "Afficher toutes les news",
@@ -59,6 +60,12 @@
   },
   "competitions": {
     "title": "Compétitions",
+    "headTitle": {
+      "standings": "Classement · {phaseName} · {editionName} · {seasonName}",
+      "results": "Résultats · {phaseName} · {editionName} · {seasonName}",
+      "planning": "Programme · {phaseName} · {editionName} · {seasonName}",
+      "match": "{homeTeam} - {awayTeam} · {phaseName} · {editionName} · {seasonName}"
+    },
     "phaseNavigation": {
       "standings": "Classement",
       "results": "Résultats",
@@ -91,6 +98,15 @@
     "photoOf": "Photo de {name}"
   },
   "nationalTeams": {
+    "headTitle": {
+      "players": {
+        "male": "Joueurs de l'{teamName}",
+        "female": "Joueuses de l'{teamName}",
+        "mixed": "Joueur·euse·s de l'{teamName}"
+      },
+      "staff": "Encadrement de l'{teamName}",
+      "results": "Résultats de l'{teamName}"
+    },
     "navigation": {
       "players": {
         "male": "Joueurs",
@@ -163,6 +179,7 @@
     "missing": "Fichier manquant"
   },
   "contactForm": {
+    "headTitle": "Contact",
     "title": "Contacter Swiss Tchoukball",
     "name": "Votre nom",
     "email": "Votre adresse e-mail",

@@ -84,6 +84,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
+import { MetaInfo } from 'vue-meta';
 import VueHcaptcha from '@hcaptcha/vue-hcaptcha';
 
 export default Vue.extend({
@@ -110,6 +111,11 @@ export default Vue.extend({
       captchaToken: null as string | null,
       captchaEKey: null as string | null,
       captchaError: null as string | null,
+    };
+  },
+  head(): MetaInfo {
+    return {
+      title: this.$t('contactForm.headTitle').toString(),
     };
   },
   methods: {

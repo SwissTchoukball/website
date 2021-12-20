@@ -8,6 +8,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
+import { MetaInfo } from 'vue-meta';
 import { NewsEntry } from '~/components/news/st-news';
 import stNews from '~/components/news/st-news.vue';
 
@@ -32,6 +33,11 @@ export default Vue.extend({
     }
 
     this.newsEntry = await this.$cmsService.getOneNews(id);
+  },
+  head(): MetaInfo {
+    return {
+      title: this.newsEntry?.title,
+    };
   },
 });
 </script>

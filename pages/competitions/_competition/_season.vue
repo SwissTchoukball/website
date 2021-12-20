@@ -87,7 +87,13 @@ export default Vue.extend({
       return CompetitionEdition.query()
         .with('phases')
         .with('phases.rounds', (query) => query.orderBy('order'))
-        .with(['phases.rounds.matches', 'phases.rounds.matches.home_team', 'phases.rounds.matches.away_team'])
+        .with([
+          'phases.competition_edition',
+          'phases.competition_edition.season',
+          'phases.rounds.matches',
+          'phases.rounds.matches.home_team',
+          'phases.rounds.matches.away_team',
+        ])
         .with('competition')
         .with('season')
         .whereHas('competition', (query) => {

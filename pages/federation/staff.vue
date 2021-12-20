@@ -50,6 +50,11 @@ export default Vue.extend({
     }
     await this.$store.dispatch('loadStaff', { groupId: this.groupId !== ALL_OPTION ? this.groupId : undefined });
   },
+  head() {
+    return {
+      title: this.$t('staff.title').toString(),
+    };
+  },
   computed: {
     Person() {
       return this.$store.$db().model(Person);

@@ -84,6 +84,15 @@ export default Vue.extend({
       return standing;
     });
   },
+  head() {
+    return {
+      title: this.$t('competitions.headTitle.standings', {
+        phaseName: this.phase.name,
+        editionName: this.phase.competition_edition.name,
+        seasonName: this.phase.competition_edition.season.name,
+      }).toString(),
+    };
+  },
   computed: {
     standingsHeader(): VueI18n.TranslateResult[] {
       return [

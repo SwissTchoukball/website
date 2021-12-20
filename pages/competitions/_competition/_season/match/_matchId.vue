@@ -76,14 +76,27 @@ export default Vue.extend({
       venueDetailsVisible: false,
     };
   },
+  head() {
+    return {
+      title: this.$t('competitions.headTitle.match', {
+        homeTeam: (this as any).match.home_team.name,
+        awayTeam: (this as any).match.away_team.name,
+        phaseName: (this as any).match.round.phase.name,
+        editionName: (this as any).match.round.phase.competition_edition.name,
+        seasonName: (this as any).match.round.phase.competition_edition.season.name,
+      }).toString(),
+    };
+  },
   computed: {
-    match() {
+    match(): Match {
       const match = Match.query()
         .whereId(this.$route.params.matchId)
         .with('home_team')
         .with('away_team')
         .with('facility')
         .with('round.phase')
+        .with('round.phase.competition_edition')
+        .with('round.phase.competition_edition.season')
         .first();
       if (!match) {
         throw new Error('No match found for this ID');
@@ -121,13 +134,13 @@ export default Vue.extend({
     },
   },
   methods: {
-    hasHomeTeamWon(match: Match) {
+    hasHomeTeamWon(match: Match): boolean {
       return match.home_team_score > match.away_team_score;
     },
-    hasAwayTeamWon(match: Match) {
+    hasAwayTeamWon(match: Match): boolean {
       return match.home_team_score < match.away_team_score;
     },
-    showVenueDetails() {
+    showVenueDetails(): void {
       this.venueDetailsVisible = true;
       this.$router.push('#match-details');
     },

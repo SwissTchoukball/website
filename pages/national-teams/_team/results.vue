@@ -80,6 +80,11 @@ export default Vue.extend({
       required: true,
     },
   },
+  head() {
+    return {
+      title: this.$t(`nationalTeams.headTitle.results`, { teamName: this.team.name.toLowerCase() }).toString(),
+    };
+  },
   computed: {
     hasNationsCupResults() {
       return (

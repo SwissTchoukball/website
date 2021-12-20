@@ -54,6 +54,14 @@ export default Vue.extend({
       }
     }
   },
+  head() {
+    return {
+      // We use this as any because key_role_ids comes from asyncData and it is not recognised as being part of the Vue component.
+      // This is going to be fixed in Nuxt 2.16.
+      // See https://github.com/nuxt/nuxt.js/pull/9239 and https://github.com/nuxt/nuxt.js/pull/9660
+      title: (this as any).title,
+    };
+  },
   computed: {
     Role() {
       return this.$store.$db().model(Role);

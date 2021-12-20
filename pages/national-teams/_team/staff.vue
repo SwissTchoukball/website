@@ -33,6 +33,11 @@ export default Vue.extend({
       required: true,
     },
   },
+  head() {
+    return {
+      title: this.$t(`nationalTeams.headTitle.staff`, { teamName: this.team.name.toLowerCase() }).toString(),
+    };
+  },
   methods: {
     generateDetails(person: StaffMember) {
       const details = [];
