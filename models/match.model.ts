@@ -38,8 +38,16 @@ export default class Match extends Model {
   }
 
   parsedDate() {
+    // The date and time given by Leverade is given without timezone information and the documentation
+    // doesn't specify what's the behaviour for the given time.
+    // Observations:
+    // - In December 2021 (winter time), when retrieving a match from September that is scheduled at 20:40 UTC+2, the time given by the API is 18:40
+    // - In December 2021 (winter time), when retrieving a match from January that is scheduled at 20:30 UTC+1, the time given by the API is 19:30
+    // It would appear that the time is given in UTC.
+    // TODO: Check what's the behaviour when we'll be in summer time and adapt the implementation accordingly, if needed.
     if (this.datetime) {
-      const parsedDate = parse(this.datetime, 'yyyy-MM-dd HH:mm:ss', new Date());
+      // We manually and explicitely set that the provided date is UTC (Z)
+      const parsedDate = parse(`${this.datetime} Z`, 'yyyy-MM-dd HH:mm:ss X', new Date());
       return parsedDate || null;
     } else {
       return null;
