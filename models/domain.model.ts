@@ -21,19 +21,19 @@ export default class Domain extends Model {
     }
 
     const domains = domainsResponse.data.reduce((domains, domain) => {
+      const translatedFields = getTranslatedFields(domain);
+
       // We discard entries that don't have mandatory data.
-      if (!domain.id || !domain.name) {
+      if (!domain?.id || !translatedFields?.name) {
         console.warn('Domain missing mandatory data', { domain });
         return domains;
       }
-
-      const translatedFields = getTranslatedFields(domain);
 
       return [
         ...domains,
         {
           id: domain.id,
-          name: translatedFields?.name || domain.name,
+          name: translatedFields?.name,
         },
       ];
     }, [] as any[]);

@@ -21,22 +21,22 @@ export default class ResourceType extends Model {
     }
 
     const resourceTypes = response.data.reduce((resourceTypes, resourceType) => {
+      const translatedFields = getTranslatedFields(resourceType);
+
       // We discard entries that don't have mandatory data.
-      if (!resourceType.id || !resourceType.name) {
+      if (!resourceType?.id || !translatedFields?.name) {
         console.warn('Resource type missing mandatory data', { resourceType });
         return resourceTypes;
       }
-
-      const translatedFields = getTranslatedFields(resourceType);
 
       return [
         ...resourceTypes,
         {
           id: resourceType.id,
-          name: translatedFields?.name || resourceType.name,
+          name: translatedFields.name,
         },
       ];
-    }, [] as any[]);
+    }, [] as { id: number; name: string }[]);
 
     this.insert({ data: resourceTypes });
   }

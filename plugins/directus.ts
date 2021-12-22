@@ -66,7 +66,6 @@ export interface DirectusPage {
 
 export interface DirectusDomain {
   id: number;
-  name: string;
   translations: {
     name: string;
   }[];
@@ -121,7 +120,6 @@ export interface DirectusEvent {
 
 export interface DirectusEventType {
   id: number;
-  name: string;
   translations: {
     name: string;
   }[];
@@ -129,9 +127,6 @@ export interface DirectusEventType {
 
 export interface DirectusPlayerPosition {
   id: number;
-  name: string;
-  name_feminine: string;
-  name_masculine: string;
   translations: {
     name: string;
     name_feminine: string;
@@ -187,8 +182,6 @@ export interface DirectusTeamResult {
 
 export interface DirectusTeam {
   id: number;
-  name: string;
-  slug: string;
   gender: string;
   translations: {
     name: string;
@@ -221,8 +214,6 @@ export interface DirectusNationalCompetitionEdition {
 
 export interface DirectusNationalCompetition {
   id: number;
-  name: string;
-  slug: string;
   editions: DirectusNationalCompetitionEdition[];
   translations: {
     name: string;
@@ -244,7 +235,6 @@ export interface DirectusFile {}
 
 export interface DirectusResourceType {
   id: number;
-  name: string;
   translations: {
     name: string;
   }[];

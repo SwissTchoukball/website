@@ -84,7 +84,7 @@ export default {
   },
   async loadDomains() {
     const domainsResponse = await this.$directus.items('domains').readMany({
-      fields: ['id', 'name', 'translations.name'],
+      fields: ['id', 'translations.name'],
       // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
       deep: { translations: { _filter: { languages_code: { _eq: this.$i18n.locale } } } },
     });
@@ -139,7 +139,7 @@ export default {
   },
   async loadResourceTypes() {
     const response = await this.$directus.items('resource_types').readMany({
-      fields: ['id', 'name', 'translations.name'],
+      fields: ['id', 'translations.name'],
       // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
       deep: { translations: { _filter: { languages_code: { _eq: this.$i18n.locale } } } },
     });
@@ -154,21 +154,21 @@ export default {
         // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
         translations: { _filter: { languages_code: { _eq: locale } } },
       },
-      fields: ['id', 'name', 'translations.languages_code', 'translations.name'],
+      fields: ['id', 'translations.languages_code', 'translations.name'],
     });
 
     const types = eventTypes.data?.reduce((types, type) => {
-      if (!type || !type.id || !type.name) {
+      const translatedFields = getTranslatedFields(type);
+
+      if (!type?.id || !translatedFields?.name) {
         return types;
       }
-
-      const translatedFields = getTranslatedFields(type);
 
       return {
         ...types,
         [type.id]: {
           id: type.id,
-          name: translatedFields?.name || type.name,
+          name: translatedFields.name,
         },
       };
     }, {} as EventTypes);
@@ -186,9 +186,6 @@ export default {
       },
       fields: [
         'id',
-        'name',
-        'name_feminine',
-        'name_masculine',
         'translations.languages_code',
         'translations.name',
         'translations.name_feminine',
@@ -197,19 +194,19 @@ export default {
     });
 
     const positions = playerPositions.data?.reduce((positions, position) => {
-      if (!position || !position.id || !position.name) {
+      const translatedFields = getTranslatedFields(position);
+
+      if (!position?.id || !translatedFields?.name) {
         return positions;
       }
-
-      const translatedFields = getTranslatedFields(position);
 
       return {
         ...positions,
         [position.id]: {
           id: position.id,
-          name: translatedFields?.name || position.name,
-          name_feminine: translatedFields?.name_feminine || position.name_feminine,
-          name_masculine: translatedFields?.name_masculine || position.name_masculine,
+          name: translatedFields.name,
+          name_feminine: translatedFields.name_feminine,
+          name_masculine: translatedFields.name_masculine,
         },
       };
     }, {} as PlayerPositions);

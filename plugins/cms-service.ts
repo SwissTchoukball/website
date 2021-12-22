@@ -267,7 +267,6 @@ const cmsService: Plugin = (context, inject) => {
         'translations.slug',
         'translations.title',
         'domains.id',
-        'domains.domains_id.name',
         'domains.domains_id.translations.name',
       ],
       deep: {
@@ -317,17 +316,21 @@ const cmsService: Plugin = (context, inject) => {
 
       if (directusNewsEntry.domains) {
         newsEntry.domains = directusNewsEntry.domains.reduce((domains, domain) => {
-          if (!domain || !domain.domains_id) {
+          if (!domain?.domains_id) {
             return domains;
           }
 
           const translatedFields = getTranslatedFields(domain.domains_id);
 
+          if (!translatedFields?.name) {
+            return domains;
+          }
+
           return [
             ...domains,
             {
               id: domain.id,
-              name: translatedFields?.name || domain.domains_id.name,
+              name: translatedFields.name,
             } as any /* Workaround until we have the news in the store as well */,
           ];
         }, [] as Domain[]);
@@ -412,17 +415,21 @@ const cmsService: Plugin = (context, inject) => {
 
     if (directusNewsEntry.domains) {
       newsEntry.domains = directusNewsEntry.domains.reduce((domains, domain) => {
-        if (!domain || !domain.domains_id) {
+        if (!domain?.domains_id) {
           return domains;
         }
 
         const translatedFields = getTranslatedFields(domain.domains_id);
 
+        if (!translatedFields?.name) {
+          return domains;
+        }
+
         return [
           ...domains,
           {
             id: domain.id,
-            name: translatedFields?.name || domain.domains_id.name,
+            name: translatedFields.name,
           } as any /* Workaround until we have the news in the store as well */,
         ];
       }, [] as Domain[]);
@@ -581,21 +588,12 @@ const cmsService: Plugin = (context, inject) => {
     const teamResponse = await context.$directus.items('national_teams').readMany({
       limit: 1,
       filter: {
-        _or: [
-          {
-            slug: { _eq: teamSlug },
-          },
-          {
-            translations: {
-              // @ts-ignore This should be accepted. To be fixed in Directus SDK
-              slug: { _eq: teamSlug },
-            },
-          },
-        ],
+        translations: {
+          // @ts-ignore This should be accepted. To be fixed in Directus SDK
+          slug: { _eq: teamSlug },
+        },
       },
       fields: [
-        'name',
-        'slug',
         'gender',
         'translations.name',
         'translations.slug',
@@ -690,10 +688,10 @@ const cmsService: Plugin = (context, inject) => {
       ) || [];
     results = results.sort((resultA, resultB) => resultB.competition.year - resultA.competition.year);
 
-    // Fallback for mandatory fields should not happen as we requested those fields
+    // Fallback for mandatory fields
     const team = {
-      name: rawTeam.name || 'No name',
-      slug: rawTeam.slug || 'unknown',
+      name: 'No name',
+      slug: 'unknown',
       gender: rawTeam.gender || 'mixed',
       players,
       staff: (rawTeam.staff?.map((s) => s?.national_team_staff_id) as any) || [],
@@ -760,22 +758,13 @@ const cmsService: Plugin = (context, inject) => {
     const response = await context.$directus.items('national_competitions').readMany({
       limit: 1,
       filter: {
-        _or: [
-          {
-            slug: { _eq: competitionSlug },
-          },
-          {
-            translations: {
-              // @ts-ignore This should be accepted. To be fixed in Directus SDK
-              slug: { _eq: competitionSlug },
-            },
-          },
-        ],
+        translations: {
+          // @ts-ignore This should be accepted. To be fixed in Directus SDK
+          slug: { _eq: competitionSlug },
+        },
       },
       fields: [
         'id',
-        'name',
-        'slug',
         'translations.name',
         'translations.slug',
         'editions.season.name',
@@ -797,18 +786,17 @@ const cmsService: Plugin = (context, inject) => {
     if (!rawCompetition || !rawCompetition.id) {
       throw new Error('No competition found');
     }
+    const translatedFields = getTranslatedFields(rawCompetition);
 
-    if (!rawCompetition.name || !rawCompetition.slug) {
+    if (!translatedFields?.name || !translatedFields?.slug) {
       throw new Error('Competition is missing requested fields');
     }
-
-    const translatedFields = getTranslatedFields(rawCompetition);
 
     // Fallback for mandatory fields should not happen as we requested those fields
     return {
       id: rawCompetition.id,
-      name: translatedFields?.name || rawCompetition.name,
-      slug: translatedFields?.slug || rawCompetition.slug,
+      name: translatedFields.name,
+      slug: translatedFields.slug,
       editions: (rawCompetition.editions as any) || [],
     };
   };
@@ -835,21 +823,12 @@ const cmsService: Plugin = (context, inject) => {
       };
       if (competitionSlug) {
         filter._and.push({
-          _or: [
-            {
-              competition: {
-                slug: { _eq: competitionSlug },
-              },
+          competition: {
+            translations: {
+              // @ts-ignore This should be accepted. To be fixed in Directus SDK
+              slug: { _eq: competitionSlug },
             },
-            {
-              competition: {
-                translations: {
-                  // @ts-ignore This should be accepted. To be fixed in Directus SDK
-                  slug: { _eq: competitionSlug },
-                },
-              },
-            },
-          ],
+          },
         });
       }
       if (seasonSlug) {
@@ -872,8 +851,6 @@ const cmsService: Plugin = (context, inject) => {
         'season.date_end',
         'season.leverade_id',
         'competition.id',
-        'competition.name',
-        'competition.slug',
         'competition.translations.name',
         'competition.translations.slug',
         'leverade_id',
@@ -889,6 +866,12 @@ const cmsService: Plugin = (context, inject) => {
     }
 
     return response.data.reduce((editions, rawEdition) => {
+      if (!rawEdition.competition) {
+        return editions;
+      }
+
+      const translatedCompetitionFields = getTranslatedFields(rawEdition.competition);
+
       if (
         !rawEdition.id ||
         !rawEdition.season?.id ||
@@ -897,15 +880,13 @@ const cmsService: Plugin = (context, inject) => {
         !rawEdition.season?.date_start ||
         !rawEdition.season?.date_end ||
         !rawEdition.season?.leverade_id ||
-        !rawEdition.competition?.id ||
-        !rawEdition.competition?.name ||
-        !rawEdition.competition?.slug ||
+        !rawEdition.competition.id ||
+        !translatedCompetitionFields?.name ||
+        !translatedCompetitionFields?.slug ||
         !rawEdition.leverade_id
       ) {
         return editions;
       }
-
-      const translatedCompetitionFields = getTranslatedFields(rawEdition.competition);
 
       return [
         ...editions,
@@ -921,8 +902,8 @@ const cmsService: Plugin = (context, inject) => {
           },
           competition: {
             id: rawEdition.competition.id,
-            name: translatedCompetitionFields?.name || rawEdition.competition.name,
-            slug: translatedCompetitionFields?.slug || rawEdition.competition.slug,
+            name: translatedCompetitionFields?.name,
+            slug: translatedCompetitionFields?.slug,
           },
           leverade_id: rawEdition.leverade_id,
         },
