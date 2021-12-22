@@ -57,7 +57,7 @@ import Vue from 'vue';
 import stResourceList from '~/components/resources/st-resource-list.vue';
 import Domain from '~/models/domain.model';
 import ResourceType from '~/models/resource-type.model';
-import { Resource } from '~/plugins/cms-service';
+import Resource from '~/models/resource.model';
 
 const ALL_OPTION = 'all';
 

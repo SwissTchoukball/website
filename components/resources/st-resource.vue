@@ -16,7 +16,7 @@
 <script lang="ts">
 import Vue, { PropType } from 'vue';
 import { TranslateResult } from 'vue-i18n';
-import { Resource } from '~/plugins/cms-service';
+import Resource from '~/models/resource.model';
 import { humanFileSize } from '~/utils/utils';
 
 export default Vue.extend({

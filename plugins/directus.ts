@@ -50,6 +50,41 @@ export interface DirectusMenuItem {
   children: DirectusMenuItem[];
 }
 
+export interface DirectusFile {
+  id: number;
+  type: string;
+  filesize: number;
+  filename_download: string;
+}
+
+export interface DirectusResourceType {
+  id: number;
+  translations: {
+    name: string;
+  }[];
+}
+
+export enum DirectusResourceStatus {
+  VISIBLE = 'visible',
+  ARCHIVED = 'archived',
+}
+
+export interface DirectusResource {
+  id: number;
+  name: string;
+  file?: DirectusFile;
+  link?: string;
+  translations: {
+    name: string;
+    file?: DirectusFile;
+    link?: string;
+  }[];
+  type: DirectusResourceType;
+  domains: number[];
+  date: string;
+  status: DirectusResourceStatus;
+}
+
 export interface DirectusPage {
   translations: {
     languages_code: string;
@@ -61,6 +96,11 @@ export interface DirectusPage {
     id: number;
     pages_id: DirectusPage;
     roles_id: DirectusRole;
+  }[];
+  resources: {
+    id: number;
+    pages_id: DirectusPage;
+    resources_id: DirectusResource;
   }[];
 }
 
@@ -229,36 +269,6 @@ export interface DirectusClub {
   status: string;
   website: string;
   logo: string;
-}
-
-export interface DirectusFile {}
-
-export interface DirectusResourceType {
-  id: number;
-  translations: {
-    name: string;
-  }[];
-}
-
-export enum DirectusResourceStatus {
-  VISIBLE = 'visible',
-  ARCHIVED = 'archived',
-}
-
-export interface DirectusResource {
-  id: number;
-  name: string;
-  file?: DirectusFile;
-  link?: string;
-  translations: {
-    name: string;
-    file?: DirectusFile;
-    link?: string;
-  }[];
-  type: DirectusResourceType;
-  domains: number[];
-  date: string;
-  status: DirectusResourceStatus;
 }
 
 type CustomTypes = {

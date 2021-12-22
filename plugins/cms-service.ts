@@ -4,6 +4,7 @@ import { Filter, PartialItem } from '@directus/sdk';
 import { Await } from '~/types/types.utils';
 import {
   DirectusNationalCompetitionEdition,
+  DirectusResource,
   DirectusRole,
   DirectusSeason,
   getTranslatedFields,
@@ -12,6 +13,7 @@ import { NewsEntry } from '~/components/news/st-news';
 import { NationalTeam, NationalTeamResult } from '~/components/national-teams/st-national-teams.prop';
 import Domain from '~/models/domain.model';
 import Role from '~/models/role.model';
+import Resource from '~/models/resource.model';
 
 export interface SimplePage {
   languages_code: string;
@@ -19,6 +21,7 @@ export interface SimplePage {
   body: string;
   path: string;
   key_roles: number[];
+  resources: number[];
 }
 export interface Venue {
   name: string;
@@ -40,21 +43,6 @@ export interface CalendarEvent {
   };
   url?: string;
   type: number;
-}
-
-export interface Resource {
-  id: number;
-  date?: string;
-  name: string;
-  file?: {
-    id: number;
-    type: string;
-    filesize: number;
-    filename_download: string;
-  };
-  link?: string;
-  type: number;
-  domains: number[];
 }
 
 interface NationalCompetitionEdition {
@@ -153,12 +141,29 @@ const cmsService: Plugin = (context, inject) => {
         'key_roles.roles_id.holders.people_id.email',
         'key_roles.roles_id.holders.people_id.gender',
         'key_roles.roles_id.holders.people_id.portrait_square_head',
+        'resources.resources_id.id',
+        'resources.resources_id.name',
+        'resources.resources_id.file.id',
+        'resources.resources_id.file.type',
+        'resources.resources_id.file.filesize',
+        'resources.resources_id.file.filename_download',
+        'resources.resources_id.link',
+        'resources.resources_id.type',
+        'resources.resources_id.domains.domains_id',
+        'resources.resources_id.translations.name',
+        'resources.resources_id.translations.file.id',
+        'resources.resources_id.translations.file.type',
+        'resources.resources_id.translations.file.filesize',
+        'resources.resources_id.translations.file.filename_download',
+        'resources.resources_id.translations.link',
       ],
       deep: {
         // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
         translations: { _filter: { languages_code: { _eq: locale } } },
         // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
         key_roles: { roles_id: { translations: { _filter: { languages_code: { _eq: locale } } } } },
+        // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
+        resources: { resources_id: { translations: { _filter: { languages_code: { _eq: locale } } } } },
       },
       limit: 1,
     });
@@ -186,6 +191,7 @@ const cmsService: Plugin = (context, inject) => {
       title: pageResponse.data[0].translations[0].title,
       body: pageResponse.data[0].translations[0].body,
       key_roles: [],
+      resources: [],
     };
 
     if (pageResponse.data[0].key_roles) {
@@ -195,6 +201,16 @@ const cmsService: Plugin = (context, inject) => {
       );
       Role.addManyFromDirectus(
         pageResponse.data[0].key_roles.map((pageRole) => pageRole?.roles_id) as PartialItem<DirectusRole>[]
+      );
+    }
+
+    if (pageResponse.data[0].resources) {
+      // We save the resources in the store and only provide the resource IDs with the page data
+      pageData.resources.push(
+        ...(pageResponse.data[0].resources.map((resource) => resource?.resources_id?.id) as number[])
+      );
+      Resource.addManyFromDirectus(
+        pageResponse.data[0].resources.map((resource) => resource?.resources_id) as PartialItem<DirectusResource>[]
       );
     }
 
@@ -970,7 +986,7 @@ const cmsService: Plugin = (context, inject) => {
         return resources;
       }
       const translatedFields = getTranslatedFields(resource);
-      const temp = [
+      return [
         ...resources,
         {
           ...resource,
@@ -979,7 +995,6 @@ const cmsService: Plugin = (context, inject) => {
           link: translatedFields?.link || resource.link,
         },
       ] as Resource[];
-      return temp;
     }, [] as Resource[]);
   };
 

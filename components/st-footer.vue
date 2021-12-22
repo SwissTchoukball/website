@@ -32,10 +32,10 @@
           :key="itemIndex"
           class="c-footer__secondary-navigation__item"
         >
-          <a v-if="item.href.startsWith('http')" :href="item.href" class="c-footer__secondary-navigation__link">
+          <a v-if="item.href" :href="item.href" class="c-footer__secondary-navigation__link">
             {{ item.name }}
           </a>
-          <nuxt-link v-else :to="localePath(item.href)" class="c-footer__secondary-navigation__link">
+          <nuxt-link v-else-if="item.to" :to="localePath(item.to)" class="c-footer__secondary-navigation__link">
             {{ item.name }}
           </nuxt-link>
         </li>
@@ -95,15 +95,15 @@ export default Vue.extend({
         },
         {
           name: 'Contact',
-          href: '/contact',
+          to: 'contact',
         },
         {
           name: 'Ressources',
-          href: '/resources',
+          to: 'resources',
         },
         {
           name: 'Médias',
-          href: '/medias',
+          to: 'medias',
         },
       ],
       partners: [
