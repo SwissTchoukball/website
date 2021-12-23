@@ -1,12 +1,12 @@
 <template>
-  <div>
-    <st-simple-page :title="title" :body="body" :key-roles="keyRoles" :resources="resources" />
-
-    <section class="l-main-content-section">
-      <h4 class="t-headline-3">{{ $t('categoryDistribution.title', { season: seasonName }) }}</h4>
-      <st-category-distribution-table :season-start-year="currentSeasonStartYear" />
-    </section>
-  </div>
+  <st-simple-page :title="title" :body="body" :key-roles="keyRoles" :resources="resources">
+    <template #after-body>
+      <section class="l-main-content-section">
+        <h4 class="t-headline-3">{{ $t('categoryDistribution.title', { season: seasonName }) }}</h4>
+        <st-category-distribution-table :season-start-year="currentSeasonStartYear" />
+      </section>
+    </template>
+  </st-simple-page>
 </template>
 
 <script lang="ts">

@@ -5,6 +5,8 @@
     <!-- eslint-disable-next-line vue/no-v-html -->
     <div class="directus-formatted-content" v-html="body"></div>
 
+    <slot name="after-body"></slot>
+
     <template v-if="resources.length">
       <h3 class="t-headline-2">{{ $t('resources.title') }}</h3>
       <st-resource-list :resources="resources" />
