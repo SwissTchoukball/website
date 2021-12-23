@@ -68,6 +68,8 @@ const config: NuxtConfig = {
     'nuxt-i18n',
     // https://github.com/dword-design/nuxt-mail
     'nuxt-mail',
+    // https://github.com/pimlie/nuxt-matomo
+    ['nuxt-matomo', { matomoUrl: '//analytics.tchoukball.ch/', siteId: 4, cookies: false }],
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
