@@ -66,7 +66,7 @@
       </div>
       <p class="c-footer__copyright">
         &copy; {{ new Date().getFullYear() }} {{ $t('title') }}, {{ $t('footer.allRightsReserved') }} -
-        <nuxt-link to="impressum">Impressum</nuxt-link>
+        <nuxt-link :to="localePath('impressum')">Impressum</nuxt-link>
       </p>
     </section>
   </footer>
