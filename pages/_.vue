@@ -1,11 +1,11 @@
 <template>
-  <st-dynamic-page :title="title" :body="body" :key-roles="keyRoles" :resources="resources" />
+  <st-simple-page :title="title" :body="body" :key-roles="keyRoles" :resources="resources" />
 </template>
 
 <script lang="ts">
 import { Item } from '@vuex-orm/core';
 import Vue from 'vue';
-import stDynamicPage from '~/components/st-dynamic-page.vue';
+import stSimplePage from '~/components/st-simple-page.vue';
 import Resource from '~/models/resource.model';
 import Role from '~/models/role.model';
 
@@ -15,7 +15,7 @@ import Role from '~/models/role.model';
  * If there's no match, we redirect to the 404 page.
  */
 export default Vue.extend({
-  components: { stDynamicPage },
+  components: { stSimplePage },
   async asyncData({ app, route, redirect, error, i18n }) {
     const splitPath = route.path.match('^/.{2}(/.*)$');
     let pagePath;
@@ -52,7 +52,7 @@ export default Vue.extend({
           console.info('No data either in the requested locale or the fallback locale.');
           break;
         default:
-          error({ message: `Error when retrieving dynamic page: ${err}` });
+          error({ message: `Error when retrieving simple page: ${err}` });
       }
     }
   },

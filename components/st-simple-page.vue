@@ -45,9 +45,3 @@ export default Vue.extend({
   },
 });
 </script>
-
-<style scoped>
-.c-dynamic-page__body {
-  margin-top: var(--st-length-spacing-s);
-}
-</style>
