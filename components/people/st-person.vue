@@ -103,6 +103,7 @@ export default Vue.extend({
 .c-person__sub-name {
   font-weight: bold;
   color: var(--st-color-person-sub-name);
+  padding-top: var(--st-length-spacing-xxs);
 }
 
 .c-person__details {

@@ -5,9 +5,17 @@
     :details="details"
   >
     <template #subName>
-      <div v-for="role of roles" :key="role.id" v-tooltip.bottom="getTooltipForRole(role)">
-        {{ role.getNameForPerson(person) }}
-      </div>
+      <ul class="u-unstyled-list">
+        <li
+          v-for="role of roles"
+          :key="role.id"
+          v-tooltip.bottom="getTooltipForRole(role)"
+          class="c-staff-person__role"
+          :class="{ 'c-staff-person__role--main': (role.pivot && role.pivot.main) || roles.length === 1 }"
+        >
+          {{ role.getNameForPerson(person) }}
+        </li>
+      </ul>
     </template>
   </st-person>
 </template>
@@ -43,11 +51,20 @@ export default Vue.extend({
       return details;
     },
     roles(): Role[] {
-      if (!this.forGroupId) {
-        return this.person.roles;
-      } else {
-        return this.person.roles.filter((role) => role.group?.id === this.forGroupId);
+      let roles = [...this.person.roles];
+      if (this.forGroupId) {
+        roles = roles.filter((role) => role.group?.id === this.forGroupId);
       }
+      // Put main role first, then order by group ID
+      roles.sort((roleA, roleB) => {
+        if (roleA.pivot?.main) {
+          return -1;
+        } else if (roleB.pivot?.main) {
+          return 1;
+        }
+        return roleA.group?.id - roleB.group?.id;
+      });
+      return roles;
     },
   },
   methods: {
@@ -64,7 +81,12 @@ export default Vue.extend({
 </script>
 
 <style scoped>
-.c-staff-person__group-name {
+.c-staff-person__role {
   font-weight: normal;
+  margin-bottom: 0.2rem;
+}
+
+.c-staff-person__role--main {
+  font-weight: bold;
 }
 </style>

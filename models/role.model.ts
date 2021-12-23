@@ -14,6 +14,9 @@ export default class Role extends Model {
   name_masculine?: string;
   group!: Group;
   holders!: Person[];
+  pivot?: {
+    main?: boolean;
+  };
 
   static fields() {
     return {

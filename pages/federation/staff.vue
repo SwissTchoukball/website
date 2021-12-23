@@ -63,9 +63,7 @@ export default Vue.extend({
       return this.$store.$db().model(Group);
     },
     people(): Collection<Person> {
-      let personQuery = this.Person.query().with('roles', (query) => {
-        query.with('group').orderBy((role: any) => role.group_id);
-      });
+      let personQuery = this.Person.query().with('roles').with('roles.group');
 
       if (this.groupId !== ALL_OPTION) {
         personQuery = personQuery.whereHas('roles', (query) => {
