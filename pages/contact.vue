@@ -228,17 +228,17 @@ export default Vue.extend({
   flex-direction: column;
   align-items: flex-start;
   max-width: 500px;
-  margin: 2rem auto 0;
+  margin: var(--st-length-spacing-s) auto 0;
 }
 
 .c-contact-form__label {
   font-size: 0.8em;
-  margin-top: 1rem;
+  margin-top: var(--st-length-spacing-xs);
 }
 
 .c-contact-form__field {
-  margin-top: 0.3rem;
-  padding: 0.5rem;
+  margin-top: var(--st-length-spacing-xxs);
+  padding: var(--st-length-spacing-xxs);
   width: 100%;
   border: 1px solid var(--st-color-input-border);
   border-radius: 0.3rem;
@@ -254,14 +254,14 @@ export default Vue.extend({
 
 .c-contact-form__captcha,
 .c-contact-form__submit-button {
-  margin-top: 2rem;
+  margin-top: var(--st-length-spacing-s);
   align-self: center;
 }
 
 .c-contact-form__field-error {
   color: var(--st-color-error);
   font-size: 0.7em;
-  margin-top: 0.2rem;
+  margin-top: var(--st-length-spacing-xxs);
 }
 
 .c-contact-form__submission-error {
@@ -269,11 +269,11 @@ export default Vue.extend({
   width: 100%;
   text-align: center;
   font-size: 0.8em;
-  margin-top: 1rem;
+  margin-top: var(--st-length-spacing-xs);
 }
 
 .c-contact-form__success-block {
   text-align: center;
-  margin: 3rem 0;
+  margin: var(--st-length-spacing-m) 0;
 }
 </style>
