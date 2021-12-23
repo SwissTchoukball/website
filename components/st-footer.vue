@@ -108,11 +108,6 @@ export default Vue.extend({
       ],
       partners: [
         {
-          name: 'J+S',
-          slug: 'js',
-          href: 'http://jeunesseetsport.ch',
-        },
-        {
           name: 'Tchoukball Promotion',
           slug: 'tchoukball-promotion',
           href: 'http://www.tchouk.com',
