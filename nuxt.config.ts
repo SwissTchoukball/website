@@ -88,6 +88,10 @@ const config: NuxtConfig = {
     langDir: 'locales/',
     strategy: 'prefix',
     lazy: true,
+    detectBrowserLanguage: {
+      useCookie: false,
+      onlyOnRoot: true,
+    },
     vueI18n: {
       fallbackLocale: 'fr',
     },
