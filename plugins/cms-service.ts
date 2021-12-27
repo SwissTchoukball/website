@@ -455,6 +455,8 @@ const cmsService: Plugin = (context, inject) => {
   };
 
   const getEvents: CMSService['getEvents'] = async ({ limit, page, typeId, month, upcoming }) => {
+    const currentLocale = context.i18n.locale;
+
     // Preparing the filter to retrieve the events
     const publishedFilter = {
       status: {
@@ -515,13 +517,13 @@ const cmsService: Plugin = (context, inject) => {
       filter,
       fields: [
         'id',
-        'name',
+        'translations.name',
+        'translations.description',
         'date_start',
         'time_start',
         'date_end',
         'time_end',
         'status',
-        'description',
         'venue.id',
         'venue.name',
         'venue_other',
@@ -530,6 +532,10 @@ const cmsService: Plugin = (context, inject) => {
         'url',
         'type',
       ],
+      deep: {
+        // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
+        translations: { _filter: { languages_code: { _eq: currentLocale } } },
+      },
     });
 
     let totalEvents = 0;
@@ -543,7 +549,8 @@ const cmsService: Plugin = (context, inject) => {
     }
 
     events = response.data.reduce((events, directusEvent) => {
-      if (!directusEvent || !directusEvent.name || !directusEvent.date_start) {
+      const translatedFields = getTranslatedFields(directusEvent);
+      if (!directusEvent?.date_start || !translatedFields?.name) {
         return events;
       }
 
@@ -580,6 +587,8 @@ const cmsService: Plugin = (context, inject) => {
 
       const event: CalendarEvent = {
         ...(directusEvent as any),
+        name: translatedFields.name,
+        description: translatedFields.description,
         date_start: startDate,
         date_end: endDate,
         isFullDay,

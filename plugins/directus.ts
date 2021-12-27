@@ -141,13 +141,15 @@ export interface DirectusVenue {
 
 export interface DirectusEvent {
   id: number;
-  name: string;
+  translations: {
+    name: string;
+    description: string;
+  }[];
   date_start: string;
   time_start: string;
   date_end: string;
   time_end: string;
   status: string;
-  description?: string;
   venue?: DirectusVenue;
   venue_other?: string;
   image?: {
