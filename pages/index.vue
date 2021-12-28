@@ -152,6 +152,7 @@ export default Vue.extend({
       limit: this.amountUpcomingEvents,
       page: 1,
       upcoming: true,
+      excludeCancelled: true,
     });
 
     this.events = eventsResult.data;

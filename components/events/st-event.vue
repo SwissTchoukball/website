@@ -1,5 +1,5 @@
 <template>
-  <article class="c-event" :class="{ 'c-event--no-image': !event.image }">
+  <article class="c-event" :class="{ 'c-event--no-image': !event.image, 'c-event--cancelled': isCancelled }">
     <img
       v-if="event.image"
       class="c-event__image"
@@ -8,34 +8,40 @@
       :srcset="mainImageSrcSet"
       :sizes="`(min-width: 1400px) 1400px, 96vw`"
     />
-    <st-event-date :start-date="event.date_start" :end-date="event.date_end" />
+    <st-event-date :start-date="event.date_start" :end-date="event.date_end" :cancelled="isCancelled" />
     <div class="c-event__main">
       <header class="c-event__header">
-        <h3 class="t-headline-2 c-event__name">
+        <h3 class="t-headline-2 c-event__name" :class="{ 'c-event__name--cancelled': isCancelled }">
           <nuxt-link :to="titleTo" class="c-event__name-link">{{ event.name }}</nuxt-link>
+          <div v-if="isCancelled" class="c-event__cancelled-label">{{ $t('events.cancelled') }}</div>
         </h3>
         <div v-if="eventTypeName" class="c-event__type">{{ eventTypeName }}</div>
       </header>
-      <section
-        v-if="event.description"
-        class="directus-formatted-content c-event__description"
-        v-html="event.description"
-      ></section>
-      <section class="c-event__details">
-        <div class="c-event__venue-and-time">
-          <div v-if="event.venue" class="c-event__venue">
-            <fa-icon icon="map-marker-alt" class="c-event__icon" />
-            <span>{{ event.venue.name }}</span>
+      <st-link-action v-if="!areInfoVisible" class="c-event__show-info-action" @click="showInfo">
+        {{ $t('events.showInfo') }}
+      </st-link-action>
+      <template v-else>
+        <section
+          v-if="event.description"
+          class="directus-formatted-content c-event__description"
+          v-html="event.description"
+        ></section>
+        <section class="c-event__details">
+          <div class="c-event__venue-and-time">
+            <div v-if="event.venue" class="c-event__venue">
+              <fa-icon icon="map-marker-alt" class="c-event__icon" />
+              <span>{{ event.venue.name }}</span>
+            </div>
+            <time :datetime="event.date_start.toISOString()" class="c-event__time">
+              <fa-icon icon="clock" class="c-event__icon" />
+              <span>{{ time }}</span>
+            </time>
           </div>
-          <time :datetime="event.date_start.toISOString()" class="c-event__time">
-            <fa-icon icon="clock" class="c-event__icon" />
-            <span>{{ time }}</span>
-          </time>
-        </div>
-        <st-button v-if="event.url" :href="event.url" primary class="c-event__link">
-          {{ $t('events.moreInfo') }}
-        </st-button>
-      </section>
+          <st-button v-if="event.url" :href="event.url" primary class="c-event__link">
+            {{ $t('events.moreInfo') }}
+          </st-button>
+        </section>
+      </template>
     </div>
   </article>
 </template>
@@ -56,6 +62,11 @@ export default Vue.extend({
       type: Object as PropType<CalendarEvent>,
       required: true,
     },
+  },
+  data() {
+    return {
+      areInfoVisible: true,
+    };
   },
   computed: {
     titleTo(): Location {
@@ -82,6 +93,9 @@ export default Vue.extend({
         time += ` - ${this.$formatDate(this.event.date_end, 'HH:mm')}`;
       }
       return time;
+    },
+    isCancelled(): boolean {
+      return this.event.status === 'cancelled';
     },
     eventTypes(): EventTypes | undefined {
       return (this.$store as Store<RootState>).state.eventTypes;
@@ -110,6 +124,16 @@ export default Vue.extend({
         // TODO: Consider renaming newsAssetsSizes to be more generic
         widths: this.$config.newsAssetsSizes,
       });
+    },
+  },
+  created() {
+    if (this.isCancelled) {
+      this.areInfoVisible = false;
+    }
+  },
+  methods: {
+    showInfo() {
+      this.areInfoVisible = true;
     },
   },
 });
@@ -156,6 +180,23 @@ export default Vue.extend({
   flex-direction: column;
 }
 
+.c-event__cancelled-label {
+  display: inline-block;
+  font-size: 0.6em;
+  color: var(--st-color-event-cancelled-label);
+  text-transform: uppercase;
+  font-weight: bold;
+  border: 0.2rem solid var(--st-color-event-cancelled-label);
+  border-radius: 0.5em;
+  padding: calc(var(--st-length-spacing-xxs) / 2) var(--st-length-spacing-xxs);
+  margin-left: var(--st-length-spacing-xxs);
+  transform: translateY(-0.2rem);
+}
+
+.c-event__show-info-action {
+  margin-top: var(--st-length-spacing-xs);
+}
+
 .c-event__details {
   display: flex;
   flex-direction: column;
@@ -166,6 +207,7 @@ export default Vue.extend({
   font-weight: bold;
   font-size: 0.9em;
   padding-top: var(--st-length-spacing-xxs);
+  flex-shrink: 0;
 }
 
 .c-event__description {
@@ -194,6 +236,17 @@ export default Vue.extend({
 .c-event__link {
   align-self: flex-end;
   margin-top: var(--st-length-spacing-xs);
+}
+
+.c-event--cancelled .c-event__name-link,
+.c-event--cancelled .c-event__venue,
+.c-event--cancelled .c-event__time {
+  text-decoration: line-through;
+  color: var(--st-color-event-foreground-cancelled);
+}
+
+.c-event--cancelled .c-event__icon {
+  color: var(--st-color-event-foreground-cancelled);
 }
 
 @media (--sm-and-up) {

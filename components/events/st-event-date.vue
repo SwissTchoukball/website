@@ -1,5 +1,9 @@
 <template>
-  <time :datetime="startDate.toISOString()" class="c-event-date" :class="{ 'c-event-date--one-line': alwaysOneLine }">
+  <time
+    :datetime="startDate.toISOString()"
+    class="c-event-date"
+    :class="{ 'c-event-date--one-line': alwaysOneLine, 'c-event-date--cancelled': cancelled }"
+  >
     <span class="c-event-date__week-days">{{ weekDays }}</span>
     <span class="c-event-date__days">{{ days }}</span>
     <span class="c-event-date__months">{{ months }}</span>
@@ -26,6 +30,7 @@ export default Vue.extend({
      * starting from viewport small and up.
      */
     alwaysOneLine: Boolean,
+    cancelled: Boolean,
   },
   computed: {
     isSingleDay(): boolean {
@@ -84,6 +89,12 @@ export default Vue.extend({
 
 .c-event-date__months {
   color: var(--st-color-event-month);
+}
+
+.c-event-date--cancelled .c-event-date__week-days,
+.c-event-date--cancelled .c-event-date__days,
+.c-event-date--cancelled .c-event-date__months {
+  color: var(--st-color-event-foreground-cancelled);
 }
 
 @media (--sm-and-up) {

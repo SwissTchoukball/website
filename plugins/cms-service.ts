@@ -76,6 +76,7 @@ export interface CMSService {
     typeId?: number;
     month?: string;
     upcoming?: boolean;
+    excludeCancelled?: boolean;
   }) => Promise<{ data: CalendarEvent[]; meta: { total: number; filteredDomainName?: string } }>;
   getTeam: (teamSlug: string) => Promise<NationalTeam>;
   getSeasons: () => Promise<DirectusSeason[]>;
@@ -455,15 +456,27 @@ const cmsService: Plugin = (context, inject) => {
     return newsEntry;
   };
 
-  const getEvents: CMSService['getEvents'] = async ({ limit, page, typeId, month, upcoming }) => {
+  const getEvents: CMSService['getEvents'] = async ({ limit, page, typeId, month, upcoming, excludeCancelled }) => {
     const currentLocale = context.i18n.locale;
 
     // Preparing the filter to retrieve the events
     const publishedFilter = {
-      status: {
-        _neq: 'draft',
-      },
+      _and: [
+        {
+          status: {
+            _neq: 'draft',
+          },
+        },
+      ],
     };
+
+    if (excludeCancelled) {
+      publishedFilter._and.push({
+        status: {
+          _neq: 'cancelled',
+        },
+      });
+    }
 
     let typeFilter: any;
     if (typeId) {
