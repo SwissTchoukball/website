@@ -19,10 +19,10 @@
         <fa-icon icon="map-marker-alt" class="c-event__icon" />
         <span>{{ event.venue.name }}</span>
       </div>
-      <div class="c-event__time">
+      <time :datetime="event.date_start.toISOString()" class="c-event__time">
         <fa-icon icon="clock" class="c-event__icon" />
         <span>{{ time }}</span>
-      </div>
+      </time>
       <st-button v-if="event.url" :href="event.url" primary class="c-event__link">
         {{ $t('events.moreInfo') }}
       </st-button>

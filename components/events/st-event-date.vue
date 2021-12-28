@@ -1,9 +1,9 @@
 <template>
-  <div class="c-event-date" :class="{ 'c-event-date--one-line': alwaysOneLine }">
+  <time :datetime="startDate.toISOString()" class="c-event-date" :class="{ 'c-event-date--one-line': alwaysOneLine }">
     <span class="c-event-date__week-days">{{ weekDays }}</span>
     <span class="c-event-date__days">{{ days }}</span>
     <span class="c-event-date__months">{{ months }}</span>
-  </div>
+  </time>
 </template>
 
 <script lang="ts">
