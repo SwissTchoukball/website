@@ -338,13 +338,14 @@ export default {
 
   async insertCompetitionEditions(
     _context,
-    tournaments: (LeveradeTournament & { competition?: DirectusNationalCompetition })[]
+    tournaments: (LeveradeTournament & { directus_id: number; competition?: DirectusNationalCompetition })[]
   ) {
     // We insertOrUpdate because we don't have the information from Directus and don't want to override it.
     await CompetitionEdition.insertOrUpdate({
       data: tournaments.map((tournament) => {
         const edition: any = {
           leverade_id: tournament.id,
+          directus_id: tournament.directus_id,
           name: tournament.attributes.name,
           gender: tournament.attributes.gender,
           season_id: tournament.relationships.season.data.id,
@@ -496,6 +497,7 @@ export default {
       }
       return {
         ...tournament,
+        directus_id: edition.directus_id,
         competition: edition.competition,
       };
     });
