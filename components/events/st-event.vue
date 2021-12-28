@@ -1,5 +1,5 @@
 <template>
-  <div class="c-event" :class="{ 'c-event--no-image': !event.image }">
+  <article class="c-event" :class="{ 'c-event--no-image': !event.image }">
     <img
       v-if="event.image"
       class="c-event__image"
@@ -10,24 +10,34 @@
     />
     <st-event-date :start-date="event.date_start" :end-date="event.date_end" />
     <div class="c-event__main">
-      <h3 class="t-headline-2 c-event__name">
-        <nuxt-link :to="titleTo" class="c-event__name-link">{{ event.name }}</nuxt-link>
-      </h3>
-      <div v-if="eventTypeName" class="c-event__type">{{ eventTypeName }}</div>
-      <div class="directus-formatted-content c-event__description" v-html="event.description"></div>
-      <div v-if="event.venue" class="c-event__venue">
-        <fa-icon icon="map-marker-alt" class="c-event__icon" />
-        <span>{{ event.venue.name }}</span>
-      </div>
-      <time :datetime="event.date_start.toISOString()" class="c-event__time">
-        <fa-icon icon="clock" class="c-event__icon" />
-        <span>{{ time }}</span>
-      </time>
-      <st-button v-if="event.url" :href="event.url" primary class="c-event__link">
-        {{ $t('events.moreInfo') }}
-      </st-button>
+      <header class="c-event__header">
+        <h3 class="t-headline-2 c-event__name">
+          <nuxt-link :to="titleTo" class="c-event__name-link">{{ event.name }}</nuxt-link>
+        </h3>
+        <div v-if="eventTypeName" class="c-event__type">{{ eventTypeName }}</div>
+      </header>
+      <section
+        v-if="event.description"
+        class="directus-formatted-content c-event__description"
+        v-html="event.description"
+      ></section>
+      <section class="c-event__details">
+        <div class="c-event__venue-and-time">
+          <div v-if="event.venue" class="c-event__venue">
+            <fa-icon icon="map-marker-alt" class="c-event__icon" />
+            <span>{{ event.venue.name }}</span>
+          </div>
+          <time :datetime="event.date_start.toISOString()" class="c-event__time">
+            <fa-icon icon="clock" class="c-event__icon" />
+            <span>{{ time }}</span>
+          </time>
+        </div>
+        <st-button v-if="event.url" :href="event.url" primary class="c-event__link">
+          {{ $t('events.moreInfo') }}
+        </st-button>
+      </section>
     </div>
-  </div>
+  </article>
 </template>
 
 <script lang="ts">
@@ -146,6 +156,11 @@ export default Vue.extend({
   flex-direction: column;
 }
 
+.c-event__details {
+  display: flex;
+  flex-direction: column;
+}
+
 .c-event__type {
   color: var(--st-color-event-type);
   font-weight: bold;
@@ -178,6 +193,7 @@ export default Vue.extend({
 
 .c-event__link {
   align-self: flex-end;
+  margin-top: var(--st-length-spacing-xs);
 }
 
 @media (--sm-and-up) {
@@ -189,21 +205,29 @@ export default Vue.extend({
     position: relative;
   }
 
+  .c-event__header,
+  .c-event__details {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .c-event__details {
+    align-items: flex-end;
+  }
+
+  .c-event__type {
+    padding-top: 0;
+    padding-left: var(--st-length-spacing-xs);
+  }
+
   .c-event__name {
     padding-top: 0;
   }
 
-  .c-event__type {
-    position: absolute;
-    top: 0;
-    right: 0;
-    padding-top: 0;
-  }
-
   .c-event__link {
-    position: absolute;
-    bottom: 0;
-    right: 0;
+    flex-shrink: 0;
   }
 }
 
