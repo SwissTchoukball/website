@@ -533,10 +533,6 @@ const cmsService: Plugin = (context, inject) => {
         'url',
         'type',
       ],
-      deep: {
-        // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
-        translations: { _filter: { languages_code: { _eq: currentLocale } } },
-      },
     });
 
     let totalEvents = 0;
@@ -550,7 +546,7 @@ const cmsService: Plugin = (context, inject) => {
     }
 
     events = response.data.reduce((events, directusEvent) => {
-      const translatedFields = getTranslatedFields(directusEvent);
+      const translatedFields = getTranslatedFields(directusEvent, currentLocale);
       if (!directusEvent?.date_start || !translatedFields?.name) {
         return events;
       }
