@@ -171,6 +171,7 @@ a:visited {
 .u-unstyled-button {
   font-family: inherit;
   font-size: inherit;
+  font-weight: inherit;
   appearance: none;
   border: none;
   background-color: transparent;

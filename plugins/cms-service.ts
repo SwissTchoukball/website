@@ -540,6 +540,7 @@ const cmsService: Plugin = (context, inject) => {
         'status',
         'venue.id',
         'venue.name',
+        'venue.address',
         'venue_other',
         'image.id',
         'image.description',

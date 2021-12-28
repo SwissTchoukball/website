@@ -28,9 +28,26 @@
         ></section>
         <section class="c-event__details">
           <div class="c-event__venue-and-time">
-            <div v-if="event.venue" class="c-event__venue">
+            <div
+              v-if="event.venue"
+              class="c-event__venue"
+              :class="{ 'c-event__venue--with-address': event.venue.address }"
+            >
               <fa-icon icon="map-marker-alt" class="c-event__icon" />
-              <span>{{ event.venue.name }}</span>
+              <div>
+                <component
+                  :is="event.venue.address ? 'button' : 'span'"
+                  class="u-unstyled-button c-event__venue-name"
+                  @click="toggleAddressVisibility"
+                >
+                  {{ event.venue.name }}
+                </component>
+                <!-- We first only show the address, if someone only wants to see in which city is the venue. -->
+                <!-- Then clicking on the address opens the map. -->
+                <a v-show="isAddressVisible" :href="mapsUrl" class="c-event__address">
+                  {{ event.venue.address }}
+                </a>
+              </div>
             </div>
             <time :datetime="event.date_start.toISOString()" class="c-event__time">
               <fa-icon icon="clock" class="c-event__icon" />
@@ -66,6 +83,7 @@ export default Vue.extend({
   data() {
     return {
       areInfoVisible: true,
+      isAddressVisible: false,
     };
   },
   computed: {
@@ -125,6 +143,13 @@ export default Vue.extend({
         widths: this.$config.newsAssetsSizes,
       });
     },
+    mapsUrl(): string | null {
+      if (!this.event.venue) {
+        return null;
+      }
+      // This link will fallback to Google Maps if Apple Maps is not available
+      return `//maps.apple.com/?q=${this.event.venue.address?.replace('\n', ', ')}`;
+    },
   },
   created() {
     if (this.isCancelled) {
@@ -134,6 +159,11 @@ export default Vue.extend({
   methods: {
     showInfo() {
       this.areInfoVisible = true;
+    },
+    toggleAddressVisibility() {
+      if (this.event.venue?.address) {
+        this.isAddressVisible = !this.isAddressVisible;
+      }
     },
   },
 });
@@ -225,6 +255,14 @@ export default Vue.extend({
   font-weight: 500;
   display: flex;
   align-items: center;
+}
+
+.c-event__venue--with-address .c-event__venue-name {
+  cursor: pointer;
+}
+
+.c-event__address {
+  white-space: pre-line;
 }
 
 .c-event__icon {
