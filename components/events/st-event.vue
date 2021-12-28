@@ -11,7 +11,7 @@
     <st-event-date :start-date="event.date_start" :end-date="event.date_end" />
     <div class="c-event__main">
       <h3 class="t-headline-2 c-event__name">
-        <nuxt-link :to="{ hash: `event-${event.id}` }" class="c-event__name-link">{{ event.name }}</nuxt-link>
+        <nuxt-link :to="titleTo" class="c-event__name-link">{{ event.name }}</nuxt-link>
       </h3>
       <div v-if="eventTypeName" class="c-event__type">{{ eventTypeName }}</div>
       <div class="directus-formatted-content c-event__description" v-html="event.description"></div>
@@ -32,6 +32,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
+import { Location } from 'vue-router';
 import { Store } from 'vuex';
 import { CalendarEvent } from '~/plugins/cms-service';
 import { EventTypes, RootState } from '~/store/state';
@@ -47,6 +48,21 @@ export default Vue.extend({
     },
   },
   computed: {
+    titleTo(): Location {
+      const location: Location = { hash: `event-${this.event.id}` };
+
+      if (this.$route.query.month || this.$route.query.year) {
+        location.query = {};
+        if (this.$route.query.month) {
+          location.query.month = this.$route.query.month.toString();
+        }
+        if (this.$route.query.year) {
+          location.query.year = this.$route.query.year.toString();
+        }
+      }
+
+      return location;
+    },
     time(): string {
       if (this.event.isFullDay) {
         return this.$t('events.fullDay').toString();
