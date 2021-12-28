@@ -105,6 +105,7 @@ export default Vue.extend({
 }
 
 .c-event__date {
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -113,14 +114,8 @@ export default Vue.extend({
   text-transform: uppercase;
   white-space: nowrap;
   margin-right: var(--st-length-spacing-xs);
-  width: 3rem;
+  width: 3.8rem;
 }
-
-/* .c-event__date--range {
-  display: block;
-  white-space: normal;
-  text-align: center;
-} */
 
 .c-event__date-separator {
   height: 2px;
@@ -149,10 +144,6 @@ export default Vue.extend({
 .c-event__name {
   font-size: 1em;
 }
-
-/* .c-event__details {
-  font-size: 0.8em;
-} */
 
 .c-event__name,
 .c-event__details {

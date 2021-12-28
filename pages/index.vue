@@ -221,13 +221,13 @@ export default Vue.extend({
 }
 
 @media (--sm-and-up) {
-  .c-index__event-item {
-    width: 50%;
-  }
-
   .c-index__event-list {
     flex-wrap: wrap;
-    max-height: 12em;
+    max-height: 13em;
+  }
+
+  .c-index__event-item {
+    width: 50%;
   }
 
   .c-index__flickr-photo {
@@ -235,7 +235,7 @@ export default Vue.extend({
   }
 }
 
-@media (--md-and-up) {
+@media (--lg-and-up) {
   .c-index__event-item {
     width: 33%;
   }
