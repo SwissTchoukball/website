@@ -44,9 +44,11 @@
                 </component>
                 <!-- We first only show the address, if someone only wants to see in which city is the venue. -->
                 <!-- Then clicking on the address opens the map. -->
-                <a v-show="isAddressVisible" :href="mapsUrl" class="c-event__address">
-                  {{ event.venue.address }}
-                </a>
+                <transition name="slide-fade">
+                  <a v-show="isAddressVisible" :href="mapsUrl" class="c-event__address">
+                    {{ event.venue.address }}
+                  </a>
+                </transition>
               </div>
             </div>
             <time :datetime="event.date_start.toISOString()" class="c-event__time">
@@ -269,6 +271,7 @@ export default Vue.extend({
   width: 1rem;
   color: var(--st-color-event-icon);
   margin-right: var(--st-length-spacing-xxs);
+  align-self: flex-start;
 }
 
 .c-event__link {
@@ -320,6 +323,19 @@ export default Vue.extend({
   .c-event__link {
     flex-shrink: 0;
   }
+}
+
+/* Transitions */
+
+/* Enter and leave animations can use different
+   durations and timing functions.              */
+.slide-fade-enter-active {
+  transition: all 0.3s ease;
+}
+
+.slide-fade-enter {
+  transform: translateX(50px);
+  opacity: 0;
 }
 
 @media (--md-and-up) {
