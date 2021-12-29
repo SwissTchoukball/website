@@ -124,8 +124,7 @@ export default Vue.extend({
         return '';
       }
       return getAssetURL(this.$config.cmsURL, this.event.image.id, {
-        // TODO: Consider renaming newsAssetsSizes to be more generic
-        width: this.$config.newsAssetsSizes[0],
+        width: this.$config.keyVisualSizes[0],
       });
     },
     mainImageSrcSet(): string {
@@ -133,8 +132,7 @@ export default Vue.extend({
         return '';
       }
       return getAssetSrcSet(this.$config.cmsURL, this.event.image.id, {
-        // TODO: Consider renaming newsAssetsSizes to be more generic
-        widths: this.$config.newsAssetsSizes,
+        widths: this.$config.keyVisualSizes,
       });
     },
     mapsUrl(): string | null {

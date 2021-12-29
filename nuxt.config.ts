@@ -175,7 +175,7 @@ const config: NuxtConfig = {
   publicRuntimeConfig: {
     cmsURL: process.env.CMS_URL || 'http://localhost:8055',
     leveradeURL: 'https://api.leverade.com',
-    newsAssetsSizes: [326, 500, 680, 1000, 1400, 2000, 2800],
+    keyVisualSizes: [326, 500, 680, 1000, 1400, 2000, 2800],
     avatarAssetsSize: [200, 400],
     competitionLogoAssetsSizes: [200, 400],
     hCaptchaSiteKey: process.env.HCAPTCHA_SITE_KEY,

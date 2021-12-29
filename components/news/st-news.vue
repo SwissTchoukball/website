@@ -40,7 +40,7 @@ export default Vue.extend({
         return '';
       }
       return getAssetURL(this.$config.cmsURL, this.newsEntry.main_image.id, {
-        width: this.$config.newsAssetsSizes[0],
+        width: this.$config.keyVisualSizes[0],
       });
     },
     mainImageSrcSet(): string {
@@ -48,7 +48,7 @@ export default Vue.extend({
         return '';
       }
       return getAssetSrcSet(this.$config.cmsURL, this.newsEntry.main_image.id, {
-        widths: this.$config.newsAssetsSizes,
+        widths: this.$config.keyVisualSizes,
       });
     },
     creationDate(): string {

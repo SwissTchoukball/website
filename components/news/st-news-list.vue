@@ -70,12 +70,12 @@ export default Vue.extend({
     },
     mainImageFallbackSrc(assetId: string): string {
       return getAssetURL(this.$config.cmsURL, assetId, {
-        width: this.$config.newsAssetsSizes[0],
+        width: this.$config.keyVisualSizes[0],
       });
     },
     mainImageSrcSet(assetId: string): string {
       return getAssetSrcSet(this.$config.cmsURL, assetId, {
-        widths: this.$config.newsAssetsSizes,
+        widths: this.$config.keyVisualSizes,
       });
     },
   },
