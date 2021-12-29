@@ -41,7 +41,7 @@ export default Vue.extend({
         });
       }
 
-      if (this.player.club.name) {
+      if (this.player.club?.name) {
         details.push({
           icon: 'shield-alt',
           text: this.player.club.name,
