@@ -97,6 +97,7 @@
   --st-color-event-icon: var(--st-color-red-swiss-tchoukball);
   --st-color-event-month-switch-link: var(--st-color-red-swiss-tchoukball);
   --st-color-event-cancelled-label: var(--st-color-red-swiss-tchoukball);
+  --st-color-event-address-toggle-marker: var(--st-color-grey-dark);
 
   /* National teams */
   --st-color-national-team-result-location: var(--st-color-grey-dark);

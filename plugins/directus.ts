@@ -136,6 +136,8 @@ export interface DirectusNews {
 export interface DirectusVenue {
   id: string;
   name: string;
+  city?: string;
+  address?: string;
   url?: string;
 }
 

@@ -34,22 +34,14 @@
               :class="{ 'c-event__venue--with-address': event.venue.address }"
             >
               <fa-icon icon="map-marker-alt" class="c-event__icon" />
-              <div>
-                <component
-                  :is="event.venue.address ? 'button' : 'span'"
-                  class="u-unstyled-button c-event__venue-name"
-                  @click="toggleAddressVisibility"
-                >
-                  {{ event.venue.name }}
+              <component :is="event.venue.address ? 'details' : 'div'" class="c-event__venue-name-and-address">
+                <component :is="event.venue.address ? 'summary' : 'span'" class="u-unstyled-button c-event__venue-name">
+                  {{ event.venue.name }}<template v-if="event.venue.city">, {{ event.venue.city }}</template>
                 </component>
                 <!-- We first only show the address, if someone only wants to see in which city is the venue. -->
                 <!-- Then clicking on the address opens the map. -->
-                <transition name="slide-fade">
-                  <a v-show="isAddressVisible" :href="mapsUrl" class="c-event__address">
-                    {{ event.venue.address }}
-                  </a>
-                </transition>
-              </div>
+                <a :href="mapsUrl" class="c-event__address">{{ event.venue.address }}</a>
+              </component>
             </div>
             <time :datetime="event.date_start.toISOString()" class="c-event__time">
               <fa-icon icon="clock" class="c-event__icon" />
@@ -259,19 +251,47 @@ export default Vue.extend({
   align-items: center;
 }
 
+.c-event__venue {
+  align-items: flex-start;
+}
+
 .c-event__venue--with-address .c-event__venue-name {
   cursor: pointer;
+  list-style: none;
+  position: relative;
+  margin-left: var(--st-length-spacing-xs);
+}
+
+.c-event__venue--with-address .c-event__venue-name::-webkit-details-marker {
+  display: none;
+}
+
+.c-event__venue--with-address .c-event__venue-name::before {
+  content: '\25B6';
+  font-size: 0.6em;
+  color: var(--st-color-event-address-toggle-marker);
+  position: absolute;
+  top: 0.2rem;
+  left: calc(-1 * var(--st-length-spacing-xs));
+  transform: rotate(0);
+  transform-origin: 0.2rem 50%;
+  transition: 0.25s transform ease;
+}
+
+.c-event__venue-name-and-address[open] > .c-event__venue-name::before {
+  transform: rotate(90deg);
 }
 
 .c-event__address {
   white-space: pre-line;
+  margin-left: var(--st-length-spacing-xs);
+  display: inline-block;
 }
 
 .c-event__icon {
   width: 1rem;
   color: var(--st-color-event-icon);
   margin-right: var(--st-length-spacing-xxs);
-  align-self: flex-start;
 }
 
 .c-event__link {

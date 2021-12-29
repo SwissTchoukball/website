@@ -25,6 +25,7 @@ export interface SimplePage {
 }
 export interface Venue {
   name: string;
+  city?: string;
   address?: string;
   url?: string;
 }
@@ -540,6 +541,7 @@ const cmsService: Plugin = (context, inject) => {
         'status',
         'venue.id',
         'venue.name',
+        'venue.city',
         'venue.address',
         'venue_other',
         'image.id',
