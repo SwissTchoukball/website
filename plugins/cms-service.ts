@@ -658,11 +658,12 @@ const cmsService: Plugin = (context, inject) => {
         'staff.roles_id.holders.people_id.gender',
         'staff.roles_id.holders.people_id.email',
         'staff.roles_id.holders.people_id.portrait_square_head',
-        'results.competition_id.name',
         'results.competition_id.year',
         'results.competition_id.logo',
-        'results.competition_id.city',
-        'results.competition_id.country',
+        'results.competition_id.translations.languages_code',
+        'results.competition_id.translations.name',
+        'results.competition_id.translations.city',
+        'results.competition_id.translations.country',
         'results.ranking',
         'nations_cup_results',
       ],
@@ -720,13 +721,29 @@ const cmsService: Plugin = (context, inject) => {
 
     // We sort the results because the API can't do it yet (only at the root)
     let results: NationalTeamResult[] =
-      rawTeam.results?.map(
-        (r) =>
-          ({
-            competition: r?.competition_id,
-            ranking: r?.ranking,
-          } as any)
-      ) || [];
+      rawTeam.results?.map((result) => {
+        if (!result?.competition_id) {
+          console.warn('Unknown competition for team result');
+          return result;
+        }
+
+        const competitionTranslations = getTranslatedFields(result.competition_id, currentLocale);
+
+        if (!competitionTranslations?.name) {
+          console.warn('Competition has no name', result.competition_id);
+          return result;
+        }
+
+        return {
+          competition: {
+            ...result?.competition_id,
+            name: competitionTranslations.name,
+            city: competitionTranslations.city,
+            country: competitionTranslations.country,
+          },
+          ranking: result?.ranking,
+        } as any;
+      }) || [];
     results = results.sort((resultA, resultB) => resultB.competition.year - resultA.competition.year);
 
     // Fallback for mandatory fields

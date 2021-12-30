@@ -1,5 +1,4 @@
 import { Gender } from '~/models/person.model';
-import { DirectusNationalTeamCompetition } from '~/plugins/directus';
 
 export interface Player {
   id: number;
@@ -19,8 +18,16 @@ export interface Player {
   portrait_square_head: string;
 }
 
+export interface NationalTeamCompetition {
+  name: string;
+  year: number;
+  logo: string;
+  city: string;
+  country: string;
+}
+
 export interface NationalTeamResult {
-  competition: DirectusNationalTeamCompetition;
+  competition: NationalTeamCompetition;
   ranking: number;
 }
 

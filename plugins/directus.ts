@@ -196,11 +196,13 @@ export interface DirectusPlayer {
 }
 
 export interface DirectusNationalTeamCompetition {
-  name: string;
   year: number;
   logo: string;
-  city: string;
-  country: string;
+  translations: {
+    name: string;
+    city: string;
+    country: string;
+  }[];
 }
 
 export interface DirectusTeamResult {
