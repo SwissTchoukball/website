@@ -19,17 +19,6 @@ export interface Player {
   portrait_square_head: string;
 }
 
-export interface StaffMember {
-  id: number;
-  first_name: string;
-  last_name: string;
-  gender: Gender;
-  role: string;
-  date_start: string;
-  date_end: string;
-  track_record: string;
-  portrait_square_head: string;
-}
 export interface NationalTeamResult {
   competition: DirectusNationalTeamCompetition;
   ranking: number;
@@ -40,7 +29,10 @@ export interface NationalTeam {
   slug: string;
   gender: string;
   players: Player[];
-  staff: StaffMember[];
+  /**
+   * Array of role IDs
+   */
+  staff: number[];
   results: NationalTeamResult[];
   nationsCupResults: {
     [year: string]: string;

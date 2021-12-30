@@ -648,15 +648,16 @@ const cmsService: Plugin = (context, inject) => {
         'players.date_end',
         'players.track_record',
         'players.portrait_square_head',
-        'staff.national_team_staff_id.id',
-        'staff.national_team_staff_id.first_name',
-        'staff.national_team_staff_id.last_name',
-        'staff.national_team_staff_id.gender',
-        'staff.national_team_staff_id.role',
-        'staff.national_team_staff_id.date_start',
-        'staff.national_team_staff_id.date_end',
-        'staff.national_team_staff_id.track_record',
-        'staff.national_team_staff_id.portrait_square_head',
+        'staff.roles_id.id',
+        'staff.roles_id.translations.name',
+        'staff.roles_id.translations.name_feminine',
+        'staff.roles_id.translations.name_masculine',
+        'staff.roles_id.holders.people_id.id',
+        'staff.roles_id.holders.people_id.first_name',
+        'staff.roles_id.holders.people_id.last_name',
+        'staff.roles_id.holders.people_id.gender',
+        'staff.roles_id.holders.people_id.email',
+        'staff.roles_id.holders.people_id.portrait_square_head',
         'results.competition_id.name',
         'results.competition_id.year',
         'results.competition_id.logo',
@@ -668,6 +669,8 @@ const cmsService: Plugin = (context, inject) => {
       deep: {
         // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
         translations: { _filter: { languages_code: { _eq: currentLocale } } },
+        // @ts-ignore Bug with Directus SDK, it should accept roles_id here.
+        staff: { roles_id: { translations: { _filter: { languages_code: { _eq: currentLocale } } } } },
         // TODO: uncomment the filter below once the filter on date fields is fixed https://github.com/directus/directus/issues/6494
         // players: {
         //   // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
@@ -732,15 +735,22 @@ const cmsService: Plugin = (context, inject) => {
       slug: 'unknown',
       gender: rawTeam.gender || 'mixed',
       players,
-      staff: (rawTeam.staff?.map((s) => s?.national_team_staff_id) as any) || [],
+      staff: [] as number[],
       results,
       nationsCupResults: (rawTeam.nations_cup_results as any) || {},
     };
 
-    if (rawTeam.translations && rawTeam.translations[0]) {
-      const translations = rawTeam.translations[0];
-      team.name = translations.name || team.name;
-      team.slug = translations.slug || team.slug;
+    const teamTranslations = getTranslatedFields(rawTeam);
+    if (!teamTranslations?.name || !teamTranslations?.slug) {
+      throw new Error('Team is missing requested fields');
+    }
+    team.name = teamTranslations.name || team.name;
+    team.slug = teamTranslations.slug || team.slug;
+
+    if (rawTeam.staff) {
+      // We save the roles in the store and only provide the role IDs with the page data
+      team.staff.push(...(rawTeam.staff.map((teamRole) => teamRole?.roles_id?.id) as number[]));
+      Role.addManyFromDirectus(rawTeam.staff.map((teamRole) => teamRole?.roles_id) as PartialItem<DirectusRole>[]);
     }
 
     const today = new Date();
@@ -748,12 +758,6 @@ const cmsService: Plugin = (context, inject) => {
     // Manually filtering players until the API filter on date fields is fixed https://github.com/directus/directus/issues/6494
     team.players = team.players.filter(
       (player: any) => player && (!player.date_end || player.date_end >= context.$formatDate(today, 'yyyy-MM-dd'))
-    );
-
-    // Manually filtering staff until the API filter on date fields is fixed https://github.com/directus/directus/issues/6494
-    team.staff = team.staff.filter(
-      (staffMember: any) =>
-        staffMember && (!staffMember.date_end || staffMember.date_end >= context.$formatDate(today, 'yyyy-MM-dd'))
     );
 
     return team;

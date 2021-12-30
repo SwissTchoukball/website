@@ -13,7 +13,7 @@
     </template>
 
     <template v-for="role in keyRoles">
-      <st-role v-if="role.holders.length > 0" :key="role.id" :role="role" />
+      <st-role v-if="role.holders.length > 0" :key="role.id" class="c-simple-page__role" :role="role" />
     </template>
   </section>
 </template>
@@ -47,3 +47,9 @@ export default Vue.extend({
   },
 });
 </script>
+
+<style scoped>
+.c-simple-page__role {
+  margin-top: var(--st-length-spacing-m);
+}
+</style>
