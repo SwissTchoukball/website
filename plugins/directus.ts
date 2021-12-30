@@ -71,9 +71,6 @@ export enum DirectusResourceStatus {
 
 export interface DirectusResource {
   id: number;
-  name: string;
-  file?: DirectusFile;
-  link?: string;
   translations: {
     name: string;
     file?: DirectusFile;

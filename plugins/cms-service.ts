@@ -953,6 +953,9 @@ const cmsService: Plugin = (context, inject) => {
     }, [] as NationalCompetitionEdition[]);
   };
   const searchResources: CMSService['searchResources'] = async (searchTerm, domainId, typeId) => {
+    // We retrieve all the languages and show resources in fallback locale if not available in current locale
+    const currentLocale = context.i18n.locale;
+
     // Type should be Filter<DirectusResourceType>, but there is a bug in the Directus SDK.
     // We use any as a workaround until the _and is properly recognised. See https://github.com/directus/directus/issues/7475
     const filter: any = {
@@ -981,12 +984,6 @@ const cmsService: Plugin = (context, inject) => {
       fields: [
         'id',
         'date',
-        'name',
-        'file.id',
-        'file.type',
-        'file.filesize',
-        'file.filename_download',
-        'link',
         'type',
         'domains.domains_id',
         'translations.name',
@@ -996,32 +993,34 @@ const cmsService: Plugin = (context, inject) => {
         'translations.file.filename_download',
         'translations.link',
       ],
-      deep: {
-        // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
-        translations: { _filter: { languages_code: { _eq: context.i18n.locale } } },
-      },
-      sort: ['name'],
     });
 
     if (!response.data) {
       throw new Error('Error when retrieving resources');
     }
 
-    return response.data.reduce((resources, resource) => {
-      if (!resource.name) {
-        return resources;
-      }
-      const translatedFields = getTranslatedFields(resource);
-      return [
-        ...resources,
-        {
-          ...resource,
-          name: translatedFields?.name || resource.name,
-          file: translatedFields?.file || resource.file,
-          link: translatedFields?.link || resource.link,
-        },
-      ] as Resource[];
-    }, [] as Resource[]);
+    return response.data
+      .reduce((resources, resource) => {
+        if (!resource) {
+          return resources;
+        }
+        const translatedFields = getTranslatedFields(resource, currentLocale);
+
+        if (!translatedFields?.name) {
+          return resources;
+        }
+
+        return [
+          ...resources,
+          {
+            ...resource,
+            name: translatedFields?.name,
+            file: translatedFields?.file,
+            link: translatedFields?.link,
+          },
+        ] as Resource[];
+      }, [] as Resource[])
+      .sort((resourceA, resourceB) => resourceA.name.localeCompare(resourceB.name));
   };
 
   inject('cmsService', {

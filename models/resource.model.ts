@@ -33,24 +33,23 @@ export default class Resource extends Model {
 
   static addManyFromDirectus(directusResources: PartialItem<DirectusResource>[]) {
     const resourcesData = directusResources.reduce((resources, resource) => {
-      if (!resource || !resource.id || !resource.name) {
+      if (!resource || !resource.id) {
         return resources;
       }
 
       const translatedFields = getTranslatedFields(resource);
 
-      // TODO: Uncomment when we'll have the resources using translations for all language (without default)
-      // if (!translatedFields?.name) {
-      //   return resources;
-      // }
+      if (!translatedFields?.name) {
+        return resources;
+      }
 
       return [
         ...resources,
         {
           ...resource,
-          name: translatedFields?.name || resource.name,
-          file: translatedFields?.file || resource.file,
-          link: translatedFields?.link || resource.link,
+          name: translatedFields?.name,
+          file: translatedFields?.file,
+          link: translatedFields?.link,
         },
       ] as Resource[];
     }, [] as Resource[]);
