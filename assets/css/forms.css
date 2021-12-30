@@ -1,0 +1,59 @@
+.l-form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.l-form__label {
+  font-size: 0.8em;
+  margin-top: var(--st-length-spacing-xs);
+}
+
+.l-form__field {
+  margin-top: var(--st-length-spacing-xxs);
+  padding: var(--st-length-spacing-xxs);
+  width: 100%;
+  border: 1px solid var(--st-color-input-border);
+  border-radius: 0.3rem;
+}
+
+.l-form__field--invalid {
+  border-color: var(--st-color-error);
+}
+
+.l-form__field--message {
+  min-height: 8rem;
+}
+
+.l-form__submit-button {
+  margin-top: var(--st-length-spacing-s);
+  align-self: center;
+}
+
+.l-form__field-error {
+  color: var(--st-color-error);
+  font-size: 0.7em;
+  margin-top: var(--st-length-spacing-xxs);
+}
+
+.l-form__submission-error {
+  color: var(--st-color-error);
+  width: 100%;
+  text-align: center;
+  font-size: 0.8em;
+  margin-top: var(--st-length-spacing-xs);
+}
+
+.l-form-select {
+  appearance: none;
+  font-size: 1em;
+  font-family: inherit;
+  padding: var(--st-length-spacing-xxs);
+  padding-right: var(--st-length-spacing-s);
+  border: 1px solid var(--st-color-select-border);
+  border-radius: 10px;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z"></path></svg>');
+  background-repeat: no-repeat;
+  background-position: right var(--st-length-spacing-xxs) center;
+  background-size: 1rem;
+}

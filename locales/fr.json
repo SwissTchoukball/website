@@ -22,6 +22,7 @@
     "lastPage": "Dernière page"
   },
   "footer": {
+    "newsletterLink": "S'inscrire à la newsletter",
     "partners": "Partenaires",
     "affiliations": "Affiliations",
     "logoFrom": "Logo de {orgName}",
@@ -33,7 +34,7 @@
     "domainFilterInfo": "Affichage des news “{domainName}”.",
     "showAll": "Afficher toutes les news",
     "publishedOn": "publié le",
-    "updatedOn": "mis à jour le"
+    "updatedOn": "mis à jour le"
   },
   "tchoukball": {
     "description": "Le tchoukball est un sport d’équipe <strong>tactique</strong> mélangeant volleyball, handball et pelote basque. Cinq minutes d’explications suffisent pour commencer à jouer, rendant le tchoukball très <strong>accessible</strong>. Gestes techniques, rythme soutenu et intelligence de jeu en font un sport particulièrement <strong>intense</strong>. Il préconise le <strong>fair-play</strong> en interdisant tout geste d’aggression et d’obstruction envers l’équipe adverse.",
@@ -58,7 +59,7 @@
     "noneUpcomingThisMonth": "Il n'y a pas d'événement à venir en {month}.",
     "showPastEvents": "Afficher les événements passés en {month}",
     "showUpcomingEventsOnly": "Afficher uniquement les événements à venir en {month}",
-    "goToEvents": "Accéder à tous les événements"
+    "goToEvents": "Accéder à tous les événements"
   },
   "competitions": {
     "title": "Compétitions",
@@ -192,6 +193,24 @@
       "title": "Message envoyé !",
       "body": "Merci pour votre message. Nous vous répondrons dans les plus brefs délais."
     }
+  },
+  "newsletter": {
+    "headTitle": "Newsletter",
+    "title": "Inscription à la newsletter",
+    "confirmation": {
+      "title": "Encore une dernière chose...",
+      "body": "Afin de vérifier que vous êtes bien à l'origine de cette demande, merci de consulter votre boîte de réception pour confirmer votre abonnement."
+    },
+    "valid": {
+      "title": "Inscription validée !",
+      "body": "Nous vous remercions de votre inscription."
+    },
+    "description": "Recevez les dernières informations du tchoukball suisse directement dans votre boîte e-mail, jusqu'à 4 fois par année.",
+    "gdprDisclaimer": "Votre adresse de messagerie est uniquement utilisée pour vous envoyer notre newsletter ainsi que des informations concernant nos activités. Vous pouvez à tout moment utiliser le lien de désabonnement intégré dans chacun de nos mails.",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "emailAddress": "Adresse e-mail",
+    "register": "Inscription"
   },
   "categoryDistribution": {
     "title": "Distribution des catégories pour la saison {season}",

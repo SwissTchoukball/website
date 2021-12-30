@@ -31,6 +31,7 @@ const config: NuxtConfig = {
     '~/assets/css/variables.css',
     '~/assets/css/typography.css',
     '~/assets/css/main.css',
+    '~/assets/css/forms.css',
     'vue-slick-carousel/dist/vue-slick-carousel.css',
     'v-tooltip/dist/v-tooltip.css',
   ],

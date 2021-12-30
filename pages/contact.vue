@@ -2,51 +2,51 @@
   <section class="l-main-content-section">
     <h2 class="t-headline-1">{{ $t('contactForm.title') }}</h2>
 
-    <form v-if="!isSent" class="c-contact-form" @submit.prevent="sendMessage">
-      <label for="senderName" class="c-contact-form__label">{{ $t('contactForm.name') }}</label>
+    <form v-if="!isSent" class="l-form c-contact-form" @submit.prevent="sendMessage">
+      <label for="senderName" class="l-form__label">{{ $t('contactForm.name') }}</label>
       <input
         id="senderName"
         ref="senderName"
         v-model="senderName"
         type="text"
         name="senderName"
-        class="c-contact-form__field"
-        :class="{ 'c-contact-form__field--invalid': senderNameError }"
+        class="l-form__field"
+        :class="{ 'l-form__field--invalid': senderNameError }"
         required
         autofocus
       />
-      <p class="c-contact-form__field-error">
+      <p class="l-form__field-error">
         <span v-if="senderNameError">{{ senderNameError }}</span>
         <span v-else>&nbsp;</span>
       </p>
 
-      <label for="senderEmail" class="c-contact-form__label">{{ $t('contactForm.email') }}</label>
+      <label for="senderEmail" class="l-form__label">{{ $t('contactForm.email') }}</label>
       <input
         id="senderEmail"
         ref="senderEmail"
         v-model="senderEmail"
         type="email"
         name="senderEmail"
-        class="c-contact-form__field"
-        :class="{ 'c-contact-form__field--invalid': senderEmailError }"
+        class="l-form__field"
+        :class="{ 'l-form__field--invalid': senderEmailError }"
         required
       />
-      <p class="c-contact-form__field-error">
+      <p class="l-form__field-error">
         <span v-if="senderEmailError">{{ senderEmailError }}</span>
         <span v-else>&nbsp;</span>
       </p>
 
-      <label for="messageBody" class="c-contact-form__label">{{ $t('contactForm.message') }}</label>
+      <label for="messageBody" class="l-form__label">{{ $t('contactForm.message') }}</label>
       <textarea
         id="messageBody"
         ref="messageBody"
         v-model="messageBody"
         name="messageBody"
-        class="c-contact-form__field c-contact-form__field--message"
-        :class="{ 'c-contact-form__field--invalid': messageBodyError }"
+        class="l-form__field l-form__field--message"
+        :class="{ 'l-form__field--invalid': messageBodyError }"
         required
       ></textarea>
-      <p class="c-contact-form__field-error">
+      <p class="l-form__field-error">
         <span v-if="messageBodyError">{{ messageBodyError }}</span>
         <span v-else>&nbsp;</span>
       </p>
@@ -60,16 +60,16 @@
         @challengeExpired="resetCaptcha"
         @error="onCaptchaError"
       />
-      <p class="c-contact-form__field-error">
+      <p class="l-form__field-error">
         <span v-if="captchaError">{{ captchaError }}</span>
         <span v-else>&nbsp;</span>
       </p>
 
-      <st-button class="c-contact-form__submit-button" primary :disabled="isSending" @click.prevent="sendMessage">
+      <st-button class="l-form__submit-button" primary :disabled="isSending" @click.prevent="sendMessage">
         {{ $t('contactForm.submit') }}
       </st-button>
 
-      <p v-if="submissionError" class="c-contact-form__submission-error">{{ submissionError }}</p>
+      <p v-if="submissionError" class="l-form__submission-error">{{ submissionError }}</p>
     </form>
 
     <div v-else class="c-contact-form__success-block">
@@ -224,52 +224,13 @@ export default Vue.extend({
 
 <style scoped>
 .c-contact-form {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
   max-width: 500px;
   margin: var(--st-length-spacing-s) auto 0;
 }
 
-.c-contact-form__label {
-  font-size: 0.8em;
-  margin-top: var(--st-length-spacing-xs);
-}
-
-.c-contact-form__field {
-  margin-top: var(--st-length-spacing-xxs);
-  padding: var(--st-length-spacing-xxs);
-  width: 100%;
-  border: 1px solid var(--st-color-input-border);
-  border-radius: 0.3rem;
-}
-
-.c-contact-form__field--invalid {
-  border-color: var(--st-color-error);
-}
-
-.c-contact-form__field--message {
-  min-height: 8rem;
-}
-
-.c-contact-form__captcha,
-.c-contact-form__submit-button {
+.c-contact-form__captcha {
   margin-top: var(--st-length-spacing-s);
   align-self: center;
-}
-
-.c-contact-form__field-error {
-  color: var(--st-color-error);
-  font-size: 0.7em;
-  margin-top: var(--st-length-spacing-xxs);
-}
-
-.c-contact-form__submission-error {
-  color: var(--st-color-error);
-  width: 100%;
-  text-align: center;
-  font-size: 0.8em;
-  margin-top: var(--st-length-spacing-xs);
 }
 
 .c-contact-form__success-block {

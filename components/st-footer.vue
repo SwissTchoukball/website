@@ -24,6 +24,7 @@
       </div>
       <div class="c-footer__tchouksuisse">#tchouksuisse</div>
     </section>
+
     <nav class="l-main-content-section c-footer__secondary-navigation">
       <h2 class="u-visually-hidden">{{ $t('secondaryNavigation') }}</h2>
       <ul class="u-unstyled-list c-footer__secondary-navigation__list">
@@ -41,6 +42,9 @@
         </li>
       </ul>
     </nav>
+
+    <nuxt-link :to="localePath('newsletter')" class="c-footer__newsletter">{{ $t('footer.newsletterLink') }}</nuxt-link>
+
     <section class="l-main-content-section">
       <h2 class="c-footer__heading">{{ $t('footer.partners') }}</h2>
       <div class="c-footer__org-logos">
@@ -215,6 +219,21 @@ export default Vue.extend({
   text-decoration: none;
   text-transform: uppercase;
   font-weight: 900;
+}
+
+.c-footer__newsletter {
+  display: inline-block;
+  margin-top: var(--st-length-spacing-m);
+  padding: var(--st-length-spacing-xxs);
+  color: var(--st-color-footer-newsletter);
+  font-weight: bold;
+  text-decoration: none;
+  border: 2px solid var(--st-color-footer-newsletter);
+}
+
+.c-footer__newsletter:hover {
+  color: var(--st-color-footer-newsletter-hover);
+  background-color: var(--st-color-footer-newsletter);
 }
 
 .c-footer__heading {

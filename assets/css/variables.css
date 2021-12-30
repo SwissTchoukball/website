@@ -56,6 +56,8 @@
   /* Footer */
   --st-color-footer-social-background: var(--st-color-grey-very-light);
   --st-color-footer-tchouksuisse: var(--st-color-red-swiss-tchoukball);
+  --st-color-footer-newsletter: var(--st-color-red-swiss-tchoukball);
+  --st-color-footer-newsletter-hover: white;
 
   /* Buttons */
   --st-color-button-base-background: white;
