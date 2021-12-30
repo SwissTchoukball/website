@@ -254,7 +254,7 @@ const cmsService: Plugin = (context, inject) => {
     let domainFilter: any;
     if (domainId) {
       domainFilter = {
-        domains: { id: { _eq: domainId } },
+        domains: { domains_id: { id: { _eq: domainId } } },
       };
     }
 
@@ -285,7 +285,7 @@ const cmsService: Plugin = (context, inject) => {
         'translations.languages_code',
         'translations.slug',
         'translations.title',
-        'domains.id',
+        'domains.domains_id.id',
         'domains.domains_id.translations.name',
       ],
       deep: {
@@ -348,7 +348,7 @@ const cmsService: Plugin = (context, inject) => {
           return [
             ...domains,
             {
-              id: domain.id,
+              id: domain.domains_id.id,
               name: translatedFields.name,
             } as any /* Workaround until we have the news in the store as well */,
           ];
@@ -390,7 +390,7 @@ const cmsService: Plugin = (context, inject) => {
         'translations.slug',
         'translations.title',
         'translations.body',
-        'domains.id',
+        'domains.domains_id.id',
         'domains.domains_id.name',
         'domains.domains_id.translations.name',
       ],
@@ -447,7 +447,7 @@ const cmsService: Plugin = (context, inject) => {
         return [
           ...domains,
           {
-            id: domain.id,
+            id: domain.domains_id.id,
             name: translatedFields.name,
           } as any /* Workaround until we have the news in the store as well */,
         ];
