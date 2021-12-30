@@ -14,10 +14,14 @@
     <st-loader v-if="$fetchState.pending" :main="true" />
     <p v-else-if="$fetchState.error">{{ $t('error.otherError') }} : {{ $fetchState.error.message }}</p>
     <template v-else-if="events.length">
-      <st-link-action v-if="showUpcoming" :to="thisMonthLink" class="c-events__past-events-link">
+      <st-link-action v-if="areOnlyUpcomingEventsVisible" :to="thisMonthLink" class="c-events__past-events-link">
         {{ $t('events.showPastEvents', { month: monthName }) }}
       </st-link-action>
-      <st-link-action v-else-if="isCurrentMonth" :to="localePath({ query: {} })" class="c-events__past-events-link">
+      <st-link-action
+        v-else-if="isCurrentMonth && areUpcomingEventsThisMonth"
+        :to="localePath({ query: {} })"
+        class="c-events__past-events-link"
+      >
         {{ $t('events.showUpcomingEventsOnly', { month: monthName }) }}
       </st-link-action>
       <st-event
@@ -58,7 +62,8 @@ export default Vue.extend({
       filteredTypeId: undefined as number | undefined,
       month: this.$formatDate(new Date(), 'MM'),
       year: this.$formatDate(new Date(), 'yyyy'),
-      showUpcoming: true,
+      areOnlyUpcomingEventsVisible: true,
+      areUpcomingEventsThisMonth: false,
     };
   },
   async fetch() {
@@ -67,23 +72,24 @@ export default Vue.extend({
     }
 
     // Reseting this data in case we specifically ask for it
-    this.showUpcoming = true;
+    this.areOnlyUpcomingEventsVisible = true;
 
     if (isDigitsString(this.$route.query.year)) {
       this.year = this.$route.query.year;
-      this.showUpcoming = false;
+      this.areOnlyUpcomingEventsVisible = false;
     }
 
     if (isDigitsString(this.$route.query.month)) {
       this.month = this.$route.query.month.length === 2 ? this.$route.query.month : `0${this.$route.query.month}`;
-      this.showUpcoming = false;
+      this.areOnlyUpcomingEventsVisible = false;
     }
 
     let eventsResult = await this.getEvents();
 
     // If there's no upcoming event, we show the past events this month
-    if (!eventsResult.data.length && this.showUpcoming) {
-      this.showUpcoming = false;
+    if (!eventsResult.data.length && this.areOnlyUpcomingEventsVisible) {
+      this.areUpcomingEventsThisMonth = false;
+      this.areOnlyUpcomingEventsVisible = false;
       eventsResult = await this.getEvents();
     }
 
@@ -141,7 +147,7 @@ export default Vue.extend({
         page: this.currentPage,
         typeId: this.filteredTypeId,
         month: `${this.year}-${this.month}`,
-        upcoming: this.showUpcoming,
+        upcoming: this.areOnlyUpcomingEventsVisible,
       });
     },
   },
