@@ -28,12 +28,6 @@ const ALL_OPTION = 'all';
 
 export default Vue.extend({
   components: { stStaffPerson },
-  nuxtI18n: {
-    paths: {
-      fr: '/federation/staff',
-      de: '/verband/staff',
-    },
-  },
   data() {
     return {
       groupId: ALL_OPTION as number | typeof ALL_OPTION,

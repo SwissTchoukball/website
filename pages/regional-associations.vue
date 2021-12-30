@@ -18,8 +18,8 @@ export default Vue.extend({
   components: { stClubList },
   nuxtI18n: {
     paths: {
-      fr: '/federation/associations-regionales',
-      de: '/verband/regionalverbaende',
+      fr: '/associations-regionales',
+      de: '/regionalverbaende',
     },
   },
   async fetch() {

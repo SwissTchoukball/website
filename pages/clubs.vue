@@ -16,8 +16,8 @@ export default Vue.extend({
   components: { stClubList },
   nuxtI18n: {
     paths: {
-      fr: '/federation/clubs',
-      de: '/verband/vereine',
+      fr: '/clubs',
+      de: '/vereine',
     },
   },
   async fetch() {
