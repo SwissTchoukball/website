@@ -983,6 +983,22 @@ const cmsService: Plugin = (context, inject) => {
       ],
     };
 
+    if (searchTerm) {
+      // We use the filter because the search capability of Directus only work on root level items, not relations
+      filter._and.push({
+        _or: [
+          {
+            keywords: { _contains: searchTerm },
+          },
+          {
+            translations: {
+              name: { _contains: searchTerm },
+            },
+          },
+        ],
+      });
+    }
+
     if (domainId) {
       filter._and.push({
         domains: { domains_id: { _eq: domainId } },
@@ -996,7 +1012,6 @@ const cmsService: Plugin = (context, inject) => {
     }
 
     const response = await context.$directus.items('resources').readMany({
-      search: searchTerm,
       filter,
       fields: [
         'id',
