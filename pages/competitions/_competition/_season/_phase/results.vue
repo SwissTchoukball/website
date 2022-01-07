@@ -108,6 +108,7 @@ export default Vue.extend({
 }
 
 .c-results__match {
+  display: block;
   width: 100%;
   padding: var(--st-length-spacing-xs) 0;
   border-bottom: 1px solid var(--st-color-match-results-separator);
