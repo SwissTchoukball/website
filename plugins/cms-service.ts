@@ -1019,6 +1019,7 @@ const cmsService: Plugin = (context, inject) => {
         'type',
         'domains.domains_id',
         'translations.name',
+        'translations.languages_code',
         'translations.file.id',
         'translations.file.type',
         'translations.file.filesize',
