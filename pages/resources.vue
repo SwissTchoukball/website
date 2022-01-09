@@ -66,7 +66,7 @@ export default Vue.extend({
   nuxtI18n: {
     paths: {
       fr: '/ressources',
-      de: '/mittel',
+      de: '/ressourcen',
     },
   },
   data() {
