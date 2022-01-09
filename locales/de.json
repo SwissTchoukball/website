@@ -26,7 +26,15 @@
     "partners": "Partner",
     "affiliations": "Mitgliedschaften",
     "logoFrom": "Logo von {orgName}",
-    "allRightsReserved": "alle Rechte vorbehalten"
+    "allRightsReserved": "alle Rechte vorbehalten",
+    "secondaryNavigation": {
+      "photos": "Fotos",
+      "videos": "Videos",
+      "shop": "Shop",
+      "contact": "Kontakt",
+      "resources": "Ressourcen",
+      "medias": "Medien"
+    }
   },
   "news": {
     "title": "Nes",

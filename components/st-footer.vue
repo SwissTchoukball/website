@@ -28,16 +28,12 @@
     <nav class="l-main-content-section c-footer__secondary-navigation">
       <h2 class="u-visually-hidden">{{ $t('secondaryNavigation') }}</h2>
       <ul class="u-unstyled-list c-footer__secondary-navigation__list">
-        <li
-          v-for="(item, itemIndex) in secondaryNavigation"
-          :key="itemIndex"
-          class="c-footer__secondary-navigation__item"
-        >
+        <li v-for="item in secondaryNavigation" :key="item.key" class="c-footer__secondary-navigation__item">
           <a v-if="item.href" :href="item.href" class="c-footer__secondary-navigation__link">
-            {{ item.name }}
+            {{ $t(`footer.secondaryNavigation.${item.key}`) }}
           </a>
           <nuxt-link v-else-if="item.to" :to="localePath(item.to)" class="c-footer__secondary-navigation__link">
-            {{ item.name }}
+            {{ $t(`footer.secondaryNavigation.${item.key}`) }}
           </nuxt-link>
         </li>
       </ul>
@@ -83,30 +79,29 @@ export default Vue.extend({
   data() {
     return {
       // TODO: Eventually move all the data to the CMS
-      // TODO: i18n
       secondaryNavigation: [
         {
-          name: 'Photos',
+          key: 'photos',
           href: 'https://flickr.com/swisstchoukball',
         },
         {
-          name: 'Vidéos',
+          key: 'videos',
           href: 'https://youtube.com/tchoukballch',
         },
         {
-          name: 'Boutique',
+          key: 'shop',
           href: 'https://shop.tchoukball.ch',
         },
         {
-          name: 'Contact',
+          key: 'contact',
           to: 'contact',
         },
         {
-          name: 'Ressources',
+          key: 'resources',
           to: 'resources',
         },
         {
-          name: 'Médias',
+          key: 'medias',
           to: 'medias',
         },
       ],

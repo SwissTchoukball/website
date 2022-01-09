@@ -26,7 +26,15 @@
     "partners": "Partenaires",
     "affiliations": "Affiliations",
     "logoFrom": "Logo de {orgName}",
-    "allRightsReserved": "tous droits réservés"
+    "allRightsReserved": "tous droits réservés",
+    "secondaryNavigation": {
+      "photos": "Photos",
+      "videos": "Vidéos",
+      "shop": "Boutique",
+      "contact": "Contact",
+      "resources": "Ressources",
+      "medias": "Médias"
+    }
   },
   "news": {
     "title": "News",
