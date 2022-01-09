@@ -46,7 +46,7 @@ export default Vue.extend({
   nuxtI18n: {
     paths: {
       fr: '/calendrier',
-      de: '/kalendar',
+      de: '/kalender',
     },
   },
   components: {
