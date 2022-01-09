@@ -1,20 +1,43 @@
 {
   "title": "Swiss Tchoukball",
   "langSwitcherTitle": "Sprache wechseln",
-  "mainNavigation": "Navigation principale",
-  "backHome": "Retour à l'accueil",
+  "mainNavigation": "Hauptnavigation",
+  "secondaryNavigation": "Unternavigation",
+  "otherNavigation": "Navigation für {name}",
+  "backHome": "Zurück zur Startseite",
+  "photos": {
+    "latest": "Letzte Fotos",
+    "seeMore": "Mehr Fotos ansehen"
+  },
   "error": {
-    "pageNotFound": "Page introuvable",
-    "otherError": "Une erreur s'est produite",
-    "imageDescription": "Dessin d'un tchoukballeur se reprenant la balle de son propre tir en pleine tête, après rebond sur le cadre"
+    "pageNotFound": "Seite nicht auffindbar",
+    "otherError": "Ein Fehler ist aufgetreten",
+    "imageDescription": "Zeichnung eines Tchoukballspielers, der den Ball auf das Netz wirft und ihn nach dem Rückprall an den Kopf kriegt"
+  },
+  "pagination": {
+    "title": "Auf den Seiten navigieren",
+    "firstPage": "Erste Seite",
+    "previousPage": "Vorhergehende Seite",
+    "nextPage": "Nächste Seite",
+    "lastPage": "Letzte Seite"
+  },
+  "footer": {
+    "newsletterLink": "Sich für den Newsletter anmelden",
+    "partners": "Partner",
+    "affiliations": "Mitgliedschaften",
+    "logoFrom": "Logo von {orgName}",
+    "allRightsReserved": "alle Rechte vorbehalten"
   },
   "news": {
-    "readMore": "Consulter plus d'articles",
+    "title": "Nes",
+    "readMore": "Alles News ansehen",
+    "domainFilterInfo": "Anzeige der News “{domainName}”",
+    "showAll": "Alle News anzeigen",
     "publishedOn": "publiziert am",
     "updatedOn": "aktualisiert am"
   },
   "tchoukball": {
-    "description": "Le tchoukball est un sport d’équipe <strong>tactique</strong> mélangeant volleyball, handball et pelote basque. Cinq minutes d’explications suffisent pour commencer à jouer, rendant le tchoukball très <strong>accessible</strong>. Gestes techniques, rythme soutenu et intelligence de jeu en font un sport particulièrement <strong>intense</strong>. Il préconise le <strong>fair-play</strong> en interdisant tout geste d’aggression et d’obstruction envers l’équipe adverse.",
+    "description": "Tchoukball ist ein <strong>taktischer</strong> Mannschaftssport und besteht aus einer Mischung aus Volleyball, Handball und baskischer Pelota. Das Spiel ist in fünf Minuten erklärt, was den Sport sehr <strong>zugänglich</strong> für jeden und jede macht. Tchoukball ist dank den technischen Bewegungen, dem hohen Tempo und der geforderten Intelligenz ein besonders <strong>dynamischer</strong> Sport. Dabei ist <strong>Fair Play</strong> oberstes Gebot, sind doch sämtliche Formen von Aggression und Obstruktion verboten.",
     "nav": {
       "presentation": "Vorstellung",
       "rules": "Regeln",
@@ -24,9 +47,179 @@
     }
   },
   "events": {
-    "title": "Ereignisse"
+    "title": "Ereignisse",
+    "cancelled": "Abgesagt",
+    "showInfo": "Informationen anzeigen",
+    "moreInfo": "Mehr Informationen",
+    "fullDay": "Ganztags",
+    "monthNavigation": "Monatsnavigation",
+    "previousMonth": "Vorhergehender Monat",
+    "nextMonth": "Nächster Monat",
+    "noneThisMonth": "Im {month} sind keine Ereignisse geplant.",
+    "noneUpcomingThisMonth": "Im {month} sind keine weiteren Ereignisse geplant.",
+    "showPastEvents": "Die vergangenen Ereignisse im {month} anzeigen",
+    "showUpcomingEventsOnly": "Nur geplante Ereignisse im {month} anzeigen",
+    "goToEvents": "Alle Ereignisse ansehen"
   },
   "competitions": {
-    "title": "Wettbewerbe"
+    "title": "Wettbewerbe",
+    "headTitle": {
+      "standings": "Klassement · {phaseName} · {editionName} · {seasonName}",
+      "results": "Resultate · {phaseName} · {editionName} · {seasonName}",
+      "planning": "Programm · {phaseName} · {editionName} · {seasonName}",
+      "match": "{homeTeam} - {awayTeam} · {phaseName} · {editionName} · {seasonName}"
+    },
+    "phaseNavigation": {
+      "standings": "Klassement",
+      "results": "Resultate",
+      "planning": "Programm"
+    },
+    "standings": {
+      "header": {
+        "team": "Mannschaft",
+        "played": "Gespielt",
+        "won": "Gewonnen",
+        "drawn": "Untentschieden",
+        "lost": "Verloren",
+        "scored": "Punkte",
+        "received": "Gegenpunkte",
+        "diff": "Differenz",
+        "points": "Punkte"
+      }
+    },
+    "results": {
+      "noResults": "Die Resultate können noch nicht angezeigt werden."
+    },
+    "planning": {
+      "noMatches": "Es sind noch keine Spiele vorgesehen oder es hat keine gegeben."
+    },
+    "upcomingMatches": "Nächste Spiele",
+    "upcomingMatchesOfCompetition": "Die Spiele von {competitionName} ansehen",
+    "noUpcomingMatches": "Es sind aktuell keine Spiele geplant."
+  },
+  "person": {
+    "photoOf": "Foto von {name}"
+  },
+  "nationalTeams": {
+    "headTitle": {
+      "players": {
+        "male": "Spieler der {teamName}",
+        "female": "Spielerinnen der {teamName}",
+        "mixed": "Spielerinnen und Spieler der {teamName}"
+      },
+      "staff": "Betreuung der {teamName}",
+      "results": "Resultate der {teamName}"
+    },
+    "navigation": {
+      "players": {
+        "male": "Spieler",
+        "female": "Spielerinnen",
+        "mixed": "Spielerinnen und Spieler"
+      },
+      "staff": "Betreuung",
+      "results": "Resultate"
+    },
+    "noPlayers": "Für diese Mannschaft können keine Spielerinnen oder Spieler angezeigt werden",
+    "noStaff": "Für diese Mannschaft kann keine Betreuung angezeigt werden",
+    "noResults": "Für diese Mannschaft können keine Ergebnisse angezeigt werden",
+    "captain": "Captain",
+    "number": "Nummer {number}",
+    "bornIn": {
+      "male": "Geboren {year}",
+      "female": "Geboren {year}",
+      "other": "Geboren {year}",
+      "undefined": "Geboren {year}"
+    },
+    "inTeamSince": "In der Nationalmannschaft seit {year}",
+    "hasRoleSince": "Auf dieser Position seit {year}",
+    "trackRecord": "Erfolge",
+    "results": {
+      "logoOf": "Logo von {name} aus dem Jahr {year}",
+      "rank": "{rank}. Platz",
+      "nationsCup": "Nations Cup"
+    }
+  },
+  "clubs": {
+    "title": "Clubs",
+    "amountMembers": "Zurzeit zählt Swiss Tchoukball {amount} Mitgliederclubs.",
+    "logoOf": "Logo von {name}"
+  },
+  "staff": {
+    "title": "Staff",
+    "all": "Alle"
+  },
+  "regionalAssociations": {
+    "title": "Regionalverbände",
+    "amount": "Zurzeit zählt Swiss Tchoukball {amount} anerkannte Regionalverbände."
+  },
+  "venue": {
+    "map": "Karte",
+    "openInMaps": "In Maps ansehen"
+  },
+  "resources": {
+    "title": "Ressourcen",
+    "form": {
+      "submit": "Suchen",
+      "placeholder": "Name des Reglements, Formulars, ...",
+      "filter": "Filter",
+      "domain": "Domäne",
+      "type": "Typ",
+      "all": "Alle",
+      "reset": "Suche zurücksetzen"
+    },
+    "search": {
+      "resultsInfo": "Kein Resultat. | Ein Resultat gefunden. | {amountResults} Resultate gefunden.",
+      "error": "Bei dieser Suche ist ein Fehler unterlaufen",
+      "tooBroad": "Geben Sie einen Suchbegriff ein oder wählen Sie ein Filterkriterium.",
+      "noResults": "Kein Resultat entspricht Ihren Suchkriterien."
+    },
+    "fileType": {
+      "pdf": "PDF-Dokument",
+      "zip": "ZIP-Archiv",
+      "other": "Datei"
+    },
+    "link": "Link",
+    "missing": "Fehlende Datei"
+  },
+  "contactForm": {
+    "headTitle": "Kontakt",
+    "title": "Swiss Tchoukball kontaktieren",
+    "name": "Ihr Name",
+    "email": "Ihre E-Mail-Adresse",
+    "message": "Ihre Mitteilung",
+    "submit": "Ihre Mitteilung senden",
+    "captchaUnverified": "Bitte bestätigen Sie, dass Sie eine echte Nutzerin / ein echter Nutzer sind.",
+    "success": {
+      "title": "Ihre Mitteilung wurde gesendet!",
+      "body": "Vielen Dank für Ihre Mitteilung. Gerne kontaktieren wir Sie schnellstmöglich."
+    }
+  },
+  "newsletter": {
+    "headTitle": "Newsletter",
+    "title": "Anmeldung für den Newsletter",
+    "confirmation": {
+      "title": "Noch eine letzte Sache...",
+      "body": "Um zu bestätigen, dass diese Mitteilung wirklich von Ihnen stammt, prüfen Sie Ihren Posteingang und aktivieren Sie Ihr Abonnement."
+    },
+    "valid": {
+      "title": "Anmeldung abgeschlossen!",
+      "body": "Wir danken Ihnen für Ihre Anmeldung."
+    },
+    "description": "Erhalten Sie die aktuellsten Informationen zum Schweizer Tchoukball bis zu vier Mal pro Jahr direkt in Ihre Mailbox.",
+    "gdprDisclaimer": "Ihre E-Mail-Adresse wird nur für den Versand der N",
+    "firstName": "Vorname",
+    "lastName": "Name",
+    "emailAddress": "E-Mail-Adresse",
+    "register": "Anmeldung"
+  },
+  "categoryDistribution": {
+    "title": "Verteilung der Kategorien für die Saison {season}",
+    "birthYear": "Geburtsjahr",
+    "ageIn": "Alter im Jahr {year}",
+    "categories": "Kategorien",
+    "competitions": "Wettkämpfe",
+    "youthAndSport": "Jugend+Sport",
+    "federation": "Swiss Tchoukball",
+    "yearAndLess": "{year} und früher"
   }
 }
