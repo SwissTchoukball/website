@@ -39,7 +39,7 @@
   "news": {
     "title": "News",
     "readMore": "Voir toutes les news",
-    "domainFilterInfo": "Affichage des news “{domainName}”.",
+    "domainFilterInfo": "Affichage des news {domainName}",
     "showAll": "Afficher toutes les news",
     "publishedOn": "publié le",
     "updatedOn": "mis à jour le"

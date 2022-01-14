@@ -5,7 +5,12 @@
     <p v-else-if="$fetchState.error">{{ $t('error.otherError') }} : {{ $fetchState.error.message }}</p>
     <template v-else>
       <p v-if="filteredDomainName" class="c-news__domain-filter-info">
-        {{ $t('news.domainFilterInfo', { domainName: filteredDomainName }) }}
+        <i18n path="news.domainFilterInfo">
+          <template #domainName>
+            <strong>{{ filteredDomainName }}</strong>
+          </template>
+        </i18n>
+        <span class="c-news__domain-filter-info-separator">—</span>
         <nuxt-link :to="''">{{ $t('news.showAll') }}</nuxt-link>
       </p>
       <st-news-list class="c-news__list" :news="newsList" />
@@ -76,6 +81,10 @@ export default Vue.extend({
 <style>
 .c-news__domain-filter-info {
   margin-top: var(--st-length-spacing-xs);
+}
+
+.c-news__domain-filter-info-separator {
+  padding: 0 var(--st-length-spacing-xxs);
 }
 
 .c-news__list {

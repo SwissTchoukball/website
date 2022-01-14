@@ -39,7 +39,7 @@
   "news": {
     "title": "Nes",
     "readMore": "Alles News ansehen",
-    "domainFilterInfo": "Anzeige der News “{domainName}”",
+    "domainFilterInfo": "Anzeige der News {domainName}",
     "showAll": "Alle News anzeigen",
     "publishedOn": "publiziert am",
     "updatedOn": "aktualisiert am"
