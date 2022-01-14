@@ -72,6 +72,12 @@ a:visited {
   max-width: 100%;
 }
 
+.directus-formatted-content hr {
+  max-width: 60rem;
+  margin: var(--st-length-spacing-s) auto;
+  border: 1px solid var(--st-color-hr);
+}
+
 .l-people-list {
   display: flex;
   flex-direction: column;
