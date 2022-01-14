@@ -1,9 +1,9 @@
 <template>
-  <article class="c-event" :class="{ 'c-event--no-image': !event.image, 'c-event--cancelled': isCancelled }">
+  <article class="c-event" :class="{ 'c-event--no-image': !hasImage, 'c-event--cancelled': isCancelled }">
     <img
-      v-if="event.image"
+      v-if="hasImage"
       class="c-event__image"
-      :alt="event.image.description"
+      :alt="mainImageDescription"
       :src="mainImageFallbackSrc"
       :srcset="mainImageSrcSet"
       :sizes="`(min-width: 1400px) 1400px, 96vw`"
@@ -15,7 +15,7 @@
           <nuxt-link :to="titleTo" class="c-event__name-link">{{ event.name }}</nuxt-link>
           <div v-if="isCancelled" class="c-event__cancelled-label">{{ $t('events.cancelled') }}</div>
         </h3>
-        <div v-if="eventTypeName" class="c-event__type">{{ eventTypeName }}</div>
+        <div v-if="eventType.name" class="c-event__type">{{ eventType.name }}</div>
       </header>
       <st-link-action v-if="!areInfoVisible" class="c-event__show-info-action" @click="showInfo">
         {{ $t('events.showInfo') }}
@@ -62,7 +62,7 @@ import Vue, { PropType } from 'vue';
 import { Location } from 'vue-router';
 import { Store } from 'vuex';
 import { CalendarEvent } from '~/plugins/cms-service';
-import { EventTypes, RootState } from '~/store/state';
+import { EventType, EventTypes, RootState } from '~/store/state';
 import { getAssetSrcSet, getAssetURL } from '~/plugins/directus';
 import stEventDate from '~/components/events/st-event-date.vue';
 
@@ -112,28 +112,42 @@ export default Vue.extend({
     eventTypes(): EventTypes | undefined {
       return (this.$store as Store<RootState>).state.eventTypes;
     },
-    eventTypeName(): string | null {
+    eventType(): EventType | null {
       if (this.eventTypes && this.event.type) {
-        return this.eventTypes[this.event.type].name;
+        return this.eventTypes[this.event.type];
       } else {
         return null;
       }
     },
+    hasImage(): boolean {
+      return !!(this.event.image || this.eventType?.image);
+    },
     mainImageFallbackSrc(): string {
-      if (!this.event.image) {
-        return '';
+      if (this.event.image) {
+        return getAssetURL(this.$config.cmsURL, this.event.image.id, {
+          width: this.$config.keyVisualSizes[0],
+        });
+      } else if (this.eventType?.image) {
+        return getAssetURL(this.$config.cmsURL, this.eventType.image.id, {
+          width: this.$config.keyVisualSizes[0],
+        });
       }
-      return getAssetURL(this.$config.cmsURL, this.event.image.id, {
-        width: this.$config.keyVisualSizes[0],
-      });
+      return '';
     },
     mainImageSrcSet(): string {
-      if (!this.event.image) {
-        return '';
+      if (this.event.image) {
+        return getAssetSrcSet(this.$config.cmsURL, this.event.image.id, {
+          widths: this.$config.keyVisualSizes,
+        });
+      } else if (this.eventType?.image) {
+        return getAssetSrcSet(this.$config.cmsURL, this.eventType.image.id, {
+          widths: this.$config.keyVisualSizes,
+        });
       }
-      return getAssetSrcSet(this.$config.cmsURL, this.event.image.id, {
-        widths: this.$config.keyVisualSizes,
-      });
+      return '';
+    },
+    mainImageDescription(): string {
+      return this.event?.image?.description || this.eventType?.image?.description || '';
     },
     mapsUrl(): string | null {
       if (!this.event.venue) {

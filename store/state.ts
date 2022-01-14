@@ -1,3 +1,5 @@
+import { DirectusImage } from '~/plugins/directus';
+
 export interface MenuItem {
   sort?: number;
   name: string;
@@ -8,6 +10,7 @@ export interface MenuItem {
 export interface EventType {
   id: number;
   name: string;
+  image?: DirectusImage;
 }
 
 export interface EventTypes {

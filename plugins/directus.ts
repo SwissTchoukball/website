@@ -57,6 +57,11 @@ export interface DirectusFile {
   filename_download: string;
 }
 
+export interface DirectusImage {
+  id: string;
+  description: string;
+}
+
 export interface DirectusResourceType {
   id: number;
   translations: {
@@ -117,10 +122,7 @@ export interface DirectusNews {
   id: number;
   date_created: string;
   date_updated: string;
-  main_image: {
-    id: string;
-    description: string;
-  };
+  main_image: DirectusImage;
   translations: {
     languages_code: string;
     slug: string;
@@ -151,10 +153,7 @@ export interface DirectusEvent {
   status: string;
   venue?: DirectusVenue;
   venue_other?: string;
-  image?: {
-    id: string;
-    description: string;
-  };
+  image?: DirectusImage;
   url?: string;
   type?: number;
 }
@@ -164,6 +163,7 @@ export interface DirectusEventType {
   translations: {
     name: string;
   }[];
+  image?: DirectusImage;
 }
 
 export interface DirectusPlayerPosition {
