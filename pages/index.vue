@@ -65,6 +65,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
+import { MetaInfo } from 'vue-meta';
 import { CarouselItem } from '~/components/st-home-carousel.vue';
 import { CalendarEvent } from '~/plugins/cms-service';
 import stEventSmall from '~/components/events/st-event-small.vue';
@@ -165,6 +166,11 @@ export default Vue.extend({
       extras: ['url_q', 'url_m'],
     });
     this.latestPhotos = flickrResponse.body.photos.photo;
+  },
+  head(): MetaInfo {
+    return {
+      meta: [{ property: 'og:title', content: this.$t('title').toString() }],
+    };
   },
 });
 </script>

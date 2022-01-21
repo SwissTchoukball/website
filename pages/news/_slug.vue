@@ -7,10 +7,12 @@
 </template>
 
 <script lang="ts">
+import { decode } from 'html-entities';
 import Vue from 'vue';
 import { MetaInfo } from 'vue-meta';
 import { NewsEntry } from '~/components/news/st-news';
 import stNews from '~/components/news/st-news.vue';
+import { getAssetURL } from '~/plugins/directus';
 
 export default Vue.extend({
   components: { stNews },
@@ -35,9 +37,44 @@ export default Vue.extend({
     this.newsEntry = await this.$cmsService.getOneNews(id);
   },
   head(): MetaInfo {
-    return {
-      title: this.newsEntry?.title,
+    const title = this.newsEntry?.title || 'News';
+    const description = this.newsEntry?.body
+      ? decode(this.newsEntry.body.replace(/(<([^>]+)>)/gi, '').substr(0, 250)) + '…'
+      : '';
+
+    const metaInfo: MetaInfo = {
+      title,
+      meta: [
+        { property: 'og:title', content: title },
+        {
+          hid: 'og:description',
+          property: 'og:description',
+          content: description,
+        },
+        {
+          hid: 'og:type',
+          property: 'og:type',
+          content: `article`,
+        },
+      ],
     };
+
+    if (this.newsEntry?.main_image) {
+      metaInfo.meta?.push(
+        {
+          hid: 'og:image',
+          property: 'og:image',
+          content: getAssetURL(this.$config.cmsURL, this.newsEntry.main_image.id, this.$config.ogImageParams),
+        },
+        {
+          hid: 'og:image:alt',
+          property: 'og:image:alt',
+          content: this.newsEntry.main_image.description || '',
+        }
+      );
+    }
+
+    return metaInfo;
   },
 });
 </script>

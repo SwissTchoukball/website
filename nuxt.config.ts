@@ -2,28 +2,80 @@ import { NuxtConfig } from '@nuxt/types/config';
 
 const config: NuxtConfig = {
   // Global page headers: https://go.nuxtjs.dev/config-head
-  head: {
-    titleTemplate: (titleChunk) => {
-      // If undefined or blank then we don't need the hyphen
-      return titleChunk ? `${titleChunk} - Swiss Tchoukball` : 'Swiss Tchoukball';
-    },
-    htmlAttrs: {
-      lang: 'en',
-    },
-    meta: [
-      { charset: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: '' },
-      { name: 'format-detection', content: 'telephone=no' },
-    ],
-    link: [
-      { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-      { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32x32.png' },
-      { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/favicon-16x16.png' },
-      { rel: 'manifest', href: '/site.webmanifest' },
-      { rel: 'mask-icon', href: '/safari-pinned-tab.svg', color: '#ff0000' },
-    ],
+  head() {
+    const i18nHead = this.$nuxtI18nHead({ addSeoAttributes: true });
+    return {
+      titleTemplate: (titleChunk) => {
+        // If undefined or blank then we don't need the hyphen
+        return titleChunk ? `${titleChunk} - ${this.$t('title')}` : this.$t('title');
+      },
+      htmlAttrs: {
+        ...i18nHead.htmlAttrs,
+      },
+      meta: [
+        { charset: 'utf-8' },
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+        { name: 'format-detection', content: 'telephone=no' },
+        {
+          hid: 'description',
+          name: 'description',
+          content: this.$t('defaultDescription'),
+        },
+        {
+          hid: 'keywords',
+          name: 'keywords',
+          content:
+            'tchoukball, tchouk, tchouk-ball, sport, sport pour tous, fair-play, accessible, intense, tactique, prix thulin, Swiss Tchoukball, fédération, verband, federazione, federation, switzerland, suisse, schweiz, svizerra',
+        },
+        { property: 'og:site_name', content: this.$t('title') },
+        {
+          hid: 'og:description',
+          property: 'og:description',
+          content: this.$t('defaultDescription'),
+          template: (chunk) => {
+            return chunk || this.$t('defaultDescription');
+          },
+        },
+        {
+          hid: 'og:type',
+          property: 'og:type',
+          content: `website`,
+        },
+        {
+          hid: 'og:url',
+          property: 'og:url',
+          content: `${this.$config.websiteBaseUrl}${this.$route.path}`,
+        },
+        {
+          hid: 'og:image',
+          property: 'og:image',
+          content: `${this.$config.websiteBaseUrl}/images/og-swiss-tchoukball.jpg`,
+        },
+        {
+          hid: 'og:image:alt',
+          property: 'og:image:alt',
+          content: 'Logo of Swiss Tchoukball over a background featuring the net of a tchoukball frame.',
+        },
+        {
+          name: 'twitter:card',
+          content: 'summary',
+        },
+        {
+          name: 'twitter:site',
+          content: '@SwissTchoukball',
+        },
+        ...i18nHead.meta,
+      ],
+      link: [
+        { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32x32.png' },
+        { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/favicon-16x16.png' },
+        { rel: 'manifest', href: '/site.webmanifest' },
+        { rel: 'mask-icon', href: '/safari-pinned-tab.svg', color: '#ff0000' },
+        ...i18nHead.link,
+      ],
+    };
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
@@ -66,7 +118,7 @@ const config: NuxtConfig = {
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
     // https://i18n.nuxtjs.org/
-    'nuxt-i18n',
+    '@nuxtjs/i18n',
     // https://github.com/dword-design/nuxt-mail
     'nuxt-mail',
     // https://github.com/pimlie/nuxt-matomo
@@ -84,14 +136,13 @@ const config: NuxtConfig = {
       { code: 'fr', iso: 'fr', name: 'FR', file: 'fr.json' },
       { code: 'de', iso: 'de', name: 'DE', file: 'de.json' },
     ],
-    baseUrl: 'https://tchoukball.ch',
+    baseUrl: process.env.ST_WEBSITE_BASE_URL,
     defaultLocale: 'fr',
     langDir: 'locales/',
     strategy: 'prefix',
     lazy: true,
     detectBrowserLanguage: {
       useCookie: false,
-      onlyOnRoot: true,
     },
     vueI18n: {
       fallbackLocale: 'fr',
@@ -175,10 +226,16 @@ const config: NuxtConfig = {
   },
   publicRuntimeConfig: {
     cmsURL: process.env.CMS_URL || 'http://localhost:8055',
+    websiteBaseUrl: process.env.ST_WEBSITE_BASE_URL,
     leveradeURL: 'https://api.leverade.com',
     keyVisualSizes: [326, 500, 680, 1000, 1400, 2000, 2800],
     avatarAssetsSize: [200, 400],
     competitionLogoAssetsSizes: [200, 400],
+    ogImageParams: {
+      width: 1200,
+      height: 630,
+      fit: 'cover',
+    },
     hCaptchaSiteKey: process.env.HCAPTCHA_SITE_KEY,
     flickr: {
       userId: '128998613@N07',

@@ -33,9 +33,6 @@ export default Vue.extend({
       isDrawerOpen: false,
     };
   },
-  head() {
-    return this.$nuxtI18nHead({ addSeoAttributes: true });
-  },
   computed: {
     mainNavigation() {
       return this.$store.state.mainNavigation;
