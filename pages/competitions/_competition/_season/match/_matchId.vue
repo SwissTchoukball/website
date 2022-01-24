@@ -77,14 +77,23 @@ export default Vue.extend({
     };
   },
   head() {
+    const title = this.$t('competitions.headTitle.match', {
+      homeTeam: (this as any).match.home_team.name,
+      awayTeam: (this as any).match.away_team.name,
+      phaseName: (this as any).match.round.phase.name,
+      editionName: (this as any).match.round.phase.competition_edition.name,
+      seasonName: (this as any).match.round.phase.competition_edition.season.name,
+    }).toString();
     return {
-      title: this.$t('competitions.headTitle.match', {
-        homeTeam: (this as any).match.home_team.name,
-        awayTeam: (this as any).match.away_team.name,
-        phaseName: (this as any).match.round.phase.name,
-        editionName: (this as any).match.round.phase.competition_edition.name,
-        seasonName: (this as any).match.round.phase.competition_edition.season.name,
-      }).toString(),
+      title,
+      meta: [
+        { property: 'og:title', content: title },
+        {
+          hid: 'og:description',
+          property: 'og:description',
+          content: this.$t('competitions.description.match').toString(),
+        },
+      ],
     };
   },
   computed: {

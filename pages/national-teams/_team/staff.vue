@@ -31,8 +31,17 @@ export default Vue.extend({
     },
   },
   head() {
+    const title = this.$t(`nationalTeams.headTitle.staff`, { teamName: this.team.name.toLowerCase() }).toString();
     return {
-      title: this.$t(`nationalTeams.headTitle.staff`, { teamName: this.team.name.toLowerCase() }).toString(),
+      title,
+      meta: [
+        { property: 'og:title', content: title },
+        {
+          hid: 'og:description',
+          property: 'og:description',
+          content: this.$t(`nationalTeams.description.staff`).toString(),
+        },
+      ],
     };
   },
   computed: {

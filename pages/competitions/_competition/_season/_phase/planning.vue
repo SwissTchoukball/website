@@ -62,12 +62,21 @@ export default Vue.extend({
     },
   },
   head() {
+    const title = this.$t('competitions.headTitle.planning', {
+      phaseName: this.phase.name,
+      editionName: this.phase.competition_edition.name,
+      seasonName: this.phase.competition_edition.season.name,
+    }).toString();
     return {
-      title: this.$t('competitions.headTitle.planning', {
-        phaseName: this.phase.name,
-        editionName: this.phase.competition_edition.name,
-        seasonName: this.phase.competition_edition.season.name,
-      }).toString(),
+      title,
+      meta: [
+        { property: 'og:title', content: title },
+        {
+          hid: 'og:description',
+          property: 'og:description',
+          content: this.$t('competitions.description.planning').toString(),
+        },
+      ],
     };
   },
   computed: {

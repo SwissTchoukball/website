@@ -38,10 +38,19 @@ export default Vue.extend({
     }
   },
   head() {
+    const title = this.$t(`nationalTeams.headTitle.players.${this.team.gender}`, {
+      teamName: this.team.name.toLowerCase(),
+    }).toString();
     return {
-      title: this.$t(`nationalTeams.headTitle.players.${this.team.gender}`, {
-        teamName: this.team.name.toLowerCase(),
-      }).toString(),
+      title,
+      meta: [
+        { property: 'og:title', content: title },
+        {
+          hid: 'og:description',
+          property: 'og:description',
+          content: this.$t(`nationalTeams.description.players.${this.team.gender}`).toString(),
+        },
+      ],
     };
   },
 });

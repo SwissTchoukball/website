@@ -37,6 +37,14 @@ export default Vue.extend({
   head() {
     return {
       title: this.$t('newsletter.headTitle').toString(),
+      meta: [
+        { property: 'og:title', content: this.$t('newsletter.title').toString() },
+        {
+          hid: 'og:description',
+          property: 'og:description',
+          content: this.$t('newsletter.description').toString(),
+        },
+      ],
     };
   },
 });

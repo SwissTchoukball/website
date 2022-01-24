@@ -55,6 +55,14 @@ export default Vue.extend({
   head(): MetaInfo {
     return {
       title: this.$t('news.title').toString(),
+      meta: [
+        { property: 'og:title', content: this.$t('news.title').toString() },
+        {
+          hid: 'og:description',
+          property: 'og:description',
+          content: this.$t('news.description').toString(),
+        },
+      ],
     };
   },
   computed: {

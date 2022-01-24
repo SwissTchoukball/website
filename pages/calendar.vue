@@ -104,6 +104,14 @@ export default Vue.extend({
   head() {
     return {
       title: this.$t('events.title').toString(),
+      meta: [
+        { property: 'og:title', content: this.$t('events.title').toString() },
+        {
+          hid: 'og:description',
+          property: 'og:description',
+          content: this.$t('events.description').toString(),
+        },
+      ],
     };
   },
   computed: {

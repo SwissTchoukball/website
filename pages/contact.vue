@@ -116,6 +116,14 @@ export default Vue.extend({
   head(): MetaInfo {
     return {
       title: this.$t('contactForm.headTitle').toString(),
+      meta: [
+        { property: 'og:title', content: this.$t('contactForm.headTitle').toString() },
+        {
+          hid: 'og:description',
+          property: 'og:description',
+          content: this.$t('contactForm.description').toString(),
+        },
+      ],
     };
   },
   methods: {

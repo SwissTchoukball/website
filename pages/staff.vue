@@ -47,6 +47,14 @@ export default Vue.extend({
   head() {
     return {
       title: this.$t('staff.title').toString(),
+      meta: [
+        { property: 'og:title', content: this.$t('staff.title').toString() },
+        {
+          hid: 'og:description',
+          property: 'og:description',
+          content: this.$t('staff.description').toString(),
+        },
+      ],
     };
   },
   computed: {

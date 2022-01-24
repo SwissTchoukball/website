@@ -39,6 +39,7 @@
   },
   "news": {
     "title": "News",
+    "description": "Toute l'actualité de Swiss Tchoukball",
     "readMore": "Voir toutes les news",
     "domainFilterInfo": "Affichage des news {domainName}",
     "showAll": "Afficher toutes les news",
@@ -57,6 +58,7 @@
   },
   "events": {
     "title": "Événements",
+    "description": "Tous les événements de tchoukball en Suisse",
     "cancelled": "Annulé",
     "showInfo": "Afficher les informations",
     "moreInfo": "Plus d'infos",
@@ -77,6 +79,12 @@
       "results": "Résultats · {phaseName} · {editionName} · {seasonName}",
       "planning": "Programme · {phaseName} · {editionName} · {seasonName}",
       "match": "{homeTeam} - {awayTeam} · {phaseName} · {editionName} · {seasonName}"
+    },
+    "description": {
+      "standings": "Classement des équipes pour la compétition",
+      "results": "Résultats des derniers matchs joués",
+      "planning": "Dates, horaires et lieux des matchs à venir",
+      "match": "Tous les détails du match"
     },
     "phaseNavigation": {
       "standings": "Classement",
@@ -119,6 +127,15 @@
       "staff": "Encadrement de l'{teamName}",
       "results": "Résultats de l'{teamName}"
     },
+    "description": {
+      "players": {
+        "male": "Liste des joueurs avec informations détaillées",
+        "female": "Liste des joueuses avec informations détaillées",
+        "mixed": "Liste des joueuses et joueurs avec informations détaillées"
+      },
+      "staff": "Coachs, entraineur·euse·s et tout le staff au service de l'équipe",
+      "results": "Résultats obtenus lors de compétitions internationales"
+    },
     "navigation": {
       "players": {
         "male": "Joueurs",
@@ -150,15 +167,18 @@
   },
   "clubs": {
     "title": "Clubs",
+    "description": "Liste des clubs de tchoukball adhérents à Swiss Tchoukball",
     "amountMembers": "Il y a {amount} clubs adhérents à Swiss Tchoukball.",
     "logoOf": "Logo du {name}"
   },
   "staff": {
     "title": "Staff",
+    "description": "Toutes les personnes impliquées au sein de Swiss Tchoukball",
     "all": "Tous"
   },
   "regionalAssociations": {
     "title": "Associations régionales",
+    "description": "Liste des associations régionales reconnues par Swiss Tchoukball",
     "amount": "Il y a {amount} associations régionales reconnues par Swiss Tchoukball."
   },
   "venue": {
@@ -167,6 +187,7 @@
   },
   "resources": {
     "title": "Ressources",
+    "description": "Documents et liens utiles",
     "form": {
       "submit": "Rechercher",
       "placeholder": "Nom de règlement, formulaire, ...",
@@ -193,6 +214,7 @@
   "contactForm": {
     "headTitle": "Contact",
     "title": "Contacter Swiss Tchoukball",
+    "description": "Envoyer un message à Swiss Tchoukball",
     "name": "Votre nom",
     "email": "Votre adresse e-mail",
     "message": "Votre message",

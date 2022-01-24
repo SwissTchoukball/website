@@ -90,6 +90,14 @@ export default Vue.extend({
   head() {
     return {
       title: this.$t('resources.title').toString(),
+      meta: [
+        { property: 'og:title', content: this.$t('resources.title').toString() },
+        {
+          hid: 'og:description',
+          property: 'og:description',
+          content: this.$t('resources.description').toString(),
+        },
+      ],
     };
   },
   computed: {
