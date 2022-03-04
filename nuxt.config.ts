@@ -139,7 +139,7 @@ const config: NuxtConfig = {
     baseUrl: process.env.ST_WEBSITE_BASE_URL,
     defaultLocale: 'fr',
     langDir: 'locales/',
-    strategy: 'prefix',
+    strategy: 'prefix_and_default',
     lazy: true,
     detectBrowserLanguage: {
       useCookie: false,
