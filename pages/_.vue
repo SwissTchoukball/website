@@ -19,7 +19,11 @@ import Role from '~/models/role.model';
 export default Vue.extend({
   components: { stSimplePage },
   async asyncData({ app, route, redirect, error, i18n }) {
-    const splitPath = route.path.match('^/.{2}(/.*)$');
+    let splitPath = route.path.match('^/.{2}(/.*)$');
+    if (!splitPath) {
+      // This means there's no match, and thus no language prefix. This can happen with the default language.
+      splitPath = [route.path, route.path];
+    }
     let pagePath;
     if (splitPath?.length === 2) {
       pagePath = splitPath[1];
