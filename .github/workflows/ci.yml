@@ -53,6 +53,7 @@ jobs:
           script: |
             cd ~/sites/tchoukball.ch
             git pull
+            source ~/.nvm/.profile
             source ~/.profile
             npm ci
             npm run build
