@@ -53,7 +53,7 @@ export default Vue.extend({
   justify-content: space-between;
   align-items: center;
   padding: 0 var(--st-length-main-content-side-padding);
-  z-index: 2;
+  z-index: 3;
 }
 
 .c-default__logo {
@@ -78,7 +78,7 @@ export default Vue.extend({
   left: 100vw;
   bottom: 0;
   transition: left 0.25s ease-in-out, opacity 0s 0.25s;
-  z-index: 2;
+  z-index: 3;
 }
 
 .c-default__drawer--open {
