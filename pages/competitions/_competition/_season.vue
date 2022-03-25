@@ -62,23 +62,29 @@ export default Vue.extend({
       // so that we can navigate through different editions
     }
 
-    if (this.competitionEdition) {
-      this.lastPhasePath = this.localePath({
-        name: 'competitions-competition-season-phase',
-        params: {
-          competition: this.$route.params.competition,
-          season: this.$route.params.season,
-          phase: this.competitionEdition.phases[this.competitionEdition.phases.length - 1].id,
-        },
-      });
+    if (!this.competitionEdition) {
+      throw new Error(`No edition found for this competition in this season.`);
+    }
 
-      // If no phase or match is set, redirect to the last phase
-      if (!this.$route.params.matchId && !this.$route.params.phase) {
-        if (process.server) {
-          this.$nuxt.context.redirect(this.lastPhasePath);
-        } else if (process.client) {
-          this.$router.replace(this.lastPhasePath);
-        }
+    if (!this.competitionEdition.phases.length) {
+      throw new Error(`This edition does not have any phase to show.`);
+    }
+
+    this.lastPhasePath = this.localePath({
+      name: 'competitions-competition-season-phase',
+      params: {
+        competition: this.$route.params.competition,
+        season: this.$route.params.season,
+        phase: this.competitionEdition.phases[this.competitionEdition.phases.length - 1].id,
+      },
+    });
+
+    // If no phase or match is set, redirect to the last phase
+    if (!this.$route.params.matchId && !this.$route.params.phase) {
+      if (process.server) {
+        this.$nuxt.context.redirect(this.lastPhasePath);
+      } else if (process.client) {
+        this.$router.replace(this.lastPhasePath);
       }
     }
   },

@@ -11,7 +11,7 @@ export default Vue.extend({
   },
   async asyncData({ app, route, redirect }) {
     const competition = await app.$cmsService.getNationalCompetition(route.params.competition);
-    Competition.insert({ data: competition, insertOrUpdate: ['competition-editions'] });
+    Competition.insert({ data: competition, insertOrUpdate: ['competition-editions', 'seasons'] });
 
     if (!competition.editions) {
       throw new Error('Competition has no editions');

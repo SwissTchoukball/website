@@ -826,6 +826,7 @@ const cmsService: Plugin = (context, inject) => {
         'id',
         'translations.name',
         'translations.slug',
+        'editions.season.id',
         'editions.season.name',
         'editions.season.slug',
         'editions.leverade_id',
