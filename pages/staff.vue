@@ -73,7 +73,7 @@ export default Vue.extend({
         });
       }
 
-      personQuery = personQuery.orderBy('first_name');
+      personQuery = personQuery.orderBy('last_name');
 
       return personQuery.get();
     },
