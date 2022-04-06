@@ -9,16 +9,25 @@
       </span>
     </nuxt-link>
     <h2 class="c-match__name">
-      <div class="c-match__team c-match__team--home" :class="{ 'c-match__team--winner': hasHomeTeamWon(match) }">
+      <div
+        v-if="match.home_team"
+        class="c-match__team c-match__team--home"
+        :class="{ 'c-match__team--winner': hasHomeTeamWon(match) }"
+      >
         {{ match.home_team.name }}
       </div>
       <div class="c-match__cross">&#9587;</div>
-      <div class="c-match__team c-match__team--away" :class="{ 'c-match__team--winner': hasAwayTeamWon(match) }">
+      <div
+        v-if="match.away_team"
+        class="c-match__team c-match__team--away"
+        :class="{ 'c-match__team--winner': hasAwayTeamWon(match) }"
+      >
         {{ match.away_team.name }}
       </div>
     </h2>
     <div class="c-match__avatars-and-score">
       <img
+        v-if="match.home_team"
         :src="`https://cdn.leverade.com/thumbnails/${match.home_team.avatarKey}.500x500.jpg`"
         class="c-match__team-avatar"
       />
@@ -27,6 +36,7 @@
       <div v-else class="c-match__no-score"></div>
 
       <img
+        v-if="match.away_team"
         :src="`https://cdn.leverade.com/thumbnails/${match.away_team.avatarKey}.500x500.jpg`"
         class="c-match__team-avatar"
       />
@@ -76,14 +86,19 @@ export default Vue.extend({
       venueDetailsVisible: false,
     };
   },
+  async fetch() {},
   head() {
-    const title = this.$t('competitions.headTitle.match', {
-      homeTeam: (this as any).match.home_team.name,
-      awayTeam: (this as any).match.away_team.name,
-      phaseName: (this as any).match.round.phase.name,
-      editionName: (this as any).match.round.phase.competition_edition.name,
-      seasonName: (this as any).match.round.phase.competition_edition.season.name,
-    }).toString();
+    const match: Match = (this as any).match;
+    let title = '';
+    if (match.home_team && match.away_team) {
+      title += `${match.home_team.name} - ${match.away_team.name} · `;
+    }
+    title += `${match.round.name} · ${match.round.phase.name} · `;
+    if (match.round.phase.name !== match.round.phase.competition_edition.name) {
+      title += `${match.round.phase.competition_edition.name} · `;
+    }
+    title += match.round.phase.competition_edition.season.name;
+
     return {
       title,
       meta: [

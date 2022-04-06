@@ -2,15 +2,15 @@
   <div>
     <template v-if="futureMatches.length > 0">
       <ul v-for="match of futureMatches" :key="match.id" class="u-unstyled-list">
-        <li v-if="match.home_team && match.away_team">
+        <li>
           <nuxt-link
             class="c-planning__match"
             :to="localePath({ name: 'competitions-competition-season-match-matchId', params: { matchId: match.id } })"
           >
             <st-event-date :start-date="match.parsedDate()" always-one-line />
             <div v-if="showMatchRound(match)" class="c-planning__match-round">{{ match.round.name }}</div>
-            <h4 class="c-planning__match-name">
-              <div class="c-planning__match-team c-planning__match-team--home">
+            <h4 v-if="match.home_team || match.away_team" class="c-planning__match-name">
+              <div v-if="match.home_team" class="c-planning__match-team c-planning__match-team--home">
                 <img
                   :src="`https://cdn.leverade.com/thumbnails/${match.home_team.avatarKey}.200x200.jpg`"
                   class="c-planning__match-team-avatar"
@@ -18,7 +18,7 @@
                 {{ match.home_team.name }}
               </div>
               <div class="c-planning__match-cross">&#9587;</div>
-              <div class="c-planning__match-team c-planning__match-team--away">
+              <div v-if="match.away_team" class="c-planning__match-team c-planning__match-team--away">
                 <img
                   :src="`https://cdn.leverade.com/thumbnails/${match.away_team.avatarKey}.200x200.jpg`"
                   class="c-planning__match-team-avatar"

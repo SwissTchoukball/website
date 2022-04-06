@@ -77,8 +77,7 @@
     "headTitle": {
       "standings": "Klassement · {phaseName} · {editionName} · {seasonName}",
       "results": "Resultate · {phaseName} · {editionName} · {seasonName}",
-      "planning": "Programm · {phaseName} · {editionName} · {seasonName}",
-      "match": "{homeTeam} - {awayTeam} · {phaseName} · {editionName} · {seasonName}"
+      "planning": "Programm · {phaseName} · {editionName} · {seasonName}"
     },
     "description": {
       "standings": "Klassement der Teams für den Wettbewerb",
