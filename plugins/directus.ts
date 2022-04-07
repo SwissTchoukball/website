@@ -218,6 +218,8 @@ export interface DirectusTeam {
     name: string;
     slug: string;
   }[];
+  team_photo?: DirectusImage;
+  team_photo_vertical_shift?: number;
   players: DirectusPlayer[];
   staff: { roles_id: DirectusRole }[];
   results: DirectusTeamResult[];

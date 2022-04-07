@@ -633,6 +633,9 @@ const cmsService: Plugin = (context, inject) => {
       },
       fields: [
         'gender',
+        'team_photo.id',
+        'team_photo.description',
+        'team_photo_vertical_shift',
         'translations.name',
         'translations.slug',
         'players.id',
@@ -751,6 +754,8 @@ const cmsService: Plugin = (context, inject) => {
       name: 'No name',
       slug: 'unknown',
       gender: rawTeam.gender || 'mixed',
+      team_photo: rawTeam.team_photo,
+      team_photo_vertical_shift: rawTeam.team_photo_vertical_shift,
       players,
       staff: [] as number[],
       results,

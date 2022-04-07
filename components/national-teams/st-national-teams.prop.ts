@@ -1,4 +1,5 @@
 import { Gender } from '~/models/person.model';
+import { DirectusImage } from '~/plugins/directus';
 
 export interface Player {
   id: number;
@@ -35,6 +36,8 @@ export interface NationalTeam {
   name: string;
   slug: string;
   gender: string;
+  team_photo?: DirectusImage;
+  team_photo_vertical_shift?: number;
   players: Player[];
   /**
    * Array of role IDs
