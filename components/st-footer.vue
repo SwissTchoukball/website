@@ -12,7 +12,7 @@
           <fa-icon :icon="['fab', 'twitter']" />
         </a>
         <a href="https://flickr.com/swisstchoukball" class="c-footer__social-icon c-footer__social-icon--flickr">
-          <icon-flickr />
+          <st-icon-flickr />
         </a>
         <a href="https://youtube.com/tchoukballch" class="c-footer__social-icon c-footer__social-icon--youtube">
           <fa-icon :icon="['fab', 'youtube']" />
@@ -74,8 +74,10 @@
 
 <script lang="ts">
 import Vue from 'vue';
+import stIconFlickr from '~/components/icon/st-icon-flickr.vue';
 
 export default Vue.extend({
+  components: { stIconFlickr },
   data() {
     return {
       // TODO: Eventually move all the data to the CMS
