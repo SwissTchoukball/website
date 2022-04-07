@@ -33,7 +33,7 @@
               class="c-event__venue"
               :class="{ 'c-event__venue--with-address': event.venue.address }"
             >
-              <fa-icon icon="map-marker-alt" class="c-event__icon" />
+              <fa-icon icon="location-dot" class="c-event__icon" />
               <component :is="event.venue.address ? 'details' : 'div'" class="c-event__venue-name-and-address">
                 <component :is="event.venue.address ? 'summary' : 'span'" class="u-unstyled-button c-event__venue-name">
                   {{ event.venue.name }}<template v-if="event.venue.city">, {{ event.venue.city }}</template>

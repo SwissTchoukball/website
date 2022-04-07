@@ -43,7 +43,7 @@ export default Vue.extend({
 
       if (this.player.club?.name) {
         details.push({
-          icon: 'shield-alt',
+          icon: 'shield-halved',
           text: this.player.club.name,
         });
       }
@@ -56,7 +56,7 @@ export default Vue.extend({
           name_gender = 'name_masculine';
         }
         details.push({
-          icon: 'dot-circle',
+          icon: 'circle-dot',
           text: this.player.positions
             .map((positionId) => {
               const genderSpecificPosition = this.$store.state.playerPositions[positionId][name_gender];
@@ -68,7 +68,7 @@ export default Vue.extend({
 
       if (this.player.date_start) {
         details.push({
-          icon: 'play-circle',
+          icon: 'circle-play',
           text: this.$t('nationalTeams.inTeamSince', { year: this.player.date_start.substring(0, 4) }).toString(),
         });
       }

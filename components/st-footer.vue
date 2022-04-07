@@ -19,7 +19,7 @@
         </a>
         <!-- TODO: Set up RSS feed -->
         <!-- <a href="#" class="c-footer__social-icon c-footer__social-icon--rss">
-          <fa-icon icon="rss" />
+          <fa-icon icon="square-rss" />
         </a> -->
       </div>
       <div class="c-footer__tchouksuisse">#tchouksuisse</div>

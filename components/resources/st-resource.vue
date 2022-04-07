@@ -60,7 +60,7 @@ export default Vue.extend({
           case 'application/pdf':
             return 'file-pdf';
           case 'application/zip':
-            return 'file-archive';
+            return 'file-zipper';
           default:
             return 'file';
         }

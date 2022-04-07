@@ -5,7 +5,7 @@
     <ul class="u-unstyled-list c-pagination__pages">
       <li class="c-pagination__page" :class="{ 'c-pagination__page--hidden': isFirstPage }">
         <nuxt-link :to="pageLink(1)" :title="$t('pagination.firstPage')">
-          <fa-icon icon="angle-double-left" />
+          <fa-icon icon="angles-left" />
         </nuxt-link>
       </li>
 
@@ -30,7 +30,7 @@
 
       <li class="c-pagination__page" :class="{ 'c-pagination__page--hidden': isLastPage }">
         <nuxt-link :to="pageLink(totalPages)" :title="$t('pagination.lastPage')">
-          <fa-icon icon="angle-double-right" />
+          <fa-icon icon="angles-right" />
         </nuxt-link>
       </li>
     </ul>
