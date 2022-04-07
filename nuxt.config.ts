@@ -155,10 +155,9 @@ const config: NuxtConfig = {
       to: 'info@tchoukball.ch',
       from: `Swiss Tchoukball <no-reply@tchoukball.ch>`,
     },
-    // TODO: Consider using a dedicated service like Mailgun or Mailtrap
     smtp: {
-      host: 'mail.infomaniak.com',
-      port: 587,
+      host: process.env.ST_SMTP_HOST,
+      port: process.env.ST_SMTP_PORT,
       auth: {
         user: process.env.ST_SMTP_USER,
         pass: process.env.ST_SMTP_PASSWORD,
