@@ -13,7 +13,7 @@
           class="c-resources__search-field"
         />
         <button type="submit" class="u-unstyled-button c-resources__search-button" :disabled="isSearching">
-          <fa-icon icon="search" class="c-resources__search-icon" />
+          <fa-icon icon="magnifying-glass" class="c-resources__search-icon" />
         </button>
       </div>
       <fieldset class="c-resources__filters">

@@ -8,7 +8,7 @@
     class="u-unstyled-button c-link-action"
     v-on="$listeners"
   >
-    <template v-if="withCross"><fa-icon icon="times" /></template>
+    <template v-if="withCross"><fa-icon icon="xmark" /></template>
     <slot></slot>
     <template v-if="withArrow">&rarr;</template>
     <template v-if="withArrowDown">&darr;</template>
