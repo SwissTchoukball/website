@@ -35,7 +35,7 @@ export default {
     // TODO: Move logic to CMSService
     const locale = this.app.i18n.locale;
 
-    const mainNavigation = await this.$directus.items('menus').readMany({
+    const mainNavigation = await this.$directus.items('menus').readByQuery({
       filter: { parent: { _eq: 1 } },
       sort: ['sort'],
       deep: {
@@ -83,7 +83,7 @@ export default {
     });
   },
   async loadDomains() {
-    const domainsResponse = await this.$directus.items('domains').readMany({
+    const domainsResponse = await this.$directus.items('domains').readByQuery({
       fields: ['id', 'translations.name'],
       // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
       deep: { translations: { _filter: { languages_code: { _eq: this.$i18n.locale } } } },
@@ -91,7 +91,7 @@ export default {
     Domain.addManyFromDirectus(domainsResponse);
   },
   async loadGroups() {
-    const groupsResponse = await this.$directus.items('groups').readMany({
+    const groupsResponse = await this.$directus.items('groups').readByQuery({
       fields: ['id', 'name', 'description', 'translations.name', 'translations.description'],
       // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
       deep: { translations: { _filter: { languages_code: { _eq: this.$i18n.locale } } } },
@@ -108,7 +108,7 @@ export default {
       filter = { roles: { roles_id: { group: { _nnull: true } } } };
     }
 
-    const peopleResponse = await this.$directus.items('people').readMany({
+    const peopleResponse = await this.$directus.items('people').readByQuery({
       fields: [
         'id',
         'first_name',
@@ -138,7 +138,7 @@ export default {
     Person.addManyFromDirectus(peopleResponse);
   },
   async loadResourceTypes() {
-    const response = await this.$directus.items('resource_types').readMany({
+    const response = await this.$directus.items('resource_types').readByQuery({
       fields: ['id', 'translations.name'],
       // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
       deep: { translations: { _filter: { languages_code: { _eq: this.$i18n.locale } } } },
@@ -149,7 +149,7 @@ export default {
     // TODO: Move logic to CMSService
     const locale = this.app.i18n.locale;
 
-    const eventTypes = await this.$directus.items('event_types').readMany({
+    const eventTypes = await this.$directus.items('event_types').readByQuery({
       deep: {
         // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
         translations: { _filter: { languages_code: { _eq: locale } } },
@@ -180,7 +180,7 @@ export default {
     // TODO: Move logic to CMSService
     const locale = this.app.i18n.locale;
 
-    const playerPositions = await this.$directus.items('player_positions').readMany({
+    const playerPositions = await this.$directus.items('player_positions').readByQuery({
       deep: {
         // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
         translations: { _filter: { languages_code: { _eq: locale } } },
@@ -219,7 +219,7 @@ export default {
    * Loads all the clubs and regional associations
    */
   async loadClubs() {
-    const clubsResponse = await this.$directus.items('clubs').readMany({
+    const clubsResponse = await this.$directus.items('clubs').readByQuery({
       fields: ['id', 'name', 'name_full', 'name_sort', 'status', 'website', 'logo'],
       filter: {
         _or: [

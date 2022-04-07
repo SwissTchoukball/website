@@ -125,7 +125,7 @@ const cmsService: Plugin = (context, inject) => {
    * Fetches the data of a simple page for a specific locale
    */
   const fetchPage = async (pagePath: string, locale: string) => {
-    const pageResponse = await context.$directus.items('pages').readMany({
+    const pageResponse = await context.$directus.items('pages').readByQuery({
       // @ts-ignore Bug with Directus SDK. It's okay to filter more than one level deep.
       filter: { translations: { path: { _eq: pagePath } } },
       fields: [
@@ -271,7 +271,7 @@ const cmsService: Plugin = (context, inject) => {
       filter._and.push(imageFilter);
     }
 
-    const newsResponse = await context.$directus.items('news').readMany({
+    const newsResponse = await context.$directus.items('news').readByQuery({
       meta: 'filter_count',
       limit,
       page,
@@ -525,7 +525,7 @@ const cmsService: Plugin = (context, inject) => {
       filter._and.push(upcomingFilter);
     }
 
-    const response = await context.$directus.items('events').readMany({
+    const response = await context.$directus.items('events').readByQuery({
       meta: 'filter_count',
       limit,
       page,
@@ -623,7 +623,7 @@ const cmsService: Plugin = (context, inject) => {
   const getTeam: CMSService['getTeam'] = async (teamSlug) => {
     // We retrieve all the languages and show news in fallback locale if not available in current locale
     const currentLocale = context.i18n.locale;
-    const teamResponse = await context.$directus.items('national_teams').readMany({
+    const teamResponse = await context.$directus.items('national_teams').readByQuery({
       limit: 1,
       filter: {
         translations: {
@@ -781,7 +781,7 @@ const cmsService: Plugin = (context, inject) => {
   };
 
   const getSeasons: CMSService['getSeasons'] = async () => {
-    const seasonsResponse = await context.$directus.items('seasons').readMany({
+    const seasonsResponse = await context.$directus.items('seasons').readByQuery({
       fields: ['id', 'name', 'slug', 'date_start', 'date_end', 'leverade_id'],
     });
 
@@ -814,7 +814,7 @@ const cmsService: Plugin = (context, inject) => {
   const getNationalCompetition: CMSService['getNationalCompetition'] = async (competitionSlug) => {
     // We retrieve all the languages and show data in fallback locale if not available in current locale
     const currentLocale = context.i18n.locale;
-    const response = await context.$directus.items('national_competitions').readMany({
+    const response = await context.$directus.items('national_competitions').readByQuery({
       limit: 1,
       filter: {
         translations: {
@@ -900,7 +900,7 @@ const cmsService: Plugin = (context, inject) => {
       }
     }
 
-    const response = await context.$directus.items('national_competition_editions').readMany({
+    const response = await context.$directus.items('national_competition_editions').readByQuery({
       filter,
       fields: [
         'id',
@@ -1012,7 +1012,7 @@ const cmsService: Plugin = (context, inject) => {
       });
     }
 
-    const response = await context.$directus.items('resources').readMany({
+    const response = await context.$directus.items('resources').readByQuery({
       filter,
       fields: [
         'id',
