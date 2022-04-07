@@ -33,6 +33,32 @@ jobs:
       - name: Build 🔨
         run: npm run build
 
+  Deploy-to-staging:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    needs: CI
+    runs-on: ubuntu-latest
+
+    environment:
+      name: Staging
+      url: https://next.tchoukball.ch
+
+    steps:
+      - name: Deploy to staging 🚀
+        uses: appleboy/ssh-action@v0.1.4
+        with:
+          host: ${{secrets.SSH_HOST}}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          script: |
+            cd ~/sites/next.tchoukball.ch
+            git pull
+            source ~/.nvm/.profile
+            source ~/env_vars/website-staging.sh
+            npm ci
+            npm run build
+            pm2 restart website-nuxt-staging
+
   Deploy-to-production:
     if: ${{ github.ref == 'refs/heads/main' }}
     needs: CI
@@ -40,7 +66,7 @@ jobs:
 
     environment:
       name: Production
-      url: https://next.tchoukball.ch
+      url: https://tchoukball.ch
 
     steps:
       - name: Deploy to production 🚀
@@ -54,7 +80,7 @@ jobs:
             cd ~/sites/tchoukball.ch
             git pull
             source ~/.nvm/.profile
-            source ~/.profile
+            source ~/env_vars/website-prod.sh
             npm ci
             npm run build
-            pm2 restart website-nuxt
+            pm2 restart website-nuxt-prod

@@ -2,13 +2,13 @@
 
 Future website of Swiss Tchoukball, made with [Nuxt.js](https://nuxtjs.org).
 
-Production is on [next.tchoukball.ch](https://next.tchoukball.ch)
+Production is on [tchoukball.ch](https://tchoukball.ch)
 
-There is no staging yet.
+Staging is on [next.tchoukball.ch](https://next.tchoukball.ch). For now it uses the same CMS instance as in production. It's fine currently, as we only read data from the CMS.
 
 ## Setup
 
-Production is hosted on an Infomaniak Managed Cloud Server.
+Production and staging are hosted on an Infomaniak Managed Cloud Server.
 
 Deployment is automated via GitHub Actions.
 
