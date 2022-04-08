@@ -2,6 +2,12 @@ name: CI/CD
 
 on: push
 
+# Those variables required for the build to pass
+# But they're not used when deployed as the build is run on the server
+env:
+  CMS_URL: https://cms.tchoukball.ch
+  ST_CONTACT_EMAIL_RECIPIENT: developer@tchoukball.ch
+
 jobs:
   CI:
     runs-on: ubuntu-latest
