@@ -152,7 +152,7 @@ const config: NuxtConfig = {
   // nuxt-mail module configuration: https://github.com/dword-design/nuxt-mail#usage
   mail: {
     message: {
-      to: 'info@tchoukball.ch',
+      to: process.env.ST_CONTACT_EMAIL_RECIPIENT,
       from: `Swiss Tchoukball <no-reply@tchoukball.ch>`,
     },
     smtp: {
