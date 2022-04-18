@@ -139,10 +139,10 @@ export default Vue.extend({
 
 @media (orientation: landscape) {
   .c-team__photo {
-    aspect-ratio: 5 / 2;
+    aspect-ratio: 2 / 1;
   }
 
-  @supports not (aspect-ratio: 5 / 2) {
+  @supports not (aspect-ratio: 2 / 1) {
     .c-team__photo::before {
       float: left;
       padding-top: 40%;

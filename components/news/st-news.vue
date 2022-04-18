@@ -117,10 +117,10 @@ export default Vue.extend({
 
 @media (orientation: landscape) {
   .c-news-entry__image {
-    aspect-ratio: 5 / 2;
+    aspect-ratio: 2 / 1;
   }
 
-  @supports not (aspect-ratio: 5 / 2) {
+  @supports not (aspect-ratio: 2 / 1) {
     .c-news-entry__image::before {
       float: left;
       padding-top: 40%;
