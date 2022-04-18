@@ -85,9 +85,7 @@ export default Vue.extend({
 
 .st-home-carousel__image {
   display: block;
-  width: 100vw;
-  max-width: 100%;
-  height: min(50vw, 60vh);
+  width: 100%;
   object-fit: cover;
   background-image: linear-gradient(gray 100%, transparent 0);
 }
@@ -164,9 +162,25 @@ export default Vue.extend({
     width: var(--st-breakpoing-l-xl);
     margin-left: calc(-1 * (var(--st-breakpoing-l-xl) - var(--st-length-main-content-max-width)) / 2);
   }
+}
 
+@media (orientation: landscape) {
   .st-home-carousel__image {
-    height: 60vh;
+    aspect-ratio: 5 / 2;
+  }
+
+  @supports not (aspect-ratio: 5 / 2) {
+    .st-home-carousel__image::before {
+      float: left;
+      padding-top: 40%;
+      content: '';
+    }
+
+    .st-home-carousel__image::after {
+      display: block;
+      content: '';
+      clear: both;
+    }
   }
 }
 </style>

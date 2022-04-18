@@ -108,17 +108,30 @@ export default Vue.extend({
   text-transform: uppercase;
 }
 
-@media (--sm-and-up) {
-  .c-news-entry__image {
-    max-height: min(50vw, 60vh);
-  }
-}
-
 @media (--xl-and-up) {
   .c-news-entry__image {
     width: var(--st-breakpoing-l-xl);
     margin-left: calc(-1 * (var(--st-breakpoing-l-xl) - var(--st-length-main-content-max-width)) / 2);
-    max-height: 60vh;
+  }
+}
+
+@media (orientation: landscape) {
+  .c-news-entry__image {
+    aspect-ratio: 5 / 2;
+  }
+
+  @supports not (aspect-ratio: 5 / 2) {
+    .c-news-entry__image::before {
+      float: left;
+      padding-top: 40%;
+      content: '';
+    }
+
+    .c-news-entry__image::after {
+      display: block;
+      content: '';
+      clear: both;
+    }
   }
 }
 </style>

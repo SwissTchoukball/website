@@ -130,17 +130,30 @@ export default Vue.extend({
   margin-top: var(--st-length-spacing-s);
 }
 
-@media (--sm-and-up) {
-  .c-team__photo {
-    max-height: min(50vw, 60vh);
-  }
-}
-
 @media (--xl-and-up) {
   .c-team__photo {
     width: var(--st-breakpoing-l-xl);
     margin-left: calc(-1 * (var(--st-breakpoing-l-xl) - var(--st-length-main-content-max-width)) / 2);
-    max-height: 60vh;
+  }
+}
+
+@media (orientation: landscape) {
+  .c-team__photo {
+    aspect-ratio: 5 / 2;
+  }
+
+  @supports not (aspect-ratio: 5 / 2) {
+    .c-team__photo::before {
+      float: left;
+      padding-top: 40%;
+      content: '';
+    }
+
+    .c-team__photo::after {
+      display: block;
+      content: '';
+      clear: both;
+    }
   }
 }
 </style>
