@@ -33,6 +33,83 @@ export default Vue.extend({
       isDrawerOpen: false,
     };
   },
+  // We define `head()` here instead of in nuxt.config.ts because when we do it there, nuxt-matomo does not work
+  // See https://github.com/nuxt-community/i18n-module/issues/1266#issuecomment-982527874
+  head() {
+    const i18nHead = this.$nuxtI18nHead({ addSeoAttributes: true });
+    return {
+      titleTemplate: (titleChunk) => {
+        // If undefined or blank then we don't need the hyphen
+        return titleChunk ? `${titleChunk} - ${this.$t('title')}` : this.$t('title').toString();
+      },
+      htmlAttrs: {
+        ...i18nHead.htmlAttrs,
+      },
+      meta: [
+        { charset: 'utf-8' },
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+        { name: 'format-detection', content: 'telephone=no' },
+        {
+          hid: 'description',
+          name: 'description',
+          content: this.$t('defaultDescription').toString(),
+        },
+        {
+          hid: 'keywords',
+          name: 'keywords',
+          content:
+            'tchoukball, tchouk, tchouk-ball, sport, sport pour tous, fair-play, accessible, intense, tactique, prix thulin, Swiss Tchoukball, fédération, verband, federazione, federation, switzerland, suisse, schweiz, svizerra',
+        },
+        { property: 'og:site_name', content: this.$t('title').toString() },
+        {
+          hid: 'og:description',
+          property: 'og:description',
+          content: this.$t('defaultDescription').toString(),
+          template: (chunk) => {
+            return chunk || this.$t('defaultDescription').toString();
+          },
+        },
+        {
+          hid: 'og:type',
+          property: 'og:type',
+          content: `website`,
+        },
+        {
+          hid: 'og:url',
+          property: 'og:url',
+          content: `${this.$config.websiteBaseUrl}${this.$route.path}`,
+        },
+        {
+          hid: 'og:image',
+          property: 'og:image',
+          content: `${this.$config.websiteBaseUrl}/images/og-swiss-tchoukball.jpg`,
+        },
+        {
+          hid: 'og:image:alt',
+          property: 'og:image:alt',
+          content: 'Logo of Swiss Tchoukball over a background featuring the net of a tchoukball frame.',
+        },
+        {
+          name: 'twitter:card',
+          content: 'summary',
+        },
+        {
+          name: 'twitter:site',
+          content: '@SwissTchoukball',
+        },
+        ...i18nHead.meta,
+      ],
+      link: [
+        { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32x32.png' },
+        { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/favicon-16x16.png' },
+        { rel: 'manifest', href: '/site.webmanifest' },
+        { rel: 'mask-icon', href: '/safari-pinned-tab.svg', color: '#ff0000' },
+        ...i18nHead.link,
+      ],
+    };
+  },
   computed: {
     mainNavigation() {
       return this.$store.state.mainNavigation;
