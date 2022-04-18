@@ -52,7 +52,7 @@ export default Vue.extend({
     } catch (err: any) {
       switch (err.message) {
         case 'pageNotFound':
-          error({ statusCode: 404 });
+          error({ statusCode: 404, message: `Could not find page for ${pagePath}` });
           break;
         case 'noData':
           console.info('No data either in the requested locale or the fallback locale.');
