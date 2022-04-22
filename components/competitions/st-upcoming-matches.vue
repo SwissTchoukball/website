@@ -11,7 +11,7 @@
             <st-event-small
               :start-date="match.parsedDate()"
               :name="`${match.home_team.name} - ${match.away_team.name}`"
-              :details="match.facility.name"
+              :details="`${match.facility.name}, ${match.facility.city}`"
               :to="
                 localePath({
                   name: 'competitions-competition-season-match-matchId',

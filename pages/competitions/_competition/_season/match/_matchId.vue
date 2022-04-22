@@ -47,9 +47,8 @@
         <fa-icon icon="clock" class="c-match__icon" /> {{ $formatDate(match.parsedDate(), 'HH:mm') }}
       </div>
       <button v-if="match.facility" class="u-unstyled-button c-match__venue" @click="showVenueDetails">
-        <fa-icon icon="location-dot" class="c-match__icon" /> {{ match.facility.name }} (<span
-          class="c-match__venue-map-action"
-          >{{ $t('venue.map') }}</span
+        <fa-icon icon="location-dot" class="c-match__icon" /> {{ match.facility.name }},
+        {{ match.facility.city }} (<span class="c-match__venue-map-action">{{ $t('venue.map') }}</span
         >)
       </button>
     </div>

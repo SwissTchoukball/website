@@ -28,7 +28,8 @@
             </h4>
             <div class="c-planning__match-details">
               <fa-icon icon="clock" class="c-planning__match-icon" /> {{ $formatDate(match.parsedDate(), 'HH:mm') }}
-              <fa-icon icon="location-dot" class="c-planning__match-icon" /> {{ match.facility.name }}
+              <fa-icon icon="location-dot" class="c-planning__match-icon" />
+              {{ match.facility.name }}, {{ match.facility.city }}
             </div>
           </nuxt-link>
         </li>
