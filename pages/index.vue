@@ -18,7 +18,7 @@
             :end-date="event.date_end"
             :is-full-day="event.isFullDay"
             :name="event.name"
-            :details="event.venue.name"
+            :details="event.venue.name + (event.venue.city ? `, ${event.venue.city}` : '')"
             :to="
               localePath({
                 name: 'calendar',
