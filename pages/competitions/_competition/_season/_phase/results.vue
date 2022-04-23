@@ -3,7 +3,7 @@
     <template v-if="roundsUpToNow.length > 0">
       <ul class="u-unstyled-list c-results__round">
         <li v-for="round of roundsUpToNow" :key="round.id" class="c-results__round">
-          <h3 v-if="roundsUpToNow.length > 1" class="t-headline-2 c-results__round-name">{{ round.name }}</h3>
+          <h3 class="t-headline-2 c-results__round-name">{{ round.name }}</h3>
           <ul class="u-unstyled-list">
             <template v-for="match of round.matches">
               <li v-if="match.home_team && match.away_team" :key="match.id">
