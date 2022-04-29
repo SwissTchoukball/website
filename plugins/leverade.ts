@@ -49,6 +49,7 @@ export interface LeveradeGroup extends LeveradeEntity {
   type: 'group';
   attributes: {
     name: string;
+    order: number;
     type: LeveradeGroupType;
     group: string | null;
   };

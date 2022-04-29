@@ -314,6 +314,7 @@ export default {
         return {
           id: group.id,
           name: group.attributes.name,
+          order: group.attributes.order,
           type: group.attributes.type,
           group: group.attributes.group,
           competition_edition_id: group.relationships.tournament.data.id,
@@ -433,6 +434,7 @@ export default {
             return {
               id: group.id,
               name: group.attributes.name,
+              order: group.attributes.order,
               type: group.attributes.type,
               group: group.attributes.group,
             };

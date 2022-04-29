@@ -8,6 +8,7 @@ export default class Phase extends Model {
 
   id!: string;
   name!: string;
+  order!: number;
   type!: LeveradeGroupType;
   group!: string;
   competition_edition!: CompetitionEdition;
@@ -17,6 +18,7 @@ export default class Phase extends Model {
     return {
       id: this.string(null),
       name: this.string(null),
+      order: this.number(null),
       type: this.string(null),
       group: this.string(null),
       competition_edition_id: this.string(null),

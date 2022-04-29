@@ -91,7 +91,7 @@ export default Vue.extend({
   computed: {
     competitionEdition(): Item<CompetitionEdition> {
       return CompetitionEdition.query()
-        .with('phases')
+        .with('phases', (query) => query.orderBy('order'))
         .with('phases.rounds', (query) => query.orderBy('order'))
         .with([
           'phases.competition_edition',
