@@ -15,6 +15,41 @@ export interface FlickrPhoto {
   url_m?: string;
 }
 
+export interface FlickrPhotoset {
+  id: string;
+  owner: string;
+  username: string;
+  primary: string;
+  secret: string;
+  server: string;
+  farm: number;
+  count_views: string;
+  count_comments: string;
+  count_photos: number;
+  count_videos: number;
+  title: {
+    _content: string;
+  };
+  description: {
+    _content: string;
+  };
+  can_comment: number;
+  date_create: string;
+  date_update: string;
+  photos: number;
+  videos: number;
+  visibility_can_see_set: number;
+  needs_interstitial: number;
+  primary_photo_extras: {
+    url_q: string;
+    height_q: number;
+    width_q: number;
+    url_m: string;
+    height_m: number;
+    width_m: number;
+  };
+}
+
 declare module 'vue/types/vue' {
   // this.$flickr inside Vue components
   interface Vue {

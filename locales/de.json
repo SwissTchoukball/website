@@ -7,7 +7,7 @@
   "otherNavigation": "Navigation für {name}",
   "backHome": "Zurück zur Startseite",
   "photos": {
-    "latest": "Letzte Fotos",
+    "latestAlbums": "Letzte Alben",
     "seeMore": "Mehr Fotos ansehen"
   },
   "error": {

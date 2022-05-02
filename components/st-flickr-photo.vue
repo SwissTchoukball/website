@@ -1,6 +1,6 @@
 <template>
   <a :href="`https://www.flickr.com/photos/swisstchoukball/${photo.id}`">
-    <img :src="photo.url_q" :alt="photo.title" :title="photo.title" class="c-flickr-photo" />
+    <img :src="photo.url_q" :alt="photo.title" :title="photo.title" loading="lazy" class="c-flickr-photo" />
   </a>
 </template>
 

@@ -51,10 +51,15 @@
       </nav>
     </section>
 
-    <section v-if="latestPhotos" class="l-main-content-section">
-      <h2 class="t-headline-1">{{ $t('photos.latest') }}</h2>
+    <section v-if="latestAlbums" class="l-main-content-section">
+      <h2 class="t-headline-1">{{ $t('photos.latestAlbums') }}</h2>
       <div class="c-index__flickr-photos">
-        <st-flickr-photo v-for="photo of latestPhotos" :key="photo.id" :photo="photo" class="c-index__flickr-photo" />
+        <st-flickr-album-link
+          v-for="album of latestAlbums"
+          :key="album.id"
+          :album="album"
+          class="c-index__flickr-photo"
+        />
       </div>
       <st-link-action href="https://flickr.com/swisstchoukball" class="c-index__see-more-photos" with-arrow>
         {{ $t('photos.seeMore') }}
@@ -70,7 +75,7 @@ import { CarouselItem } from '~/components/st-home-carousel.vue';
 import { CalendarEvent } from '~/plugins/cms-service';
 import stEventSmall from '~/components/events/st-event-small.vue';
 import stUpcomingMatches from '~/components/competitions/st-upcoming-matches.vue';
-import { FlickrPhoto } from '~/plugins/flickr';
+import { FlickrPhotoset } from '~/plugins/flickr';
 
 export default Vue.extend({
   components: {
@@ -83,7 +88,7 @@ export default Vue.extend({
       carouselItems: [] as CarouselItem[],
       amountUpcomingEvents: 9,
       events: [] as CalendarEvent[],
-      latestPhotos: [] as FlickrPhoto[],
+      latestAlbums: [] as FlickrPhotoset[],
       // TODO: low prio: Move the navigation data to the CMS.
       tchoukballNavigation: [
         {
@@ -159,13 +164,13 @@ export default Vue.extend({
     this.events = eventsResult.data;
 
     // Latest Flickr photos
-    // Doc: https://www.flickr.com/services/api/flickr.people.getPublicPhotos.html
-    const flickrResponse = await this.$flickr.people.getPublicPhotos({
+    // Doc: https://www.flickr.com/services/api/flickr.photosets.getList.html
+    const flickrResponse = await this.$flickr.photosets.getList({
       user_id: this.$config.flickr.userId,
       per_page: 6,
-      extras: ['url_q', 'url_m'],
+      primary_photo_extras: 'url_q,url_m',
     });
-    this.latestPhotos = flickrResponse.body.photos.photo;
+    this.latestAlbums = flickrResponse.body.photosets.photoset;
   },
   head(): MetaInfo {
     return {
@@ -222,8 +227,12 @@ export default Vue.extend({
 }
 
 .c-index__flickr-photo {
-  max-width: 30%;
+  max-width: 100%;
   margin-top: var(--st-length-spacing-s);
+}
+
+.c-index__flickr-photo:nth-of-type(1n + 5) {
+  display: none;
 }
 
 @media (--sm-and-up) {
@@ -233,11 +242,21 @@ export default Vue.extend({
   }
 
   .c-index__event-item {
-    width: 50%;
+    width: 30%;
   }
 
   .c-index__flickr-photo {
-    max-width: 15%;
+    max-width: 47%;
+  }
+
+  .c-index__flickr-photo:nth-of-type(1n + 5) {
+    display: block;
+  }
+}
+
+@media (--md-and-up) {
+  .c-index__flickr-photo {
+    max-width: 30%;
   }
 }
 
@@ -248,6 +267,14 @@ export default Vue.extend({
 
   .c-index__event-item:nth-of-type(1n + 7) {
     display: block;
+  }
+
+  .c-index__flickr-photo {
+    max-width: 18%;
+  }
+
+  .c-index__flickr-photo:nth-of-type(1n + 6) {
+    display: none;
   }
 }
 </style>

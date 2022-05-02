@@ -122,6 +122,10 @@
   --st-color-resource-icon: var(--st-color-red-swiss-tchoukball);
   --st-color-resource-details: var(--st-color-grey-dark);
 
+  /* Flickr */
+  --st-color-photo-caption-text: white;
+  --st-color-photo-pile-effect-line: var(--st-color-grey-dark);
+
   /* LENGTHS */
   --st-length-main-content-max-width: 100%;
   --st-length-small-header-height: 50px;
