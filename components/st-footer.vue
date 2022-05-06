@@ -83,6 +83,10 @@ export default Vue.extend({
       // TODO: Eventually move all the data to the CMS
       secondaryNavigation: [
         {
+          key: 'news',
+          href: 'news',
+        },
+        {
           key: 'photos',
           href: 'https://flickr.com/swisstchoukball',
         },
