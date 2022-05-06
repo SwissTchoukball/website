@@ -80,7 +80,7 @@ export default Vue.extend({
 
 <style scoped>
 .c-news-entry {
-  margin-top: var(--st-length-spacing-m);
+  margin-top: var(--st-length-spacing-s);
 }
 
 .c-news-entry__title {
