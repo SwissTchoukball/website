@@ -5,6 +5,10 @@
   "mainNavigation": "Hauptnavigation",
   "secondaryNavigation": "Unternavigation",
   "otherNavigation": "Navigation für {name}",
+  "breadcrumb": {
+    "title": "Brotkrümel",
+    "home": "Startseite"
+  },
   "backHome": "Zurück zur Startseite",
   "photos": {
     "latestAlbums": "Letzte Alben",
