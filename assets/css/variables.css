@@ -19,6 +19,7 @@
 
   /* Core */
   --st-color-text: black;
+  --st-color-text-lighter: var(--st-color-grey-dark);
   --st-color-error: var(--st-color-red-swiss-tchoukball);
   --st-color-main-content-alternative-background: var(--st-color-grey-very-light);
   --st-color-separator: var(--st-color-red-swiss-tchoukball);
@@ -41,6 +42,7 @@
   --st-color-wide-navigation-narrow-sub-item-active-background: white;
   --st-color-small-navigation-item-hover-border: var(--st-color-grey-light);
   --st-color-active-lang: var(--st-color-red-swiss-tchoukball);
+  --st-color-breadcrumb-separation: var(--st-color-grey-dark);
 
   /* Loader */
   --st-color-loader-background: var(--st-color-red-swiss-tchoukball);

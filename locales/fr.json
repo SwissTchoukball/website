@@ -5,6 +5,10 @@
   "mainNavigation": "Navigation principale",
   "secondaryNavigation": "Navigation secondaire",
   "otherNavigation": "Navigation pour {name}",
+  "breadcrumb": {
+    "title": "Fil d'Ariane",
+    "home": "Accueil"
+  },
   "backHome": "Retour à l'accueil",
   "photos": {
     "latestAlbums": "Derniers albums",
