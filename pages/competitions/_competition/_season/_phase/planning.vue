@@ -2,7 +2,7 @@
   <div>
     <template v-if="futureMatches.length > 0">
       <ul v-for="match of futureMatches" :key="match.id" class="u-unstyled-list">
-        <li>
+        <li v-if="showMatch(match)">
           <nuxt-link
             class="c-planning__match"
             :to="localePath({ name: 'competitions-competition-season-match-matchId', params: { matchId: match.id } })"
@@ -27,9 +27,12 @@
               </div>
             </h4>
             <div class="c-planning__match-details">
-              <fa-icon icon="clock" class="c-planning__match-icon" /> {{ $formatDate(match.parsedDate(), 'HH:mm') }}
-              <fa-icon icon="location-dot" class="c-planning__match-icon" />
-              {{ match.facility.name }}, {{ match.facility.city }}
+              <st-cancelled-label v-if="match.canceled" class="c-planning__match-cancelled" />
+              <template v-else>
+                <fa-icon icon="clock" class="c-planning__match-icon" /> {{ $formatDate(match.parsedDate(), 'HH:mm') }}
+                <fa-icon icon="location-dot" class="c-planning__match-icon" />
+                {{ match.facility.name }}, {{ match.facility.city }}
+              </template>
             </div>
           </nuxt-link>
         </li>
@@ -98,6 +101,9 @@ export default Vue.extend({
     },
   },
   methods: {
+    showMatch(match: Match) {
+      return this.showMatchRound(match) || match.home_team || match.away_team || !match.canceled;
+    },
     showMatchRound(match: Match) {
       return match.round.phase.type === LeveradeGroupType.PLAY_OFF;
     },
