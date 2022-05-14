@@ -22,7 +22,7 @@ export interface LeveradeEntity extends LeveradeBaseEntity {
     [key: string]: any;
   };
   relationships: {
-    [key: string]: { data: LeveradeBaseEntity | LeveradeBaseEntity[] };
+    [key: string]: { data: LeveradeBaseEntity | LeveradeBaseEntity[] | null };
   };
 }
 
@@ -65,6 +65,7 @@ export interface LeveradeMatch extends LeveradeEntity {
   type: 'match';
   attributes: {
     datetime: string;
+    finished: boolean;
     canceled: boolean;
   };
   meta: {
@@ -76,10 +77,34 @@ export interface LeveradeMatch extends LeveradeEntity {
       data: LeveradeBaseEntity;
     };
     facility: {
-      data: LeveradeBaseEntity;
+      data: LeveradeBaseEntity | null;
+    };
+    faceoff: {
+      data: LeveradeBaseEntity | null;
     };
   };
   // There is more. Only the base and what we need is specified here.
+}
+
+export interface LeveradeFaceoff extends LeveradeEntity {
+  type: 'faceoff';
+  attributes: {
+    winner: 'first' | 'second' | null;
+  };
+  relationships: {
+    first_team: {
+      data: LeveradeBaseEntity | null;
+    };
+    second_team: {
+      data: LeveradeBaseEntity | null;
+    };
+    round: {
+      data: LeveradeBaseEntity;
+    };
+    matches: {
+      data: LeveradeBaseEntity[];
+    };
+  };
 }
 
 export interface LeveradeRound extends LeveradeEntity {
@@ -148,7 +173,7 @@ interface Leverade {
   ) => Promise<
     LeveradeResponse<
       LeveradeTournament,
-      LeveradeGroup | LeveradeMatch | LeveradeRound | LeveradeTeam | LeveradeFacility | LeveradeResult
+      LeveradeGroup | LeveradeMatch | LeveradeFaceoff | LeveradeRound | LeveradeTeam | LeveradeFacility | LeveradeResult
     >
   >;
   getStandings: (groupId: number | string) => Promise<any>;
@@ -165,7 +190,7 @@ interface Leverade {
 const leveradePlugin: Plugin = ({ $config, $axios, $formatDate }, inject) => {
   const getFullTournament: Leverade['getFullTournament'] = (tournamentId) => {
     return $axios.get(
-      `${$config.leveradeURL}/tournaments/${tournamentId}?include=groups,groups.rounds,groups.rounds.matches,groups.rounds.matches.facility,groups.rounds.matches.results,teams`,
+      `${$config.leveradeURL}/tournaments/${tournamentId}?include=groups,groups.rounds,groups.rounds.faceoffs,groups.rounds.matches,groups.rounds.matches.facility,groups.rounds.matches.results,teams`,
       {
         transformRequest: (data, headers) => {
           // Removing authorization headers that are somehow added by the production server when this run server-side.

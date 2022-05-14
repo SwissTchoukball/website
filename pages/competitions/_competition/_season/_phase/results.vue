@@ -3,14 +3,24 @@
     <template v-if="roundsUpToNow.length > 0">
       <ul class="u-unstyled-list c-results__round">
         <li v-for="round of roundsUpToNow" :key="round.id" class="c-results__round">
-          <h3 class="t-headline-2 c-results__round-name">{{ round.name }}</h3>
-          <ul class="u-unstyled-list">
-            <template v-for="match of round.matches">
-              <li v-if="match.home_team && match.away_team && !match.canceled" :key="match.id" class="c-results__match">
-                <st-match-result :match="match" />
-              </li>
-            </template>
-          </ul>
+          <template v-if="!round.faceoffs.length">
+            <h3 class="t-headline-2 c-results__round-name">{{ round.name }}</h3>
+            <st-match-result-list :matches="round.matches" />
+          </template>
+
+          <template v-else>
+            <div v-for="(faceoff, index) of round.faceoffs" :key="faceoff.id">
+              <h3 class="c-results__round-name" :class="round.faceoffs.length > 1 ? 't-headline-3' : 't-headline-2'">
+                {{ round.name }}
+                <template v-if="round.faceoffs.length > 1">{{ index + 1 }}</template>
+              </h3>
+
+              <div v-if="isFaceoffAutoQualified(faceoff)">
+                {{ $t('competitions.results.autoQualified', { teamName: faceoff[`${faceoff.winner}_team`].name }) }}
+              </div>
+              <st-match-result-list v-else :matches="faceoff.matches" />
+            </div>
+          </template>
         </li>
       </ul>
     </template>
@@ -22,7 +32,8 @@
 import Vue, { PropType } from 'vue';
 import Phase from '~/models/phase.model';
 import Round from '~/models/round.model';
-import stMatchResult from '~/components/competitions/st-match-result.vue';
+import stMatchResultList from '~/components/competitions/st-match-result-list.vue';
+import Faceoff from '~/models/faceoff.model';
 
 export default Vue.extend({
   nuxtI18n: {
@@ -32,7 +43,7 @@ export default Vue.extend({
     },
   },
   components: {
-    stMatchResult,
+    stMatchResultList,
   },
   props: {
     phase: {
@@ -63,6 +74,13 @@ export default Vue.extend({
       return this.phase.rounds.filter((round) => round.isPast).sort((roundA, roundB) => roundB.order - roundA.order);
     },
   },
+  methods: {
+    isFaceoffAutoQualified(faceoff: Faceoff): boolean {
+      // We check this based on the first match only
+      const firstMatch = faceoff.matches[0];
+      return (!firstMatch.home_team || !firstMatch.away_team) && firstMatch.finished && faceoff.winner;
+    },
+  },
 });
 </script>
 
@@ -77,19 +95,5 @@ export default Vue.extend({
 
 .c-results__round-name {
   padding-bottom: var(--st-length-spacing-xs);
-}
-
-.c-results__match {
-  border-bottom: 1px solid var(--st-color-match-results-separator);
-}
-
-.c-results__match:last-of-type {
-  border-bottom: none;
-}
-
-@media (--sm-and-up) {
-  .c-results__match {
-    border-bottom: none;
-  }
 }
 </style>

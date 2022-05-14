@@ -96,6 +96,12 @@ export default Vue.extend({
         .with([
           'phases.competition_edition',
           'phases.competition_edition.season',
+          'phases.rounds.faceoffs',
+          'phases.rounds.faceoffs.first_team',
+          'phases.rounds.faceoffs.second_team',
+          'phases.rounds.faceoffs.matches',
+          'phases.rounds.faceoffs.matches.home_team',
+          'phases.rounds.faceoffs.matches.away_team',
           'phases.rounds.matches',
           'phases.rounds.matches.home_team',
           'phases.rounds.matches.away_team',

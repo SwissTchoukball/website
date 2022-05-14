@@ -16,5 +16,6 @@ Here's a mapping:
 | `phase`       | _N/A_                           | `group`       |
 | `phase.group` | _N/A_                           | `group.group` |
 | `round`       | _N/A_                           | `round`       |
+| `faceoff`     | _N/A_                           | `faceoff`     |
 | `match`       | _N/A_                           | `match`       |
 | `standings`   | _N/A_                           | `standings`   |

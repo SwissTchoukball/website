@@ -8,6 +8,7 @@ import Round from '~/models/round.model';
 import Match from '~/models/match.model';
 import Facility from '~/models/facility.model';
 import {
+  LeveradeFaceoff,
   LeveradeFacility,
   LeveradeGroup,
   LeveradeMatch,
@@ -24,6 +25,7 @@ import ResourceType from '~/models/resource-type.model';
 import Club from '~/models/club.model';
 import Person from '~/models/person.model';
 import Group from '~/models/group.model';
+import Faceoff from '~/models/faceoff.model';
 
 export default {
   async nuxtServerInit({ dispatch }) {
@@ -287,8 +289,24 @@ export default {
           away_team_id: match.meta.away_team,
           away_team_score,
           round_id: match.relationships.round.data.id,
+          faceoff_id: match.relationships.faceoff.data ? match.relationships.faceoff.data.id : null,
           facility_id: match.relationships.facility.data ? match.relationships.facility.data.id : null,
+          finished: match.attributes.finished,
           canceled: match.attributes.canceled,
+        };
+      }),
+    });
+  },
+
+  async insertFaceoffs(_context, faceoffs: LeveradeFaceoff[]) {
+    await Faceoff.insert({
+      data: faceoffs.map((faceoff) => {
+        return {
+          id: faceoff.id,
+          winner: faceoff.attributes.winner,
+          first_team_id: faceoff.relationships.first_team.data ? faceoff.relationships.first_team.data.id : null,
+          second_team_id: faceoff.relationships.second_team.data ? faceoff.relationships.second_team.data.id : null,
+          round_id: faceoff.relationships.round.data.id,
         };
       }),
     });
@@ -386,6 +404,7 @@ export default {
       const teams: LeveradeTeam[] = [];
       const groups: LeveradeGroup[] = [];
       const rounds: LeveradeRound[] = [];
+      const faceoffs: LeveradeFaceoff[] = [];
       const matches: LeveradeMatch[] = [];
       const facilities: LeveradeFacility[] = [];
       const results: LeveradeResult[] = [];
@@ -399,6 +418,9 @@ export default {
             break;
           case 'round':
             rounds.push(entity);
+            break;
+          case 'faceoff':
+            faceoffs.push(entity);
             break;
           case 'match':
             matches.push(entity);
@@ -445,6 +467,7 @@ export default {
 
       await context.dispatch('insertFacilities', facilities);
       await context.dispatch('insertRounds', rounds);
+      await context.dispatch('insertFaceoffs', faceoffs);
       await context.dispatch('insertMatches', { matches, results });
       context.commit('setCompetitionEditionAsFullyLoaded', { seasonSlug, competitionSlug });
     }

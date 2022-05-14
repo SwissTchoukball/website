@@ -12,24 +12,28 @@
       class="c-match-result__team c-match-result__team--home"
       :class="{ 'c-match-result__team--winner': hasHomeTeamWon }"
     >
-      <img
-        :src="`https://cdn.leverade.com/thumbnails/${match.home_team.avatarKey}.200x200.jpg`"
-        class="c-match-result__team-avatar"
-      />
-      <div class="c-match-result__team-name">{{ match.home_team.name }}</div>
-      <div class="c-match-result__score">{{ match.home_team_score }}</div>
+      <template v-if="match.home_team">
+        <img
+          :src="`https://cdn.leverade.com/thumbnails/${match.home_team.avatarKey}.200x200.jpg`"
+          class="c-match-result__team-avatar"
+        />
+        <div class="c-match-result__team-name">{{ match.home_team.name }}</div>
+        <div class="c-match-result__score">{{ match.home_team_score }}</div>
+      </template>
     </div>
     <div class="c-match-result__score-separator">-</div>
     <div
       class="c-match-result__team c-match-result__team--away"
       :class="{ 'c-match-result__team--winner': hasAwayTeamWon }"
     >
-      <img
-        :src="`https://cdn.leverade.com/thumbnails/${match.away_team.avatarKey}.200x200.jpg`"
-        class="c-match-result__team-avatar"
-      />
-      <div class="c-match-result__team-name">{{ match.away_team.name }}</div>
-      <div class="c-match-result__score">{{ match.away_team_score }}</div>
+      <template v-if="match.away_team">
+        <img
+          :src="`https://cdn.leverade.com/thumbnails/${match.away_team.avatarKey}.200x200.jpg`"
+          class="c-match-result__team-avatar"
+        />
+        <div class="c-match-result__team-name">{{ match.away_team.name }}</div>
+        <div class="c-match-result__score">{{ match.away_team_score }}</div>
+      </template>
     </div>
   </nuxt-link>
 </template>
