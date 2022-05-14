@@ -84,7 +84,7 @@ export default Vue.extend({
       secondaryNavigation: [
         {
           key: 'news',
-          href: 'news',
+          to: 'news',
         },
         {
           key: 'photos',
