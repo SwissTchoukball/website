@@ -288,6 +288,7 @@ export default {
           away_team_score,
           round_id: match.relationships.round.data.id,
           facility_id: match.relationships.facility.data ? match.relationships.facility.data.id : null,
+          canceled: match.attributes.canceled,
         };
       }),
     });

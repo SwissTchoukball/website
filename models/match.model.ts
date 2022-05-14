@@ -19,6 +19,7 @@ export default class Match extends Model {
   away_team_score!: number;
   facility_id!: string;
   facility!: Facility;
+  canceled!: boolean;
 
   static fields() {
     return {
@@ -34,6 +35,7 @@ export default class Match extends Model {
       away_team_score: this.number(null).nullable(),
       facility_id: this.string(null).nullable(),
       facility: this.belongsTo(Facility, 'facility_id'),
+      canceled: this.boolean(false),
     };
   }
 

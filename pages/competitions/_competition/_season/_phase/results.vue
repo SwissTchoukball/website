@@ -6,7 +6,7 @@
           <h3 class="t-headline-2 c-results__round-name">{{ round.name }}</h3>
           <ul class="u-unstyled-list">
             <template v-for="match of round.matches">
-              <li v-if="match.home_team && match.away_team" :key="match.id">
+              <li v-if="match.home_team && match.away_team && !match.canceled" :key="match.id">
                 <nuxt-link
                   class="c-results__match"
                   :to="
