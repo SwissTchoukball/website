@@ -13,7 +13,7 @@
       <header class="c-event__header">
         <h3 class="t-headline-2 c-event__name" :class="{ 'c-event__name--cancelled': isCancelled }">
           <nuxt-link :to="titleTo" class="c-event__name-link">{{ event.name }}</nuxt-link>
-          <div v-if="isCancelled" class="c-event__cancelled-label">{{ $t('events.cancelled') }}</div>
+          <st-cancelled-label v-if="isCancelled" class="c-event__cancelled-label" />
         </h3>
         <div v-if="eventType.name" class="c-event__type">{{ eventType.name }}</div>
       </header>
@@ -217,14 +217,6 @@ export default Vue.extend({
 }
 
 .c-event__cancelled-label {
-  display: inline-block;
-  font-size: 0.6em;
-  color: var(--st-color-event-cancelled-label);
-  text-transform: uppercase;
-  font-weight: bold;
-  border: 0.2rem solid var(--st-color-event-cancelled-label);
-  border-radius: 0.5em;
-  padding: calc(var(--st-length-spacing-xxs) / 2) var(--st-length-spacing-xxs);
   margin-left: var(--st-length-spacing-xxs);
   transform: translateY(-0.2rem);
 }
