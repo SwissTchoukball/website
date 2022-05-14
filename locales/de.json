@@ -105,7 +105,8 @@
       }
     },
     "results": {
-      "noResults": "Die Resultate können noch nicht angezeigt werden."
+      "noResults": "Die Resultate können noch nicht angezeigt werden.",
+      "autoQualified": "{teamName} ist automatisch qualifiziert."
     },
     "planning": {
       "noMatches": "Es sind noch keine Spiele vorgesehen oder es hat keine gegeben."
