@@ -6,40 +6,8 @@
           <h3 class="t-headline-2 c-results__round-name">{{ round.name }}</h3>
           <ul class="u-unstyled-list">
             <template v-for="match of round.matches">
-              <li v-if="match.home_team && match.away_team && !match.canceled" :key="match.id">
-                <nuxt-link
-                  class="c-results__match"
-                  :to="
-                    localePath({
-                      name: 'competitions-competition-season-match-matchId',
-                      params: { matchId: match.id },
-                    })
-                  "
-                >
-                  <div
-                    class="c-results__match-team c-results__match-team--home"
-                    :class="{ 'c-results__match-team--winner': hasHomeTeamWon(match) }"
-                  >
-                    <img
-                      :src="`https://cdn.leverade.com/thumbnails/${match.home_team.avatarKey}.200x200.jpg`"
-                      class="c-results__match-team-avatar"
-                    />
-                    <div class="c-results__match-team-name">{{ match.home_team.name }}</div>
-                    <div class="c-results__match-score">{{ match.home_team_score }}</div>
-                  </div>
-                  <div class="c-results__match-score-separator">-</div>
-                  <div
-                    class="c-results__match-team c-results__match-team--away"
-                    :class="{ 'c-results__match-team--winner': hasAwayTeamWon(match) }"
-                  >
-                    <img
-                      :src="`https://cdn.leverade.com/thumbnails/${match.away_team.avatarKey}.200x200.jpg`"
-                      class="c-results__match-team-avatar"
-                    />
-                    <div class="c-results__match-team-name">{{ match.away_team.name }}</div>
-                    <div class="c-results__match-score">{{ match.away_team_score }}</div>
-                  </div>
-                </nuxt-link>
+              <li v-if="match.home_team && match.away_team && !match.canceled" :key="match.id" class="c-results__match">
+                <st-match-result :match="match" />
               </li>
             </template>
           </ul>
@@ -54,7 +22,7 @@
 import Vue, { PropType } from 'vue';
 import Phase from '~/models/phase.model';
 import Round from '~/models/round.model';
-import Match from '~/models/match.model';
+import stMatchResult from '~/components/competitions/st-match-result.vue';
 
 export default Vue.extend({
   nuxtI18n: {
@@ -62,6 +30,9 @@ export default Vue.extend({
       fr: '/competitions/:competition/:season/:phase/resultats',
       de: '/wettbewerbe/:competition/:season/:phase/ergebnisse',
     },
+  },
+  components: {
+    stMatchResult,
   },
   props: {
     phase: {
@@ -92,14 +63,6 @@ export default Vue.extend({
       return this.phase.rounds.filter((round) => round.isPast).sort((roundA, roundB) => roundB.order - roundA.order);
     },
   },
-  methods: {
-    hasHomeTeamWon(match: Match) {
-      return match.home_team_score > match.away_team_score;
-    },
-    hasAwayTeamWon(match: Match) {
-      return match.home_team_score < match.away_team_score;
-    },
-  },
 });
 </script>
 
@@ -117,102 +80,16 @@ export default Vue.extend({
 }
 
 .c-results__match {
-  display: block;
-  width: 100%;
-  padding: var(--st-length-spacing-xs) 0;
   border-bottom: 1px solid var(--st-color-match-results-separator);
-  color: inherit;
-  text-decoration: none;
 }
 
-li:last-of-type .c-results__match {
+.c-results__match:last-of-type {
   border-bottom: none;
-}
-
-.c-results__match-team {
-  display: flex;
-  align-items: center;
-}
-
-.c-results__match-team--winner {
-  font-weight: bold;
-}
-
-.c-results__match-team-name {
-  flex-grow: 2;
-  text-align: left;
-}
-
-.c-results__match-score {
-  padding: var(--st-length-spacing-xs) 0;
-  color: var(--st-color-match-score);
-  font-weight: bold;
-  width: 2em;
-}
-
-.c-results__match-score-separator {
-  display: none;
-  padding: var(--st-length-spacing-xs) var(--st-length-spacing-xxs);
-  color: var(--st-color-match-score);
-  font-weight: bold;
-}
-
-.c-results__match-team-avatar {
-  width: 40px;
-  height: 40px;
-  margin-right: var(--st-length-spacing-xs);
-  margin-left: var(--st-length-spacing-xs);
-  margin-bottom: var(--st-length-spacing-xxs);
 }
 
 @media (--sm-and-up) {
   .c-results__match {
-    display: flex;
     border-bottom: none;
-    justify-content: center;
-    padding: var(--st-length-spacing-xxs) 0;
-  }
-
-  .c-results__match-team {
-    flex: 1 1 0;
-  }
-
-  .c-results__match-team--away {
-    flex-direction: row-reverse;
-    justify-content: flex-start;
-  }
-
-  .c-results__match-team--home {
-    justify-content: flex-end;
-  }
-
-  .c-results__match-team-avatar {
-    margin-bottom: 0;
-    order: 2;
-  }
-
-  .c-results__match-team-name {
-    order: 1;
-  }
-
-  .c-results__match-team--home .c-results__match-team-name {
-    text-align: right;
-  }
-
-  .c-results__match-score {
-    order: 3;
-  }
-
-  .c-results__match-team--home .c-results__match-score {
-    text-align: right;
-  }
-
-  .c-results__match-team--away .c-results__match-score {
-    text-align: left;
-  }
-
-  .c-results__match-score-separator {
-    display: block;
   }
 }
 </style>
