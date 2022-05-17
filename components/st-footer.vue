@@ -17,10 +17,9 @@
         <a href="https://youtube.com/tchoukballch" class="c-footer__social-icon c-footer__social-icon--youtube">
           <fa-icon :icon="['fab', 'youtube']" />
         </a>
-        <!-- TODO: Set up RSS feed -->
-        <!-- <a href="#" class="c-footer__social-icon c-footer__social-icon--rss">
+        <a :href="rssFeedUrl" class="c-footer__social-icon c-footer__social-icon--rss">
           <fa-icon icon="square-rss" />
-        </a> -->
+        </a>
       </div>
       <div class="c-footer__tchouksuisse">#tchouksuisse</div>
     </section>
@@ -146,6 +145,11 @@ export default Vue.extend({
         },
       ],
     };
+  },
+  computed: {
+    rssFeedUrl() {
+      return `https://feeds.tchoukball.ch/news-${this.$i18n.locale}.xml`;
+    },
   },
 });
 </script>

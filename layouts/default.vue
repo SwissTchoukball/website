@@ -106,6 +106,20 @@ export default Vue.extend({
         { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/favicon-16x16.png' },
         { rel: 'manifest', href: '/site.webmanifest' },
         { rel: 'mask-icon', href: '/safari-pinned-tab.svg', color: '#ff0000' },
+        {
+          rel: 'alternate',
+          type: 'application/rss+xml',
+          hreflang: 'fr',
+          href: 'https://feeds.tchoukball.ch/news-fr.xml',
+          title: 'News Swiss Tchoukball en français',
+        },
+        {
+          rel: 'alternate',
+          type: 'application/rss+xml',
+          hreflang: 'de',
+          href: 'https://feeds.tchoukball.ch/news-de.xml',
+          title: 'Swiss Tchoukball News auf Deutsch',
+        },
         ...i18nHead.link,
       ],
     };
