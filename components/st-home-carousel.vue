@@ -48,7 +48,7 @@ export default Vue.extend({
   data() {
     return {
       settings: {
-        autoplay: true,
+        autoplay: false,
         autoplaySpeed: 5000,
         slidesToShow: 1,
         dots: true,
@@ -88,6 +88,7 @@ export default Vue.extend({
   width: 100%;
   object-fit: cover;
   background-image: linear-gradient(gray 100%, transparent 0);
+  aspect-ratio: 3 / 2;
 }
 
 .st-home-carousel__item {
