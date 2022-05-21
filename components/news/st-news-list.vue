@@ -27,6 +27,9 @@
       <h3 class="c-news-list__title t-headline-2">
         <nuxt-link :to="getNewsLink(newsEntry)"> {{ newsEntry.title }} </nuxt-link>
       </h3>
+      <time :datetime="getNewsCreationDateISO(newsEntry)" class="c-news-list__date">
+        {{ getNewsCreationDate(newsEntry) }}
+      </time>
     </li>
     <li v-for="index in amountSpacerProducts" :key="`spacer-${index}`"></li>
   </ul>
@@ -67,6 +70,12 @@ export default Vue.extend({
         newsLink += `-${newsEntry.slug}`;
       }
       return this.localePath(newsLink);
+    },
+    getNewsCreationDate(newsEntry: NewsEntry): string {
+      return this.$formatDate(new Date(newsEntry.date_created), 'PPP');
+    },
+    getNewsCreationDateISO(newsEntry: NewsEntry): string {
+      return this.$formatDate(new Date(newsEntry.date_created), 'yyyy-MM-dd');
     },
     mainImageFallbackSrc(assetId: string): string {
       return getAssetURL(this.$config.cmsURL, assetId, {
@@ -136,6 +145,13 @@ export default Vue.extend({
 
 .c-news-list__title a {
   color: var(--st-color-text);
+}
+
+.c-news-list__date {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--st-color-news-date-foreground);
+  padding-top: var(--st-length-spacing-xxs);
 }
 
 @media (--sm-and-up) {
