@@ -21,7 +21,7 @@ export default class Match extends Model {
   away_team!: Team;
   away_team_score!: number;
   facility_id!: string;
-  facility!: Facility;
+  facility!: Facility | null;
   finished!: boolean;
   canceled!: boolean;
 

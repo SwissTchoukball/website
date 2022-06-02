@@ -7,22 +7,7 @@
       <ul class="u-unstyled-list c-upcoming-matches__list">
         <template v-for="match of upcomingMatches">
           <li v-if="match.home_team && match.away_team" :key="match.id" class="c-upcoming-matches__match">
-            <!-- <pre>{{ match }}</pre> -->
-            <st-event-small
-              :start-date="match.parsedDate()"
-              :name="`${match.home_team.name} - ${match.away_team.name}`"
-              :details="`${match.facility.name}, ${match.facility.city}`"
-              :to="
-                localePath({
-                  name: 'competitions-competition-season-match-matchId',
-                  params: {
-                    competition: match.round.phase.competition_edition.competition.slug,
-                    season: match.round.phase.competition_edition.season.slug,
-                    matchId: match.id,
-                  },
-                })
-              "
-            />
+            <st-match-event-small :match="match" />
           </li>
         </template>
       </ul>
@@ -30,21 +15,12 @@
         v-for="phase of relatedPhasesByEdition"
         :key="phase.id"
         with-arrow
-        :to="
-          localePath({
-            name: 'competitions-competition-season-phase-planning',
-            params: {
-              competition: phase.competition_edition.competition.slug,
-              season: phase.competition_edition.season.slug,
-              phase: phase.id,
-            },
-          })
-        "
+        :to="getPathToPhase(phase)"
         class="c-upcoming-matches__see-more-link"
       >
         {{
           $t('competitions.upcomingMatchesOfCompetition', {
-            competitionName: phase.competition_edition.competition.name,
+            competitionName: getPhaseCompetitionName(phase),
           })
         }}
       </st-link-action>
@@ -58,11 +34,11 @@
 <script lang="ts">
 import Vue from 'vue';
 import Match from '~/models/match.model';
-import stEventSmall from '~/components/events/st-event-small.vue';
+import stMatchEventSmall from '~/components/competitions/st-match-event-small.vue';
 import Phase from '~/models/phase.model';
 
 export default Vue.extend({
-  components: { stEventSmall },
+  components: { stMatchEventSmall },
   async fetch() {
     if (!this.$store.state.upcomingMatchesLoaded) {
       await this.$store.dispatch('loadUpcomingMatches');
@@ -95,6 +71,21 @@ export default Vue.extend({
       }, [] as Phase[]);
 
       return phases;
+    },
+  },
+  methods: {
+    getPathToPhase(phase: Phase): string {
+      return this.localePath({
+        name: 'competitions-competition-season-phase-planning',
+        params: {
+          competition: phase.competition_edition?.competition?.slug,
+          season: phase.competition_edition?.season?.slug,
+          phase: phase.id,
+        },
+      });
+    },
+    getPhaseCompetitionName(phase: Phase): string {
+      return phase.competition_edition?.competition?.name || '';
     },
   },
 });

@@ -51,11 +51,14 @@
         {{ match.facility.city }} (<span class="c-match__venue-map-action">{{ $t('venue.map') }}</span
         >)
       </button>
+      <div v-else class="c-match__venue c-match__venue--undefined">
+        <fa-icon icon="location-dot" class="c-match__icon" /> {{ $t('venue.undefined') }}
+      </div>
     </div>
     <div v-if="venueDetailsVisible" id="venue-details" class="c-match__venue-details">
       <div class="c-match__address">
         <fa-icon icon="location-dot" class="c-match__icon" />
-        <div>
+        <div v-if="match.facility">
           <strong>{{ match.facility.name }}</strong> <br />
           {{ match.facility.address }}<br />
           {{ match.facility.postal_code }} {{ match.facility.city }}<br />
@@ -63,7 +66,7 @@
         </div>
       </div>
       <client-only>
-        <iframe :src="swisstopoMapUrl" frameborder="0" class="c-match__map"></iframe>
+        <iframe v-if="swisstopoMapUrl" :src="swisstopoMapUrl" frameborder="0" class="c-match__map"></iframe>
       </client-only>
     </div>
   </div>
@@ -146,11 +149,17 @@ export default Vue.extend({
       }
       return this.localePath({ name: pathName, params: { phase: this.match.round.phase.id } });
     },
-    mapsUrl(): string {
+    mapsUrl(): string | null {
+      if (!this.match.facility) {
+        return null;
+      }
       // This link will fallback to Google Maps if Apple Maps is not available
       return `//maps.apple.com/?q=${this.match.facility.address},${this.match.facility.postal_code}+${this.match.facility.city}`;
     },
-    swisstopoMapUrl(): string {
+    swisstopoMapUrl(): string | null {
+      if (!this.match.facility) {
+        return null;
+      }
       const swisssearch = `${this.match.facility.address}, ${this.match.facility.postal_code} ${this.match.facility.city} limit: 1`;
       const bgLayer = 'ch.swisstopo.pixelkarte-farbe';
       return `//map.geo.admin.ch/embed.html?swisssearch=${swisssearch}&lang=${this.$i18n.locale}&bgLayer=${bgLayer}&showTooltip=true`;
@@ -259,6 +268,10 @@ export default Vue.extend({
 .c-match__venue {
   font-size: inherit;
   cursor: pointer;
+}
+
+.c-match__venue--undefined {
+  cursor: default;
 }
 
 .c-match__venue-map-action {

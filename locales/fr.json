@@ -184,7 +184,8 @@
   },
   "venue": {
     "map": "carte",
-    "openInMaps": "Voir dans Maps"
+    "openInMaps": "Voir dans Maps",
+    "undefined": "Lieu indéfini"
   },
   "resources": {
     "title": "Ressources",
