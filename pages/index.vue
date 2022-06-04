@@ -18,7 +18,7 @@
             :end-date="event.date_end"
             :is-full-day="event.isFullDay"
             :name="event.name"
-            :details="event.venue.name + (event.venue.city ? `, ${event.venue.city}` : '')"
+            :details="event.venue ? event.venue.name + (event.venue.city ? `, ${event.venue.city}` : '') : ''"
             :to="
               localePath({
                 name: 'calendar',
@@ -162,6 +162,8 @@ export default Vue.extend({
     });
 
     this.events = eventsResult.data;
+
+    console.log(this.events);
 
     // Latest Flickr photos
     // Doc: https://www.flickr.com/services/api/flickr.photosets.getList.html
