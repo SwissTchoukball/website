@@ -20,7 +20,7 @@
     "*.{css,vue}": "stylelint"
   },
   "dependencies": {
-    "@directus/sdk": "^9.8.0",
+    "@directus/sdk": "^9.12.2",
     "@fortawesome/free-brands-svg-icons": "^6.1.1",
     "@fortawesome/free-solid-svg-icons": "^6.1.1",
     "@hcaptcha/vue-hcaptcha": "^0.3.2",
