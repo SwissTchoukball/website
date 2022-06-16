@@ -14,9 +14,11 @@
     >
       <template v-if="match.home_team">
         <img
+          v-if="match.home_team.avatarKey"
           :src="`https://cdn.leverade.com/thumbnails/${match.home_team.avatarKey}.200x200.jpg`"
           class="c-match-result__team-avatar"
         />
+        <div v-else class="c-match-result__team-avatar c-match-result__team-avatar--placeholder"></div>
         <div class="c-match-result__team-name">{{ match.home_team.name }}</div>
         <div class="c-match-result__score">{{ match.home_team_score }}</div>
       </template>
@@ -28,9 +30,11 @@
     >
       <template v-if="match.away_team">
         <img
+          v-if="match.away_team.avatarKey"
           :src="`https://cdn.leverade.com/thumbnails/${match.away_team.avatarKey}.200x200.jpg`"
           class="c-match-result__team-avatar"
         />
+        <div v-else class="c-match-result__team-avatar c-match-result__team-avatar--placeholder"></div>
         <div class="c-match-result__team-name">{{ match.away_team.name }}</div>
         <div class="c-match-result__score">{{ match.away_team_score }}</div>
       </template>

@@ -13,9 +13,11 @@
               <div class="c-planning__match-team c-planning__match-team--home">
                 <template v-if="match.home_team">
                   <img
+                    v-if="match.home_team.avatarKey"
                     :src="`https://cdn.leverade.com/thumbnails/${match.home_team.avatarKey}.200x200.jpg`"
                     class="c-planning__match-team-avatar"
                   />
+                  <div v-else class="c-planning__match-team-avatar c-planning__match-team-avatar--placeholder"></div>
                   {{ match.home_team.name }}
                 </template>
               </div>
@@ -25,9 +27,11 @@
               <div class="c-planning__match-team c-planning__match-team--away">
                 <template v-if="match.away_team">
                   <img
+                    v-if="match.away_team.avatarKey"
                     :src="`https://cdn.leverade.com/thumbnails/${match.away_team.avatarKey}.200x200.jpg`"
                     class="c-planning__match-team-avatar"
                   />
+                  <div v-else class="c-planning__match-team-avatar c-planning__match-team-avatar--placeholder"></div>
                   {{ match.away_team.name }}
                 </template>
               </div>

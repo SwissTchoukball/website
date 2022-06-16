@@ -7,13 +7,13 @@ export default class Team extends Model {
 
   id!: string;
   name!: string;
-  avatarKey!: string;
+  avatarKey?: string;
 
   static fields() {
     return {
       id: this.string(null),
       name: this.string(null),
-      avatarKey: this.string(null),
+      avatarKey: this.string(null).nullable(),
       competition_edition_id: this.string(null),
       competition_edition: this.belongsTo(CompetitionEdition, 'competition_edition_id'),
       home_matches: this.hasMany(Match, 'home_team_id'),

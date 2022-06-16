@@ -18,9 +18,11 @@
           <td class="c-standings__table-cell">
             <div class="c-standings__team">
               <img
+                v-if="standing.team.avatarKey"
                 :src="`https://cdn.leverade.com/thumbnails/${standing.team.avatarKey}.200x200.jpg`"
                 class="c-standings__team-avatar"
               />
+              <div v-else class="c-standings__team-avatar c-standings__team-avatar--placeholder"></div>
               {{ standing.team.name }}
             </div>
           </td>

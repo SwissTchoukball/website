@@ -27,7 +27,7 @@
     </h2>
     <div class="c-match__avatars-and-score">
       <img
-        v-if="match.home_team"
+        v-if="match.home_team && match.home_team.avatarKey"
         :src="`https://cdn.leverade.com/thumbnails/${match.home_team.avatarKey}.500x500.jpg`"
         class="c-match__team-avatar"
       />
@@ -36,7 +36,7 @@
       <div v-else class="c-match__no-score"></div>
 
       <img
-        v-if="match.away_team"
+        v-if="match.away_team && match.away_team.avatarKey"
         :src="`https://cdn.leverade.com/thumbnails/${match.away_team.avatarKey}.500x500.jpg`"
         class="c-match__team-avatar"
       />

@@ -345,7 +345,7 @@ export default {
   async insertTeams(_context, teams: LeveradeTeam[]) {
     await Team.insert({
       data: teams.map((team) => {
-        const avatarKeyMatchArray = team.meta.avatar.large.match(/\/(\w+)\.[0-9]/);
+        const avatarKeyMatchArray = team.meta?.avatar?.large?.match(/\/(\w+)\.[0-9]/);
 
         return {
           id: team.id,
@@ -445,7 +445,7 @@ export default {
           season: competitionEdition.season,
           competition: competitionEdition.competition,
           teams: teams.map((team) => {
-            const avatarKeyMatchArray = team.meta.avatar.large.match(/\/(\w+)\.[0-9]/);
+            const avatarKeyMatchArray = team.meta?.avatar?.large?.match(/\/(\w+)\.[0-9]/);
 
             return {
               id: team.id,
