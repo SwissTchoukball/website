@@ -10,7 +10,7 @@
         </nuxt-link>
       </h2>
       <st-navigation
-        v-if="currentPhase"
+        v-if="showPhasesNavigation"
         :items="phasesNavigation"
         :name="$t('otherNavigation', { name: `${competitionEdition.name}, ${competitionEdition.season.name}` })"
         class="c-competition-edition__phase-navigation"
@@ -135,6 +135,14 @@ export default Vue.extend({
         throw new Error('Unrecognised phase');
       }
       return phase;
+    },
+    showPhasesNavigation(): boolean {
+      return (
+        !!this.currentPhase &&
+        !!this.competitionEdition &&
+        (this.phasesNavigation.length > 1 ||
+          (this.phasesNavigation.length === 1 && this.phasesNavigation[0].name !== this.competitionEdition.name))
+      );
     },
   },
   watch: {
