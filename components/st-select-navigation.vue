@@ -1,4 +1,9 @@
 <template>
+  <!--
+    NOTE: This component is not used any more.
+    It hasn't been removed in case it could be needed.
+    If it isn't used for a while, we could consider removing it.
+  -->
   <nav class="c-select-navigation">
     <h2 class="u-visually-hidden">{{ name }}</h2>
     <button

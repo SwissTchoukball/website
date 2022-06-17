@@ -62,6 +62,6 @@ export default Vue.extend({
 
 <style scoped>
 .c-competition-phase__navigation {
-  padding-top: var(--st-length-spacing-s);
+  margin-top: var(--st-length-spacing-s);
 }
 </style>

@@ -1,5 +1,8 @@
 <template>
-  <nav class="c-navigation" :class="{ 'c-navigation--narrow': narrow, 'c-navigation--small': small }">
+  <nav
+    class="c-navigation"
+    :class="{ 'c-navigation--narrow': narrow, 'c-navigation--small': small, 'c-navigation--inverted': inverted }"
+  >
     <h2 class="u-visually-hidden">{{ name }}</h2>
     <ul v-click-outside="closeAllMenuItems" class="u-unstyled-list c-navigation__list">
       <li
@@ -59,6 +62,10 @@ export default Vue.extend({
      * Alternative layout for sub-navigation.
      */
     small: Boolean,
+    /**
+     * Invert colours of navigation.
+     */
+    inverted: Boolean,
     items: {
       type: Array as PropType<MenuItem[]>,
       default: () => [],
@@ -110,7 +117,7 @@ export default Vue.extend({
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  margin-bottom: 5px;
+  gap: var(--st-length-spacing-xs);
 
   /* Translate to have the navigation aligned when not hovered */
   transform: translateX(-0.5rem);
@@ -123,12 +130,20 @@ export default Vue.extend({
 }
 
 .c-navigation--small .c-navigation__list {
+  column-gap: var(--st-length-spacing-s);
   transform: none;
+}
+
+.c-navigation--inverted .c-navigation__list {
+  background-color: black;
+  padding: var(--st-length-spacing-xxs) var(--st-length-main-content-side-padding);
+  margin-left: calc(-1 * var(--st-length-main-content-side-padding));
+  width: calc(100% + 2 * var(--st-length-main-content-side-padding));
+  gap: var(--st-length-spacing-xxs);
 }
 
 .c-navigation__item-group {
   position: relative;
-  margin-bottom: var(--st-length-spacing-xs); /* Notably useful when a navigation gets wrapped */
 }
 
 .c-navigation__item-name {
@@ -141,7 +156,6 @@ export default Vue.extend({
   border-radius: 5px;
   font-weight: 900;
   color: var(--st-color-wide-navigation-item);
-  margin-right: var(--st-length-spacing-xs);
   position: relative;
   transition: background-color 0.25s ease;
   touch-action: manipulation;
@@ -151,7 +165,11 @@ export default Vue.extend({
   text-transform: none;
   padding: 0;
   border-radius: 0;
-  margin-right: var(--st-length-spacing-s);
+}
+
+.c-navigation--inverted .c-navigation__item-name {
+  color: white;
+  padding: var(--st-length-spacing-xxs);
 }
 
 .c-navigation__item-group--open .c-navigation__item-name,
@@ -161,6 +179,10 @@ export default Vue.extend({
 
 .c-navigation--small .c-navigation__item-name:hover {
   background-color: transparent;
+}
+
+.c-navigation--inverted .c-navigation__item-name:hover {
+  color: red;
 }
 
 .c-navigation__item-name.nuxt-link-active::after {
@@ -173,8 +195,13 @@ export default Vue.extend({
   left: 0;
 }
 
-.c-navigation--narrow .c-navigation__item-name.nuxt-link-active::after {
-  content: none;
+.c-navigation--inverted .c-navigation__item-name.nuxt-link-active {
+  background-color: red;
+  border-radius: var(--st-length-spacing-xxs);
+}
+
+.c-navigation--inverted .c-navigation__item-name.nuxt-link-active:hover {
+  color: white;
 }
 
 .c-navigation--small .c-navigation__item-name:hover:not(.nuxt-link-active)::after {
@@ -185,6 +212,12 @@ export default Vue.extend({
   position: absolute;
   bottom: -4px;
   left: 0;
+}
+
+.c-navigation--narrow .c-navigation__item-name.nuxt-link-active::after,
+.c-navigation--inverted .c-navigation__item-name.nuxt-link-active::after,
+.c-navigation--inverted .c-navigation__item-name:hover:not(.nuxt-link-active)::after {
+  content: none;
 }
 
 .c-navigation__sub-items {
@@ -239,8 +272,8 @@ export default Vue.extend({
 }
 
 @media (--lg-and-up) {
-  .c-navigation__item-name {
-    margin-right: var(--st-length-spacing-s);
+  .c-navigation__list {
+    column-gap: var(--st-length-spacing-s);
   }
 }
 </style>

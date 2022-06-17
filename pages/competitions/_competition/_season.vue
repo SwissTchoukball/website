@@ -9,17 +9,14 @@
           {{ competitionEdition.name }}
         </nuxt-link>
       </h2>
-      <st-select-navigation
+      <st-navigation
         v-if="currentPhase"
+        :items="phasesNavigation"
         :name="$t('otherNavigation', { name: `${competitionEdition.name}, ${competitionEdition.season.name}` })"
-        :options="phasesNavigation"
         class="c-competition-edition__phase-navigation"
-      >
-        <div class="c-competition-edition__phase-navigation-toggle">
-          {{ currentPhase.name }}
-          <span class="c-competition-edition__phase-navigation-toggle-triangle">&#9660;</span>
-        </div>
-      </st-select-navigation>
+        small
+        inverted
+      />
       <nuxt-child :phase="currentPhase" />
     </template>
   </section>
@@ -163,25 +160,6 @@ export default Vue.extend({
 }
 
 .c-competition-edition__phase-navigation {
-  margin-top: var(--st-length-spacing-xs);
-}
-
-.c-competition-edition__phase-navigation-toggle {
-  margin-top: var(--st-length-spacing-xs);
-  padding: var(--st-length-spacing-xxs);
-  cursor: pointer;
-  border: 1px solid var(--st-color-phase-select-border);
-  border-radius: 5px;
-}
-
-.c-competition-edition__phase-navigation-toggle:hover {
-  background-color: var(--st-color-phase-select-background-hover);
-}
-
-.c-competition-edition__phase-navigation-toggle-triangle {
-  display: inline-block;
-  margin-left: var(--st-length-spacing-xxs);
-  font-size: 0.5em;
-  transform: translateY(-0.2em);
+  margin-top: var(--st-length-spacing-s);
 }
 </style>
