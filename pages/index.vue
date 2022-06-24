@@ -163,8 +163,6 @@ export default Vue.extend({
 
     this.events = eventsResult.data;
 
-    console.log(this.events);
-
     // Latest Flickr photos
     // Doc: https://www.flickr.com/services/api/flickr.photosets.getList.html
     const flickrResponse = await this.$flickr.photosets.getList({

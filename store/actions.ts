@@ -482,8 +482,10 @@ export default {
     const matchesResponse = await this.$leverade.getUpcomingMatches(currentSeason.leverade_id);
     const matches = matchesResponse.data.data;
 
-    if (!matchesResponse.data.included) {
-      throw new Error('Missing included data');
+    if (!matchesResponse.data?.included) {
+      console.warn('Do data for upcoming matches');
+      context.commit('setUpcomingMatchesAsLoaded');
+      return;
     }
 
     const teams: LeveradeTeam[] = [];
