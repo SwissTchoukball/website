@@ -48,7 +48,7 @@ export default Vue.extend({
   data() {
     return {
       settings: {
-        autoplay: false,
+        autoplay: true,
         autoplaySpeed: 5000,
         slidesToShow: 1,
         dots: true,
