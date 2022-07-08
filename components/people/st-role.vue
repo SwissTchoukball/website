@@ -1,5 +1,5 @@
 <template>
-  <div class="c-role">
+  <div v-if="role.holders && role.holders.length" class="c-role">
     <h3 v-if="!roleAsSubname" class="c-role__title t-headline-2">{{ role.nameForHolders }}</h3>
     <st-person
       v-for="holder in role.holders"
