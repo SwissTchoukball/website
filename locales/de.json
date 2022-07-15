@@ -77,6 +77,10 @@
     "showUpcomingEventsOnly": "Nur geplante Ereignisse im {month} anzeigen",
     "goToEvents": "Alle Ereignisse ansehen"
   },
+  "season": {
+    "name": "Saison | Saison | Saisonen",
+    "previousSeasonsExplanation": "Die Daten der vorangegangenen Saisonen werden in Kürze importiert."
+  },
   "competitions": {
     "title": "Wettbewerbe",
     "headTitle": {

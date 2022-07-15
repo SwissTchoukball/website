@@ -26,6 +26,7 @@ import Club from '~/models/club.model';
 import Person from '~/models/person.model';
 import Group from '~/models/group.model';
 import Faceoff from '~/models/faceoff.model';
+import { NationalCompetition, NationalCompetitionEdition } from '~/plugins/cms-service';
 
 export default {
   async nuxtServerInit({ dispatch }) {
@@ -381,6 +382,27 @@ export default {
         return edition;
       }),
     });
+  },
+
+  async loadCompetitionsOfSeason(_context, seasonSlug: string) {
+    let competitionEditions: NationalCompetitionEdition[] = [];
+    try {
+      competitionEditions = await this.$cmsService.getNationalCompetitionEditions({ seasonSlug });
+    } catch (error) {
+      console.error('Could not load the competitions for a season', error);
+    }
+
+    for (const competitionEdition of competitionEditions) {
+      await CompetitionEdition.insert({
+        data: {
+          leverade_id: competitionEdition.leverade_id,
+          directus_id: competitionEdition.directus_id,
+          name: (competitionEdition.competition as NationalCompetition).name,
+          season: competitionEdition.season,
+          competition: competitionEdition.competition,
+        },
+      });
+    }
   },
 
   async loadCompetitionEdition(

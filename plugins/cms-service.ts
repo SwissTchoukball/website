@@ -47,7 +47,7 @@ export interface CalendarEvent {
   type: number;
 }
 
-interface NationalCompetitionEdition {
+export interface NationalCompetitionEdition {
   directus_id: number;
   season: DirectusSeason;
   // eslint-disable-next-line no-use-before-define
@@ -55,7 +55,7 @@ interface NationalCompetitionEdition {
   leverade_id?: number;
 }
 
-interface NationalCompetition {
+export interface NationalCompetition {
   id: number;
   name: string;
   slug: string;

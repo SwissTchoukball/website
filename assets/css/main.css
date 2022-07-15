@@ -89,6 +89,24 @@ a:visited {
   width: 100%;
 }
 
+.l-link-list-item {
+  margin-top: var(--st-length-spacing-xs);
+  text-indent: 1rem;
+  font-weight: bold;
+}
+
+.l-link-list {
+  padding-left: 0.8rem;
+}
+
+.l-link-list-item a {
+  text-decoration: none;
+}
+
+.l-link-list-item::marker {
+  content: '\2726';
+}
+
 .l-blank-slate-message {
   margin: var(--st-length-spacing-m) 0;
   text-align: center;

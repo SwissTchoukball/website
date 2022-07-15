@@ -77,6 +77,10 @@
     "showUpcomingEventsOnly": "Afficher uniquement les événements à venir en {month}",
     "goToEvents": "Accéder à tous les événements"
   },
+  "season": {
+    "name": "Saison | Saison | Saisons",
+    "previousSeasonsExplanation": "Les données des précédentes saisons seront importées prochainement."
+  },
   "competitions": {
     "title": "Compétitions",
     "headTitle": {
