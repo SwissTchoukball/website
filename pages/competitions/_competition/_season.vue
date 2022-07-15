@@ -3,12 +3,8 @@
     <st-loader v-if="$fetchState.pending" :main="true" />
     <p v-else-if="$fetchState.error">{{ $t('error.otherError') }} : {{ $fetchState.error.message }}</p>
     <template v-else>
-      <p class="c-competition-edition__season">{{ competitionEdition.season.name }}</p>
-      <h2 class="t-headline-1 c-competition-edition__title">
-        <nuxt-link :to="lastPhasePath">
-          {{ competitionEdition.name }}
-        </nuxt-link>
-      </h2>
+      <st-breadcrumb :items="breadcrumb" class="c-competition-edition__breadcrumb" />
+      <h2 class="t-headline-1">{{ competitionEdition.name }}</h2>
       <st-navigation
         v-if="showPhasesNavigation"
         :items="phasesNavigation"
@@ -27,6 +23,7 @@ import Vue from 'vue';
 import { Store } from 'vuex';
 import { Item } from '@vuex-orm/core';
 import { MenuItem, RootState } from '~/store/state';
+import { BreadcrumbItem } from '~/components/st-breadcrumb.vue';
 import CompetitionEdition from '~/models/competition-edition.model';
 import Phase from '~/models/phase.model';
 
@@ -55,8 +52,6 @@ export default Vue.extend({
         seasonSlug: this.$route.params.season,
         competitionSlug: this.$route.params.competition,
       });
-      // TODO: Load all other editions as well (just the edition, not it relations),
-      // so that we can navigate through different editions
     }
 
     if (!this.competitionEdition) {
@@ -144,6 +139,27 @@ export default Vue.extend({
           (this.phasesNavigation.length === 1 && this.phasesNavigation[0].name !== this.competitionEdition.name))
       );
     },
+    breadcrumb(): BreadcrumbItem[] {
+      const breadcrumb = [
+        {
+          pageName: 'seasons',
+          displayName: this.$tc('season.name', 2),
+        },
+      ];
+
+      if (this.competitionEdition) {
+        breadcrumb.push(
+          ...[
+            {
+              displayName: this.competitionEdition.season.name,
+              pageName: 'seasons-season',
+            },
+          ]
+        );
+      }
+
+      return breadcrumb;
+    },
   },
   watch: {
     '$route.params.competition': '$fetch',
@@ -153,21 +169,11 @@ export default Vue.extend({
 </script>
 
 <style scoped>
-.c-competition-edition__season {
-  padding-top: var(--st-length-spacing-xs);
-  font-weight: 900;
-  font-size: 0.8em;
-}
-
-.c-competition-edition__title {
-  padding-top: var(--st-length-spacing-xs);
-}
-
-.c-competition-edition__title a {
-  color: inherit;
+.c-competition-edition__breadcrumb {
+  margin-top: var(--st-length-spacing-s);
 }
 
 .c-competition-edition__phase-navigation {
-  margin-top: var(--st-length-spacing-s);
+  margin-top: var(--st-length-spacing-xs);
 }
 </style>
