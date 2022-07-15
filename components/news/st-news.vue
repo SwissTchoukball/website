@@ -1,6 +1,7 @@
 <template>
   <article class="c-news-entry">
-    <st-domain-labels :domains="newsEntry.domains" />
+    <st-breadcrumb :items="breadcrumb" />
+    <st-domain-labels :domains="newsEntry.domains" class="c-news-entry__domain-labels" />
     <h2 class="c-news-entry__title t-headline-1">{{ newsEntry.title }}</h2>
     <img
       v-if="newsEntry.main_image"
@@ -20,6 +21,7 @@
 <script lang="ts">
 import Vue, { PropType } from 'vue';
 import { NewsEntry } from '~/components/news/st-news';
+import { BreadcrumbItem } from '~/components/st-breadcrumb.vue';
 import { getAssetURL, getAssetSrcSet } from '~/plugins/directus';
 
 export default Vue.extend({
@@ -32,6 +34,12 @@ export default Vue.extend({
   data() {
     return {
       imgTagSizes: '',
+      breadcrumb: [
+        {
+          pageName: 'news',
+          displayName: 'News',
+        },
+      ] as BreadcrumbItem[],
     };
   },
   computed: {
@@ -80,6 +88,10 @@ export default Vue.extend({
 
 <style scoped>
 .c-news-entry {
+  margin-top: var(--st-length-spacing-xs);
+}
+
+.c-news-entry__domain-labels {
   margin-top: var(--st-length-spacing-s);
 }
 
@@ -106,6 +118,12 @@ export default Vue.extend({
 
 .c-news-entry__dates::first-letter {
   text-transform: uppercase;
+}
+
+@media (--md-and-up) {
+  .c-news-entry {
+    margin-top: var(--st-length-spacing-s);
+  }
 }
 
 @media (--xl-and-up) {
