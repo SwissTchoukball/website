@@ -264,6 +264,14 @@ export interface DirectusClub {
   logo: string;
 }
 
+export interface DirectusTchoukup {
+  id: number;
+  number: string;
+  releaseDate: string;
+  cover: DirectusImage;
+  file: DirectusFile;
+}
+
 type CustomTypes = {
   /*
 	This type will be merged with Directus user type.
@@ -288,6 +296,7 @@ type CustomTypes = {
   groups: DirectusGroup;
   roles: DirectusRole;
   people: DirectusPerson;
+  tchoukup: DirectusTchoukup;
 };
 
 declare module 'vue/types/vue' {

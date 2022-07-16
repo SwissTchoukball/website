@@ -3,6 +3,7 @@ import { set } from 'date-fns';
 import { Filter, PartialItem } from '@directus/sdk';
 import { Await } from '~/types/types.utils';
 import {
+  DirectusFile,
   DirectusNationalCompetitionEdition,
   DirectusResource,
   DirectusRole,
@@ -10,6 +11,7 @@ import {
   getTranslatedFields,
 } from '~/plugins/directus';
 import { NewsEntry } from '~/components/news/st-news';
+import { Tchoukup } from '~/components/tchoukup/st-tchoukup';
 import { NationalTeam, NationalTeamResult } from '~/components/national-teams/st-national-teams.prop';
 import Domain from '~/models/domain.model';
 import Role from '~/models/role.model';
@@ -91,6 +93,7 @@ export interface CMSService {
     seasonSlug?: string;
     leveradeIds?: string[];
   }) => Promise<NationalCompetitionEdition[]>;
+  getTchoukups: (options: { limit: number; page: number }) => Promise<{ data: Tchoukup[]; meta: { total: number } }>;
   searchResources: (searchTerm: string, domainId?: number, typeId?: number) => Promise<Resource[]>;
 }
 
@@ -975,6 +978,72 @@ const cmsService: Plugin = (context, inject) => {
       ];
     }, [] as NationalCompetitionEdition[]);
   };
+
+  const getTchoukups: CMSService['getTchoukups'] = async ({ limit, page }) => {
+    const tchoukupResponse = await context.$directus.items('tchoukup').readByQuery({
+      meta: 'filter_count',
+      limit,
+      page,
+      fields: [
+        'id',
+        'number',
+        'releaseDate',
+        'cover.id',
+        'cover.description',
+        'file',
+        'file.id',
+        'file.type',
+        'file.filesize',
+        'file.filename_download',
+      ],
+      sort: ['-releaseDate'],
+    });
+
+    let totalIssues = 0;
+    if (tchoukupResponse?.meta?.filter_count) {
+      totalIssues = tchoukupResponse.meta.filter_count;
+    }
+
+    let tchoukups = [];
+    if (!tchoukupResponse?.data) {
+      throw new Error('Error when retrieving Tchoukups');
+    }
+
+    tchoukups = tchoukupResponse.data.reduce((news, directusTchoukup) => {
+      if (!directusTchoukup) {
+        return news;
+      }
+
+      if (!directusTchoukup.id || !directusTchoukup.number || !directusTchoukup.file) {
+        console.warn(`Tchoukup entry with ID ${directusTchoukup.id} is missing requested fields`);
+        return news;
+      }
+
+      const tchoukupIssue: Tchoukup = {
+        id: directusTchoukup.id,
+        number: directusTchoukup.number,
+        releaseDate: directusTchoukup.releaseDate,
+        file: directusTchoukup.file as DirectusFile,
+      };
+
+      if (directusTchoukup.cover && directusTchoukup.cover.id) {
+        tchoukupIssue.cover = {
+          id: directusTchoukup.cover.id,
+          description: directusTchoukup.cover.description || '',
+        };
+      }
+
+      return [...news, tchoukupIssue];
+    }, [] as Tchoukup[]);
+
+    return {
+      data: tchoukups,
+      meta: {
+        total: totalIssues,
+      },
+    };
+  };
+
   const searchResources: CMSService['searchResources'] = async (searchTerm, domainId, typeId) => {
     // We retrieve all the languages and show resources in fallback locale if not available in current locale
     const currentLocale = context.i18n.locale;
@@ -1071,6 +1140,7 @@ const cmsService: Plugin = (context, inject) => {
     getSeasons,
     getNationalCompetition,
     getNationalCompetitionEditions,
+    getTchoukups,
     searchResources,
   });
 };

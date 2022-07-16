@@ -221,6 +221,11 @@
     "link": "Lien",
     "missing": "Fichier manquant"
   },
+  "tchoukup": {
+    "title": "Tchoukup",
+    "description": "Le journal officiel de Swiss Tchoukball",
+    "no": "N°"
+  },
   "contactForm": {
     "headTitle": "Contact",
     "title": "Contacter Swiss Tchoukball",
