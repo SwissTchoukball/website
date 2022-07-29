@@ -89,15 +89,21 @@ export default Vue.extend({
       // We use this as any because key_role_ids comes from asyncData and it is not recognised as being part of the Vue component.
       // This is going to be fixed in Nuxt 2.16.
       // See https://github.com/nuxt/nuxt.js/pull/9239 and https://github.com/nuxt/nuxt.js/pull/9660
-      return (this as any).key_role_ids.map((roleId: number) =>
-        this.Role.query().with('holders').whereId(roleId).first()
-      );
+      const key_role_ids = (this as any).key_role_ids;
+      if (!key_role_ids) {
+        return [];
+      }
+      return key_role_ids.map((roleId: number) => this.Role.query().with('holders').whereId(roleId).first());
     },
     resources(): Item<Resource>[] {
       // We use this as any because resource_ids comes from asyncData and it is not recognised as being part of the Vue component.
       // This is going to be fixed in Nuxt 2.16.
       // See https://github.com/nuxt/nuxt.js/pull/9239 and https://github.com/nuxt/nuxt.js/pull/9660
-      return (this as any).resource_ids.map((resourceId: number) => this.Resource.query().whereId(resourceId).first());
+      const resource_ids = (this as any).resource_ids;
+      if (!resource_ids) {
+        return [];
+      }
+      return resource_ids.map((resourceId: number) => this.Resource.query().whereId(resourceId).first());
     },
   },
 });
