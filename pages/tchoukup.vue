@@ -1,29 +1,17 @@
 <template>
-  <!-- FIXME: Make it so custom simple pages work properly with SSR in production  -->
-  <!-- The commented code below is how it should be. -->
-  <!-- <st-simple-page :title="title" :body="body" :key-roles="keyRoles" :resources="resources">
+  <st-simple-page :title="title" :body="body" :key-roles="keyRoles" :resources="resources">
     <template #after-body>
-    <st-tchoukup-list v-else :issues="tchoukupIssues" class="c-tchoukup__list" />
-    <st-pagination
-      v-if="totalPages"
-      :current-page="currentPage"
-      :total-pages="totalPages"
-      class="c-tchoukup__pagination"
-    />
-  </template>
-  </st-simple-page> -->
-  <section class="l-main-content-section">
-    <h2 class="t-headline-1">{{ $t('tchoukup.title') }}</h2>
-    <st-loader v-if="$fetchState.pending" :main="true" />
-    <p v-else-if="$fetchState.error">{{ $t('error.otherError') }} : {{ $fetchState.error.message }}</p>
-    <st-tchoukup-list v-else :issues="tchoukupIssues" class="c-tchoukup__list" />
-    <st-pagination
-      v-if="totalPages"
-      :current-page="currentPage"
-      :total-pages="totalPages"
-      class="c-tchoukup__pagination"
-    />
-  </section>
+      <st-loader v-if="$fetchState.pending" :main="true" />
+      <p v-else-if="$fetchState.error">{{ $t('error.otherError') }} : {{ $fetchState.error.message }}</p>
+      <st-tchoukup-list v-else :issues="tchoukupIssues" class="c-tchoukup__list" />
+      <st-pagination
+        v-if="totalPages"
+        :current-page="currentPage"
+        :total-pages="totalPages"
+        class="c-tchoukup__pagination"
+      />
+    </template>
+  </st-simple-page>
 </template>
 
 <script lang="ts">
