@@ -505,7 +505,7 @@ export default {
     const matches = matchesResponse.data.data;
 
     if (!matchesResponse.data?.included) {
-      console.warn('Do data for upcoming matches');
+      // No data for upcoming matches
       context.commit('setUpcomingMatchesAsLoaded');
       return;
     }
