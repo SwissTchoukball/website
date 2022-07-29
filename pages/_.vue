@@ -63,17 +63,18 @@ export default Vue.extend({
     }
   },
   head(): MetaInfo {
+    // We use this as any because body comes from asyncData and it is not recognised as being part of the Vue component.
+    // This is going to be fixed in Nuxt 2.16.
+    // See https://github.com/nuxt/nuxt.js/pull/9239 and https://github.com/nuxt/nuxt.js/pull/9660
+    const body = (this as any).body || '';
     return {
-      // We use this as any because key_role_ids comes from asyncData and it is not recognised as being part of the Vue component.
-      // This is going to be fixed in Nuxt 2.16.
-      // See https://github.com/nuxt/nuxt.js/pull/9239 and https://github.com/nuxt/nuxt.js/pull/9660
       title: (this as any).title,
       meta: [
         { property: 'og:title', content: (this as any).title },
         {
           hid: 'og:description',
           property: 'og:description',
-          content: decode((this as any).body.replace(/(<([^>]+)>)/gi, '').substr(0, 250)) + '…',
+          content: decode(body.replace(/(<([^>]+)>)/gi, '').substr(0, 250)) + '…',
         },
       ],
     };
