@@ -41,7 +41,7 @@
 
     <section class="l-main-content-section">
       <h2 class="t-headline-1">Tchoukball</h2>
-      <p class="l-paragraph l-paragraph--large" v-html="$t('tchoukball.description')"></p>
+      <p class="l-paragraph l-paragraph--large" v-html="tchoukballDescription"></p>
       <nav>
         <ul class="c-index__tchoukball-nav u-unstyled-list">
           <li v-for="item of tchoukballNavigation" :key="item.name" class="c-index__tchoukball-nav-item">
@@ -88,6 +88,7 @@ export default Vue.extend({
       carouselItems: [] as CarouselItem[],
       amountUpcomingEvents: 9,
       events: [] as CalendarEvent[],
+      tchoukballDescription: '',
       latestAlbums: [] as FlickrPhotoset[],
       // TODO: low prio: Move the navigation data to the CMS.
       tchoukballNavigation: [
@@ -162,6 +163,8 @@ export default Vue.extend({
     });
 
     this.events = eventsResult.data;
+
+    this.tchoukballDescription = (await this.$cmsService.getText(1))?.body;
 
     // Latest Flickr photos
     // Doc: https://www.flickr.com/services/api/flickr.photosets.getList.html
