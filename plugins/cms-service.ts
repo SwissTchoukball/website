@@ -25,6 +25,12 @@ export interface SimplePage {
   key_roles: number[];
   resources: number[];
 }
+
+export interface TextEntry {
+  id: number;
+  body: string;
+}
+
 export interface Venue {
   name: string;
   city?: string;
@@ -66,6 +72,7 @@ export interface NationalCompetition {
 
 export interface CMSService {
   getPage: (options: { pagePath: string }) => Promise<PartialItem<SimplePage>>;
+  getText: (textId: number) => Promise<TextEntry>;
   getNews: (options: {
     limit: number;
     page: number;
@@ -221,6 +228,31 @@ const cmsService: Plugin = (context, inject) => {
     }
 
     return pageData;
+  };
+
+  const getText: CMSService['getText'] = async (textId) => {
+    // We retrieve all the languages and show text in fallback locale if not available in current locale
+    const currentLocale = context.i18n.locale;
+    const directusTextEntry = await context.$directus.items('texts').readOne(textId, {
+      fields: ['id', 'translations.languages_code', 'translations.body'],
+    });
+
+    if (!directusTextEntry) {
+      throw new Error('Error when retrieving text entry');
+    }
+
+    const translatedFields = getTranslatedFields(directusTextEntry, currentLocale);
+
+    if (!directusTextEntry.id || !translatedFields?.body) {
+      throw new Error(`Text entry is missing requested fields`);
+    }
+
+    const textEntry: TextEntry = {
+      id: directusTextEntry.id,
+      body: translatedFields.body,
+    };
+
+    return textEntry;
   };
 
   /**
@@ -1133,6 +1165,7 @@ const cmsService: Plugin = (context, inject) => {
 
   inject('cmsService', {
     getPage,
+    getText,
     getNews,
     getOneNews,
     getEvents,

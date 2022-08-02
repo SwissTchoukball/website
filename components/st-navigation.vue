@@ -1,7 +1,12 @@
 <template>
   <nav
     class="c-navigation"
-    :class="{ 'c-navigation--narrow': narrow, 'c-navigation--small': small, 'c-navigation--inverted': inverted }"
+    :class="{
+      'c-navigation--narrow': narrow,
+      'c-navigation--small': small,
+      'c-navigation--inverted': inverted,
+      'c-navigation--selected-on-exact-active': selectedOnExactActive,
+    }"
   >
     <h2 class="u-visually-hidden">{{ name }}</h2>
     <ul v-click-outside="closeAllMenuItems" class="u-unstyled-list c-navigation__list">
@@ -70,6 +75,7 @@ export default Vue.extend({
       type: Array as PropType<MenuItem[]>,
       default: () => [],
     },
+    selectedOnExactActive: Boolean,
   },
   data() {
     return {
@@ -185,7 +191,8 @@ export default Vue.extend({
   color: red;
 }
 
-.c-navigation__item-name.nuxt-link-active::after {
+.c-navigation:not(.c-navigation--selected-on-exact-active) .c-navigation__item-name.nuxt-link-active::after,
+.c-navigation--selected-on-exact-active .c-navigation__item-name.nuxt-link-exact-active::after {
   content: '';
   display: block;
   width: 100%;
@@ -214,9 +221,20 @@ export default Vue.extend({
   left: 0;
 }
 
-.c-navigation--narrow .c-navigation__item-name.nuxt-link-active::after,
-.c-navigation--inverted .c-navigation__item-name.nuxt-link-active::after,
-.c-navigation--inverted .c-navigation__item-name:hover:not(.nuxt-link-active)::after {
+.c-navigation--selected-on-exact-active .c-navigation--narrow .c-navigation__item-name.nuxt-link-active::after,
+.c-navigation--selected-on-exact-active .c-navigation--inverted .c-navigation__item-name.nuxt-link-active::after,
+.c-navigation--selected-on-exact-active
+  .c-navigation--inverted
+  .c-navigation__item-name:hover:not(.nuxt-link-active)::after,
+.c-navigation:not(.c-navigation--selected-on-exact-active)
+  .c-navigation--narrow
+  .c-navigation__item-name.nuxt-link-active::after,
+.c-navigation:not(.c-navigation--selected-on-exact-active)
+  .c-navigation--inverted
+  .c-navigation__item-name.nuxt-link-active::after,
+.c-navigation:not(.c-navigation--selected-on-exact-active)
+  .c-navigation--inverted
+  .c-navigation__item-name:hover:not(.nuxt-link-active)::after {
   content: none;
 }
 

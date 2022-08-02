@@ -267,5 +267,17 @@
     "youthAndSport": "Jeunesse+Sport",
     "federation": "Swiss Tchoukball",
     "yearAndLess": "{year} et moins"
+  },
+  "etc2022": {
+    "title": "Championnats d'Europe 2022",
+    "navigation": {
+      "liveNews": "Infos en direct",
+      "schedule": "Programme",
+      "medias": "Médias"
+    },
+    "medias": {
+      "title": "Informations aux médias",
+      "accessPressReleases": "Accéder aux communiqués de presse"
+    }
   }
 }

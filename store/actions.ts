@@ -38,7 +38,7 @@ export default {
     // TODO: Move logic to CMSService
     const locale = this.app.i18n.locale;
 
-    const mainNavigation = await this.$directus.items('menus').readByQuery({
+    const rawMainNavigation = await this.$directus.items('menus').readByQuery({
       filter: { parent: { _eq: 1 } },
       sort: ['sort'],
       deep: {
@@ -77,7 +77,15 @@ export default {
       };
     };
 
-    commit('setMainNavigation', mainNavigation.data?.map(transformForStore));
+    const mainNavigation = rawMainNavigation.data?.map(transformForStore);
+
+    mainNavigation?.push({
+      sort: 1000,
+      name: 'ETC 2022',
+      href: '/etc2022',
+    });
+
+    commit('setMainNavigation', mainNavigation);
   },
   async loadSeasons() {
     const directusSeasons = await this.$cmsService.getSeasons();

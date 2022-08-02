@@ -106,6 +106,14 @@ export interface DirectusPage {
   }[];
 }
 
+export interface DirectusText {
+  id: number;
+  translations: {
+    languages_code: string;
+    body: string;
+  }[];
+}
+
 export interface DirectusDomain {
   id: number;
   translations: {
@@ -281,6 +289,7 @@ type CustomTypes = {
 	*/
   menus: DirectusMenuItem;
   pages: DirectusPage;
+  texts: DirectusText;
   news: DirectusNews;
   events: DirectusEvent;
   event_types: DirectusEventType;
