@@ -1,7 +1,7 @@
 <template>
   <div>
     <section class="l-main-content-section">
-      <st-home-carousel v-if="carouselItems" :items="carouselItems" />
+      <st-home-carousel v-if="carouselItems" :items="carouselItems" class="c-index_carousel" />
       <st-link-action :to="localePath('news')" class="c-index__read-more-news" with-arrow>
         {{ $t('news.readMore') }}
       </st-link-action>
@@ -184,6 +184,10 @@ export default Vue.extend({
 </script>
 
 <style scoped>
+.c-index_carousel {
+  margin-top: var(--st-length-spacing-xs);
+}
+
 .c-index__section-title {
   color: var(--st-color-text);
 }
