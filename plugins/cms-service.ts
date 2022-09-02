@@ -567,6 +567,7 @@ const cmsService: Plugin = (context, inject) => {
       filter,
       fields: [
         'id',
+        'translations.languages_code',
         'translations.name',
         'translations.description',
         'date_start',
@@ -596,11 +597,17 @@ const cmsService: Plugin = (context, inject) => {
       throw new Error('Error when retrieving events');
     }
 
+    console.log({ currentLocale });
+
     events = response.data.reduce((events, directusEvent) => {
+      console.dir({ directusEvent }, { depth: 5 });
+
       const translatedFields = getTranslatedFields(directusEvent, currentLocale);
       if (!directusEvent?.date_start || !translatedFields?.name) {
         return events;
       }
+
+      console.log({ translatedFields });
 
       let isFullDay = true;
       let showEndTime = false;
@@ -671,6 +678,7 @@ const cmsService: Plugin = (context, inject) => {
         'team_photo.id',
         'team_photo.description',
         'team_photo_vertical_shift',
+        'translations.languages_code',
         'translations.name',
         'translations.slug',
         'players.id',
@@ -864,6 +872,7 @@ const cmsService: Plugin = (context, inject) => {
       },
       fields: [
         'id',
+        'translations.languages_code',
         'translations.name',
         'translations.slug',
         'editions.season.id',
@@ -1126,8 +1135,8 @@ const cmsService: Plugin = (context, inject) => {
         'date',
         'type',
         'domains.domains_id',
-        'translations.name',
         'translations.languages_code',
+        'translations.name',
         'translations.file.id',
         'translations.file.type',
         'translations.file.filesize',
