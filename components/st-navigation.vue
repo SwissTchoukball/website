@@ -221,20 +221,13 @@ export default Vue.extend({
   left: 0;
 }
 
+.c-navigation.c-navigation--inverted .c-navigation__item-name.nuxt-link-active::after,
+.c-navigation.c-navigation--inverted .c-navigation__item-name:hover:not(.nuxt-link-active)::after,
 .c-navigation--selected-on-exact-active .c-navigation--narrow .c-navigation__item-name.nuxt-link-active::after,
 .c-navigation--selected-on-exact-active .c-navigation--inverted .c-navigation__item-name.nuxt-link-active::after,
-.c-navigation--selected-on-exact-active
-  .c-navigation--inverted
-  .c-navigation__item-name:hover:not(.nuxt-link-active)::after,
 .c-navigation:not(.c-navigation--selected-on-exact-active)
   .c-navigation--narrow
-  .c-navigation__item-name.nuxt-link-active::after,
-.c-navigation:not(.c-navigation--selected-on-exact-active)
-  .c-navigation--inverted
-  .c-navigation__item-name.nuxt-link-active::after,
-.c-navigation:not(.c-navigation--selected-on-exact-active)
-  .c-navigation--inverted
-  .c-navigation__item-name:hover:not(.nuxt-link-active)::after {
+  .c-navigation__item-name.nuxt-link-active::after {
   content: none;
 }
 
