@@ -54,20 +54,12 @@ export default Vue.extend({
       });
     }
 
-    if (!this.competitionEdition) {
-      throw new Error(`No edition found for this competition in this season.`);
-    }
-
-    if (!this.competitionEdition.phases.length) {
-      throw new Error(`This edition does not have any phase to show.`);
-    }
-
     this.lastPhasePath = this.localePath({
       name: 'competitions-competition-season-phase',
       params: {
         competition: this.$route.params.competition,
         season: this.$route.params.season,
-        phase: this.competitionEdition.phases[this.competitionEdition.phases.length - 1].id,
+        phase: CompetitionEdition.getLastPhase(this.$route.params.competition, this.$route.params.season).id,
       },
     });
 

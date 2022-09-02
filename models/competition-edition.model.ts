@@ -33,4 +33,28 @@ export default class CompetitionEdition extends Model {
       teams: this.hasMany(Team, 'competition_edition_id'),
     };
   }
+
+  static getLastPhase(competitionSlug: string, seasonSlug: string): Phase {
+    const competitionEdition = this.query()
+      .with('phases', (query) => query.orderBy('order'))
+      .with('competition')
+      .with('season')
+      .whereHas('competition', (query) => {
+        query.where('slug', competitionSlug);
+      })
+      .whereHas('season', (query) => {
+        query.where('slug', seasonSlug);
+      })
+      .first();
+
+    if (!competitionEdition) {
+      throw new Error(`No edition found for this competition in this season.`);
+    }
+
+    if (!competitionEdition.phases.length) {
+      throw new Error(`This edition does not have any phase to show.`);
+    }
+
+    return competitionEdition.phases[competitionEdition.phases.length - 1];
+  }
 }
