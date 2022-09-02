@@ -79,12 +79,6 @@ export default {
 
     const mainNavigation = rawMainNavigation.data?.map(transformForStore);
 
-    mainNavigation?.push({
-      sort: 1000,
-      name: 'ETC 2022',
-      href: '/etc2022',
-    });
-
     commit('setMainNavigation', mainNavigation);
   },
   async loadSeasons() {
