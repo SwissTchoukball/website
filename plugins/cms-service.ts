@@ -869,6 +869,7 @@ const cmsService: Plugin = (context, inject) => {
         'editions.season.id',
         'editions.season.name',
         'editions.season.slug',
+        'editions.season.leverade_id',
         'editions.leverade_id',
       ],
       deep: {
