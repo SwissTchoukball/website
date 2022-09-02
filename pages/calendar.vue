@@ -1,6 +1,7 @@
 <template>
   <section class="l-main-content-section">
     <h2 class="u-visually-hidden">{{ monthName }}</h2>
+
     <nav class="c-events__month-navigation">
       <h3 class="u-visually-hidden">{{ $t('events.monthNavigation') }}</h3>
       <nuxt-link :to="previousMonthLink" :title="$t('events.previousMonth')" class="c-events__month-switch-link">
@@ -11,9 +12,10 @@
         <fa-icon icon="angle-right" />
       </nuxt-link>
     </nav>
+
     <st-loader v-if="$fetchState.pending" :main="true" />
     <p v-else-if="$fetchState.error">{{ $t('error.otherError') }} : {{ $fetchState.error.message }}</p>
-    <template v-else-if="events.length">
+    <template v-else>
       <st-link-action v-if="areOnlyUpcomingEventsVisible" :to="thisMonthLink" class="c-events__past-events-link">
         {{ $t('events.showPastEvents', { month: monthName }) }}
       </st-link-action>
@@ -24,15 +26,22 @@
       >
         {{ $t('events.showUpcomingEventsOnly', { month: monthName }) }}
       </st-link-action>
-      <st-event
-        v-for="event of events"
-        :id="`event-${event.id}`"
-        :key="`event-${event.id}`"
-        :event="event"
-        class="c-events__event"
-      />
+
+      <st-link-action v-if="!isCurrentMonth" :to="currentMonthLink" class="c-events__past-events-link">
+        {{ $t('events.goToCurrentMonth') }}
+      </st-link-action>
+
+      <template v-if="events.length">
+        <st-event
+          v-for="event of events"
+          :id="`event-${event.id}`"
+          :key="`event-${event.id}`"
+          :event="event"
+          class="c-events__event"
+        />
+      </template>
+      <p v-else class="l-blank-slate-message">{{ $t('events.noneThisMonth', { month: monthName }) }}</p>
     </template>
-    <p v-else class="l-blank-slate-message">{{ $t('events.noneThisMonth', { month: monthName }) }}</p>
   </section>
 </template>
 
@@ -118,8 +127,17 @@ export default Vue.extend({
     monthName(): string {
       return this.$formatDate(new Date(`${this.year}-${this.month}-01`), 'MMMM yyyy');
     },
+    currentMonth(): string {
+      return this.$formatDate(new Date(), 'MM');
+    },
+    currentYear(): string {
+      return this.$formatDate(new Date(), 'yyyy');
+    },
     isCurrentMonth(): boolean {
-      return this.month === this.$formatDate(new Date(), 'MM') && this.year === this.$formatDate(new Date(), 'yyyy');
+      return this.month === this.currentMonth && this.year === this.currentYear;
+    },
+    currentMonthLink(): string {
+      return this.localePath({ query: { month: this.currentMonth, year: this.currentYear } });
     },
     thisMonthLink(): string {
       return this.localePath({ query: { month: this.month } });

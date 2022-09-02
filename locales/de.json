@@ -74,7 +74,8 @@
     "noneUpcomingThisMonth": "Im {month} sind keine weiteren Ereignisse geplant.",
     "showPastEvents": "Die vergangenen Ereignisse im {month} anzeigen",
     "showUpcomingEventsOnly": "Nur geplante Ereignisse im {month} anzeigen",
-    "goToEvents": "Alle Ereignisse ansehen"
+    "goToEvents": "Alle Ereignisse ansehen",
+    "goToCurrentMonth": "Zum aktuellen Monat springen"
   },
   "season": {
     "name": "Saison | Saison | Saisonen",
