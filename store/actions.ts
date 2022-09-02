@@ -416,6 +416,9 @@ export default {
       throw new Error('No competition edition found');
     }
     // There should be only one edition matching the request parameters.
+    if (competitionEditions.length > 1) {
+      console.warn('Multiple competition editions matching the request. Taking the first one.');
+    }
     const competitionEdition = competitionEditions[0];
     if (!competitionEdition.leverade_id) {
       throw new Error('This competition edition has no Leverade ID');
