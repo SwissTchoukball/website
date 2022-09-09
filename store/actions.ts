@@ -30,11 +30,12 @@ import { NationalCompetition, NationalCompetitionEdition } from '~/plugins/cms-s
 
 export default {
   async nuxtServerInit({ dispatch }) {
-    await dispatch('loadMenu');
+    await dispatch('loadMainMenu');
+    await dispatch('loadSecondaryMenu');
     await dispatch('loadSeasons');
     await dispatch('loadDomains');
   },
-  async loadMenu({ commit }) {
+  async loadMainMenu({ commit }) {
     // TODO: Move logic to CMSService
     const locale = this.app.i18n.locale;
 
@@ -80,6 +81,48 @@ export default {
     const mainNavigation = rawMainNavigation.data?.map(transformForStore);
 
     commit('setMainNavigation', mainNavigation);
+  },
+  loadSecondaryMenu({ commit }) {
+    const getSecondaryNavigationName = (key: string): string => {
+      return this.$i18n.t(`footer.secondaryNavigation.${key}`).toString();
+    };
+
+    // TODO: Eventually move all the data to the CMS
+    const secondaryNavigation: MenuItem[] = [
+      {
+        name: getSecondaryNavigationName('news'),
+        href: 'news',
+      },
+      {
+        name: getSecondaryNavigationName('photos'),
+        href: 'https://flickr.com/swisstchoukball',
+        isExternal: true,
+      },
+      {
+        name: getSecondaryNavigationName('videos'),
+        href: 'https://youtube.com/tchoukballch',
+        isExternal: true,
+      },
+      {
+        name: getSecondaryNavigationName('shop'),
+        href: 'https://shop.tchoukball.ch',
+        isExternal: true,
+      },
+      {
+        name: getSecondaryNavigationName('contact'),
+        href: 'contact',
+      },
+      {
+        name: getSecondaryNavigationName('resources'),
+        href: 'resources',
+      },
+      {
+        name: getSecondaryNavigationName('medias'),
+        href: 'medias',
+      },
+    ];
+
+    commit('setSecondaryNavigation', secondaryNavigation);
   },
   async loadSeasons() {
     const directusSeasons = await this.$cmsService.getSeasons();

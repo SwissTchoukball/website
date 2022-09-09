@@ -10,6 +10,14 @@
         class="c-default__drawer-navigation"
         @navigate="closeDrawer()"
       />
+      <st-navigation
+        :items="secondaryNavigation"
+        :name="$t('secondaryNavigation')"
+        narrow
+        small
+        class="c-default__drawer-navigation"
+        @navigate="closeDrawer()"
+      />
     </div>
     <header class="c-default__header">
       <nuxt-link class="c-default__logo" :to="localePath('index')" @click.native="closeDrawer()"></nuxt-link>
@@ -127,6 +135,9 @@ export default Vue.extend({
   computed: {
     mainNavigation() {
       return this.$store.state.mainNavigation;
+    },
+    secondaryNavigation() {
+      return this.$store.state.secondaryNavigation;
     },
   },
   methods: {

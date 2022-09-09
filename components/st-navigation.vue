@@ -3,7 +3,8 @@
     class="c-navigation"
     :class="{
       'c-navigation--narrow': narrow,
-      'c-navigation--small': small,
+      'c-navigation--narrow-small': narrow && small,
+      'c-navigation--small': small && !narrow,
       'c-navigation--inverted': inverted,
       'c-navigation--selected-on-exact-active': selectedOnExactActive,
     }"
@@ -16,8 +17,12 @@
         class="c-navigation__item-group"
         :class="{ 'c-navigation__item-group--open': openStates[itemIndex] }"
       >
+        <a v-if="item.isExternal" :href="item.href" class="u-unstyled-button c-navigation__item-name">
+          {{ item.name }}
+        </a>
         <component
           :is="item.href ? 'nuxt-link' : 'button'"
+          v-else
           :to="localePath(item.href)"
           :aria-haspopup="item.children && !!item.children.length"
           :aria-expanded="openStates[itemIndex]"
@@ -129,10 +134,18 @@ export default Vue.extend({
   transform: translateX(-0.5rem);
 }
 
+.c-navigation--narrow-small {
+  font-size: 0.9rem;
+}
+
 .c-navigation--narrow .c-navigation__list {
   flex-direction: column;
   align-items: flex-start;
   transform: none;
+}
+
+.c-navigation--narrow-small .c-navigation__list {
+  row-gap: var(--st-length-spacing-xxs);
 }
 
 .c-navigation--small .c-navigation__list {

@@ -4,6 +4,7 @@ export interface MenuItem {
   sort?: number;
   name: string;
   href?: string;
+  isExternal?: boolean;
   children?: MenuItem[];
 }
 
@@ -30,6 +31,7 @@ export interface PlayerPositions {
 
 export interface RootState {
   mainNavigation: MenuItem[];
+  secondaryNavigation: MenuItem[];
   eventTypes?: EventTypes;
   playerPositions?: PlayerPositions;
   upcomingMatchesLoaded: boolean;
@@ -38,6 +40,7 @@ export interface RootState {
 
 export default (): RootState => ({
   mainNavigation: [],
+  secondaryNavigation: [],
   eventTypes: undefined,
   playerPositions: undefined,
   upcomingMatchesLoaded: false,

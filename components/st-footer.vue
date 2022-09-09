@@ -26,13 +26,14 @@
 
     <nav class="l-main-content-section c-footer__secondary-navigation">
       <h2 class="u-visually-hidden">{{ $t('secondaryNavigation') }}</h2>
+      <!-- TODO: Replace with st-navigation component, adapted for the usage here -->
       <ul class="u-unstyled-list c-footer__secondary-navigation__list">
-        <li v-for="item in secondaryNavigation" :key="item.key" class="c-footer__secondary-navigation__item">
-          <a v-if="item.href" :href="item.href" class="c-footer__secondary-navigation__link">
-            {{ $t(`footer.secondaryNavigation.${item.key}`) }}
+        <li v-for="item in secondaryNavigation" :key="item.name" class="c-footer__secondary-navigation__item">
+          <a v-if="item.isExternal" :href="item.href" class="c-footer__secondary-navigation__link">
+            {{ item.name }}
           </a>
-          <nuxt-link v-else-if="item.to" :to="localePath(item.to)" class="c-footer__secondary-navigation__link">
-            {{ $t(`footer.secondaryNavigation.${item.key}`) }}
+          <nuxt-link v-else :to="localePath(item.href)" class="c-footer__secondary-navigation__link">
+            {{ item.name }}
           </nuxt-link>
         </li>
       </ul>
@@ -79,37 +80,6 @@ export default Vue.extend({
   components: { stIconFlickr },
   data() {
     return {
-      // TODO: Eventually move all the data to the CMS
-      secondaryNavigation: [
-        {
-          key: 'news',
-          to: 'news',
-        },
-        {
-          key: 'photos',
-          href: 'https://flickr.com/swisstchoukball',
-        },
-        {
-          key: 'videos',
-          href: 'https://youtube.com/tchoukballch',
-        },
-        {
-          key: 'shop',
-          href: 'https://shop.tchoukball.ch',
-        },
-        {
-          key: 'contact',
-          to: 'contact',
-        },
-        {
-          key: 'resources',
-          to: 'resources',
-        },
-        {
-          key: 'medias',
-          to: 'medias',
-        },
-      ],
       partners: [
         {
           name: 'Tchoukball Promotion',
@@ -149,6 +119,9 @@ export default Vue.extend({
   computed: {
     rssFeedUrl() {
       return `https://feeds.tchoukball.ch/news-${this.$i18n.locale}.xml`;
+    },
+    secondaryNavigation() {
+      return this.$store.state.secondaryNavigation;
     },
   },
 });

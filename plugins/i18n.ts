@@ -8,7 +8,11 @@ const i18nPlugin: Plugin = ({ app, store }) => {
   }; */
   // onLanguageSwitched called right after a new locale has been set
   app.i18n.onLanguageSwitched = async (_oldLocale, _newLocale) => {
-    const dataLoads = [store.dispatch('loadMenu'), store.dispatch('loadDomains')];
+    const dataLoads = [
+      store.dispatch('loadMainMenu'),
+      store.dispatch('loadSecondaryMenu'),
+      store.dispatch('loadDomains'),
+    ];
 
     // We load the event types only if we already have them in the old locale
     if (store.state.eventTypes) {

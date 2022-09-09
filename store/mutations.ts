@@ -5,6 +5,9 @@ export default {
   setMainNavigation(state, mainNavigation: MenuItem[]) {
     state.mainNavigation = mainNavigation;
   },
+  setSecondaryNavigation(state, secondaryNavigation: MenuItem[]) {
+    state.secondaryNavigation = secondaryNavigation;
+  },
   setEventTypes(state, eventTypes: EventTypes) {
     state.eventTypes = eventTypes;
   },
