@@ -39,7 +39,10 @@
             <div class="c-planning__match-details">
               <st-cancelled-label v-if="match.canceled" class="c-planning__match-cancelled" />
               <template v-else>
-                <fa-icon icon="clock" class="c-planning__match-icon" /> {{ $formatDate(match.parsedDate(), 'HH:mm') }}
+                <template v-if="showTime(match)">
+                  <fa-icon icon="clock" class="c-planning__match-icon" />
+                  {{ $formatDate(match.parsedDate(), 'HH:mm') }}
+                </template>
                 <fa-icon icon="location-dot" class="c-planning__match-icon" />
                 {{ match.facility.name }}, {{ match.facility.city }}
               </template>
@@ -116,6 +119,12 @@ export default Vue.extend({
     },
     showMatchRound(match: Match) {
       return match.round.phase.type === LeveradeGroupType.PLAY_OFF;
+    },
+    showTime(match: Match) {
+      // This can be a problem if a match is actually scheduled at midnight.
+      // Unfortunately, there's currently no way to differentiate a match for which the date is not set from one where it is scheduled at midnight.
+      const matchParsedDate = match.parsedDate();
+      return matchParsedDate && this.$formatDate(matchParsedDate, 'HH:mm') !== '00:00';
     },
   },
 });
