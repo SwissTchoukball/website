@@ -51,4 +51,22 @@ export default class Match extends Model {
       return parseLeveradeDate(this.datetime);
     }
   }
+
+  get homeTeamName(): string {
+    if (this.home_team) {
+      return this.home_team.name;
+    } else if (this.faceoff?.first_text) {
+      return this.faceoff.first_text;
+    }
+    return '';
+  }
+
+  get awayTeamName(): string {
+    if (this.away_team) {
+      return this.away_team.name;
+    } else if (this.faceoff?.second_text) {
+      return this.faceoff.second_text;
+    }
+    return '';
+  }
 }

@@ -90,6 +90,8 @@ export interface LeveradeFaceoff extends LeveradeEntity {
   type: 'faceoff';
   attributes: {
     winner: 'first' | 'second' | null;
+    first_text: string | null;
+    second_text: string | null;
   };
   relationships: {
     first_team: {

@@ -9,20 +9,12 @@
       </span>
     </nuxt-link>
     <h2 class="c-match__name">
-      <div
-        v-if="match.home_team"
-        class="c-match__team c-match__team--home"
-        :class="{ 'c-match__team--winner': hasHomeTeamWon(match) }"
-      >
-        {{ match.home_team.name }}
+      <div class="c-match__team c-match__team--home" :class="{ 'c-match__team--winner': hasHomeTeamWon(match) }">
+        {{ match.homeTeamName }}
       </div>
       <div class="c-match__cross">&#9587;</div>
-      <div
-        v-if="match.away_team"
-        class="c-match__team c-match__team--away"
-        :class="{ 'c-match__team--winner': hasAwayTeamWon(match) }"
-      >
-        {{ match.away_team.name }}
+      <div class="c-match__team c-match__team--away" :class="{ 'c-match__team--winner': hasAwayTeamWon(match) }">
+        {{ match.awayTeamName }}
       </div>
     </h2>
     <div class="c-match__avatars-and-score">
@@ -31,6 +23,7 @@
         :src="`https://cdn.leverade.com/thumbnails/${match.home_team.avatarKey}.500x500.jpg`"
         class="c-match__team-avatar"
       />
+      <div v-else class="c-match__team-avatar"></div>
 
       <div v-if="isOver" class="c-match__score">{{ match.home_team_score }} - {{ match.away_team_score }}</div>
       <div v-else class="c-match__no-score"></div>
@@ -40,6 +33,7 @@
         :src="`https://cdn.leverade.com/thumbnails/${match.away_team.avatarKey}.500x500.jpg`"
         class="c-match__team-avatar"
       />
+      <div v-else class="c-match__team-avatar"></div>
     </div>
     <div id="match-details" class="c-match__details">
       <st-event-date v-if="match.parsedDate()" :start-date="match.parsedDate()" always-one-line />
@@ -120,6 +114,7 @@ export default Vue.extend({
         .with('home_team')
         .with('away_team')
         .with('facility')
+        .with('faceoff')
         .with('round.phase')
         .with('round.phase.competition_edition')
         .with('round.phase.competition_edition.season')

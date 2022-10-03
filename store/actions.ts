@@ -351,7 +351,9 @@ export default {
           id: faceoff.id,
           winner: faceoff.attributes.winner,
           first_team_id: faceoff.relationships.first_team.data ? faceoff.relationships.first_team.data.id : null,
+          first_text: faceoff.attributes.first_text,
           second_team_id: faceoff.relationships.second_team.data ? faceoff.relationships.second_team.data.id : null,
+          second_text: faceoff.attributes.second_text,
           round_id: faceoff.relationships.round.data.id,
         };
       }),

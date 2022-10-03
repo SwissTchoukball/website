@@ -9,31 +9,27 @@
           >
             <st-event-date :start-date="match.parsedDate()" always-one-line />
             <div v-if="showMatchRound(match)" class="c-planning__match-round">{{ match.round.name }}</div>
-            <h4 v-if="match.home_team || match.away_team" class="c-planning__match-name">
+            <h4 v-if="match.homeTeamName || match.awayTeamName" class="c-planning__match-name">
               <div class="c-planning__match-team c-planning__match-team--home">
-                <template v-if="match.home_team">
-                  <img
-                    v-if="match.home_team.avatarKey"
-                    :src="`https://cdn.leverade.com/thumbnails/${match.home_team.avatarKey}.200x200.jpg`"
-                    class="c-planning__match-team-avatar"
-                  />
-                  <div v-else class="c-planning__match-team-avatar c-planning__match-team-avatar--placeholder"></div>
-                  {{ match.home_team.name }}
-                </template>
+                <img
+                  v-if="match.home_team && match.home_team.avatarKey"
+                  :src="`https://cdn.leverade.com/thumbnails/${match.home_team.avatarKey}.200x200.jpg`"
+                  class="c-planning__match-team-avatar"
+                />
+                <div v-else class="c-planning__match-team-avatar c-planning__match-team-avatar--placeholder"></div>
+                {{ match.homeTeamName }}
               </div>
 
               <div class="c-planning__match-cross">&#9587;</div>
 
               <div class="c-planning__match-team c-planning__match-team--away">
-                <template v-if="match.away_team">
-                  <img
-                    v-if="match.away_team.avatarKey"
-                    :src="`https://cdn.leverade.com/thumbnails/${match.away_team.avatarKey}.200x200.jpg`"
-                    class="c-planning__match-team-avatar"
-                  />
-                  <div v-else class="c-planning__match-team-avatar c-planning__match-team-avatar--placeholder"></div>
-                  {{ match.away_team.name }}
-                </template>
+                <img
+                  v-if="match.away_team && match.away_team.avatarKey"
+                  :src="`https://cdn.leverade.com/thumbnails/${match.away_team.avatarKey}.200x200.jpg`"
+                  class="c-planning__match-team-avatar"
+                />
+                <div v-else class="c-planning__match-team-avatar c-planning__match-team-avatar--placeholder"></div>
+                {{ match.awayTeamName }}
               </div>
             </h4>
             <div class="c-planning__match-details">
@@ -102,6 +98,7 @@ export default Vue.extend({
         .with('home_team')
         .with('away_team')
         .with('facility')
+        .with('faceoff')
         .with('round', (query) => query.with('phase', (queryP) => queryP.where('id', this.phase.id)))
         .where('datetime', (datetime: string) => datetime >= this.$formatDate(new Date(), 'yyyy-MM-dd'))
         .orderBy('datetime')
