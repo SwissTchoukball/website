@@ -14,8 +14,8 @@
     >
       <template v-if="match.home_team">
         <img
-          v-if="match.home_team.avatarKey"
-          :src="`https://cdn.leverade.com/thumbnails/${match.home_team.avatarKey}.200x200.jpg`"
+          v-if="match.home_team.avatarMediumUrl"
+          :src="match.home_team.avatarMediumUrl"
           class="c-match-result__team-avatar"
         />
         <div v-else class="c-match-result__team-avatar c-match-result__team-avatar--placeholder"></div>
@@ -30,8 +30,8 @@
     >
       <template v-if="match.away_team">
         <img
-          v-if="match.away_team.avatarKey"
-          :src="`https://cdn.leverade.com/thumbnails/${match.away_team.avatarKey}.200x200.jpg`"
+          v-if="match.away_team.avatarMediumUrl"
+          :src="match.away_team.avatarMediumUrl"
           class="c-match-result__team-avatar"
         />
         <div v-else class="c-match-result__team-avatar c-match-result__team-avatar--placeholder"></div>

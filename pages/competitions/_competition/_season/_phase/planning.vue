@@ -12,8 +12,8 @@
             <h4 v-if="match.homeTeamName || match.awayTeamName" class="c-planning__match-name">
               <div class="c-planning__match-team c-planning__match-team--home">
                 <img
-                  v-if="match.home_team && match.home_team.avatarKey"
-                  :src="`https://cdn.leverade.com/thumbnails/${match.home_team.avatarKey}.200x200.jpg`"
+                  v-if="match.home_team && match.home_team.avatarMediumUrl"
+                  :src="match.home_team.avatarMediumUrl"
                   class="c-planning__match-team-avatar"
                 />
                 <div v-else class="c-planning__match-team-avatar c-planning__match-team-avatar--placeholder"></div>
@@ -24,8 +24,8 @@
 
               <div class="c-planning__match-team c-planning__match-team--away">
                 <img
-                  v-if="match.away_team && match.away_team.avatarKey"
-                  :src="`https://cdn.leverade.com/thumbnails/${match.away_team.avatarKey}.200x200.jpg`"
+                  v-if="match.away_team && match.away_team.avatarMediumUrl"
+                  :src="match.away_team.avatarMediumUrl"
                   class="c-planning__match-team-avatar"
                 />
                 <div v-else class="c-planning__match-team-avatar c-planning__match-team-avatar--placeholder"></div>

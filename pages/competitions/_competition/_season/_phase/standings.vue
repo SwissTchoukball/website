@@ -18,8 +18,8 @@
           <td class="c-standings__table-cell">
             <div class="c-standings__team">
               <img
-                v-if="standing.team.avatarKey"
-                :src="`https://cdn.leverade.com/thumbnails/${standing.team.avatarKey}.200x200.jpg`"
+                v-if="standing.team.avatarMediumUrl"
+                :src="standing.team.avatarMediumUrl"
                 class="c-standings__team-avatar"
               />
               <div v-else class="c-standings__team-avatar c-standings__team-avatar--placeholder"></div>
@@ -57,7 +57,7 @@ export default Vue.extend({
   },
   data() {
     return {
-      standings: [] as any[],
+      rawStandings: [] as any[],
       stats: [],
     };
   },
@@ -72,15 +72,13 @@ export default Vue.extend({
       } else if (process.client) {
         this.$router.replace(resultsPath);
       }
-      return;
     }
 
-    // Retrieving standings
     const response = await this.$leverade.getStandings(this.phase.id);
-    this.standings = response.data.meta.standingsrows.map((row: any) => {
+    this.rawStandings = response.data.meta.standingsrows.map((row: any) => {
       const standing = {
         position: row.position,
-        team: Team.find(row.id),
+        teamId: row.id,
         stats: row.standingsstats,
       };
       return standing;
@@ -130,6 +128,13 @@ export default Vue.extend({
         'value_difference',
         'score',
       ];
+    },
+    standings(): any[] {
+      return this.rawStandings.map((standingRow) => ({
+        position: standingRow.position,
+        team: Team.find(standingRow.teamId),
+        stats: standingRow.stats,
+      }));
     },
   },
   watch: {
