@@ -64,6 +64,7 @@ jobs:
             nvm install
             npm ci
             npm run build
+            npm list -g pm2 || npm install -g pm2
             pm2 restart website-nuxt-staging
 
   Deploy-to-production:
@@ -91,4 +92,5 @@ jobs:
             nvm install
             npm ci
             npm run build
+            npm list -g pm2 || npm install -g pm2
             pm2 restart website-nuxt-prod
