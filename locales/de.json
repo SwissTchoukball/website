@@ -126,6 +126,15 @@
   "person": {
     "photoOf": "Foto von {name}"
   },
+  "referees": {
+    "title": "SchiedsrichterInnen",
+    "level": {
+      "i": "SchiedsrichterInnen I",
+      "ii": "SchiedsrichterInnen II",
+      "iii": "SchiedsrichterInnen III",
+      "iv": "SchiedsrichterInnen IV"
+    }
+  },
   "nationalTeams": {
     "headTitle": {
       "players": {

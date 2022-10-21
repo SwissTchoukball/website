@@ -126,6 +126,15 @@
   "person": {
     "photoOf": "Photo de {name}"
   },
+  "referees": {
+    "title": "Arbitres",
+    "level": {
+      "i": "Arbitres I",
+      "ii": "Arbitres II",
+      "iii": "Arbitres III",
+      "iv": "Arbitres IV"
+    }
+  },
   "nationalTeams": {
     "headTitle": {
       "players": {
