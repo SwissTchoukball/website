@@ -1,6 +1,10 @@
 <template>
   <ul class="u-unstyled-list c-resource-list">
-    <li v-for="resource of resources" :key="resource.id" class="c-resource-list__item">
+    <li
+      v-for="(resource, index) of resources"
+      :key="resource ? resource.id : `unknown-${index}`"
+      class="c-resource-list__item"
+    >
       <st-resource :resource="resource" />
     </li>
   </ul>

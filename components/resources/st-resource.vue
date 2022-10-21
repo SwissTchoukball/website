@@ -2,14 +2,13 @@
   <div class="c-resource">
     <fa-icon :icon="iconName" class="c-resource__icon" />
     <div class="c-resource__name-details">
-      <a class="c-resource__name" :href="href" :download="download">{{ resource.name }}</a>
+      <a class="c-resource__name" :href="href" :download="download">{{ fileName }}</a>
       <div class="c-resource__details">
         <span v-if="fileType" class="c-resource__file_type">{{ fileType }}</span>
         <span v-if="formattedFileSize" class="c-resource__file-size">{{ formattedFileSize }}</span>
         <span v-if="date" class="c-resource__date">{{ date }}</span>
       </div>
     </div>
-    <!-- <pre>{{ resource }}</pre> -->
   </div>
 </template>
 
@@ -23,39 +22,45 @@ export default Vue.extend({
   props: {
     resource: {
       type: Object as PropType<Resource>,
-      required: true,
+      default: undefined,
     },
   },
   computed: {
     href(): string | undefined {
-      if (this.resource.file) {
+      if (this.resource?.file) {
         return `${this.$config.cmsURL}/assets/${this.resource.file.id}?download`;
-      } else if (this.resource.link) {
+      } else if (this.resource?.link) {
         return this.resource.link;
       } else {
         return '#';
       }
     },
     download(): string | null {
-      if (!this.resource.file) {
+      if (!this.resource?.file) {
         return null;
       }
       return this.resource.file.filename_download;
     },
     date(): string | undefined {
-      if (this.resource.date) {
+      if (this.resource?.date) {
         return this.$formatDate(new Date(this.resource.date), 'dd.MM.yyyy');
       }
       return undefined;
     },
     formattedFileSize(): string | undefined {
-      if (!this.resource.file) {
+      if (!this.resource?.file) {
         return;
       }
       return humanFileSize(this.resource.file.filesize, 2, this.$i18n.locale);
     },
+    fileName(): string {
+      if (this.resource?.name) {
+        return this.resource.name;
+      }
+      return this.$t('resources.missing').toString();
+    },
     iconName(): string {
-      if (this.resource.file) {
+      if (this.resource?.file) {
         switch (this.resource.file.type) {
           case 'application/pdf':
             return 'file-pdf';
@@ -64,13 +69,13 @@ export default Vue.extend({
           default:
             return 'file';
         }
-      } else if (this.resource.link) {
+      } else if (this.resource?.link) {
         return 'link';
       }
       return 'question';
     },
     fileType(): TranslateResult {
-      if (this.resource.file) {
+      if (this.resource?.file) {
         switch (this.resource.file.type) {
           case 'application/pdf':
             return this.$t('resources.fileType.pdf');
@@ -79,7 +84,7 @@ export default Vue.extend({
           default:
             return this.$t('resources.fileType.other');
         }
-      } else if (this.resource.link) {
+      } else if (this.resource?.link) {
         return this.$t('resources.link');
       }
       return this.$t('resources.missing');
