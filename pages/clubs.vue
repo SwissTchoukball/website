@@ -1,8 +1,12 @@
 <template>
   <section class="l-main-content-section">
     <h2 class="t-headline-1">{{ $t('clubs.title') }}</h2>
-    <p class="c-clubs__amount">{{ $t('clubs.amountMembers', { amount: clubs.length }) }}</p>
-    <st-club-list :clubs="clubs" />
+    <st-loader v-if="$fetchState.pending" :main="true" />
+    <p v-else-if="$fetchState.error">{{ $t('error.otherError') }} : {{ $fetchState.error.message }}</p>
+    <template v-else>
+      <p class="c-clubs__amount">{{ $t('clubs.amountMembers', { amount: clubs.length }) }}</p>
+      <st-club-list :clubs="clubs" />
+    </template>
   </section>
 </template>
 
