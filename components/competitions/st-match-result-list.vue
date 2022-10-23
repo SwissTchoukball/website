@@ -2,7 +2,7 @@
   <ul class="u-unstyled-list">
     <template v-for="match of matches">
       <li
-        v-if="match.home_team && match.away_team && !match.canceled"
+        v-if="(match.home_team || match.away_team) && !match.canceled"
         :key="match.id"
         class="c-match-result-list__match"
       >

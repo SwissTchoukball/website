@@ -10,15 +10,17 @@
 
           <template v-else>
             <div v-for="(faceoff, index) of round.faceoffs" :key="faceoff.id">
-              <h3 class="c-results__round-name" :class="round.faceoffs.length > 1 ? 't-headline-3' : 't-headline-2'">
-                {{ round.name }}
-                <template v-if="round.faceoffs.length > 1">{{ index + 1 }}</template>
-              </h3>
+              <template v-if="faceoffHasMatches(faceoff)">
+                <h3 class="c-results__round-name" :class="round.faceoffs.length > 1 ? 't-headline-3' : 't-headline-2'">
+                  {{ round.name }}
+                  <template v-if="round.faceoffs.length > 1">{{ index + 1 }}</template>
+                </h3>
 
-              <div v-if="isFaceoffAutoQualified(faceoff)">
-                {{ $t('competitions.results.autoQualified', { teamName: faceoff[`${faceoff.winner}_team`].name }) }}
-              </div>
-              <st-match-result-list v-else :matches="faceoff.matches" />
+                <div v-if="isFaceoffAutoQualified(faceoff)">
+                  {{ $t('competitions.results.autoQualified', { teamName: faceoff[`${faceoff.winner}_team`].name }) }}
+                </div>
+                <st-match-result-list v-else :matches="faceoff.matches" />
+              </template>
             </div>
           </template>
         </li>
@@ -79,6 +81,17 @@ export default Vue.extend({
       // We check this based on the first match only
       const firstMatch = faceoff.matches[0];
       return (!firstMatch.home_team || !firstMatch.away_team) && firstMatch.finished && faceoff.winner;
+    },
+    /**
+     * Checks that a faceoff has a match with a least one team set.
+     */
+    faceoffHasMatches(faceoff: Faceoff): boolean {
+      if (!faceoff.matches) {
+        return false;
+      }
+      // We check this based on the first match only
+      const firstMatch = faceoff.matches[0];
+      return !!(firstMatch.home_team || firstMatch.away_team);
     },
   },
 });
