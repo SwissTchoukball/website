@@ -14,7 +14,7 @@
         <a href="https://flickr.com/swisstchoukball" class="c-footer__social-icon c-footer__social-icon--flickr">
           <st-icon-flickr />
         </a>
-        <a href="https://youtube.com/tchoukballch" class="c-footer__social-icon c-footer__social-icon--youtube">
+        <a href="https://youtube.com/@swisstchoukball" class="c-footer__social-icon c-footer__social-icon--youtube">
           <fa-icon :icon="['fab', 'youtube']" />
         </a>
         <a :href="rssFeedUrl" class="c-footer__social-icon c-footer__social-icon--rss">
