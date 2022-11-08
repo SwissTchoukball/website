@@ -54,7 +54,7 @@
     "eslint-plugin-nuxt": "^4.0.0",
     "eslint-plugin-vue": "^9.7.0",
     "husky": "^8.0.1",
-    "lint-staged": "^12.4.1",
+    "lint-staged": "^13.0.3",
     "postcss-custom-media": "^8.0.2",
     "postcss-html": "^1.4.1",
     "prettier": "^2.7.1",
