@@ -7,7 +7,7 @@
     <template v-else>
       <h2 class="t-headline-1">{{ groupName }}</h2>
 
-      <p v-if="groupDescription" class="c-group__description">{{ groupDescription }}</p>
+      <p v-if="groupDescription" class="c-group__description l-paragraph">{{ groupDescription }}</p>
 
       <ul v-if="people" class="u-unstyled-list l-people-list">
         <li v-for="person of people" :key="person.id" class="l-people-list__person">

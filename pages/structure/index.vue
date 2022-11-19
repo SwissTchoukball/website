@@ -40,7 +40,7 @@ export default Vue.extend({
       return this.$store.$db().model(Group);
     },
     groups(): Collection<Group> {
-      return this.Group.all();
+      return this.Group.query().orderBy('name').get();
     },
     groupsNavigation(): MenuItem[] {
       if (!this.groups) {
