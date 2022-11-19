@@ -180,6 +180,12 @@ const config: NuxtConfig = {
       apiKey: process.env.FLICKR_API_KEY,
     },
   },
+  serverMiddleware: [
+    {
+      path: '/',
+      handler: '~/server-middleware/redirects.ts',
+    },
+  ],
 };
 
 export default config;
