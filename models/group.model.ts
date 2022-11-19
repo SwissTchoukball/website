@@ -9,6 +9,7 @@ export default class Group extends Model {
   id!: number;
   name!: string;
   description!: string;
+  slug!: string;
   roles!: any[];
 
   static fields() {
@@ -16,6 +17,7 @@ export default class Group extends Model {
       id: this.number(null),
       name: this.string(null),
       description: this.string(null).nullable(),
+      slug: this.string(null),
       roles: this.hasMany(Role, 'group_id'),
     };
   }
@@ -29,7 +31,7 @@ export default class Group extends Model {
       const translatedFields = getTranslatedFields(group);
 
       // We discard entries that don't have mandatory data.
-      if (!group.id || !translatedFields?.name) {
+      if (!group.id || !translatedFields?.name || !translatedFields?.slug) {
         console.warn('Group missing mandatory data', { group });
         return groups;
       }
@@ -40,6 +42,7 @@ export default class Group extends Model {
           id: group.id,
           name: translatedFields.name,
           description: translatedFields?.description || '',
+          slug: translatedFields?.slug,
         },
       ];
     }, [] as any[]);

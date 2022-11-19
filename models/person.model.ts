@@ -74,6 +74,8 @@ export default class Person extends Model {
                 ? {
                     id: role.roles_id.group.id,
                     name: translatedGroupFields?.name,
+                    slug: translatedGroupFields?.slug,
+                    description: translatedGroupFields?.description,
                   }
                 : null,
               pivot: {

@@ -6,6 +6,7 @@ export interface DirectusGroup {
   translations: {
     name: string;
     description: string;
+    slug: string;
   }[];
 }
 

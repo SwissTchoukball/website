@@ -140,20 +140,19 @@ export default {
   },
   async loadGroups() {
     const groupsResponse = await this.$directus.items('groups').readByQuery({
-      fields: ['id', 'name', 'description', 'translations.name', 'translations.description'],
+      fields: ['id', 'translations.name', 'translations.description', 'translations.slug'],
       // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
       deep: { translations: { _filter: { languages_code: { _eq: this.$i18n.locale } } } },
     });
     await Group.addManyFromDirectus(groupsResponse);
   },
-  async loadStaff(_context, { groupId }: { groupId: number }) {
+  async loadStaff(_context, { groupId, groupSlug }: { groupId: number; groupSlug: string }) {
     let filter: any = {};
 
     if (groupId) {
       filter = { roles: { roles_id: { group: { id: groupId } } } };
-    } else {
-      // If no group is specified, we still retrieve only people that are at least in one group
-      filter = { roles: { roles_id: { group: { _nnull: true } } } };
+    } else if (groupSlug) {
+      filter = { roles: { roles_id: { group: { translations: { slug: groupSlug } } } } };
     }
 
     const peopleResponse = await this.$directus.items('people').readByQuery({
@@ -171,6 +170,8 @@ export default {
         'roles.roles_id.translations.name_masculine',
         'roles.roles_id.group.id',
         'roles.roles_id.group.translations.name',
+        'roles.roles_id.group.translations.slug',
+        'roles.roles_id.group.translations.description',
       ],
       filter,
       deep: {

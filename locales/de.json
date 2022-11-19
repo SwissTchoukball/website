@@ -189,10 +189,13 @@
     "amountMembers": "Zurzeit zählt Swiss Tchoukball {amount} Mitgliederclubs.",
     "logoOf": "Logo von {name}"
   },
-  "staff": {
-    "title": "Staff",
-    "description": "Alle Personen, die bei Swiss Tchoukball involviert sind",
-    "all": "Alle"
+  "structure": {
+    "title": "Struktur",
+    "staff": {
+      "title": "Staff",
+      "slug": "staff",
+      "description": "Alle Personen, die bei Swiss Tchoukball involviert sind"
+    }
   },
   "regionalAssociations": {
     "title": "Regionalverbände",
