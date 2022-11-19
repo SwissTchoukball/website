@@ -6,23 +6,11 @@
     <template v-else>
       <h2 class="t-headline-1">{{ $tc('season.name', 1) }} {{ season.name }}</h2>
       <h3 class="t-headline-2">{{ $t('competitions.title') }}</h3>
-      <p class="l-paragraph">
-        <ul class="c-season__list l-link-list">
-          <li v-for="competitionEdition in competitionEditions" :key="competitionEdition.id" class="l-link-list-item">
-            <nuxt-link
-              class="c-season__item-link"
-              :to="
-                localePath({
-                  name: 'competitions-competition-season',
-                  params: { season: season.slug, competition: competitionEdition.competition.slug },
-                })
-              "
-            >
-              {{ competitionEdition.name }}
-            </nuxt-link>
-          </li>
-        </ul>
-      </p>
+      <st-link-list
+        :items="competitionEditionsNavigation"
+        :name="$t('otherNavigation', { name: `${$t('competitions.title')} ${season.name}` })"
+        class="c-season__competition-list"
+      />
     </template>
   </section>
 </template>
@@ -33,6 +21,7 @@ import { Collection, Item } from '@vuex-orm/core';
 import CompetitionEdition from '~/models/competition-edition.model';
 import Season from '~/models/season.model';
 import { BreadcrumbItem } from '~/components/st-breadcrumb.vue';
+import { MenuItem } from '~/store/state';
 
 export default Vue.extend({
   nuxtI18n: {
@@ -49,7 +38,7 @@ export default Vue.extend({
           displayName: this.$tc('season.name', 2),
         },
       ] as BreadcrumbItem[],
-    }
+    };
   },
   async fetch() {
     await this.$store.dispatch('loadCompetitionsOfSeason', this.$route.params.season);
@@ -66,6 +55,17 @@ export default Vue.extend({
         })
         .all();
     },
+    competitionEditionsNavigation(): MenuItem[] {
+      return this.competitionEditions.map((competitionEdition) => {
+        return {
+          name: competitionEdition.name,
+          href: this.localePath({
+            name: 'competitions-competition-season',
+            params: { season: this.season?.slug || '', competition: competitionEdition.competition.slug },
+          }),
+        };
+      });
+    },
   },
 });
 </script>
@@ -75,7 +75,7 @@ export default Vue.extend({
   margin-top: var(--st-length-spacing-s);
 }
 
-.c-season__list {
+.c-season__competition-list {
   margin-top: var(--st-length-spacing-s);
 }
 </style>
