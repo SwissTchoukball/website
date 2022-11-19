@@ -597,17 +597,11 @@ const cmsService: Plugin = (context, inject) => {
       throw new Error('Error when retrieving events');
     }
 
-    console.log({ currentLocale });
-
     events = response.data.reduce((events, directusEvent) => {
-      console.dir({ directusEvent }, { depth: 5 });
-
       const translatedFields = getTranslatedFields(directusEvent, currentLocale);
       if (!directusEvent?.date_start || !translatedFields?.name) {
         return events;
       }
-
-      console.log({ translatedFields });
 
       let isFullDay = true;
       let showEndTime = false;
