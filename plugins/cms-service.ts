@@ -1,8 +1,9 @@
 import { Plugin } from '@nuxt/types';
 import { set } from 'date-fns';
-import { Filter, PartialItem } from '@directus/sdk';
+import { Filter, OneItem, PartialItem } from '@directus/sdk';
 import { Await } from '~/types/types.utils';
 import {
+  DirectusEvent,
   DirectusFile,
   DirectusNationalCompetitionEdition,
   DirectusResource,
@@ -80,6 +81,7 @@ export interface CMSService {
     withImageOnly?: boolean;
   }) => Promise<{ data: NewsEntry[]; meta: { total: number; filteredDomainName?: string } }>;
   getOneNews: (newsId: number) => Promise<NewsEntry>;
+  getEvent: (eventId: number) => Promise<CalendarEvent>;
   getEvents: (options: {
     limit: number;
     page: number;
@@ -492,6 +494,94 @@ const cmsService: Plugin = (context, inject) => {
     return newsEntry;
   };
 
+  const processEvent = (directusEvent: PartialItem<DirectusEvent>, locale: string): CalendarEvent => {
+    const translatedFields = getTranslatedFields(directusEvent, locale);
+    if (!directusEvent?.date_start || !translatedFields?.name) {
+      throw new Error('Event is missing name or start date');
+    }
+
+    let isFullDay = true;
+    let showEndTime = false;
+
+    let startDate = new Date(directusEvent.date_start);
+    if (directusEvent.time_start) {
+      const startTime = directusEvent.time_start.split(':').map((t) => parseInt(t));
+      startDate = set(startDate, { hours: startTime[0], minutes: startTime[1] });
+      isFullDay = false;
+    }
+
+    let endDate: Date;
+    if (directusEvent.date_end) {
+      endDate = new Date(directusEvent.date_end);
+    } else {
+      endDate = startDate;
+    }
+    if (!isFullDay && directusEvent.time_end) {
+      const endTime = directusEvent.time_end.split(':').map((t) => parseInt(t));
+      endDate = set(endDate, { hours: endTime[0], minutes: endTime[1] });
+      showEndTime = true;
+    }
+
+    let venue: Venue | undefined;
+    if (directusEvent.venue) {
+      venue = directusEvent.venue;
+    } else if (directusEvent.venue_other) {
+      venue = {
+        name: directusEvent.venue_other,
+      };
+    }
+
+    const event: CalendarEvent = {
+      ...(directusEvent as any),
+      name: translatedFields.name,
+      description: translatedFields.description,
+      date_start: startDate,
+      date_end: endDate,
+      isFullDay,
+      showEndTime,
+      venue,
+    };
+
+    return event;
+  };
+
+  const getEvent: CMSService['getEvent'] = async (eventId) => {
+    let response: OneItem<DirectusEvent>;
+    try {
+      response = await context.$directus.items('events').readOne(eventId, {
+        fields: [
+          'id',
+          'translations.languages_code',
+          'translations.name',
+          'translations.description',
+          'date_start',
+          'time_start',
+          'date_end',
+          'time_end',
+          'status',
+          'venue.id',
+          'venue.name',
+          'venue.city',
+          'venue.address',
+          'venue_other',
+          'image.id',
+          'image.description',
+          'url',
+          'type',
+        ],
+      });
+    } catch (error) {
+      console.error('Error when retrieving event');
+      throw error;
+    }
+
+    if (!response) {
+      throw new Error('No event found for requested ID');
+    }
+
+    return processEvent(response, context.i18n.locale);
+  };
+
   const getEvents: CMSService['getEvents'] = async ({ limit, page, typeId, month, upcoming, excludeCancelled }) => {
     const currentLocale = context.i18n.locale;
 
@@ -598,54 +688,65 @@ const cmsService: Plugin = (context, inject) => {
     }
 
     events = response.data.reduce((events, directusEvent) => {
-      const translatedFields = getTranslatedFields(directusEvent, currentLocale);
-      if (!directusEvent?.date_start || !translatedFields?.name) {
+      let event: CalendarEvent;
+      try {
+        event = processEvent(directusEvent, currentLocale);
+      } catch (error) {
+        console.warn(`Could not process event with ID ${directusEvent.id}`);
+        console.error(error);
         return events;
       }
 
-      let isFullDay = true;
-      let showEndTime = false;
-
-      let startDate = new Date(directusEvent.date_start);
-      if (directusEvent.time_start) {
-        const startTime = directusEvent.time_start.split(':').map((t) => parseInt(t));
-        startDate = set(startDate, { hours: startTime[0], minutes: startTime[1] });
-        isFullDay = false;
-      }
-
-      let endDate: Date;
-      if (directusEvent.date_end) {
-        endDate = new Date(directusEvent.date_end);
-      } else {
-        endDate = startDate;
-      }
-      if (!isFullDay && directusEvent.time_end) {
-        const endTime = directusEvent.time_end.split(':').map((t) => parseInt(t));
-        endDate = set(endDate, { hours: endTime[0], minutes: endTime[1] });
-        showEndTime = true;
-      }
-
-      let venue: Venue | undefined;
-      if (directusEvent.venue) {
-        venue = directusEvent.venue;
-      } else if (directusEvent.venue_other) {
-        venue = {
-          name: directusEvent.venue_other,
-        };
-      }
-
-      const event: CalendarEvent = {
-        ...(directusEvent as any),
-        name: translatedFields.name,
-        description: translatedFields.description,
-        date_start: startDate,
-        date_end: endDate,
-        isFullDay,
-        showEndTime,
-        venue,
-      };
-
       return [...events, event];
+
+      // const translatedFields = getTranslatedFields(directusEvent, currentLocale);
+      // if (!directusEvent?.date_start || !translatedFields?.name) {
+      //   return events;
+      // }
+
+      // let isFullDay = true;
+      // let showEndTime = false;
+
+      // let startDate = new Date(directusEvent.date_start);
+      // if (directusEvent.time_start) {
+      //   const startTime = directusEvent.time_start.split(':').map((t) => parseInt(t));
+      //   startDate = set(startDate, { hours: startTime[0], minutes: startTime[1] });
+      //   isFullDay = false;
+      // }
+
+      // let endDate: Date;
+      // if (directusEvent.date_end) {
+      //   endDate = new Date(directusEvent.date_end);
+      // } else {
+      //   endDate = startDate;
+      // }
+      // if (!isFullDay && directusEvent.time_end) {
+      //   const endTime = directusEvent.time_end.split(':').map((t) => parseInt(t));
+      //   endDate = set(endDate, { hours: endTime[0], minutes: endTime[1] });
+      //   showEndTime = true;
+      // }
+
+      // let venue: Venue | undefined;
+      // if (directusEvent.venue) {
+      //   venue = directusEvent.venue;
+      // } else if (directusEvent.venue_other) {
+      //   venue = {
+      //     name: directusEvent.venue_other,
+      //   };
+      // }
+
+      // const event: CalendarEvent = {
+      //   ...(directusEvent as any),
+      //   name: translatedFields.name,
+      //   description: translatedFields.description,
+      //   date_start: startDate,
+      //   date_end: endDate,
+      //   isFullDay,
+      //   showEndTime,
+      //   venue,
+      // };
+
+      // return [...events, event];
     }, [] as CalendarEvent[]);
 
     return {
@@ -1172,6 +1273,7 @@ const cmsService: Plugin = (context, inject) => {
     getText,
     getNews,
     getOneNews,
+    getEvent,
     getEvents,
     getTeam,
     getSeasons,

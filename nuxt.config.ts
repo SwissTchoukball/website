@@ -40,6 +40,7 @@ const config: NuxtConfig = {
     // https://go.nuxtjs.dev/stylelint
     '@nuxtjs/stylelint-module',
     '@nuxtjs/fontawesome',
+    '@nuxtclub/slugify',
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
@@ -133,6 +134,12 @@ const config: NuxtConfig = {
         'faNewspaper',
       ],
       brands: ['faTwitter', 'faInstagram', 'faFacebook', 'faFlickr', 'faYoutube'],
+    },
+  },
+
+  slugify: {
+    globals: {
+      lower: true,
     },
   },
 

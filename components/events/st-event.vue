@@ -59,7 +59,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import { Location } from 'vue-router';
+// import { Location } from 'vue-router';
 import { Store } from 'vuex';
 import { CalendarEvent } from '~/plugins/cms-service';
 import { EventType, EventTypes, RootState } from '~/store/state';
@@ -81,20 +81,11 @@ export default Vue.extend({
     };
   },
   computed: {
-    titleTo(): Location {
-      const location: Location = { hash: `event-${this.event.id}` };
-
-      if (this.$route.query.month || this.$route.query.year) {
-        location.query = {};
-        if (this.$route.query.month) {
-          location.query.month = this.$route.query.month.toString();
-        }
-        if (this.$route.query.year) {
-          location.query.year = this.$route.query.year.toString();
-        }
-      }
-
-      return location;
+    titleTo(): string {
+      return this.localePath({
+        name: 'event-slug',
+        params: { slug: `${this.event.id}-${this.$slugify(this.event.name)}` },
+      });
     },
     time(): string {
       if (this.event.isFullDay) {

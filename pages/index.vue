@@ -21,12 +21,8 @@
             :details="event.venue ? event.venue.name + (event.venue.city ? `, ${event.venue.city}` : '') : ''"
             :to="
               localePath({
-                name: 'calendar',
-                query: {
-                  month: $formatDate(event.date_start, 'M'),
-                  year: $formatDate(event.date_start, 'yyyy'),
-                },
-                hash: `#event-${event.id}`,
+                name: 'event-slug',
+                params: { slug: `${event.id}-${$slugify(event.name)}` },
               })
             "
           />
@@ -249,7 +245,7 @@ export default Vue.extend({
   }
 
   .c-index__event-item {
-    width: 30%;
+    width: 49%;
   }
 
   .c-index__flickr-photo {
