@@ -698,55 +698,6 @@ const cmsService: Plugin = (context, inject) => {
       }
 
       return [...events, event];
-
-      // const translatedFields = getTranslatedFields(directusEvent, currentLocale);
-      // if (!directusEvent?.date_start || !translatedFields?.name) {
-      //   return events;
-      // }
-
-      // let isFullDay = true;
-      // let showEndTime = false;
-
-      // let startDate = new Date(directusEvent.date_start);
-      // if (directusEvent.time_start) {
-      //   const startTime = directusEvent.time_start.split(':').map((t) => parseInt(t));
-      //   startDate = set(startDate, { hours: startTime[0], minutes: startTime[1] });
-      //   isFullDay = false;
-      // }
-
-      // let endDate: Date;
-      // if (directusEvent.date_end) {
-      //   endDate = new Date(directusEvent.date_end);
-      // } else {
-      //   endDate = startDate;
-      // }
-      // if (!isFullDay && directusEvent.time_end) {
-      //   const endTime = directusEvent.time_end.split(':').map((t) => parseInt(t));
-      //   endDate = set(endDate, { hours: endTime[0], minutes: endTime[1] });
-      //   showEndTime = true;
-      // }
-
-      // let venue: Venue | undefined;
-      // if (directusEvent.venue) {
-      //   venue = directusEvent.venue;
-      // } else if (directusEvent.venue_other) {
-      //   venue = {
-      //     name: directusEvent.venue_other,
-      //   };
-      // }
-
-      // const event: CalendarEvent = {
-      //   ...(directusEvent as any),
-      //   name: translatedFields.name,
-      //   description: translatedFields.description,
-      //   date_start: startDate,
-      //   date_end: endDate,
-      //   isFullDay,
-      //   showEndTime,
-      //   venue,
-      // };
-
-      // return [...events, event];
     }, [] as CalendarEvent[]);
 
     return {
