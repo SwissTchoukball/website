@@ -41,6 +41,10 @@
         />
       </template>
       <p v-else class="l-blank-slate-message">{{ $t('events.noneThisMonth', { month: monthName }) }}</p>
+
+      <st-link-action :href="icsUrl" class="c-events__past-events-link">
+        {{ $t('events.subscribe') }}
+      </st-link-action>
     </template>
   </section>
 </template>
@@ -159,6 +163,9 @@ export default Vue.extend({
         previousYear = parseInt(this.year) - 1;
       }
       return this.localePath({ query: { month: previousMonth, year: previousYear } });
+    },
+    icsUrl(): string {
+      return `https://feeds.tchoukball.ch/events/all-${this.$i18n.locale}.ics`;
     },
   },
   watch: {

@@ -75,7 +75,8 @@
     "showPastEvents": "Afficher les événements passés en {month}",
     "showUpcomingEventsOnly": "Afficher uniquement les événements à venir en {month}",
     "goToEvents": "Accéder à tous les événements",
-    "goToCurrentMonth": "Aller au mois en cours"
+    "goToCurrentMonth": "Aller au mois en cours",
+    "subscribe": "S'abonner au calendrier Swiss Tchoukball"
   },
   "season": {
     "name": "Saison | Saison | Saisons",
