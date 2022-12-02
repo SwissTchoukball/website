@@ -10,7 +10,7 @@
       <p v-if="!events.length" class="l-blank-slate-message">{{ $t('events.noneThisMonth', { month: monthName }) }}</p>
       <template v-else>
         <st-link-action
-          v-if="showUpcomingEventsOnly && events.length !== upcomingEvents.length"
+          v-if="showUpcomingEventsOnly && arePastEventsThisMonth"
           class="c-calendar-list__past-events-link"
           @click="showUpcomingEventsOnly = false"
         >
@@ -73,7 +73,17 @@ export default (Vue as VueConstructor<Vue & InstanceType<typeof monthParamsMixin
     }
 
     this.events = eventsResult.data;
-    this.upcomingEvents = this.events.filter((event) => event.date_start >= new Date());
+    this.upcomingEvents = this.events.filter((event) => event.date_end >= new Date());
+
+    const now = new Date();
+    if (
+      this.arePastEventsThisMonth &&
+      this.upcomingEvents.length > 0 &&
+      now.getFullYear() === this.year &&
+      now.getMonth() + 1 === this.month
+    ) {
+      this.showUpcomingEventsOnly = true;
+    }
 
     // We load the event types only if we don't have them already
     if (!this.$store.state.eventTypes) {
@@ -94,18 +104,12 @@ export default (Vue as VueConstructor<Vue & InstanceType<typeof monthParamsMixin
     };
   },
   computed: {
-    areUpcomingEventsThisMonth(): boolean {
-      return !!this.upcomingEvents.length;
+    arePastEventsThisMonth(): boolean {
+      return this.events.length !== this.upcomingEvents.length;
     },
     visibleEvents(): CalendarEvent[] {
       return this.showUpcomingEventsOnly ? this.upcomingEvents : this.events;
     },
-  },
-  created() {
-    const now = new Date();
-    if (this.areUpcomingEventsThisMonth && now.getFullYear() === this.year && now.getMonth() + 1 === this.month) {
-      this.showUpcomingEventsOnly = true;
-    }
   },
   methods: {
     async getEvents(): ReturnType<CMSService['getEvents']> {
