@@ -24,15 +24,7 @@
           {{ $t('events.showUpcomingEventsOnly', { month: monthName }) }}
         </st-link-action>
 
-        <template v-if="visibleEvents.length">
-          <st-event
-            v-for="event of visibleEvents"
-            :id="`event-${event.id}`"
-            :key="`event-${event.id}`"
-            :event="event"
-            class="c-calendar-list__event"
-          />
-        </template>
+        <st-event-list v-if="visibleEvents.length" :events="visibleEvents" class="c-calendar-list__events" />
       </template>
     </template>
   </section>
@@ -40,7 +32,7 @@
 
 <script lang="ts">
 import Vue, { VueConstructor } from 'vue';
-import stEvent from '~/components/events/st-event.vue';
+import stEventList from '~/components/events/st-event-list.vue';
 import stCalendarNav from '~/components/events/st-calendar-nav.vue';
 import { CalendarEvent, CMSService } from '~/plugins/cms-service';
 import monthParamsMixin from '~/mixins/month-params.mixin';
@@ -53,7 +45,7 @@ export default (Vue as VueConstructor<Vue & InstanceType<typeof monthParamsMixin
     },
   },
   components: {
-    stEvent,
+    stEventList,
     stCalendarNav,
   },
   mixins: [monthParamsMixin],
@@ -137,7 +129,7 @@ export default (Vue as VueConstructor<Vue & InstanceType<typeof monthParamsMixin
   font-size: 0.8em;
 }
 
-.c-calendar-list__event {
+.c-calendar-list__events {
   margin-top: var(--st-length-spacing-s);
 }
 </style>

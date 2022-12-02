@@ -15,7 +15,15 @@
           <nuxt-link :to="titleTo" class="c-event__name-link">{{ event.name }}</nuxt-link>
           <st-cancelled-label v-if="isCancelled" class="c-event__cancelled-label" />
         </h3>
-        <div v-if="eventType.name" class="c-event__type">{{ eventType.name }}</div>
+        <nuxt-link
+          v-if="eventType.name"
+          :to="
+            localePath({ name: 'events-slug', params: { slug: `${eventType.id}-${$slugify(eventType.name_plural)}` } })
+          "
+          class="c-event__type"
+        >
+          {{ eventType.name }}
+        </nuxt-link>
       </header>
       <st-link-action v-if="!areInfoVisible" class="c-event__show-info-action" @click="showInfo">
         {{ $t('events.showInfo') }}
@@ -329,6 +337,7 @@ export default Vue.extend({
   .c-event__type {
     padding-top: 0;
     padding-left: var(--st-length-spacing-xs);
+    text-decoration: none;
   }
 
   .c-event__name {

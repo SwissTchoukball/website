@@ -76,6 +76,10 @@
     "goToEvents": "Accéder à tous les événements",
     "goToCurrentMonth": "Aller au mois en cours",
     "subscribe": "S'abonner au calendrier Swiss Tchoukball",
+    "eventTypeUpcoming": {
+      "title": "{name} à venir",
+      "none": "Il n'y a pas d'événements de type «{name}» à venir."
+    },
     "switch": {
       "list": "Passer à la vue en liste",
       "month": "Passer à la vue calendaire"

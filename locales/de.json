@@ -76,6 +76,10 @@
     "goToEvents": "Alle Ereignisse ansehen",
     "goToCurrentMonth": "Zum aktuellen Monat springen",
     "subscribe": "Swiss Tchoukball Kalender abonnieren",
+    "eventTypeUpcoming": {
+      "title": "Anstehende {name}",
+      "none": "Es stehen keine Ereignisse vom Typ «{name}» an."
+    },
     "switch": {
       "list": "Zur Listenansicht wechseln",
       "month": "Zur Kalenderansicht wechseln"

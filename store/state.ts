@@ -11,6 +11,7 @@ export interface MenuItem {
 export interface EventType {
   id: number;
   name: string;
+  name_plural: string;
   image?: DirectusImage;
 }
 

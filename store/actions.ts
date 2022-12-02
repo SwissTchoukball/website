@@ -203,13 +203,20 @@ export default {
         // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
         translations: { _filter: { languages_code: { _eq: locale } } },
       },
-      fields: ['id', 'translations.languages_code', 'translations.name', 'image.id', 'image.description'],
+      fields: [
+        'id',
+        'translations.languages_code',
+        'translations.name',
+        'translations.name_plural',
+        'image.id',
+        'image.description',
+      ],
     });
 
     const types = eventTypes.data?.reduce((types, type) => {
       const translatedFields = getTranslatedFields(type);
 
-      if (!type?.id || !translatedFields?.name) {
+      if (!type?.id || !translatedFields?.name || !translatedFields?.name_plural) {
         return types;
       }
 
@@ -218,6 +225,7 @@ export default {
         [type.id]: {
           id: type.id,
           name: translatedFields.name,
+          name_plural: translatedFields.name_plural,
           image: type.image,
         },
       };

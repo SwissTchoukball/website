@@ -84,7 +84,7 @@ export interface CMSService {
   getEvent: (eventId: number) => Promise<CalendarEvent>;
   getEvents: (options: {
     limit: number;
-    page: number;
+    page?: number;
     typeId?: number;
     startDateBefore?: Date;
     startDateAfter?: Date;
