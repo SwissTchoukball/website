@@ -52,7 +52,7 @@ export default Vue.extend({
   },
   computed: {
     monthName(): string {
-      return this.$formatDate(new Date(`${this.year}-${this.month}-01`), 'MMMM yyyy');
+      return this.$formatDate(new Date(this.year, this.month - 1, 1), 'MMMM yyyy');
     },
     nextMonthLink(): string {
       let nextMonth = this.month + 1;

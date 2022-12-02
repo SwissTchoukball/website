@@ -100,7 +100,7 @@ export default Vue.extend({
   },
   computed: {
     startOfMonth(): Date {
-      return startOfMonth(new Date(this.year, this.month, -1));
+      return startOfMonth(new Date(this.year, this.month - 1));
     },
     firstDay(): Date {
       return startOfWeek(this.startOfMonth, { weekStartsOn: 1 });
