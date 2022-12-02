@@ -71,12 +71,15 @@
     "previousMonth": "Vorhergehender Monat",
     "nextMonth": "Nächster Monat",
     "noneThisMonth": "Im {month} sind keine Ereignisse geplant.",
-    "noneUpcomingThisMonth": "Im {month} sind keine weiteren Ereignisse geplant.",
     "showPastEvents": "Die vergangenen Ereignisse im {month} anzeigen",
     "showUpcomingEventsOnly": "Nur geplante Ereignisse im {month} anzeigen",
     "goToEvents": "Alle Ereignisse ansehen",
     "goToCurrentMonth": "Zum aktuellen Monat springen",
-    "subscribe": "Swiss Tchoukball Kalender abonnieren"
+    "subscribe": "Swiss Tchoukball Kalender abonnieren",
+    "switch": {
+      "list": "Zur Listenansicht wechseln",
+      "month": "Zur Kalenderansicht wechseln"
+    }
   },
   "season": {
     "name": "Saison | Saison | Saisonen",

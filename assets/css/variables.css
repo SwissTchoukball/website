@@ -5,8 +5,10 @@
   --st-color-red-swiss-tchoukball: #f00;
   --st-color-red-swiss-tchoukball-light: #ff4e4e;
   --st-color-red-swiss-tchoukball-very-light: #ff9d9d;
+  --st-color-red-swiss-tchoukball-ultra-light: #ffd8d8;
   --st-color-red-swiss-tchoukball-dark: #b10000;
   --st-color-red-swiss-tchoukball-very-dark: #620000;
+  --st-color-red-swiss-tchoukball-ultra-dark: #270000;
 
   /* Greys */
   --st-color-grey-very-dark: #1a1a1a;
@@ -18,7 +20,7 @@
   /* COLOR USAGE */
 
   /* Core */
-  --st-color-text: black;
+  --st-color-text: var(--st-color-grey-very-dark);
   --st-color-text-lighter: var(--st-color-grey-dark);
   --st-color-error: var(--st-color-red-swiss-tchoukball);
   --st-color-main-content-alternative-background: var(--st-color-grey-very-light);
@@ -103,6 +105,14 @@
   --st-color-event-month-switch-link: var(--st-color-red-swiss-tchoukball);
   --st-color-event-cancelled-label: var(--st-color-red-swiss-tchoukball);
   --st-color-event-address-toggle-marker: var(--st-color-grey-dark);
+
+  /* Month calendar */
+  --st-color-calendar-border: var(--st-color-grey-light);
+  --st-color-calendar-today-foreground: white;
+  --st-color-calendar-today-background: var(--st-color-red-swiss-tchoukball);
+  --st-color-calendar-day-not-in-month-color: var(--st-color-grey);
+  --st-color-calendar-event-time: var(--st-color-grey-dark);
+  --st-color-calendar-event-background: var(--st-color-red-swiss-tchoukball-ultra-light);
 
   /* National teams */
   --st-color-national-team-result-location: var(--st-color-grey-dark);

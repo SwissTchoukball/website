@@ -86,6 +86,10 @@ export interface CMSService {
     limit: number;
     page: number;
     typeId?: number;
+    startDateBefore?: Date;
+    startDateAfter?: Date;
+    endDateBefore?: Date;
+    endDateAfter?: Date;
     month?: string;
     upcoming?: boolean;
     excludeCancelled?: boolean;
@@ -582,7 +586,18 @@ const cmsService: Plugin = (context, inject) => {
     return processEvent(response, context.i18n.locale);
   };
 
-  const getEvents: CMSService['getEvents'] = async ({ limit, page, typeId, month, upcoming, excludeCancelled }) => {
+  const getEvents: CMSService['getEvents'] = async ({
+    limit,
+    page,
+    typeId,
+    month,
+    startDateBefore,
+    startDateAfter,
+    endDateBefore,
+    endDateAfter,
+    upcoming,
+    excludeCancelled,
+  }) => {
     const currentLocale = context.i18n.locale;
 
     // Preparing the filter to retrieve the events
@@ -630,6 +645,42 @@ const cmsService: Plugin = (context, inject) => {
       };
     }
 
+    let startDateBeforeFilter: any;
+    if (startDateBefore) {
+      startDateBeforeFilter = {
+        date_start: {
+          _lte: startDateBefore.toISOString(),
+        },
+      };
+    }
+
+    let startDateAfterFilter: any;
+    if (startDateAfter) {
+      startDateAfterFilter = {
+        date_start: {
+          _gte: startDateAfter.toISOString(),
+        },
+      };
+    }
+
+    let endDateBeforeFilter: any;
+    if (endDateBefore) {
+      endDateBeforeFilter = {
+        date_start: {
+          _lte: endDateBefore.toISOString(),
+        },
+      };
+    }
+
+    let endDateAfterFilter: any;
+    if (endDateAfter) {
+      endDateAfterFilter = {
+        date_start: {
+          _gte: endDateAfter.toISOString(),
+        },
+      };
+    }
+
     let upcomingFilter: any;
     if (upcoming) {
       upcomingFilter = {
@@ -646,6 +697,18 @@ const cmsService: Plugin = (context, inject) => {
     if (monthFilter) {
       filter._and.push(monthFilter);
     }
+    if (startDateBeforeFilter) {
+      filter._and.push(startDateBeforeFilter);
+    }
+    if (startDateAfterFilter) {
+      filter._and.push(startDateAfterFilter);
+    }
+    if (endDateBeforeFilter) {
+      filter._and.push(endDateBeforeFilter);
+    }
+    if (endDateAfterFilter) {
+      filter._and.push(endDateAfterFilter);
+    }
     if (upcomingFilter) {
       filter._and.push(upcomingFilter);
     }
@@ -653,7 +716,7 @@ const cmsService: Plugin = (context, inject) => {
     const response = await context.$directus.items('events').readByQuery({
       meta: 'filter_count',
       limit,
-      page,
+      page: page || 1,
       filter,
       fields: [
         'id',

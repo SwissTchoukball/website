@@ -71,12 +71,15 @@
     "previousMonth": "Mois précédent",
     "nextMonth": "Mois suivant",
     "noneThisMonth": "Il n'y a pas d'événement en {month}.",
-    "noneUpcomingThisMonth": "Il n'y a pas d'événement à venir en {month}.",
     "showPastEvents": "Afficher les événements passés en {month}",
     "showUpcomingEventsOnly": "Afficher uniquement les événements à venir en {month}",
     "goToEvents": "Accéder à tous les événements",
     "goToCurrentMonth": "Aller au mois en cours",
-    "subscribe": "S'abonner au calendrier Swiss Tchoukball"
+    "subscribe": "S'abonner au calendrier Swiss Tchoukball",
+    "switch": {
+      "list": "Passer à la vue en liste",
+      "month": "Passer à la vue calendaire"
+    }
   },
   "season": {
     "name": "Saison | Saison | Saisons",
