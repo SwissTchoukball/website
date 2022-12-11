@@ -1,14 +1,10 @@
 <template>
   <section class="l-main-content-section">
-    <h2 class="t-headline-1">{{ $t('newsletter.title') }}</h2>
-    <p class="l-paragraph">{{ $t('newsletter.description') }}</p>
+    <h2 class="t-headline-1">{{ $t(`newsletter.${selectedNewsletter}.title`) }}</h2>
+    <p class="l-paragraph">{{ $t(`newsletter.${selectedNewsletter}.description`) }}</p>
     <form method="post" action="https://newsletter.infomaniak.com/external/submit" class="l-form c-newsletter__form">
       <input type="email" name="email" style="display: none" />
-      <input
-        type="hidden"
-        name="key"
-        value="eyJpdiI6IjZWTmtncjJqTUh5ZmZ1Y3pmYkw3SXFOdVB0YTV3RkpPM3ZjaFZ1TmVIN2M9IiwidmFsdWUiOiJibmh4Qjl4NnRMSlI0cnJJZmFyK3dNN1FcLzVEU1dLYlpPUkFERGlxR0xkTT0iLCJtYWMiOiJjMDQyOWFlNTZmYTljMjNhZDQ4M2FlZDkyYmQ2NTY0ZjEyMzk2Yzk4ZGU2MWFmMmNlMzhhYjNkNTM2MzlmZDA3In0="
-      />
+      <input type="hidden" name="key" :value="selectedNewsletterKey" />
       <input type="hidden" name="webform_id" value="239" />
 
       <label for="emailAddress" class="l-form__label">{{ $t('newsletter.emailAddress') }}</label>
@@ -23,7 +19,7 @@
         placeholder="Mail"
       />
       <p class="l-paragraph">
-        <small>{{ $t('newsletter.gdprDisclaimer') }}</small>
+        <small>{{ $t(`newsletter.${selectedNewsletter}.gdprDisclaimer`) }}</small>
       </p>
       <st-button type="submit" primary class="l-form__submit-button">{{ $t('newsletter.register') }}</st-button>
     </form>
@@ -31,21 +27,38 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import Vue, { VueConstructor } from 'vue';
+import newsletterMixin, { NewsletterSlug } from '~/mixins/newsletter.mixin';
 
-export default Vue.extend({
+export default (Vue as VueConstructor<Vue & InstanceType<typeof newsletterMixin>>).extend({
+  mixins: [newsletterMixin],
+  data() {
+    return {
+      newsletterKey: {
+        general:
+          'eyJpdiI6IjZWTmtncjJqTUh5ZmZ1Y3pmYkw3SXFOdVB0YTV3RkpPM3ZjaFZ1TmVIN2M9IiwidmFsdWUiOiJibmh4Qjl4NnRMSlI0cnJJZmFyK3dNN1FcLzVEU1dLYlpPUkFERGlxR0xkTT0iLCJtYWMiOiJjMDQyOWFlNTZmYTljMjNhZDQ4M2FlZDkyYmQ2NTY0ZjEyMzk2Yzk4ZGU2MWFmMmNlMzhhYjNkNTM2MzlmZDA3In0=',
+        instructors:
+          'eyJpdiI6IlVIQldOdWVXR1k2YnRYQUJPVUMzVkVtdjFRaVBYNTJiN3h0UVA5Vk91cFE9IiwidmFsdWUiOiJ6WmFZbXVCbVA4emZDcWRcL2RmS0w1U3FuTDRwR3FTYVNRNXUzMTVlQ1BMWT0iLCJtYWMiOiI2NzY1MDU1MjAxNzQyOWYzZWQ2ODA3NTAwZDgzZjNmYzA1YzVhNTM3ZjZmYzU5YmEwMWM4ZWY4MDcxNDhiNjgxIn0=',
+      },
+    };
+  },
   head() {
     return {
-      title: this.$t('newsletter.headTitle').toString(),
+      title: this.$t(`newsletter.${(this as any).selectedNewsletter}.headTitle`).toString(),
       meta: [
-        { property: 'og:title', content: this.$t('newsletter.title').toString() },
+        { property: 'og:title', content: this.$t(`newsletter.${(this as any).selectedNewsletter}.title`).toString() },
         {
           hid: 'og:description',
           property: 'og:description',
-          content: this.$t('newsletter.description').toString(),
+          content: this.$t(`newsletter.${(this as any).selectedNewsletter}.description`).toString(),
         },
       ],
     };
+  },
+  computed: {
+    selectedNewsletterKey(): string {
+      return this.newsletterKey[this.selectedNewsletter as NewsletterSlug];
+    },
   },
 });
 </script>

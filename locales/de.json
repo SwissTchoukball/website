@@ -261,8 +261,18 @@
     }
   },
   "newsletter": {
-    "headTitle": "Newsletter",
-    "title": "Anmeldung für den Newsletter",
+    "general": {
+      "headTitle": "Newsletter",
+      "title": "Anmeldung für den Newsletter",
+      "description": "Erhalten Sie die aktuellsten Informationen zum Schweizer Tchoukball bis zu vier Mal pro Jahr direkt in Ihre Mailbox.",
+      "gdprDisclaimer": "Ihre E-Mail-Adresse wird nur für den Versand der N"
+    },
+    "instructors": {
+      "headTitle": "LeiterInnen Newsletter",
+      "title": "Informationen für LeiterInnen",
+      "description": "Bleiben Sie auf dem Laufenden mit Informationen von Swiss Tchoukball für LeiterInnen",
+      "gdprDisclaimer": "Ihre E-Mail-Adresse wird nur dazu verwendet, Ihnen relevante Informationen für Tchoukball-Leiter zu senden. Sie können jederzeit den in jeder unserer E-Mails integrierten Abmeldelink nutzen."
+    },
     "confirmation": {
       "title": "Noch eine letzte Sache...",
       "body": "Um zu bestätigen, dass diese Mitteilung wirklich von Ihnen stammt, prüfen Sie Ihren Posteingang und aktivieren Sie Ihr Abonnement."
@@ -271,8 +281,6 @@
       "title": "Anmeldung abgeschlossen!",
       "body": "Wir danken Ihnen für Ihre Anmeldung."
     },
-    "description": "Erhalten Sie die aktuellsten Informationen zum Schweizer Tchoukball bis zu vier Mal pro Jahr direkt in Ihre Mailbox.",
-    "gdprDisclaimer": "Ihre E-Mail-Adresse wird nur für den Versand der N",
     "firstName": "Vorname",
     "lastName": "Name",
     "emailAddress": "E-Mail-Adresse",

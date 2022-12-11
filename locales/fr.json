@@ -261,8 +261,18 @@
     }
   },
   "newsletter": {
-    "headTitle": "Newsletter",
-    "title": "Inscription à la newsletter",
+    "general": {
+      "headTitle": "Newsletter",
+      "title": "Inscription à la newsletter",
+      "description": "Recevez les dernières informations du tchoukball suisse directement dans votre boîte e-mail, jusqu'à quatre fois par année.",
+      "gdprDisclaimer": "Votre adresse de messagerie est uniquement utilisée pour vous envoyer notre newsletter ainsi que des informations concernant nos activités. Vous pouvez à tout moment utiliser le lien de désabonnement intégré dans chacun de nos mails."
+    },
+    "instructors": {
+      "headTitle": "Newsletter moniteur·rice·s",
+      "title": "Informations pour les moniteur·rice·s",
+      "description": "Restez informé des informations de Swiss Tchoukball à destinations des moniteur·rice·s",
+      "gdprDisclaimer": "Votre adresse de messagerie est uniquement utilisée pour vous envoyer des informations pertinentes pour les moniteur·rice·s de tchoukball. Vous pouvez à tout moment utiliser le lien de désabonnement intégré dans chacun de nos mails."
+    },
     "confirmation": {
       "title": "Encore une dernière chose...",
       "body": "Afin de vérifier que vous êtes bien à l'origine de cette demande, merci de consulter votre boîte de réception pour confirmer votre abonnement."
@@ -271,8 +281,6 @@
       "title": "Inscription validée !",
       "body": "Nous vous remercions de votre inscription."
     },
-    "description": "Recevez les dernières informations du tchoukball suisse directement dans votre boîte e-mail, jusqu'à quatre fois par année.",
-    "gdprDisclaimer": "Votre adresse de messagerie est uniquement utilisée pour vous envoyer notre newsletter ainsi que des informations concernant nos activités. Vous pouvez à tout moment utiliser le lien de désabonnement intégré dans chacun de nos mails.",
     "firstName": "Prénom",
     "lastName": "Nom",
     "emailAddress": "Adresse e-mail",
