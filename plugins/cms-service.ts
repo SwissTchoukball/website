@@ -79,6 +79,7 @@ export interface CMSService {
     page: number;
     domainId?: number;
     withImageOnly?: boolean;
+    forHomepage?: boolean;
   }) => Promise<{ data: NewsEntry[]; meta: { total: number; filteredDomainName?: string } }>;
   getOneNews: (newsId: number) => Promise<NewsEntry>;
   getEvent: (eventId: number) => Promise<CalendarEvent>;
@@ -281,7 +282,7 @@ const cmsService: Plugin = (context, inject) => {
     return pageData;
   };
 
-  const getNews: CMSService['getNews'] = async ({ limit, page, domainId, withImageOnly }) => {
+  const getNews: CMSService['getNews'] = async ({ limit, page, domainId, withImageOnly, forHomepage }) => {
     // We retrieve all the languages and show news in fallback locale if not available in current locale
     const currentLocale = context.i18n.locale;
 
@@ -304,12 +305,20 @@ const cmsService: Plugin = (context, inject) => {
       imageFilter = { main_image: { _nnull: true } };
     }
 
+    let homepageFilter: any;
+    if (forHomepage) {
+      homepageFilter = { hide_from_home: { _eq: false } };
+    }
+
     const filter: any = { _and: [publishedFilter] };
     if (domainFilter) {
       filter._and.push(domainFilter);
     }
     if (imageFilter) {
       filter._and.push(imageFilter);
+    }
+    if (homepageFilter) {
+      filter._and.push(homepageFilter);
     }
 
     const newsResponse = await context.$directus.items('news').readByQuery({

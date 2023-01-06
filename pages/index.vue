@@ -134,6 +134,7 @@ export default Vue.extend({
       limit: this.amountNewsInCarousel,
       page: 1,
       withImageOnly: true,
+      forHomepage: true,
     });
 
     // TODO: Consider having other entities than news entries in carousel.
