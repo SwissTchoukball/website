@@ -3,7 +3,7 @@
     <st-breadcrumb :items="breadcrumb" />
     <st-loader v-if="$fetchState.pending" :main="true" />
     <p v-else-if="$fetchState.error">{{ $t('error.otherError') }} : {{ $fetchState.error.message }}</p>
-    <st-event v-else-if="event" :event="event" class="c-event-page__event" />
+    <st-event v-else-if="event" :event="event" :show-year="true" class="c-event-page__event" />
   </section>
 </template>
 

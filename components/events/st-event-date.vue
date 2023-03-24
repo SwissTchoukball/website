@@ -7,12 +7,13 @@
     <span class="c-event-date__week-days">{{ weekDays }}</span>
     <span class="c-event-date__days">{{ days }}</span>
     <span class="c-event-date__months">{{ months }}</span>
+    <span v-if="showYear" class="c-event-date__year">{{ year }}</span>
   </time>
 </template>
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import { isSameDay, isSameMonth } from 'date-fns';
+import { isSameDay, isSameMonth, isSameYear } from 'date-fns';
 
 export default Vue.extend({
   props: {
@@ -24,6 +25,7 @@ export default Vue.extend({
       type: Date as PropType<Date>,
       default: null,
     },
+    showYear: Boolean,
     /**
      * Renders the date on a single line regardless of the viewport,
      * as opposed to the default behaviour which wraps the date on three lines
@@ -38,6 +40,9 @@ export default Vue.extend({
     },
     isWithinSingleMonth(): boolean {
       return !this.endDate || isSameMonth(this.startDate, this.endDate);
+    },
+    isWithinSingleYear(): boolean {
+      return !this.endDate || isSameYear(this.startDate, this.endDate);
     },
     weekDays(): string {
       let weekDays = this.$formatDate(this.startDate, 'EEEE');
@@ -64,6 +69,14 @@ export default Vue.extend({
       }
 
       return months;
+    },
+    year(): string {
+      let year = this.$formatDate(this.startDate, 'yyyy');
+      if (!this.isWithinSingleYear) {
+        year += ` - ${this.$formatDate(this.endDate, 'yyyy')}`;
+      }
+
+      return year;
     },
   },
 });

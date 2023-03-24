@@ -1,7 +1,7 @@
 <template>
   <ul class="u-unstyled-list c-event-list">
     <li v-for="event of events" :key="`event-${event.id}`">
-      <st-event :id="`event-${event.id}`" :event="event" />
+      <st-event :id="`event-${event.id}`" :event="event" :show-year="showYear" />
     </li>
   </ul>
 </template>
@@ -20,6 +20,7 @@ export default Vue.extend({
       type: Array as PropType<CalendarEvent[]>,
       required: true,
     },
+    showYear: Boolean,
   },
 });
 </script>

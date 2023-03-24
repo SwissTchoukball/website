@@ -8,7 +8,12 @@
       :srcset="mainImageSrcSet"
       :sizes="`(min-width: 1400px) 1400px, 96vw`"
     />
-    <st-event-date :start-date="event.date_start" :end-date="event.date_end" :cancelled="isCancelled" />
+    <st-event-date
+      :start-date="event.date_start"
+      :end-date="event.date_end"
+      :show-year="showYear"
+      :cancelled="isCancelled"
+    />
     <div class="c-event__main">
       <header class="c-event__header">
         <h3 class="t-headline-2 c-event__name" :class="{ 'c-event__name--cancelled': isCancelled }">
@@ -81,6 +86,7 @@ export default Vue.extend({
       type: Object as PropType<CalendarEvent>,
       required: true,
     },
+    showYear: Boolean,
   },
   data() {
     return {

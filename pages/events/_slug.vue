@@ -3,7 +3,7 @@
     <st-breadcrumb :items="breadcrumb" />
     <h3 class="t-headline-1">{{ $t('events.eventTypeUpcoming.title', { name: eventTypeName }) }}</h3>
     <template v-if="events.length">
-      <st-event-list :events="events" class="c-event-type-page__events" />
+      <st-event-list :events="events" class="c-event-type-page__events" :show-year="true" />
     </template>
     <p v-else class="c-event-type-page__blank-slate">
       {{ $t('events.eventTypeUpcoming.none', { name: eventTypeName }) }}
