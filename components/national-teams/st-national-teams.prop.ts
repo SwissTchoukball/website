@@ -48,3 +48,11 @@ export interface NationalTeam {
     [year: string]: string;
   };
 }
+
+export interface NationalTeamForCompetition {
+  id: number;
+  competition: NationalTeamCompetition;
+  team: Pick<NationalTeam, 'name'>;
+  players: Player[];
+  coaches: number[];
+}

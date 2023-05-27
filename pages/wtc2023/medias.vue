@@ -16,8 +16,8 @@ import { TextEntry } from '~/plugins/cms-service';
 export default Vue.extend({
   nuxtI18n: {
     paths: {
-      fr: '/etc2022/medias',
-      de: '/etc2022/medien',
+      fr: '/wtc2023/medias',
+      de: '/wtc2023/medien',
     },
   },
   data() {
@@ -26,7 +26,7 @@ export default Vue.extend({
     };
   },
   async fetch() {
-    this.textEntry = await this.$cmsService.getText(2);
+    this.textEntry = await this.$cmsService.getText(8);
   },
 });
 </script>

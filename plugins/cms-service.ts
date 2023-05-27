@@ -13,10 +13,16 @@ import {
 } from '~/plugins/directus';
 import { NewsEntry } from '~/components/news/st-news';
 import { Tchoukup } from '~/components/tchoukup/st-tchoukup';
-import { NationalTeam, NationalTeamResult } from '~/components/national-teams/st-national-teams.prop';
+import {
+  NationalTeam,
+  NationalTeamCompetition,
+  NationalTeamForCompetition,
+  NationalTeamResult,
+} from '~/components/national-teams/st-national-teams.prop';
 import Domain from '~/models/domain.model';
 import Role from '~/models/role.model';
 import Resource from '~/models/resource.model';
+import { processRawPlayers } from '~/plugins/cms-service/national-teams';
 
 export interface SimplePage {
   languages_code: string;
@@ -96,6 +102,10 @@ export interface CMSService {
     excludeCancelled?: boolean;
   }) => Promise<{ data: CalendarEvent[]; meta: { total: number; filteredDomainName?: string } }>;
   getTeam: (teamSlug: string) => Promise<NationalTeam>;
+  getNationalTeamCompetition: (nationalTeamCompetitionId: number) => Promise<NationalTeamCompetition>;
+  getNationalTeamsForCompetition: (
+    nationalTeamCompetitionId: number
+  ) => Promise<Omit<NationalTeamForCompetition, 'competition'>[]>;
   getSeasons: () => Promise<DirectusSeason[]>;
   getNationalCompetition: (competitionSlug: string) => Promise<NationalCompetition>;
   getNationalCompetitionEditions: ({
@@ -856,32 +866,7 @@ const cmsService: Plugin = (context, inject) => {
       throw new Error('No team found');
     }
 
-    let players: any[] = [];
-    if (rawTeam.players) {
-      players = rawTeam.players.map((player) => {
-        if (player?.positions) {
-          return {
-            ...player,
-            positions: player.positions.map((position) => {
-              if (position) {
-                return position.player_positions_id;
-              }
-              return position;
-            }),
-          };
-        }
-        return player;
-      });
-    }
-
-    // We sort the players because the API can't do it yet (only at the root)
-    // Captain first, then alphabetically by last name, and then first name.
-    players = players.sort(
-      (playerA, playerB) =>
-        playerB.is_captain - playerA.is_captain ||
-        playerA.last_name.localeCompare(playerB.last_name) ||
-        playerA.first_name.localeCompare(playerB.first_name)
-    );
+    const players: any[] = processRawPlayers(rawTeam.players);
 
     // We sort the results because the API can't do it yet (only at the root)
     let results: NationalTeamResult[] =
@@ -944,6 +929,130 @@ const cmsService: Plugin = (context, inject) => {
     );
 
     return team;
+  };
+
+  const getNationalTeamCompetition: CMSService['getNationalTeamCompetition'] = async (nationalTeamCompetitionId) => {
+    // We retrieve all the languages and show news in fallback locale if not available in current locale
+    const currentLocale = context.i18n.locale;
+    const competitionResponse = await context.$directus.items('national_team_competitions').readByQuery({
+      limit: 1,
+      filter: {
+        id: nationalTeamCompetitionId,
+      },
+      fields: [
+        'id',
+        'logo',
+        'year',
+        'translations.language_code',
+        'translations.name',
+        'translations.city',
+        'translations.country',
+      ],
+      deep: {
+        // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
+        translations: { _filter: { languages_code: { _eq: currentLocale } } },
+      },
+    });
+
+    if (!competitionResponse?.data) {
+      throw new Error('Error when retrieving national team competition');
+    }
+
+    const rawNationalTeamCompetition = competitionResponse.data[0];
+
+    if (!rawNationalTeamCompetition) {
+      throw new Error('No national team competition found');
+    }
+
+    const translations = getTranslatedFields(rawNationalTeamCompetition);
+
+    if (
+      !rawNationalTeamCompetition?.id ||
+      !rawNationalTeamCompetition.logo ||
+      !rawNationalTeamCompetition.year ||
+      !translations?.name ||
+      !translations.city ||
+      !translations.country
+    ) {
+      throw new Error('National team competition is missing requested fields');
+    }
+
+    return {
+      id: rawNationalTeamCompetition.id,
+      logo: rawNationalTeamCompetition.logo,
+      year: rawNationalTeamCompetition.year,
+      name: translations.name,
+      city: translations.city,
+      country: translations.country,
+    };
+  };
+
+  const getNationalTeamsForCompetition: CMSService['getNationalTeamsForCompetition'] = async (
+    nationalTeamCompetitionId
+  ) => {
+    // We retrieve all the languages and show news in fallback locale if not available in current locale
+    const currentLocale = context.i18n.locale;
+    const teamResponse = await context.$directus.items('national_team_competitions_teams').readByQuery({
+      filter: {
+        competition: {
+          id: nationalTeamCompetitionId,
+        },
+      },
+      fields: [
+        'id',
+        // 'team.translations.languages_code',
+        'team.translations.name',
+        'team.translations.slug',
+        'players.national_team_players_id.id',
+        'players.national_team_players_id.first_name',
+        'players.national_team_players_id.last_name',
+        'players.national_team_players_id.number',
+        'players.national_team_players_id.is_captain',
+        'players.national_team_players_id.birth_year',
+        'players.national_team_players_id.gender',
+        'players.national_team_players_id.club.name',
+        'players.national_team_players_id.positions.player_positions_id',
+        'players.national_team_players_id.date_start',
+        'players.national_team_players_id.date_end',
+        'players.national_team_players_id.track_record',
+        'players.national_team_players_id.portrait_square_head',
+        'coaches.people_id.id',
+        'coaches.people_id.first_name',
+        'coaches.people_id.last_name',
+        'coaches.people_id.gender',
+        'coaches.people_id.email',
+        'coaches.people_id.portrait_square_head',
+      ],
+      deep: {
+        // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
+        team: { translation: { _filter: { language_code: { _eq: currentLocale } } } },
+      },
+    });
+
+    if (!teamResponse?.data) {
+      throw new Error('Error when retrieving national teams for competitions');
+    }
+
+    return teamResponse.data.map((rawTeam) => {
+      if (!rawTeam.id || !rawTeam.team) {
+        throw new Error(`Team for national competition with ID ${rawTeam.id} is missing team or competition`);
+      }
+
+      const teamTranslations = getTranslatedFields(rawTeam.team);
+      if (!teamTranslations?.name || !teamTranslations.slug) {
+        throw new Error(`Team for national competition with ID ${rawTeam.id} is missing requested fields`);
+      }
+
+      return {
+        id: rawTeam.id,
+        team: {
+          name: teamTranslations.name,
+          slug: teamTranslations.slug,
+        },
+        players: processRawPlayers(rawTeam.players?.map((player) => player?.national_team_players_id)) as any[],
+        coaches: rawTeam.coaches?.map((coach) => coach?.people_id) as any[],
+      };
+    });
   };
 
   const getSeasons: CMSService['getSeasons'] = async () => {
@@ -1299,6 +1408,8 @@ const cmsService: Plugin = (context, inject) => {
     getEvent,
     getEvents,
     getTeam,
+    getNationalTeamCompetition,
+    getNationalTeamsForCompetition,
     getSeasons,
     getNationalCompetition,
     getNationalCompetitionEditions,

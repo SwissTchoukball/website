@@ -1,6 +1,5 @@
 <template>
   <div>
-    <h3 class="t-headline-2">{{ $t('internationalCompetition.medias.title') }}</h3>
     <st-loader v-if="$fetchState.pending" :main="true" />
     <p v-else-if="$fetchState.error">{{ $t('error.otherError') }} : {{ $fetchState.error.message }}</p>
     <!-- We have to use v-html here as we get html content directly from Directus -->
@@ -16,8 +15,8 @@ import { TextEntry } from '~/plugins/cms-service';
 export default Vue.extend({
   nuxtI18n: {
     paths: {
-      fr: '/etc2022/medias',
-      de: '/etc2022/medien',
+      fr: '/wytc2023/programme',
+      de: '/wytc2023/programm',
     },
   },
   data() {
@@ -26,7 +25,7 @@ export default Vue.extend({
     };
   },
   async fetch() {
-    this.textEntry = await this.$cmsService.getText(2);
+    this.textEntry = await this.$cmsService.getText(10);
   },
 });
 </script>

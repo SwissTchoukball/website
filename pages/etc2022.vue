@@ -1,10 +1,10 @@
 <template>
   <section class="l-main-content-section">
-    <h2 class="t-headline-1">{{ $t('etc2022.title') }}</h2>
+    <h2 class="t-headline-1">{{ $t('internationalCompetition.etc2022.title') }}</h2>
     <st-navigation
-      :items="etcNavigation"
-      class="c-etc__navigation"
-      :name="$t('otherNavigation', { name: $t('etc2022.title') })"
+      :items="navigation"
+      class="navigation"
+      :name="$t('otherNavigation', { name: $t('internationalCompetition.etc2022.title') })"
       selected-on-exact-active
       small
     />
@@ -19,10 +19,10 @@ import { MenuItem } from '~/store/state';
 export default Vue.extend({
   data() {
     return {
-      etcNavigation: [
-        { name: this.$t('etc2022.navigation.liveNews'), href: this.localePath('etc2022') },
-        { name: this.$t('etc2022.navigation.schedule'), href: this.localePath('etc2022-schedule') },
-        { name: this.$t('etc2022.navigation.medias'), href: this.localePath('etc2022-medias') },
+      navigation: [
+        { name: this.$t('internationalCompetition.navigation.liveNews'), href: this.localePath('etc2022-live') },
+        { name: this.$t('internationalCompetition.navigation.schedule'), href: this.localePath('etc2022-schedule') },
+        { name: this.$t('internationalCompetition.navigation.medias'), href: this.localePath('etc2022-medias') },
       ] as MenuItem[],
     };
   },
@@ -30,7 +30,8 @@ export default Vue.extend({
 </script>
 
 <style scoped>
-.c-etc__navigation {
+.navigation {
   margin-top: var(--st-length-spacing-s);
+  margin-bottom: var(--st-length-spacing-s);
 }
 </style>

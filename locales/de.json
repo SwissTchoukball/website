@@ -296,17 +296,32 @@
     "federation": "Swiss Tchoukball",
     "yearAndLess": "{year} und früher"
   },
-  "etc2022": {
-    "title": "Europameisterschaft 2022",
+  "internationalCompetition": {
     "viewTweets": "Die während des Wettbewerbs veröffentlichten Tweets noch einmal ansehen",
     "navigation": {
       "liveNews": "Live-Infos",
+      "about": "Infos",
       "schedule": "Programm",
-      "medias": "Medien"
+      "medias": "Medien",
+      "teams": "Teams",
+      "team": "Team"
     },
     "medias": {
       "title": "Informationen für Medien",
       "accessPressReleases": "Zu den Pressemitteilungen"
+    },
+    "teams": {
+      "selection": "Auswahl",
+      "coach": "Coach | Coachs"
+    },
+    "etc2022": {
+      "title": "Europameisterschaft 2022"
+    },
+    "wtc2023": {
+      "title": "Weltmeisterschaft 2023"
+    },
+    "wytc2023": {
+      "title": "Jugend-Weltmeisterschaft 2023"
     }
   }
 }
