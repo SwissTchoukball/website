@@ -298,6 +298,7 @@
   },
   "etc2022": {
     "title": "Championnats d'Europe 2022",
+    "viewTweets": "Revoir les tweets publiés durant la compétition",
     "navigation": {
       "liveNews": "Infos en direct",
       "schedule": "Programme",
