@@ -15,6 +15,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
+import { MetaInfo } from 'vue-meta';
 import { NationalTeamCompetition } from '~/components/national-teams/st-national-teams.prop';
 import { getAssetURL } from '~/plugins/directus';
 import { MenuItem } from '~/store/state';
@@ -33,6 +34,24 @@ export default Vue.extend({
   },
   async fetch() {
     this.competition = await this.$cmsService.getNationalTeamCompetition(25);
+  },
+  head(): MetaInfo {
+    const title = this.$t('internationalCompetition.wytc2023.title').toString();
+    const description = this.$t('internationalCompetition.wytc2023.shortDescription').toString();
+
+    const metaInfo: MetaInfo = {
+      title,
+      meta: [
+        { property: 'og:title', content: title },
+        {
+          hid: 'og:description',
+          property: 'og:description',
+          content: description,
+        },
+      ],
+    };
+
+    return metaInfo;
   },
   computed: {
     logoSrc(): string {

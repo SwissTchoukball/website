@@ -315,13 +315,16 @@
       "coach": "Coach | Coachs"
     },
     "etc2022": {
-      "title": "Europameisterschaft 2022"
+      "title": "Europameisterschaft 2022",
+      "shortDescription": "Informationen über die Teilnahme von Schweizer Teams an den Europameisterschaften 2022"
     },
     "wtc2023": {
-      "title": "Weltmeisterschaft 2023"
+      "title": "Weltmeisterschaft 2023",
+      "shortDescription": "Informationen über die Teilnahme von Schweizer Teams an den Weltmeisterschaften 2023"
     },
     "wytc2023": {
-      "title": "Jugend-Weltmeisterschaft 2023"
+      "title": "Jugend-Weltmeisterschaft 2023",
+      "shortDescription": "Informationen zur Teilnahme der Schweizer U18-Männermannschaft an den Jugend-Weltmeisterschaften 2023"
     }
   }
 }

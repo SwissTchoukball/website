@@ -14,6 +14,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
+import { MetaInfo } from 'vue-meta';
 import { MenuItem } from '~/store/state';
 
 export default Vue.extend({
@@ -25,6 +26,24 @@ export default Vue.extend({
         { name: this.$t('internationalCompetition.navigation.medias'), href: this.localePath('etc2022-medias') },
       ] as MenuItem[],
     };
+  },
+  head(): MetaInfo {
+    const title = this.$t('internationalCompetition.etc2022.title').toString();
+    const description = this.$t('internationalCompetition.etc2022.shortDescription').toString();
+
+    const metaInfo: MetaInfo = {
+      title,
+      meta: [
+        { property: 'og:title', content: title },
+        {
+          hid: 'og:description',
+          property: 'og:description',
+          content: description,
+        },
+      ],
+    };
+
+    return metaInfo;
   },
 });
 </script>
