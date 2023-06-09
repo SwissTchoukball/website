@@ -1,5 +1,5 @@
 <template>
-  <div class="c-etc2022">
+  <div>
     <p v-if="$fetchState.error">{{ $t('error.otherError') }} : {{ $fetchState.error.message }}</p>
     <!-- We have to use v-html here as we get html content directly from Directus -->
     <!-- eslint-disable-next-line vue/no-v-html -->
