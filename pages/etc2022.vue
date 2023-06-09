@@ -21,7 +21,7 @@ export default Vue.extend({
   data() {
     return {
       navigation: [
-        { name: this.$t('internationalCompetition.navigation.liveNews'), href: this.localePath('etc2022-live') },
+        { name: this.$t('internationalCompetition.navigation.live'), href: this.localePath('etc2022-live') },
         { name: this.$t('internationalCompetition.navigation.schedule'), href: this.localePath('etc2022-schedule') },
         { name: this.$t('internationalCompetition.navigation.medias'), href: this.localePath('etc2022-medias') },
       ] as MenuItem[],

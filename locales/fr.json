@@ -299,7 +299,7 @@
   "internationalCompetition": {
     "viewTweets": "Revoir les tweets publiés durant la compétition",
     "navigation": {
-      "liveNews": "En direct",
+      "live": "En direct",
       "about": "À propos",
       "schedule": "Programme",
       "medias": "Médias",

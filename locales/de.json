@@ -299,7 +299,7 @@
   "internationalCompetition": {
     "viewTweets": "Die während des Wettbewerbs veröffentlichten Tweets noch einmal ansehen",
     "navigation": {
-      "liveNews": "Live-Infos",
+      "live": "Live-Infos",
       "about": "Infos",
       "schedule": "Programm",
       "medias": "Medien",

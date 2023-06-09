@@ -25,7 +25,7 @@ export default Vue.extend({
     return {
       competition: undefined as NationalTeamCompetition | undefined,
       navigation: [
-        { name: this.$t('internationalCompetition.navigation.liveNews'), href: this.localePath('wtc2023-live') },
+        { name: this.$t('internationalCompetition.navigation.live'), href: this.localePath('wtc2023-live') },
         { name: this.$t('internationalCompetition.navigation.about'), href: this.localePath('wtc2023-about') },
         { name: this.$t('internationalCompetition.navigation.schedule'), href: this.localePath('wtc2023-schedule') },
         { name: this.$t('internationalCompetition.navigation.medias'), href: this.localePath('wtc2023-medias') },
