@@ -2,7 +2,7 @@
 import Vue from 'vue';
 export default Vue.extend({
   asyncData({ redirect, localePath }) {
-    redirect(localePath('wytc2023-live'));
+    redirect(localePath('test1234-live'));
   },
 });
 </script>

@@ -306,6 +306,12 @@
       "teams": "Équipes",
       "team": "Équipe"
     },
+    "live": {
+      "updates": {
+        "title": "Dernières nouvelles",
+        "loadingError": "Erreur lors du chargement des dernières nouvelles"
+      }
+    },
     "medias": {
       "title": "Informations aux médias",
       "accessPressReleases": "Accéder aux communiqués de presse"

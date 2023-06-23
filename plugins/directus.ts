@@ -207,12 +207,28 @@ export interface DirectusPlayer {
 export interface DirectusNationalTeamCompetition {
   id: number;
   year: number;
+  date_start: string;
+  date_end: string;
   logo: string;
   translations: {
     name: string;
     city: string;
     country: string;
   }[];
+}
+
+export type DirectusNationalTeamCompetitionUpdateStatus = 'published' | 'draft' | 'archived';
+
+export interface DirectusNationalTeamCompetitionUpdate {
+  id: number;
+  translations: {
+    body: string;
+  }[];
+  image?: DirectusImage;
+  competition: DirectusNationalTeamCompetition;
+  status: DirectusNationalTeamCompetitionUpdateStatus;
+  date_created: string;
+  date_updated: string;
 }
 
 export interface DirectusTeamResult {
@@ -310,6 +326,7 @@ type CustomTypes = {
   national_teams: DirectusTeam;
   national_team_competitions: DirectusNationalTeamCompetition;
   national_team_competitions_teams: DirectusNationalTeamCompetitionsTeam;
+  national_teams_competitions_updates: DirectusNationalTeamCompetitionUpdate;
   player_positions: DirectusPlayerPosition;
   seasons: DirectusSeason;
   national_competitions: DirectusNationalCompetition;

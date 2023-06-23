@@ -32,6 +32,8 @@
     "date-fns": "^2.30.0",
     "flickr-sdk": "^6.2.1",
     "html-entities": "^2.3.3",
+    "linkify-string": "^4.1.1",
+    "linkifyjs": "^4.1.1",
     "nuxt": "2.15.8",
     "nuxt-mail": "^3.1.45",
     "nuxt-matomo": "^1.2.4",

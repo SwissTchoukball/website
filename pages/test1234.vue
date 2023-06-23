@@ -1,14 +1,9 @@
 <template>
   <section class="l-main-content-section">
     <img v-if="competition" :src="logoSrc" :srcset="logoSrcSet" class="competition-logo" />
-    <h2 class="t-headline-1">{{ $t('internationalCompetition.wytc2023.title') }}</h2>
-    <st-navigation
-      :items="navigation"
-      class="navigation"
-      :name="$t('otherNavigation', { name: $t('internationalCompetition.wytc2023.title') })"
-      small
-    />
-    <nuxt-child :competition="competition" />
+    <h2 class="t-headline-1">Test 1234</h2>
+    <st-navigation :items="navigation" class="navigation" :name="$t('otherNavigation', { name: 'Test 1234' })" small />
+    <nuxt-child v-if="competition" :competition="competition" />
   </section>
 </template>
 
@@ -24,20 +19,16 @@ export default Vue.extend({
     return {
       competition: undefined as NationalTeamCompetition | undefined,
       navigation: [
-        { name: this.$t('internationalCompetition.navigation.live'), href: this.localePath('wytc2023-live') },
-        { name: this.$t('internationalCompetition.navigation.about'), href: this.localePath('wytc2023-about') },
-        { name: this.$t('internationalCompetition.navigation.schedule'), href: this.localePath('wytc2023-schedule') },
-        { name: this.$t('internationalCompetition.navigation.medias'), href: this.localePath('wytc2023-medias') },
-        { name: this.$t('internationalCompetition.navigation.team'), href: this.localePath('wytc2023-teams') },
+        { name: this.$t('internationalCompetition.navigation.live'), href: this.localePath('test1234-live') },
       ] as MenuItem[],
     };
   },
   async fetch() {
-    this.competition = await this.$cmsService.getNationalTeamCompetition(25);
+    this.competition = await this.$cmsService.getNationalTeamCompetition(26);
   },
   head(): MetaInfo {
-    const title = this.$t('internationalCompetition.wytc2023.title').toString();
-    const description = this.$t('internationalCompetition.wytc2023.shortDescription').toString();
+    const title = 'Test 1234';
+    const description = 'Test page for the international competitions';
 
     const metaInfo: MetaInfo = {
       title,

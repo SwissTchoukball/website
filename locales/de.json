@@ -306,6 +306,12 @@
       "teams": "Teams",
       "team": "Team"
     },
+    "live": {
+      "updates": {
+        "title": "Neueste Nachrichten",
+        "loadingError": "Fehler beim Laden der letzten Nachrichten"
+      }
+    },
     "medias": {
       "title": "Informationen für Medien",
       "accessPressReleases": "Zu den Pressemitteilungen"

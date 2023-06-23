@@ -56,13 +56,13 @@ export default Vue.extend({
   },
   computed: {
     logoSrc(): string {
-      if (!this.competition) {
+      if (!this.competition?.logo) {
         return '';
       }
       return getAssetURL(this.$config.cmsURL, this.competition.logo, { width: 180 });
     },
     logoSrcSet(): string {
-      if (!this.competition) {
+      if (!this.competition?.logo) {
         return '';
       }
       return `${getAssetURL(this.$config.cmsURL, this.competition.logo, {

@@ -16,6 +16,7 @@ import { Tchoukup } from '~/components/tchoukup/st-tchoukup';
 import {
   NationalTeam,
   NationalTeamCompetition,
+  NationalTeamCompetitionUpdate,
   NationalTeamForCompetition,
   NationalTeamResult,
 } from '~/components/national-teams/st-national-teams.prop';
@@ -103,6 +104,10 @@ export interface CMSService {
   }) => Promise<{ data: CalendarEvent[]; meta: { total: number; filteredDomainName?: string } }>;
   getTeam: (teamSlug: string) => Promise<NationalTeam>;
   getNationalTeamCompetition: (nationalTeamCompetitionId: number) => Promise<NationalTeamCompetition>;
+  getNationalTeamCompetitionUpdates: (
+    nationalTeamCompetitionId: number,
+    options: { limit: number; page: number }
+  ) => Promise<{ data: NationalTeamCompetitionUpdate[]; meta: { total: number } }>;
   getNationalTeamsForCompetition: (
     nationalTeamCompetitionId: number
   ) => Promise<Omit<NationalTeamForCompetition, 'competition'>[]>;
@@ -943,6 +948,8 @@ const cmsService: Plugin = (context, inject) => {
         'id',
         'logo',
         'year',
+        'date_start',
+        'date_end',
         'translations.language_code',
         'translations.name',
         'translations.city',
@@ -968,7 +975,6 @@ const cmsService: Plugin = (context, inject) => {
 
     if (
       !rawNationalTeamCompetition?.id ||
-      !rawNationalTeamCompetition.logo ||
       !rawNationalTeamCompetition.year ||
       !translations?.name ||
       !translations.city ||
@@ -981,9 +987,75 @@ const cmsService: Plugin = (context, inject) => {
       id: rawNationalTeamCompetition.id,
       logo: rawNationalTeamCompetition.logo,
       year: rawNationalTeamCompetition.year,
+      date_start: rawNationalTeamCompetition.date_start,
+      date_end: rawNationalTeamCompetition.date_end,
       name: translations.name,
       city: translations.city,
       country: translations.country,
+    };
+  };
+
+  const getNationalTeamCompetitionUpdates: CMSService['getNationalTeamCompetitionUpdates'] = async (
+    nationalTeamCompetitionId,
+    { limit, page }
+  ) => {
+    // We retrieve all the languages and show news in fallback locale if not available in current locale
+    const currentLocale = context.i18n.locale;
+    const updatesResponse = await context.$directus.items('national_teams_competitions_updates').readByQuery({
+      meta: 'filter_count',
+      limit,
+      page,
+      filter: {
+        competition: {
+          id: nationalTeamCompetitionId,
+        },
+        status: 'published',
+      },
+      fields: [
+        'id',
+        'translations.body',
+        'translations.languages_code',
+        'image.id',
+        'image.description',
+        'date_created',
+        'date_updated',
+      ],
+      sort: ['-date_created'],
+    });
+
+    let totalUpdates = 0;
+    if (updatesResponse?.meta?.filter_count) {
+      totalUpdates = updatesResponse.meta.filter_count;
+    }
+
+    if (!updatesResponse?.data) {
+      throw new Error('Error when retrieving updates for national team competitions');
+    }
+
+    const updateList = updatesResponse.data.reduce((updates, rawUpdate) => {
+      const updateTranslations = getTranslatedFields(rawUpdate, currentLocale);
+      if (!rawUpdate.id || !rawUpdate.date_created || !updateTranslations?.body) {
+        console.warn(`Update for national team competition with ID ${rawUpdate.id} is missing requested fields`);
+        return updates;
+      }
+
+      return [
+        ...updates,
+        {
+          id: rawUpdate.id,
+          image: rawUpdate.image,
+          body: updateTranslations.body,
+          date_created: rawUpdate.date_created,
+          date_updated: rawUpdate.date_updated,
+        },
+      ];
+    }, [] as NationalTeamCompetitionUpdate[]);
+
+    return {
+      data: updateList,
+      meta: {
+        total: totalUpdates,
+      },
     };
   };
 
@@ -1409,6 +1481,7 @@ const cmsService: Plugin = (context, inject) => {
     getEvents,
     getTeam,
     getNationalTeamCompetition,
+    getNationalTeamCompetitionUpdates,
     getNationalTeamsForCompetition,
     getSeasons,
     getNationalCompetition,

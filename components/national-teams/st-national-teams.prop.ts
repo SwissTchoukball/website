@@ -22,9 +22,19 @@ export interface Player {
 export interface NationalTeamCompetition {
   name: string;
   year: number;
-  logo: string;
+  logo?: string;
   city: string;
   country: string;
+  date_start?: string;
+  date_end?: string;
+}
+
+export interface NationalTeamCompetitionUpdate {
+  id: number;
+  body: string;
+  image?: DirectusImage;
+  date_created: string;
+  date_updated?: string;
 }
 
 export interface NationalTeamResult {
