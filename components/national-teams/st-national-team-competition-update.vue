@@ -71,19 +71,6 @@ export default Vue.extend({
 </script>
 
 <style scoped>
-.c-national-team-competition-update {
-  margin-top: var(--st-length-spacing-s);
-  border-bottom: 1px solid var(--st-color-hr);
-}
-
-.c-national-team-competition-update:first-child {
-  margin-top: var(--st-length-spacing-xs);
-}
-
-.c-national-team-competition-update:last-child {
-  border: none;
-}
-
 .c-national-team-competition-update__time {
   display: block;
   font-size: 0.8em;

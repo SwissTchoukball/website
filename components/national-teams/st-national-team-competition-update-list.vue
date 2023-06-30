@@ -11,7 +11,7 @@
     <template v-else>
       <p v-if="hasRefreshError">{{ $t('internationalCompetition.live.updates.loadingError') }}</p>
       <ul class="u-unstyled-list">
-        <li v-for="update in updates" :key="update.id">
+        <li v-for="update in updates" :key="update.id" class="c-national-team-competition-update-list__item">
           <st-national-team-competition-update :update="update" />
         </li>
       </ul>
@@ -111,6 +111,20 @@ export default Vue.extend({
 <style scoped>
 .c-national-team-competition-update-list__live-indicator {
   transform: translateY(0.3rem);
+}
+
+.c-national-team-competition-update-list__item {
+  margin-top: var(--st-length-spacing-s);
+  padding-bottom: var(--st-length-spacing-xs);
+  border-bottom: 1px solid var(--st-color-hr);
+}
+
+.c-national-team-competition-update-list__item:first-child {
+  margin-top: var(--st-length-spacing-xs);
+}
+
+.c-national-team-competition-update-list__item:last-child {
+  border: none;
 }
 
 .c-national-team-competition-update-list__pagination {
