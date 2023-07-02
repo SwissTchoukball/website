@@ -83,6 +83,7 @@ export default Vue.extend({
 
 .c-national-team-competition-update__body {
   margin-top: var(--st-length-spacing-xxs);
+  white-space: pre-wrap;
 }
 
 .c-national-team-competition-update__image {
