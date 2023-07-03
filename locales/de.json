@@ -89,6 +89,10 @@
     "name": "Saison | Saison | Saisonen",
     "previousSeasonsExplanation": "Die Daten der vorangegangenen Saisonen werden in Kürze importiert."
   },
+  "pressReleases": {
+    "name": "Pressemitteilung | Pressemitteilung | Pressemitteilungen",
+    "previousPressReleases": "Zu den vorherigen Pressemitteilungen"
+  },
   "competitions": {
     "title": "Wettbewerbe",
     "headTitle": {

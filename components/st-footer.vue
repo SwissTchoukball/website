@@ -257,4 +257,12 @@ export default Vue.extend({
     max-width: 11.5rem;
   }
 }
+
+@media print {
+  .c-footer__social,
+  .c-footer__secondary-navigation,
+  .c-footer__newsletter {
+    display: none;
+  }
+}
 </style>

@@ -6,6 +6,7 @@ import {
   DirectusEvent,
   DirectusFile,
   DirectusNationalCompetitionEdition,
+  DirectusPressRelease,
   DirectusResource,
   DirectusRole,
   DirectusSeason,
@@ -24,6 +25,7 @@ import Domain from '~/models/domain.model';
 import Role from '~/models/role.model';
 import Resource from '~/models/resource.model';
 import { processRawPlayers } from '~/plugins/cms-service/national-teams';
+import { PressRelease } from '~/components/press-releases/press-releases';
 
 export interface SimplePage {
   languages_code: string;
@@ -89,6 +91,11 @@ export interface CMSService {
     forHomepage?: boolean;
   }) => Promise<{ data: NewsEntry[]; meta: { total: number; filteredDomainName?: string } }>;
   getOneNews: (newsId: number) => Promise<NewsEntry>;
+  getPressReleaseList: (options: {
+    limit: number;
+    page: number;
+  }) => Promise<{ data: PressRelease[]; meta: { total: number } }>;
+  getPressRelease: (pressReleaseId: number) => Promise<PressRelease>;
   getEvent: (eventId: number) => Promise<CalendarEvent>;
   getEvents: (options: {
     limit: number;
@@ -520,6 +527,102 @@ const cmsService: Plugin = (context, inject) => {
     }
 
     return newsEntry;
+  };
+
+  const processPressRelease = (directusPressRelease: PartialItem<DirectusPressRelease>): PressRelease => {
+    // We retrieve all the languages and show news in fallback locale if not available in current locale
+    const currentLocale = context.i18n.locale;
+
+    const translatedFields = getTranslatedFields(directusPressRelease, currentLocale);
+
+    if (!directusPressRelease.id || !directusPressRelease.date_created || !translatedFields?.title) {
+      throw new Error(`Press release is missing requested fields`);
+    }
+
+    const pressRelease: PressRelease = {
+      id: directusPressRelease.id,
+      title: translatedFields.title,
+      slug: translatedFields.slug,
+      context: translatedFields.context || undefined,
+      body: translatedFields.body || undefined,
+      date_created: directusPressRelease.date_created,
+      date_updated: directusPressRelease.date_updated,
+    };
+
+    return pressRelease;
+  };
+
+  const getPressReleaseList: CMSService['getPressReleaseList'] = async ({ limit, page }) => {
+    // Preparing the filter to retrieve the news
+    const publishedFilter = {
+      status: {
+        _eq: 'published',
+      },
+    };
+
+    const filter: any = { _and: [publishedFilter] };
+
+    const pressReleaseResponse = await context.$directus.items('press_releases').readByQuery({
+      meta: 'filter_count',
+      limit,
+      page,
+      filter,
+      fields: [
+        'id',
+        'date_created',
+        'date_updated',
+        'translations.languages_code',
+        'translations.slug',
+        'translations.title',
+        'translations.context',
+      ],
+      sort: ['-date_created'],
+    });
+
+    let totalPressReleaseEntries = 0;
+    if (pressReleaseResponse?.meta?.filter_count) {
+      totalPressReleaseEntries = pressReleaseResponse.meta.filter_count;
+    }
+
+    let pressReleaseList = [];
+    if (!pressReleaseResponse?.data) {
+      throw new Error('Error when retrieving press releases');
+    }
+
+    pressReleaseList = pressReleaseResponse.data.reduce((pressReleaseList, directusPressRelease) => {
+      if (!directusPressRelease) {
+        return pressReleaseList;
+      }
+      return [...pressReleaseList, processPressRelease(directusPressRelease)];
+    }, [] as PressRelease[]);
+
+    return {
+      data: pressReleaseList,
+      meta: {
+        total: totalPressReleaseEntries,
+      },
+    };
+  };
+
+  const getPressRelease: CMSService['getPressRelease'] = async (pressReleaseId) => {
+    const directusPressRelease = await context.$directus.items('press_releases').readOne(pressReleaseId, {
+      fields: [
+        'id',
+        'date_created',
+        'date_updated',
+        'translations.languages_code',
+        'translations.slug',
+        'translations.title',
+        'translations.context',
+        'translations.body',
+      ],
+    });
+
+    if (!directusPressRelease) {
+      throw new Error('Error when retrieving news');
+    }
+
+    return processPressRelease(directusPressRelease);
   };
 
   const processEvent = (directusEvent: PartialItem<DirectusEvent>, locale: string): CalendarEvent => {
@@ -1478,6 +1581,8 @@ const cmsService: Plugin = (context, inject) => {
     getNews,
     getOneNews,
     getEvent,
+    getPressReleaseList,
+    getPressRelease,
     getEvents,
     getTeam,
     getNationalTeamCompetition,

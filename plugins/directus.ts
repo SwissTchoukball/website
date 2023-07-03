@@ -141,6 +141,19 @@ export interface DirectusNews {
   domains: DirectusNewsDomainPivot[];
 }
 
+export interface DirectusPressRelease {
+  id: number;
+  date_created: string;
+  date_updated?: string;
+  translations: {
+    languages_code: string;
+    context?: string;
+    title: string;
+    slug: string;
+    body: string;
+  }[];
+}
+
 export interface DirectusVenue {
   id: string;
   name: string;
@@ -321,6 +334,7 @@ type CustomTypes = {
   pages: DirectusPage;
   texts: DirectusText;
   news: DirectusNews;
+  press_releases: DirectusPressRelease;
   events: DirectusEvent;
   event_types: DirectusEventType;
   national_teams: DirectusTeam;

@@ -95,6 +95,10 @@
   --st-color-news-image-foreground: var(--st-color-grey);
   --st-color-news-date-foreground: var(--st-color-grey-dark);
 
+  /* Press releases */
+  --st-color-press-release-context-background: var(--st-color-red-swiss-tchoukball);
+  --st-color-press-release-context-foreground: white;
+
   /* Events */
   --st-color-event-background: var(--st-color-grey-very-light);
   --st-color-event-foreground-cancelled: var(--st-color-grey-dark);

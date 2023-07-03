@@ -247,4 +247,13 @@ export default Vue.extend({
     display: none;
   }
 }
+
+@media print {
+  .c-default__header-lang-switcher,
+  .c-default__header-navigation,
+  .c-default__burger-button,
+  .c-default__drawer {
+    display: none;
+  }
+}
 </style>
