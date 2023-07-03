@@ -4,7 +4,15 @@
 
     <ul class="u-unstyled-list c-press-releases__list">
       <li v-for="pressRelease in pressReleaseList" :key="pressRelease.id" class="c-press-releases__list-item">
-        <nuxt-link :to="`${pressRelease.id}-${pressRelease.slug}`" class="c-press-releases__one-link">
+        <nuxt-link
+          :to="
+            localePath({
+              name: 'press-releases-slug',
+              params: { slug: `${pressRelease.id}-${pressRelease.slug}` },
+            })
+          "
+          class="c-press-releases__one-link"
+        >
           <time :datetime="pressRelease.date_created" class="c-press-releases__one-date">
             {{ $formatDate(new Date(pressRelease.date_created), 'dd.MM.yyyy') }}
           </time>
