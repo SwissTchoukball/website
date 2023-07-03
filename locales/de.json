@@ -90,8 +90,8 @@
     "previousSeasonsExplanation": "Die Daten der vorangegangenen Saisonen werden in Kürze importiert."
   },
   "pressReleases": {
-    "name": "Pressemitteilung | Pressemitteilung | Pressemitteilungen",
-    "previousPressReleases": "Zu den vorherigen Pressemitteilungen"
+    "name": "Medienmitteilung | Medienmitteilung | Medienmitteilungen",
+    "previousPressReleases": "Zu den vorherigen Medienmitteilungen"
   },
   "competitions": {
     "title": "Wettbewerbe",
@@ -317,8 +317,7 @@
       }
     },
     "medias": {
-      "title": "Informationen für Medien",
-      "accessPressReleases": "Zu den Pressemitteilungen"
+      "title": "Informationen für Medien"
     },
     "teams": {
       "selection": "Auswahl",

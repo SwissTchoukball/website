@@ -25,7 +25,7 @@ export default Vue.extend({
   nuxtI18n: {
     paths: {
       fr: '/communiques-de-presse/:slug',
-      de: '/pressemitteilungen/:slug',
+      de: '/medienmitteilungen/:slug',
     },
   },
   data() {
