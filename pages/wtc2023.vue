@@ -9,7 +9,7 @@
       selected-on-exact-active
       small
     />
-    <nuxt-child />
+    <nuxt-child :competition="competition" />
   </section>
 </template>
 
