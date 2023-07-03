@@ -132,7 +132,7 @@ export default Vue.extend({
 
 .c-press-release__dates {
   margin-top: var(--st-length-spacing-s);
-  color: var(--st-color-news-date-foreground);
+  color: var(--st-color-press-release-date-foreground);
 }
 
 .c-press-release__dates::first-letter {

@@ -98,6 +98,7 @@
   /* Press releases */
   --st-color-press-release-context-background: var(--st-color-red-swiss-tchoukball);
   --st-color-press-release-context-foreground: white;
+  --st-color-press-release-date-foreground: var(--st-color-grey-dark);
 
   /* Events */
   --st-color-event-background: var(--st-color-grey-very-light);
