@@ -95,7 +95,7 @@ export default Vue.extend({
 }
 
 .c-press-releases__list-item {
-  margin-top: var(--st-length-spacing-xs);
+  margin-top: var(--st-length-spacing-s);
 }
 
 .c-press-releases__one-link {
@@ -115,11 +115,12 @@ export default Vue.extend({
 }
 
 .c-press-releases__one-title {
-  font-weight: bold;
+  font-weight: 900;
+  font-size: 1.5rem;
   color: var(--st-color-link);
 }
 
 .c-press-releases__previous {
-  margin-top: var(--st-length-spacing-s);
+  margin-top: var(--st-length-spacing-m);
 }
 </style>
