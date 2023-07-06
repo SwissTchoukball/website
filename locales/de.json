@@ -9,6 +9,10 @@
     "title": "Brotkrümel",
     "home": "Startseite"
   },
+  "languages": {
+    "french": "Französisch",
+    "german": "Deutsch"
+  },
   "backHome": "Zurück zur Startseite",
   "photos": {
     "latestAlbums": "Letzte Alben",
@@ -91,6 +95,7 @@
   },
   "pressReleases": {
     "name": "Medienmitteilung | Medienmitteilung | Medienmitteilungen",
+    "subscribe": "Medienmitteilungen abonnieren",
     "previousPressReleases": "Zu den vorherigen Medienmitteilungen"
   },
   "competitions": {
@@ -276,6 +281,18 @@
       "title": "Informationen für LeiterInnen",
       "description": "Bleiben Sie auf dem Laufenden mit Informationen von Swiss Tchoukball für LeiterInnen",
       "gdprDisclaimer": "Ihre E-Mail-Adresse wird nur dazu verwendet, Ihnen relevante Informationen für Tchoukball-Leiter zu senden. Sie können jederzeit den in jeder unserer E-Mails integrierten Abmeldelink nutzen."
+    },
+    "medias-fr": {
+      "headTitle": "Medienmitteilungen auf Französisch",
+      "title": "Abonnement für Medienmitteilungen auf Französisch",
+      "description": "Erhalten Sie die Medienmitteilungen von Swiss Tchoukball auf Französisch per E-Mail.",
+      "gdprDisclaimer": "Ihre E-Mail-Adresse wird ausschließlich dazu verwendet, Ihnen unsere Medienmitteilungen zuzusenden. Sie können jederzeit den Abmeldelink nutzen, der in jeder unserer E-Mails integriert ist."
+    },
+    "medias-de": {
+      "headTitle": "Medienmitteilungen auf Deutsch",
+      "title": "Abonnement für Medienmitteilungen auf Deutsch",
+      "description": "Erhalten Sie die Medienmitteilungen von Swiss Tchoukball auf Deutsch per E-Mail.",
+      "gdprDisclaimer": "Ihre E-Mail-Adresse wird ausschließlich dazu verwendet, Ihnen unsere Medienmitteilungen zuzusenden. Sie können jederzeit den Abmeldelink nutzen, der in jeder unserer E-Mails integriert ist."
     },
     "confirmation": {
       "title": "Noch eine letzte Sache...",

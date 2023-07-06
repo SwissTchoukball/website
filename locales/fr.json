@@ -9,6 +9,10 @@
     "title": "Fil d'Ariane",
     "home": "Accueil"
   },
+  "languages": {
+    "french": "Français",
+    "german": "Allemand"
+  },
   "backHome": "Retour à l'accueil",
   "photos": {
     "latestAlbums": "Derniers albums",
@@ -91,6 +95,7 @@
   },
   "pressReleases": {
     "name": "Communiqué de presse | Communiqué de presse | Communiqués de presse",
+    "subscribe": "S'abonner aux communiqués de presse",
     "previousPressReleases": "Accéder aux précédents communiqués de presse"
   },
   "competitions": {
@@ -276,6 +281,18 @@
       "title": "Informations pour les moniteur·rice·s",
       "description": "Restez informé des informations de Swiss Tchoukball à destinations des moniteur·rice·s",
       "gdprDisclaimer": "Votre adresse de messagerie est uniquement utilisée pour vous envoyer des informations pertinentes pour les moniteur·rice·s de tchoukball. Vous pouvez à tout moment utiliser le lien de désabonnement intégré dans chacun de nos mails."
+    },
+    "medias-fr": {
+      "headTitle": "Communiqués de presse en français",
+      "title": "Abonnement aux communiqués de presse en français",
+      "description": "Recevez les communiqués de presse de Swiss Tchoukball en français par e-mail.",
+      "gdprDisclaimer": "Votre adresse de messagerie est uniquement utilisée pour vous envoyer nos communiqués de presse. Vous pouvez à tout moment utiliser le lien de désabonnement intégré dans chacun de nos mails."
+    },
+    "medias-de": {
+      "headTitle": "Communiqués de presse en allemand",
+      "title": "Abonnement aux communiqués de presse en allemand",
+      "description": "Recevez les communiqués de presse de Swiss Tchoukball en allemand par e-mail.",
+      "gdprDisclaimer": "Votre adresse de messagerie est uniquement utilisée pour vous envoyer nos communiqués de presse. Vous pouvez à tout moment utiliser le lien de désabonnement intégré dans chacun de nos mails."
     },
     "confirmation": {
       "title": "Encore une dernière chose...",

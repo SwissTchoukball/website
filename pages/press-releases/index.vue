@@ -24,6 +24,17 @@
 
     <st-pagination v-if="totalPages && totalPages > 1" :current-page="currentPage" :total-pages="totalPages" />
 
+    <p class="c-press-releases__subscribe">
+      {{ $t('pressReleases.subscribe') }} :
+      <nuxt-link :to="localePath({ name: 'newsletter', query: { name: 'medias-fr' } })">{{
+        $t('languages.french')
+      }}</nuxt-link>
+      /
+      <nuxt-link :to="localePath({ name: 'newsletter', query: { name: 'medias-de' } })">{{
+        $t('languages.german')
+      }}</nuxt-link>
+    </p>
+
     <p class="c-press-releases__previous">
       <a href="https://files.tchoukball.ch/medias">{{ $t('pressReleases.previousPressReleases') }}</a>
     </p>
@@ -120,7 +131,11 @@ export default Vue.extend({
   color: var(--st-color-link);
 }
 
-.c-press-releases__previous {
+.c-press-releases__subscribe {
   margin-top: var(--st-length-spacing-m);
+}
+
+.c-press-releases__previous {
+  margin-top: var(--st-length-spacing-s);
 }
 </style>
