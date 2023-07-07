@@ -146,10 +146,10 @@
   "referees": {
     "title": "Arbitres",
     "level": {
+      "zero": "Arbitres 0",
       "i": "Arbitres I",
       "ii": "Arbitres II",
-      "iii": "Arbitres III",
-      "iv": "Arbitres IV"
+      "iii": "Arbitres III"
     }
   },
   "nationalTeams": {
