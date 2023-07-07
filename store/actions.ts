@@ -348,6 +348,7 @@ export default {
           facility_id: match.relationships.facility.data ? match.relationships.facility.data.id : null,
           finished: match.attributes.finished,
           canceled: match.attributes.canceled,
+          rest: match.attributes.rest,
         };
       }),
     });

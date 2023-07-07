@@ -67,6 +67,7 @@ export interface LeveradeMatch extends LeveradeEntity {
     datetime: string;
     finished: boolean;
     canceled: boolean;
+    rest: boolean;
   };
   meta: {
     home_team: string;

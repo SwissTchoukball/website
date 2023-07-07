@@ -24,6 +24,7 @@ export default class Match extends Model {
   facility!: Facility | null;
   finished!: boolean;
   canceled!: boolean;
+  rest!: boolean;
 
   static fields() {
     return {
@@ -43,6 +44,7 @@ export default class Match extends Model {
       facility: this.belongsTo(Facility, 'facility_id'),
       finished: this.boolean(false),
       canceled: this.boolean(false),
+      rest: this.boolean(false),
     };
   }
 
