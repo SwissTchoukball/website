@@ -173,8 +173,7 @@ export default Vue.extend({
      */
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(274px, 1fr));
-    column-gap: var(--st-length-spacing-s);
-    row-gap: var(--st-length-spacing-m);
+    gap: var(--st-length-spacing-m) var(--st-length-spacing-s);
   }
 
   .c-news-list__entry {

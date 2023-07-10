@@ -515,6 +515,7 @@ export default Vue.extend({
     font-size: 1.8em;
   }
 }
+
 @media (--lg-and-up) {
   .c-match__score {
     margin: var(--st-length-spacing-l);

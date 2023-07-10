@@ -40,8 +40,6 @@ const config: NuxtConfig = {
   buildModules: [
     // https://go.nuxtjs.dev/typescript
     '@nuxt/typescript-build',
-    // https://go.nuxtjs.dev/stylelint
-    '@nuxtjs/stylelint-module',
     '@nuxtjs/fontawesome',
     '@nuxtclub/slugify',
   ],

@@ -268,8 +268,7 @@ export default Vue.extend({
   margin-top: var(--st-length-spacing-xxs);
   display: flex;
   flex-wrap: wrap;
-  column-gap: var(--st-length-spacing-xs);
-  row-gap: var(--st-length-spacing-xxs);
+  gap: var(--st-length-spacing-xxs) var(--st-length-spacing-xs);
   font-size: 0.8em;
   align-items: center;
 }
