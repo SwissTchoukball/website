@@ -49,7 +49,6 @@
     "@nuxtclub/slugify": "^1.2.1",
     "@nuxtjs/eslint-config-typescript": "^12.1.0",
     "@nuxtjs/eslint-module": "^3.1.0",
-    "@nuxtjs/stylelint-module": "^4.2.2",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^8.10.0",
     "eslint-plugin-nuxt": "^4.0.0",
@@ -59,9 +58,8 @@
     "postcss-custom-media": "^8.0.2",
     "postcss-html": "^1.6.0",
     "prettier": "^2.8.8",
-    "stylelint": "^14.16.1",
-    "stylelint-config-prettier": "^9.0.5",
+    "stylelint": "^16.2.1",
     "stylelint-config-recommended-vue": "^1.5.0",
-    "stylelint-config-standard": "^29.0.0"
+    "stylelint-config-standard": "^36.0.0"
   }
 }

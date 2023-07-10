@@ -194,10 +194,7 @@ export default Vue.extend({
 
 .c-event__image {
   position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
+  inset: 0;
   z-index: -1;
   height: 100%;
   width: 100%;

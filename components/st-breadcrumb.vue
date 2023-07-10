@@ -36,8 +36,7 @@ export default Vue.extend({
 .c-breadcrumb__list {
   display: flex;
   flex-wrap: wrap;
-  column-gap: 0.5em;
-  row-gap: 0.5em;
+  gap: 0.5em;
 }
 
 .c-breadcrumb__item {
