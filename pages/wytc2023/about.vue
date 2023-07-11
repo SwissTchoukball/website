@@ -12,6 +12,12 @@ import Vue from 'vue';
 import { TextEntry } from '~/plugins/cms-service';
 
 export default Vue.extend({
+  nuxtI18n: {
+    paths: {
+      fr: '/wytc2023/a-propos',
+      de: '/wytc2023/infos',
+    },
+  },
   data() {
     return {
       textEntry: undefined as TextEntry | undefined,
