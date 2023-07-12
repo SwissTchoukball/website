@@ -6,10 +6,10 @@
       <st-breadcrumb :items="breadcrumb" />
       <div v-if="pressRelease.context" class="c-press-release__context">{{ pressRelease.context }}</div>
       <h2 class="c-press-release__title t-headline-1">{{ pressRelease.title }}</h2>
+      <p class="c-press-release__dates">{{ dates }}</p>
       <!-- We have to use v-html here as we get html content directly from Directus -->
       <!-- eslint-disable-next-line vue/no-v-html -->
       <div class="directus-formatted-content c-press-release__body" v-html="pressRelease.body"></div>
-      <p class="c-press-release__dates">{{ dates }}</p>
     </article>
   </section>
 </template>
@@ -131,7 +131,7 @@ export default Vue.extend({
 }
 
 .c-press-release__dates {
-  margin-top: var(--st-length-spacing-s);
+  margin-top: var(--st-length-spacing-xxs);
   color: var(--st-color-press-release-date-foreground);
 }
 
