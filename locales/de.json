@@ -330,6 +330,8 @@
     "live": {
       "updates": {
         "title": "Neueste Nachrichten",
+        "subscribe": "Abonnieren",
+        "autoRefresh": "Automatische Aktualisierung",
         "loadingError": "Fehler beim Laden der letzten Nachrichten"
       }
     },

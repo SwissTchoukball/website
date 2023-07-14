@@ -20,6 +20,7 @@ export interface Player {
 }
 
 export interface NationalTeamCompetition {
+  id: number;
   name: string;
   year: number;
   logo?: string;
@@ -27,6 +28,7 @@ export interface NationalTeamCompetition {
   country: string;
   date_start?: string;
   date_end?: string;
+  telegram_channel?: string;
 }
 
 export interface NationalTeamCompetitionUpdate {

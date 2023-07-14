@@ -1,9 +1,19 @@
 <template>
   <div>
-    <h3 v-if="updates && updates.length > 0" class="t-headline-2">
-      <st-live-indicator v-show="liveRefresh" class="c-national-team-competition-update-list__live-indicator" />
-      {{ $t('internationalCompetition.live.updates.title') }}
-    </h3>
+    <div v-if="updates && updates.length > 0" class="c-national-team-competition-update-list__header">
+      <st-live-indicator v-show="liveRefresh" v-tooltip.top="$t('internationalCompetition.live.updates.autoRefresh')" />
+      <h3 class="t-headline-2 c-national-team-competition-update-list__title">
+        {{ $t('internationalCompetition.live.updates.title') }}
+      </h3>
+      <st-button
+        v-if="telegramChannelName"
+        :href="`https://t.me/${telegramChannelName}`"
+        :primary="true"
+        :narrow="true"
+      >
+        {{ $t('internationalCompetition.live.updates.subscribe') }}
+      </st-button>
+    </div>
     <st-loader v-if="$fetchState.pending" :main="true" />
     <p v-else-if="$fetchState.error">
       {{ $t('internationalCompetition.live.updates.loadingError') }} : {{ $fetchState.error.message }}
@@ -41,6 +51,10 @@ export default Vue.extend({
     competitionId: {
       type: Number,
       required: true,
+    },
+    telegramChannelName: {
+      type: String,
+      default: undefined,
     },
     liveRefresh: Boolean,
   },
@@ -109,8 +123,23 @@ export default Vue.extend({
 </script>
 
 <style scoped>
-.c-national-team-competition-update-list__live-indicator {
-  transform: translateY(0.3rem);
+.c-national-team-competition-update-list__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.c-national-team-competition-update-list__title {
+  flex-grow: 2;
+  padding-top: 0;
+}
+
+.c-national-team-competition-update-list__subscribe-link {
+  display: inline-block;
+  margin-left: 1rem;
+  font-weight: normal;
+  font-size: 0.8em;
 }
 
 .c-national-team-competition-update-list__item {

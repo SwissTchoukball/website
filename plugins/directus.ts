@@ -223,6 +223,7 @@ export interface DirectusNationalTeamCompetition {
   date_start: string;
   date_end: string;
   logo: string;
+  telegram_channel: string;
   translations: {
     name: string;
     city: string;

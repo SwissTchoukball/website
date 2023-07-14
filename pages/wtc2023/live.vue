@@ -8,6 +8,7 @@
       v-if="competition"
       :competition-id="competition.id"
       :live-refresh="isRunning"
+      :telegram-channel-name="competition.telegram_channel"
       class="c-international-competition-live__updates"
     />
   </div>

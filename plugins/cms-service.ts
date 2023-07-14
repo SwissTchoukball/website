@@ -1053,6 +1053,7 @@ const cmsService: Plugin = (context, inject) => {
         'year',
         'date_start',
         'date_end',
+        'telegram_channel',
         'translations.language_code',
         'translations.name',
         'translations.city',
@@ -1095,6 +1096,7 @@ const cmsService: Plugin = (context, inject) => {
       name: translations.name,
       city: translations.city,
       country: translations.country,
+      telegram_channel: rawNationalTeamCompetition.telegram_channel,
     };
   };
 
