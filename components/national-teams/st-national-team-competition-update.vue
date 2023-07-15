@@ -90,6 +90,6 @@ export default Vue.extend({
   display: block;
   width: 100%;
   margin-top: var(--st-length-spacing-xs);
-  margin-bottom: var(--st-length-spacing-s);
+  margin-bottom: 0;
 }
 </style>
