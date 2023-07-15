@@ -40,7 +40,7 @@ import Vue from 'vue';
 import { NationalTeamCompetitionUpdate } from './st-national-teams.prop';
 import StNationalTeamCompetitionUpdate from '~/components/national-teams/st-national-team-competition-update.vue';
 
-const UPDATES_PER_PAGE = 5;
+const UPDATES_PER_PAGE = 10;
 const REFRESH_INTERVAL = 30; // In seconds
 
 export default Vue.extend({
