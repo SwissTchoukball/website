@@ -16,7 +16,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import { isWithinInterval } from 'date-fns';
+import { addDays, isWithinInterval } from 'date-fns';
 import stNationalTeamCompetitionUpdateList from '~/components/national-teams/st-national-team-competition-update-list.vue';
 import { NationalTeamCompetition } from '~/components/national-teams/st-national-teams.prop';
 import { TextEntry } from '~/plugins/cms-service';
@@ -44,7 +44,8 @@ export default Vue.extend({
         !!this.competition.date_end &&
         isWithinInterval(new Date(), {
           start: new Date(this.competition.date_start),
-          end: new Date(this.competition.date_end),
+          // We add one day because instantiating the Date sets the time to midnight
+          end: addDays(new Date(this.competition.date_end), 1),
         })
       );
     },
