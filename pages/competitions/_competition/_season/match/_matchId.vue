@@ -35,6 +35,28 @@
       />
       <div v-else class="c-match__team-avatar"></div>
     </div>
+    <ul v-if="periods" class="c-match__detailed-score u-unstyled-list">
+      <template v-for="period in periods">
+        <li
+          v-if="period.home_team_score || period.away_team_score"
+          :key="period.order"
+          v-tooltip.bottom="period.name"
+          class="c-match__period"
+        >
+          {{ period.home_team_score || 0 }} - {{ period.away_team_score || 0 }}
+        </li>
+      </template>
+    </ul>
+    <div v-if="match.referees && match.referees.length" class="c-match__referees">
+      <st-custom-icon :view-box-width="512" :view-box-height="512" class="c-match__icon">
+        <st-icon-whistle />
+      </st-custom-icon>
+      <ul class="u-unstyled-list c-match__referee-list">
+        <li v-for="referee in match.referees" :key="`${referee.first_name} ${referee.last_name}`">
+          {{ referee.first_name }} {{ referee.last_name }}
+        </li>
+      </ul>
+    </div>
     <div id="match-details" class="c-match__details">
       <st-event-date v-if="match.parsedDate()" :start-date="match.parsedDate()" always-one-line />
       <div v-if="match.parsedDate()">
@@ -70,11 +92,15 @@
 import Vue from 'vue';
 import Match from '~/models/match.model';
 import StEventDate from '~/components/events/st-event-date.vue';
+import StCustomIcon from '~/components/icon/st-custom-icon.vue';
+import StIconWhistle from '~/components/icon/st-icon-whistle.vue';
 import { LeveradeGroupType } from '~/plugins/leverade';
 
 export default Vue.extend({
   components: {
     StEventDate,
+    StCustomIcon,
+    StIconWhistle,
   },
   scrollToTop: true,
   data() {
@@ -82,18 +108,22 @@ export default Vue.extend({
       venueDetailsVisible: false,
     };
   },
-  async fetch() {},
+  async fetch() {
+    await this.$store.dispatch('loadMatch', this.$route.params.matchId);
+  },
   head() {
     const match: Match = (this as any).match;
     let title = '';
     if (match.home_team && match.away_team) {
       title += `${match.home_team.name} - ${match.away_team.name} · `;
     }
-    title += `${match.round.name} · ${match.round.phase.name} · `;
-    if (match.round.phase.name !== match.round.phase.competition_edition.name) {
-      title += `${match.round.phase.competition_edition.name} · `;
+    if (match.round?.phase) {
+      title += `${match.round.name} · ${match.round.phase.name} · `;
+      if (match.round.phase.name !== match.round.phase.competition_edition.name) {
+        title += `${match.round.phase.competition_edition.name} · `;
+      }
+      title += match.round.phase.competition_edition.season.name;
     }
-    title += match.round.phase.competition_edition.season.name;
 
     return {
       title,
@@ -124,14 +154,20 @@ export default Vue.extend({
       }
       return match;
     },
+    periods(): Match['periods'] {
+      return [...this.match.periods].sort((periodA, periodB) => periodA.order - periodB.order);
+    },
     isOver(): boolean {
       return this.match.home_team_score > 0 || this.match.away_team_score > 0;
     },
     isPhaseNameVisible(): boolean {
-      return this.match.round.phase.type !== LeveradeGroupType.PLAY_OFF;
+      return this.match.round.phase && this.match.round.phase.type !== LeveradeGroupType.PLAY_OFF;
     },
     isRoundNameVisible(): boolean {
-      return !this.isPhaseNameVisible || this.match.round.name !== this.match.round.phase.name;
+      return (
+        !!this.match.round?.phase?.name &&
+        (!this.isPhaseNameVisible || this.match.round.name !== this.match.round.phase.name)
+      );
     },
     /**
      * Links to the planning if the match we're viewing has not been played yet,
@@ -141,6 +177,9 @@ export default Vue.extend({
       let pathName = 'competitions-competition-season-phase-planning';
       if (this.isOver) {
         pathName = 'competitions-competition-season-phase-results';
+      }
+      if (!this.match.round?.phase) {
+        return '';
       }
       return this.localePath({ name: pathName, params: { phase: this.match.round.phase.id } });
     },
@@ -234,14 +273,46 @@ export default Vue.extend({
   color: var(--st-color-match-score);
   font-weight: 900;
   font-size: 1.5em;
+  white-space: nowrap;
 }
 
 .c-match__no-score {
   width: 10vw;
 }
 
-.c-match__details {
+.c-match__detailed-score {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-weight: bold;
   margin-top: var(--st-length-spacing-s);
+}
+
+.c-match__period {
+  white-space: nowrap;
+}
+
+.c-match__period:not(:last-child)::after {
+  content: '/';
+  padding-left: 0.9rem;
+}
+
+.c-match__referees {
+  margin-top: var(--st-length-spacing-s);
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.c-match__referee-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.c-match__details {
+  margin-top: var(--st-length-spacing-m);
   display: flex;
   align-items: baseline;
   justify-content: center;
@@ -303,12 +374,26 @@ export default Vue.extend({
     margin: var(--st-length-spacing-s);
     font-size: 2.5em;
   }
+
+  .c-match__detailed-score {
+    font-size: 1.5em;
+  }
+
+  .c-match__referee-list {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+  }
 }
 
 @media (--md-and-up) {
   .c-match__score {
     margin: var(--st-length-spacing-m);
     font-size: 3em;
+  }
+
+  .c-match__detailed-score {
+    font-size: 1.8em;
   }
 }
 @media (--lg-and-up) {

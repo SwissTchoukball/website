@@ -4,7 +4,7 @@
     <p v-else-if="$fetchState.error">{{ $t('error.otherError') }} : {{ $fetchState.error.message }}</p>
     <template v-else>
       <st-breadcrumb :items="breadcrumb" class="c-competition-edition__breadcrumb" />
-      <h2 class="t-headline-1">{{ competitionEdition.name }}</h2>
+      <h2 v-if="competitionEdition" class="t-headline-1">{{ competitionEdition.name }}</h2>
       <st-navigation
         v-if="showPhasesNavigation"
         :items="phasesNavigation"
@@ -43,10 +43,13 @@ export default Vue.extend({
     // We load all the competition data from Leverade only if we don't have it already.
     // We consider that if we have a competition in store and it has a gender (piece of data coming from Leverade),
     // then we have all the necessary related data.
+    // But if we only try to load a single match, which is a child page of season,
+    // then we don't load the whole competition.
     if (
       !(this.$store as Store<RootState>).state.fullyLoadedCompetitionEditions.find(
         (entry) => entry.season === this.$route.params.season && entry.competition === this.$route.params.competition
-      )
+      ) &&
+      !this.$route.name?.startsWith('competitions-competition-season-match-matchId')
     ) {
       await this.$store.dispatch('loadCompetitionEdition', {
         seasonSlug: this.$route.params.season,
@@ -54,17 +57,21 @@ export default Vue.extend({
       });
     }
 
-    this.lastPhasePath = this.localePath({
-      name: 'competitions-competition-season-phase',
-      params: {
-        competition: this.$route.params.competition,
-        season: this.$route.params.season,
-        phase: CompetitionEdition.getLastPhase(this.$route.params.competition, this.$route.params.season).id,
-      },
-    });
+    try {
+      this.lastPhasePath = this.localePath({
+        name: 'competitions-competition-season-phase',
+        params: {
+          competition: this.$route.params.competition,
+          season: this.$route.params.season,
+          phase: CompetitionEdition.getLastPhase(this.$route.params.competition, this.$route.params.season).id,
+        },
+      });
+    } catch (error) {
+      console.error(error);
+    }
 
     // If no phase or match is set, redirect to the last phase
-    if (!this.$route.params.matchId && !this.$route.params.phase) {
+    if (this.lastPhasePath && !this.$route.params.matchId && !this.$route.params.phase) {
       if (process.server) {
         this.$nuxt.context.redirect(this.lastPhasePath);
       } else if (process.client) {

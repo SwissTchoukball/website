@@ -20,6 +20,19 @@ export default class Match extends Model {
   away_team_id!: string;
   away_team!: Team;
   away_team_score!: number;
+  periods!: {
+    name?: string;
+    order: number;
+    home_team_score?: number;
+    away_team_score?: number;
+  }[];
+
+  referees!: {
+    first_name: string;
+    last_name: string;
+    gender: 'male' | 'female';
+  }[];
+
   facility_id!: string;
   facility!: Facility | null;
   finished!: boolean;
@@ -40,6 +53,8 @@ export default class Match extends Model {
       away_team_id: this.string(null).nullable(),
       away_team: this.belongsTo(Team, 'away_team_id'),
       away_team_score: this.number(null).nullable(),
+      periods: this.attr([]),
+      referees: this.attr([]),
       facility_id: this.string(null).nullable(),
       facility: this.belongsTo(Facility, 'facility_id'),
       finished: this.boolean(false),

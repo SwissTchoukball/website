@@ -12,6 +12,8 @@ import {
   LeveradeFacility,
   LeveradeGroup,
   LeveradeMatch,
+  LeveradePeriod,
+  LeveradeProfile,
   LeveradeResult,
   LeveradeRound,
   LeveradeTeam,
@@ -312,28 +314,78 @@ export default {
     });
   },
 
-  async insertMatches(_context, { matches, results }: { matches: LeveradeMatch[]; results?: LeveradeResult[] }) {
+  async insertMatches(
+    _context,
+    {
+      matches,
+      results,
+      periods,
+      referees,
+    }: {
+      matches: LeveradeMatch[];
+      results?: LeveradeResult[];
+      periods?: LeveradePeriod[];
+      referees?: LeveradeProfile[];
+    }
+  ) {
     await Match.insert({
       data: matches.map((match) => {
         let home_team_score: number | null = null;
         let away_team_score: number | null = null;
+        let matchPeriods: Match['periods'] | undefined;
+        let matchReferees: Match['referees'] | undefined;
 
         const homeResult = results?.find((result) => {
           return (
             result.relationships?.match?.data?.id === match.id &&
-            result.relationships?.team?.data?.id === match.meta.home_team
+            result.relationships?.team?.data?.id === match.meta.home_team &&
+            result.relationships?.parent?.data?.type === 'match'
           );
         });
 
         const awayResult = results?.find(
           (result) =>
             result.relationships?.match?.data?.id === match.id &&
-            result.relationships?.team?.data?.id === match.meta.away_team
+            result.relationships?.team?.data?.id === match.meta.away_team &&
+            result.relationships?.parent?.data?.type === 'match'
         );
 
         if (homeResult && awayResult) {
           home_team_score = homeResult.attributes.value;
           away_team_score = awayResult.attributes.value;
+        }
+
+        if (periods) {
+          matchPeriods = periods
+            .filter((period) => period.relationships?.periodable?.data?.id === match.id)
+            .map((period) => {
+              return {
+                name: period.attributes.name,
+                order: period.attributes.order,
+                home_team_score:
+                  results?.find(
+                    (result) =>
+                      result.relationships?.period?.data?.id === period.id &&
+                      result.relationships?.team?.data?.id === match.meta.home_team
+                  )?.attributes.value || undefined,
+                away_team_score:
+                  results?.find(
+                    (result) =>
+                      result.relationships?.period?.data?.id === period.id &&
+                      result.relationships?.team?.data?.id === match.meta.away_team
+                  )?.attributes.value || undefined,
+              };
+            });
+        }
+
+        if (referees) {
+          matchReferees = referees.map((referee) => {
+            return {
+              first_name: referee.attributes.first_name,
+              last_name: referee.attributes.last_name,
+              gender: referee.attributes.gender,
+            };
+          });
         }
 
         return {
@@ -343,6 +395,8 @@ export default {
           home_team_score,
           away_team_id: match.meta.away_team,
           away_team_score,
+          periods: matchPeriods,
+          referees: matchReferees,
           round_id: match.relationships.round.data.id,
           faceoff_id: match.relationships.faceoff.data ? match.relationships.faceoff.data.id : null,
           facility_id: match.relationships.facility.data ? match.relationships.facility.data.id : null,
@@ -553,6 +607,98 @@ export default {
       await context.dispatch('insertMatches', { matches, results });
       context.commit('setCompetitionEditionAsFullyLoaded', { seasonSlug, competitionSlug });
     }
+  },
+
+  async loadMatch(context, matchId) {
+    const matchResponse = await this.$leverade.getMatch(matchId);
+
+    if (!matchResponse.data.included) {
+      throw new Error('Missing related match data');
+    }
+
+    const teams: LeveradeTeam[] = [];
+    let faceoff: LeveradeFaceoff | undefined;
+    let round: LeveradeRound | undefined;
+    let group: LeveradeGroup | undefined;
+    let tournament: LeveradeTournament | undefined;
+    let facility: LeveradeFacility | undefined;
+    const results: LeveradeResult[] = [];
+    const periods: LeveradePeriod[] = [];
+    const referees: LeveradeProfile[] = [];
+    matchResponse.data.included.forEach((entity) => {
+      switch (entity.type) {
+        case 'team':
+          teams.push(entity);
+          break;
+        case 'faceoff':
+          faceoff = entity;
+          break;
+        case 'round':
+          round = entity;
+          break;
+        case 'group':
+          group = entity;
+          break;
+        case 'tournament':
+          tournament = entity;
+          break;
+        case 'facility':
+          facility = entity;
+          break;
+        case 'result':
+          results.push(entity);
+          break;
+        case 'period':
+          periods.push(entity);
+          break;
+        case 'profile':
+          // For now it's fine to do this because the only profiles we get for a match are referees.
+          // If later one we retrieve the players, then we'll have to add more logic to differentiate them.
+          referees.push(entity);
+          break;
+        default:
+      }
+    });
+
+    const match = matchResponse.data.data;
+
+    if (facility) {
+      await context.dispatch('insertFacilities', [facility]);
+    }
+
+    if (tournament) {
+      // Loading Directus-only data
+      const competitionEditions = await this.$cmsService.getNationalCompetitionEditions({
+        leveradeIds: [tournament.id],
+      });
+      // There should be only one edition matching the request parameters.
+      if (competitionEditions.length > 1) {
+        console.warn('Multiple competition editions matching the request. Taking the first one.');
+      }
+      const competitionEdition = competitionEditions[0];
+      await context.dispatch('insertCompetitionEditions', [
+        {
+          ...tournament,
+          directus_id: competitionEdition.directus_id,
+          competition: competitionEdition.competition,
+        },
+      ]);
+    }
+
+    if (group) {
+      await context.dispatch('insertPhases', [group]);
+    }
+
+    if (round) {
+      await context.dispatch('insertRounds', [round]);
+    }
+
+    if (faceoff) {
+      await context.dispatch('insertFaceoffs', [faceoff]);
+    }
+
+    await context.dispatch('insertTeams', teams);
+    await context.dispatch('insertMatches', { matches: [match], results, periods, referees });
   },
 
   async loadUpcomingMatches(context) {

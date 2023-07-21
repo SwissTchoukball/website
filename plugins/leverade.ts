@@ -83,8 +83,37 @@ export interface LeveradeMatch extends LeveradeEntity {
     faceoff: {
       data: LeveradeBaseEntity | null;
     };
+    teams: {
+      data: LeveradeBaseEntity[] | null;
+    };
+    periods: {
+      data: LeveradeBaseEntity[] | null;
+    };
+    results: {
+      data: LeveradeBaseEntity[] | null;
+    };
+    matchreferees: {
+      data: LeveradeBaseEntity[] | null;
+    };
   };
   // There is more. Only the base and what we need is specified here.
+}
+
+export interface LeveradePeriod extends LeveradeEntity {
+  type: 'period';
+  attributes: {
+    finished: boolean;
+    name: string;
+    order: number;
+  };
+  relationships: {
+    periodable: {
+      data: LeveradeBaseEntity;
+    };
+    results: {
+      data: LeveradeBaseEntity[];
+    };
+  };
 }
 
 export interface LeveradeFaceoff extends LeveradeEntity {
@@ -167,6 +196,65 @@ export interface LeveradeResult extends LeveradeEntity {
     team: {
       data: LeveradeBaseEntity;
     };
+    parent: {
+      data: LeveradeBaseEntity;
+    };
+    period: {
+      data: LeveradeBaseEntity | null;
+    };
+  };
+}
+
+export interface LeveradeMatchReferee extends LeveradeEntity {
+  type: 'matchreferee';
+  attributes: {
+    attendance: 'confirmed' | 'pending' | 'rejected';
+    published: boolean;
+  };
+  relationships: {
+    match: {
+      data: LeveradeBaseEntity;
+    };
+    license: {
+      data: LeveradeBaseEntity;
+    };
+  };
+}
+
+export interface LeveradeLicense extends LeveradeEntity {
+  type: 'license';
+  attributes: {
+    type: 'executive' | 'player' | 'referee' | 'staff';
+    number: number | null;
+  };
+  relationships: {
+    category: {
+      data: LeveradeBaseEntity | null;
+    };
+    club: {
+      data: LeveradeBaseEntity | null;
+    };
+    form: {
+      data: LeveradeBaseEntity;
+    };
+    profile: {
+      data: LeveradeBaseEntity;
+    };
+    refereecategory?: {
+      data: LeveradeBaseEntity;
+    };
+    season: {
+      data: LeveradeBaseEntity | null;
+    };
+  };
+}
+
+export interface LeveradeProfile extends LeveradeEntity {
+  type: 'profile';
+  attributes: {
+    first_name: string;
+    last_name: string;
+    gender: 'male' | 'female';
   };
 }
 
@@ -188,7 +276,31 @@ interface Leverade {
       LeveradeRound | LeveradeGroup | LeveradeTournament | LeveradeTeam | LeveradeFacility
     >
   >;
+  getMatch: (
+    matchId: number | string
+  ) => Promise<
+    LeveradeResponse<
+      LeveradeMatch,
+      | LeveradeFaceoff
+      | LeveradeRound
+      | LeveradeGroup
+      | LeveradeTournament
+      | LeveradeTeam
+      | LeveradeResult
+      | LeveradePeriod
+      | LeveradeMatchReferee
+      | LeveradeLicense
+      | LeveradeProfile
+      | LeveradeFacility
+    >
+  >;
 }
+
+const removeAuthorizationHeaders = (headers: any) => {
+  // Removing authorization headers that are somehow added by the production server when this run server-side.
+  delete headers.common.authorization;
+  delete headers.authorization;
+};
 
 const leveradePlugin: Plugin = ({ $config, $axios, $formatDate }, inject) => {
   const getFullTournament: Leverade['getFullTournament'] = (tournamentId) => {
@@ -196,9 +308,7 @@ const leveradePlugin: Plugin = ({ $config, $axios, $formatDate }, inject) => {
       `${$config.leveradeURL}/tournaments/${tournamentId}?include=groups,groups.rounds,groups.rounds.faceoffs,groups.rounds.matches,groups.rounds.matches.facility,groups.rounds.matches.results,teams`,
       {
         transformRequest: (data, headers) => {
-          // Removing authorization headers that are somehow added by the production server when this run server-side.
-          delete headers.common.authorization;
-          delete headers.authorization;
+          removeAuthorizationHeaders(headers);
           return data;
         },
       }
@@ -208,9 +318,7 @@ const leveradePlugin: Plugin = ({ $config, $axios, $formatDate }, inject) => {
   const getStandings: Leverade['getStandings'] = (groupId) => {
     return $axios.get(`${$config.leveradeURL}/groups/${groupId}/standings`, {
       transformRequest: (data, headers) => {
-        // Removing authorization headers that are somehow added by the production server when this run server-side.
-        delete headers.common.authorization;
-        delete headers.authorization;
+        removeAuthorizationHeaders(headers);
         return data;
       },
     });
@@ -222,10 +330,29 @@ const leveradePlugin: Plugin = ({ $config, $axios, $formatDate }, inject) => {
       `${$config.leveradeURL}/matches?filter=datetime>${today},round.group.tournament.season.id:${seasonLeveradeId}&sort=datetime&include=round.group.tournament,teams,facility`,
       {
         transformRequest: (data, headers) => {
-          // Removing authorization headers that are somehow added by the production server when this run server-side.
-          delete headers.common.authorization;
-          delete headers.authorization;
+          removeAuthorizationHeaders(headers);
           return data;
+        },
+      }
+    );
+  };
+
+  const getMatch: Leverade['getMatch'] = (matchId) => {
+    // We use the endpoint to get a list of matches even though we want only one,
+    // because `GET /matches/{id}` is behind authentication
+    return $axios.get(
+      `${$config.leveradeURL}/matches?filter=id:${matchId}&include=round,round.group,round.group.tournament,faceoff,teams,results,periods,matchreferees.license.profile,periods.results,results,facility`,
+      {
+        transformRequest: (data, headers) => {
+          removeAuthorizationHeaders(headers);
+          return data;
+        },
+        transformResponse: (data) => {
+          const jsonData = JSON.parse(data);
+          return {
+            ...jsonData,
+            data: jsonData.data[0],
+          };
         },
       }
     );
@@ -235,6 +362,7 @@ const leveradePlugin: Plugin = ({ $config, $axios, $formatDate }, inject) => {
     getFullTournament,
     getStandings,
     getUpcomingMatches,
+    getMatch,
   });
 };
 
