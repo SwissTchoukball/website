@@ -74,10 +74,8 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import stIconFlickr from '~/components/icon/st-icon-flickr.vue';
 
 export default Vue.extend({
-  components: { stIconFlickr },
   data() {
     return {
       partners: [

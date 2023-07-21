@@ -92,15 +92,11 @@
 import Vue from 'vue';
 import Match from '~/models/match.model';
 import StEventDate from '~/components/events/st-event-date.vue';
-import StCustomIcon from '~/components/icon/st-custom-icon.vue';
-import StIconWhistle from '~/components/icon/st-icon-whistle.vue';
 import { LeveradeGroupType } from '~/plugins/leverade';
 
 export default Vue.extend({
   components: {
     StEventDate,
-    StCustomIcon,
-    StIconWhistle,
   },
   scrollToTop: true,
   data() {
