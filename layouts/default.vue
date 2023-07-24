@@ -140,6 +140,13 @@ export default Vue.extend({
       return this.$store.state.secondaryNavigation;
     },
   },
+  mounted() {
+    // Adding a specific class if the OS is Windows.
+    // Enables using a custom font for Flag emojis so that they're better than the default flag emojis on Windows, which are just letters
+    if (/windows/i.test(navigator.userAgent)) {
+      document.body.classList.add('u-is-windows');
+    }
+  },
   methods: {
     closeDrawer() {
       this.isDrawerOpen = false;

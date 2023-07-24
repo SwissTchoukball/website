@@ -146,6 +146,10 @@ a:visited {
 
 /* Utility classes */
 
+.u-is-windows {
+  font-family: "Twemoji Country Flags", Inter, sans-serif;
+}
+
 .u-visually-hidden {
   position: absolute;
   left: -10000px;
