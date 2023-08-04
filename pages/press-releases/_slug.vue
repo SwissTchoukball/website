@@ -4,6 +4,7 @@
     <p v-else-if="$fetchState.error">{{ $t('error.otherError') }} : {{ $fetchState.error.message }}</p>
     <article v-else class="c-press-release">
       <st-breadcrumb :items="breadcrumb" />
+      <div v-if="isDraft" class="c-press-release__draft-label">{{ $t('pressReleases.draft') }}</div>
       <div v-if="pressRelease.context" class="c-press-release__context">{{ pressRelease.context }}</div>
       <h2 class="c-press-release__title t-headline-1">{{ pressRelease.title }}</h2>
       <p class="c-press-release__dates">{{ dates }}</p>
@@ -101,6 +102,9 @@ export default Vue.extend({
 
       return dates;
     },
+    isDraft(): boolean {
+      return this.pressRelease?.status === 'draft';
+    },
   },
 });
 </script>
@@ -108,6 +112,16 @@ export default Vue.extend({
 <style scoped>
 .c-press-release {
   margin-top: var(--st-length-spacing-s);
+}
+
+.c-press-release__draft-label {
+  background-color: yellow;
+  padding: var(--st-length-spacing-xxs);
+  margin: var(--st-length-spacing-s) 0;
+  font-weight: bold;
+  font-size: 1.3em;
+  text-align: center;
+  text-transform: uppercase;
 }
 
 .c-press-release__context {

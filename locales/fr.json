@@ -96,7 +96,8 @@
   "pressReleases": {
     "name": "Communiqué de presse | Communiqué de presse | Communiqués de presse",
     "subscribe": "S'abonner aux communiqués de presse",
-    "previousPressReleases": "Accéder aux précédents communiqués de presse"
+    "previousPressReleases": "Accéder aux précédents communiqués de presse",
+    "draft": "Brouillon"
   },
   "competitions": {
     "title": "Compétitions",

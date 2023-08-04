@@ -96,7 +96,8 @@
   "pressReleases": {
     "name": "Medienmitteilung | Medienmitteilung | Medienmitteilungen",
     "subscribe": "Medienmitteilungen abonnieren",
-    "previousPressReleases": "Zu den vorherigen Medienmitteilungen"
+    "previousPressReleases": "Zu den vorherigen Medienmitteilungen",
+    "draft": "Entwurf"
   },
   "competitions": {
     "title": "Wettbewerbe",

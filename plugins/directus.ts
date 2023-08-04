@@ -145,6 +145,7 @@ export interface DirectusPressRelease {
   id: number;
   date_created: string;
   date_updated?: string;
+  status: string;
   translations: {
     languages_code: string;
     context?: string;
