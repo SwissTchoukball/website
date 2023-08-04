@@ -612,6 +612,7 @@ const cmsService: Plugin = (context, inject) => {
         'id',
         'date_created',
         'date_updated',
+        'status',
         'translations.languages_code',
         'translations.slug',
         'translations.title',
