@@ -25,13 +25,7 @@
           <p class="c-results__competition-location">
             {{ result.competition.city }} - {{ result.competition.country }}
           </p>
-          <div
-            class="c-results__ranking"
-            :class="`c-results__ranking--rank-${result.ranking}`"
-            :title="$t('nationalTeams.results.rank', { rank: result.ranking })"
-          >
-            {{ result.ranking }}
-          </div>
+          <st-medal class="c-results__ranking" :rank="result.ranking" />
         </li>
       </ul>
     </template>
@@ -45,13 +39,7 @@
       />
       <ul class="u-unstyled-list">
         <li v-for="(years, ranking) in nationsCupDistribution" :key="ranking" class="c-results__nations-cup-ranking">
-          <div
-            class="c-results__ranking"
-            :class="`c-results__ranking--rank-${ranking}`"
-            :title="$t('nationalTeams.results.rank', { rank: ranking })"
-          >
-            {{ ranking }}
-          </div>
+          <st-medal class="c-results__ranking" :rank="ranking" />
           <div class="c-results__nations-cup-years">{{ years.join(', ') }}</div>
         </li>
       </ul>
@@ -161,25 +149,8 @@ export default Vue.extend({
   display: inline-block;
   font-weight: 900;
   font-size: 2em;
-  width: 1.5em;
-  height: 1.5em;
   margin: var(--st-length-spacing-xs);
-  border-radius: 50%;
-  padding-top: 0.1em;
-  border: 1px solid var(--st-color-medal-none);
   text-align: center;
-}
-
-.c-results__ranking--rank-1 {
-  background-color: var(--st-color-medal-gold);
-}
-
-.c-results__ranking--rank-2 {
-  background-color: var(--st-color-medal-silver);
-}
-
-.c-results__ranking--rank-3 {
-  background-color: var(--st-color-medal-bronze);
 }
 
 .c-results__nations-cup-link {

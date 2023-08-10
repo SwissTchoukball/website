@@ -123,9 +123,13 @@
   --st-color-national-team-result-location: var(--st-color-grey-dark);
 
   /* Medals */
-  --st-color-medal-gold: #ffd700;
-  --st-color-medal-silver: #c0c0c0;
-  --st-color-medal-bronze: #cd7f32;
+
+  --st-color-medal-gold: repeating-conic-gradient(#edc800 0deg, #ffe800 15deg, #f3cf00 30deg, #e3b600 45deg, #edc800 60deg) 10% 10%;
+  --st-color-medal-silver: repeating-conic-gradient(#c3c3c3 0deg, #ccc 15deg, #c6c6c6 30deg, #d7d7d7 45deg, #c3c3c3 60deg) 10% 10%;
+  --st-color-medal-bronze: repeating-conic-gradient(#d96b41 0deg, #b15a39 15deg, #b25b3a 30deg, #d26645 45deg, #d96b41 60deg) 10% 10%;
+  --st-color-medal-gold-simple: #ffd700;
+  --st-color-medal-silver-simple: #c0c0c0;
+  --st-color-medal-bronze-simple: #cd7f32;
   --st-color-medal-none: var(--st-color-grey-very-light);
 
   /* Competitions */
