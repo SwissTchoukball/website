@@ -43,6 +43,7 @@ export default Vue.extend({
   color: #00000060;
   font-weight: 900;
   border: 0.1em solid #00000020;
+  flex-shrink: 0; /* In case the medal is in a flex context */
 }
 
 .c-medal--gold {
