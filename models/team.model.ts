@@ -36,8 +36,10 @@ export default class Team extends Model {
       slug = 'val-de-ruz_flyers';
     } else if (this.name.includes('La Chaux-de-Fonds Beehives')) {
       slug = 'la_chaux-de-fonds_beehives';
-    } else if (this.name.includes('Nyon Lakers')) {
-      slug = 'nyon_lakers';
+    } else if (this.name.includes('Delémont Blizzard')) {
+      slug = 'delemont_blizzard';
+    } else if (this.name.includes('Delémont Thunder')) {
+      slug = 'delemont_thunder';
     }
 
     if (slug) {
