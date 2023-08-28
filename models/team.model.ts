@@ -34,6 +34,8 @@ export default class Team extends Model {
       slug = 'geneva_flames';
     } else if (this.name.includes('Val-de-Ruz Flyers')) {
       slug = 'val-de-ruz_flyers';
+    } else if (this.name.includes('Val-de-Ruz Black Kites')) {
+      slug = 'val-de-ruz_black_kites';
     } else if (this.name.includes('La Chaux-de-Fonds Beehives')) {
       slug = 'la_chaux-de-fonds_beehives';
     } else if (this.name.includes('Nyon Lakers')) {
@@ -42,6 +44,10 @@ export default class Team extends Model {
       slug = 'delemont_blizzard';
     } else if (this.name.includes('Delémont Thunder')) {
       slug = 'delemont_thunder';
+    } else if (this.name.includes('Vernier Turtles B')) {
+      slug = 'vernier_turtles_b';
+    } else if (this.name.includes('Vernier Turtles')) {
+      slug = 'vernier_turtles';
     }
 
     if (slug) {
