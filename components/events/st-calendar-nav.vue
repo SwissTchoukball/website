@@ -1,11 +1,11 @@
 <template>
   <nav class="c-calendar-nav">
     <h3 class="u-visually-hidden">{{ $t('events.monthNavigation') }}</h3>
+    <div class="t-headline-1 c-calendar-nav__name" aria-hidden="true">{{ monthName }}</div>
     <div class="c-calendar-nav__month-navigation">
       <nuxt-link :to="previousMonthLink" :title="$t('events.previousMonth')" class="c-calendar-nav__switch-link">
         <fa-icon icon="angle-left" />
       </nuxt-link>
-      <div class="t-headline-1 c-calendar-nav__name" aria-hidden="true">{{ monthName }}</div>
       <nuxt-link :to="nextMonthLink" :title="$t('events.nextMonth')" class="c-calendar-nav__switch-link">
         <fa-icon icon="angle-right" />
       </nuxt-link>
@@ -103,8 +103,9 @@ export default Vue.extend({
 <style scoped>
 .c-calendar-nav {
   display: flex;
-  flex-direction: column;
+  flex-flow: row wrap;
   align-items: center;
+  justify-content: space-between;
   gap: var(--st-length-spacing-xs);
 }
 
@@ -112,12 +113,14 @@ export default Vue.extend({
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--st-length-spacing-s);
+  gap: var(--st-length-spacing-xs);
 }
 
 .c-calendar-nav__name {
   text-transform: capitalize;
+  text-align: center;
   padding-top: 0;
+  width: 100%;
 }
 
 .c-calendar-nav__switch-link {
@@ -141,14 +144,17 @@ export default Vue.extend({
 }
 
 .c-calendar-nav__action {
-  /* We set the color explicitely to prevent the visited color to be applied */
+  /* We set the color explicitly to prevent the visited color to be applied */
   color: var(--st-color-link);
 }
 
 @media (--sm-and-up) {
-  .c-calendar-nav {
-    flex-direction: row;
-    justify-content: space-between;
+  .c-calendar-nav__month-navigation {
+    order: -1;
+  }
+
+  .c-calendar-nav__name {
+    width: auto;
   }
 
   .c-calendar-nav__spacer {
