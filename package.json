@@ -34,7 +34,7 @@
     "html-entities": "^2.3.3",
     "linkify-string": "^4.1.1",
     "linkifyjs": "^4.1.1",
-    "nuxt": "2.15.8",
+    "nuxt": "3.7.2",
     "nuxt-mail": "^3.1.45",
     "nuxt-matomo": "^1.2.4",
     "v-click-outside": "^3.2.0",
