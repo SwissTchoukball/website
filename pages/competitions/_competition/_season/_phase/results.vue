@@ -1,8 +1,8 @@
 <template>
   <div class="c-results">
-    <template v-if="roundsUpToNow.length > 0">
+    <template v-if="roundsToShow.length > 0">
       <ul class="u-unstyled-list c-results__round">
-        <li v-for="round of roundsUpToNow" :key="round.id" class="c-results__round">
+        <li v-for="round of roundsToShow" :key="round.id" class="c-results__round">
           <template v-if="!round.faceoffs.length">
             <h3 class="t-headline-2 c-results__round-name">{{ round.name }}</h3>
             <st-match-result-list :matches="round.matches" />
@@ -72,8 +72,10 @@ export default Vue.extend({
     };
   },
   computed: {
-    roundsUpToNow(): Round[] {
-      return this.phase.rounds.filter((round) => round.isPast).sort((roundA, roundB) => roundB.order - roundA.order);
+    roundsToShow(): Round[] {
+      return this.phase.rounds
+        .filter((round) => round.isPast || round.hasFinishedMatches)
+        .sort((roundA, roundB) => roundB.order - roundA.order);
     },
   },
   methods: {

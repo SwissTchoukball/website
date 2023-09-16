@@ -43,4 +43,8 @@ export default class Round extends Model {
     }
     return isPast(this.parsedStartDate);
   }
+
+  get hasFinishedMatches(): boolean {
+    return this.matches.some((match) => match.finished && !match.rest);
+  }
 }
