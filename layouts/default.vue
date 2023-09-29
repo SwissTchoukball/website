@@ -25,6 +25,13 @@
       <st-burger-button v-model="isDrawerOpen" class="c-default__burger-button" />
       <st-navigation :items="mainNavigation" :name="$t('mainNavigation')" class="c-default__header-navigation" />
     </header>
+    <a v-for="liveStream of liveStreams" :key="liveStream.id" :href="liveStream.url" class="c-default__live-stream">
+      <fa-icon icon="circle-play" />
+      <span>
+        {{ $t('liveBanner.live') }} <span>{{ $formatDateDistanceToNow(new Date(liveStream.stream_start)) }}</span> :
+        {{ liveStream.title }}
+      </span>
+    </a>
     <main>
       <Nuxt />
     </main>
@@ -34,6 +41,8 @@
 
 <script lang="ts">
 import Vue from 'vue';
+import { Collection } from '@vuex-orm/core';
+import LiveStream from '~/models/live-stream.model';
 
 export default Vue.extend({
   data() {
@@ -133,11 +142,17 @@ export default Vue.extend({
     };
   },
   computed: {
-    mainNavigation() {
+    mainNavigation(): any {
       return this.$store.state.mainNavigation;
     },
-    secondaryNavigation() {
+    secondaryNavigation(): any {
       return this.$store.state.secondaryNavigation;
+    },
+    LiveStream(): any {
+      return this.$store.$db().model(LiveStream);
+    },
+    liveStreams(): Collection<LiveStream> {
+      return this.LiveStream.all();
     },
   },
   mounted() {
@@ -211,6 +226,17 @@ export default Vue.extend({
 
 .c-default__drawer-navigation {
   padding: var(--st-length-spacing-xs);
+}
+
+.c-default__live-stream {
+  display: flex;
+  gap: var(--st-length-spacing-xs);
+  align-items: center;
+  padding: var(--st-length-spacing-xs) var(--st-length-main-content-side-padding);
+  color: var(--st-color-live-stream-foreground);
+  font-weight: bold;
+  background-color: var(--st-color-live-stream-background);
+  text-decoration: none;
 }
 
 @media (--sm-and-up) {

@@ -11,6 +11,7 @@ const i18nPlugin: Plugin = ({ app, store }) => {
     const dataLoads = [
       store.dispatch('loadMainMenu'),
       store.dispatch('loadSecondaryMenu'),
+      store.dispatch('loadLiveStreams'),
       store.dispatch('loadDomains'),
     ];
 

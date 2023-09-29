@@ -46,6 +46,9 @@
       "medias": "Médias"
     }
   },
+  "liveBanner": {
+    "live": "En direct"
+  },
   "news": {
     "title": "News",
     "description": "Toute l'actualité de Swiss Tchoukball",

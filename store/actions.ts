@@ -29,11 +29,13 @@ import Person from '~/models/person.model';
 import Group from '~/models/group.model';
 import Faceoff from '~/models/faceoff.model';
 import { NationalCompetition, NationalCompetitionEdition } from '~/plugins/cms-service';
+import LiveStream from '~/models/live-stream.model';
 
 export default {
   async nuxtServerInit({ dispatch }) {
     await dispatch('loadMainMenu');
     await dispatch('loadSecondaryMenu');
+    await dispatch('loadLiveStreams');
     await dispatch('loadSeasons');
     await dispatch('loadDomains');
   },
@@ -125,6 +127,12 @@ export default {
     ];
 
     commit('setSecondaryNavigation', secondaryNavigation);
+  },
+  async loadLiveStreams() {
+    const directusLiveStreams = await this.$cmsService.getLiveStreams();
+    LiveStream.insert({
+      data: directusLiveStreams,
+    });
   },
   async loadSeasons() {
     const directusSeasons = await this.$cmsService.getSeasons();

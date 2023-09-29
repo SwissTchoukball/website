@@ -150,6 +150,10 @@
   --st-color-photo-caption-text: white;
   --st-color-photo-pile-effect-line: var(--st-color-grey-dark);
 
+  /* Live stream banner */
+  --st-color-live-stream-background: var(--st-color-red-swiss-tchoukball);
+  --st-color-live-stream-foreground: white;
+
   /* LENGTHS */
   --st-length-main-content-max-width: 100%;
   --st-length-small-header-height: 50px;

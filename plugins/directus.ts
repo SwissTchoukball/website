@@ -290,6 +290,17 @@ export interface DirectusSeason {
   leverade_id?: number;
 }
 
+export interface DirectusLiveStream {
+  id: number;
+  translations: {
+    title: string;
+  }[];
+  url: string;
+  date_start: string;
+  date_end: string;
+  stream_start: string;
+}
+
 export interface DirectusNationalCompetitionEdition {
   id: number;
   season: DirectusSeason;
@@ -345,6 +356,7 @@ type CustomTypes = {
   national_teams_competitions_updates: DirectusNationalTeamCompetitionUpdate;
   player_positions: DirectusPlayerPosition;
   seasons: DirectusSeason;
+  live_streams: DirectusLiveStream;
   national_competitions: DirectusNationalCompetition;
   national_competition_editions: DirectusNationalCompetitionEdition;
   domains: DirectusDomain;

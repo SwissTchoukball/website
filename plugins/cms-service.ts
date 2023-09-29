@@ -26,6 +26,7 @@ import Role from '~/models/role.model';
 import Resource from '~/models/resource.model';
 import { processRawPlayers } from '~/plugins/cms-service/national-teams';
 import { PressRelease } from '~/components/press-releases/press-releases';
+import { toISOLocal } from '~/utils/utils';
 
 export interface SimplePage {
   languages_code: string;
@@ -80,6 +81,15 @@ export interface NationalCompetition {
   editions?: NationalCompetitionEdition[];
 }
 
+export interface LiveStream {
+  id: number;
+  title: string;
+  url: string;
+  date_start: string;
+  date_end: string;
+  stream_start: string;
+}
+
 export interface CMSService {
   getPage: (options: { pagePath: string }) => Promise<PartialItem<SimplePage>>;
   getText: (textId: number) => Promise<TextEntry>;
@@ -119,6 +129,7 @@ export interface CMSService {
     nationalTeamCompetitionId: number
   ) => Promise<Omit<NationalTeamForCompetition, 'competition'>[]>;
   getSeasons: () => Promise<DirectusSeason[]>;
+  getLiveStreams: () => Promise<LiveStream[]>;
   getNationalCompetition: (competitionSlug: string) => Promise<NationalCompetition>;
   getNationalCompetitionEditions: ({
     competitionSlug,
@@ -799,7 +810,7 @@ const cmsService: Plugin = (context, inject) => {
     let endDateBeforeFilter: any;
     if (endDateBefore) {
       endDateBeforeFilter = {
-        date_start: {
+        date_end: {
           _lte: endDateBefore.toISOString(),
         },
       };
@@ -808,7 +819,7 @@ const cmsService: Plugin = (context, inject) => {
     let endDateAfterFilter: any;
     if (endDateAfter) {
       endDateAfterFilter = {
-        date_start: {
+        date_end: {
           _gte: endDateAfter.toISOString(),
         },
       };
@@ -1269,6 +1280,74 @@ const cmsService: Plugin = (context, inject) => {
     return seasons;
   };
 
+  const getLiveStreams: CMSService['getLiveStreams'] = async () => {
+    const now = new Date();
+    const filter = {
+      _and: [
+        {
+          date_start: {
+            _lte: toISOLocal(now),
+          },
+        },
+        {
+          date_end: {
+            _gte: toISOLocal(now),
+          },
+        },
+      ],
+    };
+
+    const liveStreamsResponse = await context.$directus.items('live_streams').readByQuery({
+      fields: [
+        'id',
+        'translations.languages_code',
+        'translations.title',
+        'url',
+        'date_start',
+        'date_end',
+        'stream_start',
+      ],
+      filter,
+    });
+
+    if (!liveStreamsResponse?.data) {
+      throw new Error('Error when retrieving seasons');
+    }
+
+    // We retrieve all the languages and show text in fallback locale if not available in current locale
+    const currentLocale = context.i18n.locale;
+
+    const liveStreams = liveStreamsResponse.data.reduce((liveStreams, liveStream) => {
+      const translatedFields = getTranslatedFields(liveStream, currentLocale);
+
+      // We discard live streams that don't have mandatory data.
+      if (
+        liveStream.id &&
+        translatedFields?.title &&
+        liveStream.url &&
+        liveStream.date_start &&
+        liveStream.date_end &&
+        liveStream.stream_start
+      ) {
+        return [
+          ...liveStreams,
+          {
+            id: liveStream.id,
+            title: translatedFields.title,
+            url: liveStream.url,
+            date_start: liveStream.date_start,
+            date_end: liveStream.date_end,
+            stream_start: liveStream.stream_start,
+          },
+        ];
+      }
+      console.warn('Live stream missing mandatory data', { liveStream });
+      return liveStreams;
+    }, [] as LiveStream[]);
+
+    return liveStreams;
+  };
+
   const getNationalCompetition: CMSService['getNationalCompetition'] = async (competitionSlug) => {
     // We retrieve all the languages and show data in fallback locale if not available in current locale
     const currentLocale = context.i18n.locale;
@@ -1597,6 +1676,7 @@ const cmsService: Plugin = (context, inject) => {
     getNationalTeamCompetitionUpdates,
     getNationalTeamsForCompetition,
     getSeasons,
+    getLiveStreams,
     getNationalCompetition,
     getNationalCompetitionEditions,
     getTchoukups,
