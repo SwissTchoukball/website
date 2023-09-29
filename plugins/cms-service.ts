@@ -654,6 +654,9 @@ const cmsService: Plugin = (context, inject) => {
       const endTime = directusEvent.time_end.split(':').map((t) => parseInt(t));
       endDate = set(endDate, { hours: endTime[0], minutes: endTime[1] });
       showEndTime = true;
+    } else {
+      // We still set an end time to `endDate` otherwise it's going to be set to midnight and it can create issues for filtering by date
+      endDate = set(endDate, { hours: 23, minutes: 59, seconds: 59 });
     }
 
     let venue: Venue | undefined;
