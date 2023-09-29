@@ -25,13 +25,7 @@
       <st-burger-button v-model="isDrawerOpen" class="c-default__burger-button" />
       <st-navigation :items="mainNavigation" :name="$t('mainNavigation')" class="c-default__header-navigation" />
     </header>
-    <a v-for="liveStream of liveStreams" :key="liveStream.id" :href="liveStream.url" class="c-default__live-stream">
-      <fa-icon icon="circle-play" />
-      <span>
-        {{ $t('liveBanner.live') }} <span>{{ $formatDateDistanceToNow(new Date(liveStream.stream_start)) }}</span> :
-        {{ liveStream.title }}
-      </span>
-    </a>
+    <st-live-stream-banner :live-streams="liveStreams" />
     <main>
       <Nuxt />
     </main>
@@ -226,17 +220,6 @@ export default Vue.extend({
 
 .c-default__drawer-navigation {
   padding: var(--st-length-spacing-xs);
-}
-
-.c-default__live-stream {
-  display: flex;
-  gap: var(--st-length-spacing-xs);
-  align-items: center;
-  padding: var(--st-length-spacing-xs) var(--st-length-main-content-side-padding);
-  color: var(--st-color-live-stream-foreground);
-  font-weight: bold;
-  background-color: var(--st-color-live-stream-background);
-  text-decoration: none;
 }
 
 @media (--sm-and-up) {
