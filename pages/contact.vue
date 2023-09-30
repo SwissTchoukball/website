@@ -245,4 +245,9 @@ export default Vue.extend({
   text-align: center;
   margin: var(--st-length-spacing-m) 0;
 }
+
+.c-contact-form__success-block > * {
+  margin-left: auto;
+  margin-right: auto;
+}
 </style>
