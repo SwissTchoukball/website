@@ -33,7 +33,7 @@ a:visited {
 .directus-formatted-content p,
 .directus-formatted-content ul,
 .directus-formatted-content ol {
-  max-width: 45rem;
+  max-width: 45em;
   margin-top: var(--st-length-spacing-xs);
   font-size: 1em;
   line-height: 1.5;
@@ -120,7 +120,7 @@ a:visited {
 
   .l-table,
   .directus-formatted-content table {
-    width: 45rem;
+    width: 45em;
   }
 
   .l-table--large,

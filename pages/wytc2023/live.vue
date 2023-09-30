@@ -55,8 +55,7 @@ export default Vue.extend({
 
 <style scoped>
 .c-international-competition-live__updates {
-  max-width: 800px;
-  margin: auto;
+  max-width: 45em;
   margin-top: var(--st-length-spacing-s);
 }
 </style>
