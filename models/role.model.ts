@@ -12,7 +12,7 @@ export default class Role extends Model {
   name!: string;
   name_feminine?: string;
   name_masculine?: string;
-  group!: Group;
+  group?: Group;
   holders!: Person[];
   pivot?: {
     main?: boolean;
@@ -24,7 +24,7 @@ export default class Role extends Model {
       name: this.string(null),
       name_feminine: this.string(null).nullable(),
       name_masculine: this.string(null).nullable(),
-      group_id: this.number(null),
+      group_id: this.number(null).nullable(),
       group: this.belongsTo(Group, 'group_id'),
       holders: this.belongsToMany(Person, RolePerson, 'role_id', 'person_id'),
     };

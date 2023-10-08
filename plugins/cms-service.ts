@@ -27,6 +27,8 @@ import Resource from '~/models/resource.model';
 import { processRawPlayers } from '~/plugins/cms-service/national-teams';
 import { PressRelease } from '~/components/press-releases/press-releases';
 import { toISOLocal } from '~/utils/utils';
+import Group from '~/models/group.model';
+import Person, { Gender } from '~/models/person.model';
 
 export interface SimplePage {
   languages_code: string;
@@ -101,6 +103,9 @@ export interface CMSService {
     forHomepage?: boolean;
   }) => Promise<{ data: NewsEntry[]; meta: { total: number; filteredDomainName?: string } }>;
   getOneNews: (newsId: number) => Promise<NewsEntry>;
+  getRole: (
+    roleId: number
+  ) => Promise<Partial<Omit<Role, 'group' | 'holders'> & { group: Partial<Group>; holders: Partial<Person>[] }>>;
   getPressReleaseList: (options: {
     limit: number;
     page: number;
@@ -562,6 +567,80 @@ const cmsService: Plugin = (context, inject) => {
     };
 
     return pressRelease;
+  };
+
+  const getRole: CMSService['getRole'] = async (roleId: number) => {
+    const rawRole = await context.$directus.items('roles').readOne(roleId, {
+      fields: [
+        'id',
+        'translations.name',
+        'translations.name_feminine',
+        'translations.name_masculine',
+        'translations.languages_code',
+        'group.id',
+        'group.translations.name',
+        'group.translations.slug',
+        'group.translations.languages_code',
+        'holders.people_id.id',
+        'holders.people_id.first_name',
+        'holders.people_id.last_name',
+        'holders.people_id.email',
+        'holders.people_id.gender',
+        'holders.people_id.portrait_square_head',
+      ],
+    });
+
+    if (!rawRole) {
+      throw new Error('Error when retrieving role');
+    }
+
+    // We retrieve all the languages and show news in fallback locale if not available in current locale
+    const currentLocale = context.i18n.locale;
+
+    const translatedFields = getTranslatedFields(rawRole, currentLocale);
+
+    if (!rawRole.id || !translatedFields?.name) {
+      throw new Error(`Role is missing requested fields`);
+    }
+
+    let group: Partial<Group> | undefined;
+    if (rawRole.group) {
+      const groupTranslatedFields = getTranslatedFields(rawRole.group, currentLocale);
+      if (rawRole.group.id && groupTranslatedFields?.name && groupTranslatedFields?.slug) {
+        group = {
+          id: rawRole.group.id,
+          name: groupTranslatedFields.name,
+          slug: groupTranslatedFields.slug,
+        };
+      }
+    }
+
+    const holders: Partial<Person>[] = [];
+
+    rawRole.holders?.forEach((holder) => {
+      if (!holder?.people_id) {
+        return;
+      }
+      holders.push({
+        id: holder.people_id.id,
+        first_name: holder.people_id.first_name,
+        last_name: holder.people_id.last_name,
+        portrait_square_head: holder.people_id.portrait_square_head,
+        gender: holder.people_id.gender as Gender,
+        email: holder.people_id.email,
+      });
+    });
+
+    const role: Partial<Omit<Role, 'group' | 'holders'> & { group: Partial<Group>; holders: Partial<Person>[] }> = {
+      id: rawRole.id,
+      name: translatedFields.name,
+      name_feminine: translatedFields.name_feminine,
+      name_masculine: translatedFields.name_masculine,
+      group,
+      holders,
+    };
+
+    return role;
   };
 
   const getPressReleaseList: CMSService['getPressReleaseList'] = async ({ limit, page }) => {
@@ -1668,6 +1747,7 @@ const cmsService: Plugin = (context, inject) => {
     getNews,
     getOneNews,
     getEvent,
+    getRole,
     getPressReleaseList,
     getPressRelease,
     getEvents,

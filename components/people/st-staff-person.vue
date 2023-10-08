@@ -62,7 +62,15 @@ export default Vue.extend({
         } else if (roleB.pivot?.main) {
           return 1;
         }
-        return roleA.group?.id - roleB.group?.id;
+
+        if (roleA.group?.id && roleB.group?.id) {
+          return roleA.group?.id - roleB.group?.id;
+        } else if (roleA.group?.id && !roleB.group?.id) {
+          return -1;
+        } else if (roleB.group?.id) {
+          return 1;
+        }
+        return 0;
       });
       return roles;
     },

@@ -8,7 +8,7 @@ export default class Group extends Model {
 
   id!: number;
   name!: string;
-  description!: string;
+  description?: string;
   slug!: string;
   roles!: any[];
 

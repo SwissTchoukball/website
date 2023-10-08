@@ -12,6 +12,7 @@
       <!-- eslint-disable-next-line vue/no-v-html -->
       <div class="directus-formatted-content c-press-release__body" v-html="pressRelease.body"></div>
     </article>
+    <st-role v-if="headOfCommunicationRole" :role="headOfCommunicationRole" class="c-press-release__contact" />
   </section>
 </template>
 
@@ -21,8 +22,13 @@ import Vue from 'vue';
 import { MetaInfo } from 'vue-meta';
 import { PressRelease } from '~/components/press-releases/press-releases';
 import { BreadcrumbItem } from '~/components/st-breadcrumb.vue';
+import stRole from '~/components/people/st-role.vue';
+import Role from '~/models/role.model';
+
+const HEAD_OF_COMMUNICATION_ROLE_ID = 3;
 
 export default Vue.extend({
+  components: { stRole },
   nuxtI18n: {
     paths: {
       fr: '/communiques-de-presse/:slug',
@@ -54,6 +60,9 @@ export default Vue.extend({
     }
 
     this.pressRelease = await this.$cmsService.getPressRelease(id);
+
+    const headOfCommunicationRole = await this.$cmsService.getRole(HEAD_OF_COMMUNICATION_ROLE_ID);
+    this.Role.insert({ data: headOfCommunicationRole });
   },
   head(): MetaInfo {
     const title = this.pressRelease?.title || 'Press release';
@@ -81,6 +90,12 @@ export default Vue.extend({
     return metaInfo;
   },
   computed: {
+    Role() {
+      return this.$store.$db().model(Role);
+    },
+    headOfCommunicationRole(): Role | null {
+      return this.Role.query().whereId(HEAD_OF_COMMUNICATION_ROLE_ID).with('holders').first();
+    },
     creationDate(): string {
       if (this.pressRelease?.date_created) {
         return this.$formatDate(new Date(this.pressRelease.date_created), 'PPP');
@@ -151,5 +166,9 @@ export default Vue.extend({
 
 .c-press-release__dates::first-letter {
   text-transform: uppercase;
+}
+
+.c-press-release__contact {
+  margin-top: var(--st-length-spacing-m);
 }
 </style>
