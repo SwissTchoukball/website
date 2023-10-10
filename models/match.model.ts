@@ -39,6 +39,9 @@ export default class Match extends Model {
   canceled!: boolean;
   rest!: boolean;
 
+  // Non-Leverade fields:
+  flickr_photoset_id?: string;
+
   static fields() {
     return {
       id: this.string(null),
@@ -60,6 +63,9 @@ export default class Match extends Model {
       finished: this.boolean(false),
       canceled: this.boolean(false),
       rest: this.boolean(false),
+
+      // Non-Leverade fields:
+      flickr_photoset_id: this.string(null).nullable(),
     };
   }
 

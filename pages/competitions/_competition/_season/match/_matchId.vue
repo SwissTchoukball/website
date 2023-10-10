@@ -9,13 +9,13 @@
       </span>
     </nuxt-link>
     <h2 class="c-match__name">
-      <div class="c-match__team c-match__team--home" :class="{ 'c-match__team--winner': hasHomeTeamWon(match) }">
+      <span class="c-match__team c-match__team--home" :class="{ 'c-match__team--winner': hasHomeTeamWon(match) }">
         {{ match.homeTeamName }}
-      </div>
-      <div class="c-match__cross">&#9587;</div>
-      <div class="c-match__team c-match__team--away" :class="{ 'c-match__team--winner': hasAwayTeamWon(match) }">
+      </span>
+      <span class="c-match__cross">&#9587;</span>
+      <span class="c-match__team c-match__team--away" :class="{ 'c-match__team--winner': hasAwayTeamWon(match) }">
         {{ match.awayTeamName }}
-      </div>
+      </span>
     </h2>
     <div class="c-match__avatars-and-score">
       <img
@@ -85,6 +85,10 @@
         <iframe v-if="swisstopoMapUrl" :src="swisstopoMapUrl" frameborder="0" class="c-match__map"></iframe>
       </client-only>
     </div>
+    <template v-if="photos.length">
+      <h3 class="t-headline-2 c-match__photos-title">{{ $t('match.photos') }}</h3>
+      <st-flickr-album-gallery :photos="photos" class="c-match__photos-gallery" />
+    </template>
   </div>
 </template>
 
@@ -93,6 +97,7 @@ import Vue from 'vue';
 import Match from '~/models/match.model';
 import StEventDate from '~/components/events/st-event-date.vue';
 import { LeveradeGroupType } from '~/plugins/leverade';
+import { FlickrPhoto } from '~/plugins/flickr';
 
 export default Vue.extend({
   components: {
@@ -102,10 +107,21 @@ export default Vue.extend({
   data() {
     return {
       venueDetailsVisible: false,
+      photos: [] as FlickrPhoto[],
     };
   },
   async fetch() {
     await this.$store.dispatch('loadMatch', this.$route.params.matchId);
+
+    if (this.match.flickr_photoset_id) {
+      // Doc: https://www.flickr.com/services/api/flickr.photosets.getPhotos.html
+      const flickrResponse = await this.$flickr.photosets.getPhotos({
+        user_id: this.$config.flickr.userId,
+        photoset_id: this.match.flickr_photoset_id,
+        extras: 'url_q,url_m',
+      });
+      this.photos = flickrResponse.body.photoset.photo;
+    }
   },
   head() {
     const match: Match = (this as any).match;
@@ -359,6 +375,14 @@ export default Vue.extend({
   width: 100%;
   height: 50vh;
   border: 0;
+}
+
+.c-match__photos-title {
+  padding-top: var(--st-length-spacing-m);
+}
+
+.c-match__photos-gallery {
+  margin-top: var(--st-length-spacing-s);
 }
 
 @media (--sm-and-up) {

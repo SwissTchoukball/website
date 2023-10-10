@@ -30,7 +30,7 @@
     "@vuex-orm/core": "^0.36.4",
     "core-js": "^3.30.2",
     "date-fns": "^2.30.0",
-    "flickr-sdk": "^6.2.1",
+    "flickr-sdk": "^6.3.0",
     "html-entities": "^2.3.3",
     "linkify-string": "^4.1.1",
     "linkifyjs": "^4.1.1",

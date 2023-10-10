@@ -4,7 +4,11 @@
     <p v-else-if="$fetchState.error">{{ $t('error.otherError') }} : {{ $fetchState.error.message }}</p>
     <template v-else>
       <st-breadcrumb :items="breadcrumb" class="c-competition-edition__breadcrumb" />
-      <h2 v-if="competitionEdition" class="t-headline-1">{{ competitionEdition.name }}</h2>
+      <h2 v-if="competitionEdition" class="t-headline-1 c-competition-edition__title">
+        <nuxt-link :to="localePath({ name: 'competitions-competition-season' })">
+          {{ competitionEdition.name }}
+        </nuxt-link>
+      </h2>
       <st-navigation
         v-if="showPhasesNavigation"
         :items="phasesNavigation"
@@ -170,6 +174,10 @@ export default Vue.extend({
 <style scoped>
 .c-competition-edition__breadcrumb {
   margin-top: var(--st-length-spacing-s);
+}
+
+.c-competition-edition__title a {
+  color: initial;
 }
 
 .c-competition-edition__phase-navigation {

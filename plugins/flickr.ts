@@ -8,11 +8,16 @@ export interface FlickrPhoto {
   server: string;
   farm: number;
   title: string;
+  isprimary: string;
   ispublic: number;
   isfriend: number;
   isfamily: number;
   url_q?: string;
+  height_q: number;
+  width_q: number;
   url_m?: string;
+  height_m: number;
+  width_m: number;
 }
 
 export interface FlickrPhotoset {

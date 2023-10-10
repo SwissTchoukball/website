@@ -5,6 +5,7 @@ import { Await } from '~/types/types.utils';
 import {
   DirectusEvent,
   DirectusFile,
+  DirectusMatchAdditionalData,
   DirectusNationalCompetitionEdition,
   DirectusPressRelease,
   DirectusResource,
@@ -145,6 +146,7 @@ export interface CMSService {
     seasonSlug?: string;
     leveradeIds?: string[];
   }) => Promise<NationalCompetitionEdition[]>;
+  getMatchAdditionalData: (leveradeId: number) => Promise<DirectusMatchAdditionalData | null>;
   getTchoukups: (options: { limit: number; page: number }) => Promise<{ data: Tchoukup[]; meta: { total: number } }>;
   searchResources: (searchTerm: string, domainId?: number, typeId?: number) => Promise<Resource[]>;
 }
@@ -1589,6 +1591,37 @@ const cmsService: Plugin = (context, inject) => {
     }, [] as NationalCompetitionEdition[]);
   };
 
+  const getMatchAdditionalData: CMSService['getMatchAdditionalData'] = async (leveradeId) => {
+    const response = await context.$directus.items('match_additional_data').readByQuery({
+      limit: 1,
+      filter: {
+        leverade_id: leveradeId,
+      },
+      fields: ['id', 'leverade_id', 'flickr_photoset_id'],
+    });
+
+    if (!response?.data) {
+      throw new Error('Could not retrieve match additional data');
+    }
+
+    if (!response.data.length) {
+      // No additional data for this match
+      return null;
+    }
+
+    const rawData = response.data[0];
+
+    if (!rawData.id || !rawData.leverade_id) {
+      throw new Error('Match additional data is missing mandatory attributes');
+    }
+
+    return {
+      id: rawData.id,
+      leverade_id: rawData.leverade_id,
+      flickr_photoset_id: rawData.flickr_photoset_id,
+    };
+  };
+
   const getTchoukups: CMSService['getTchoukups'] = async ({ limit, page }) => {
     const tchoukupResponse = await context.$directus.items('tchoukup').readByQuery({
       meta: 'filter_count',
@@ -1759,6 +1792,7 @@ const cmsService: Plugin = (context, inject) => {
     getLiveStreams,
     getNationalCompetition,
     getNationalCompetitionEditions,
+    getMatchAdditionalData,
     getTchoukups,
     searchResources,
   });

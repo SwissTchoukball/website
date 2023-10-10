@@ -309,6 +309,12 @@ export interface DirectusNationalCompetitionEdition {
   leverade_id?: number;
 }
 
+export interface DirectusMatchAdditionalData {
+  id: number;
+  leverade_id: number;
+  flickr_photoset_id?: string;
+}
+
 export interface DirectusNationalCompetition {
   id: number;
   editions: DirectusNationalCompetitionEdition[];
@@ -359,6 +365,7 @@ type CustomTypes = {
   live_streams: DirectusLiveStream;
   national_competitions: DirectusNationalCompetition;
   national_competition_editions: DirectusNationalCompetitionEdition;
+  match_additional_data: DirectusMatchAdditionalData;
   domains: DirectusDomain;
   resources: DirectusResource;
   resource_types: DirectusResourceType;

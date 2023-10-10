@@ -144,6 +144,9 @@
     "upcomingMatchesOfCompetition": "Die Spiele von {competitionName} ansehen",
     "noUpcomingMatches": "Es sind aktuell keine Spiele geplant."
   },
+  "match": {
+    "photos": "Fotos vom Spiel"
+  },
   "person": {
     "photoOf": "Foto von {name}"
   },

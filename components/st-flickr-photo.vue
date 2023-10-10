@@ -1,6 +1,6 @@
 <template>
   <a :href="`https://www.flickr.com/photos/swisstchoukball/${photo.id}`">
-    <img :src="photo.url_q" :alt="photo.title" :title="photo.title" loading="lazy" class="c-flickr-photo" />
+    <img :src="photo.url_m" :alt="photo.title" :title="photo.title" loading="lazy" class="c-flickr-photo" />
   </a>
 </template>
 
@@ -21,5 +21,7 @@ export default Vue.extend({
 <style scoped>
 .c-flickr-photo {
   width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
 }
 </style>

@@ -2,7 +2,12 @@ import { ActionTree } from 'vuex/types/index';
 import { PartialItem } from '@directus/sdk';
 import { Item } from '@vuex-orm/core';
 import { EventTypes, MenuItem, PlayerPositions, RootState } from './state';
-import { DirectusMenuItem, DirectusNationalCompetition, getTranslatedFields } from '~/plugins/directus';
+import {
+  DirectusMatchAdditionalData,
+  DirectusMenuItem,
+  DirectusNationalCompetition,
+  getTranslatedFields,
+} from '~/plugins/directus';
 import CompetitionEdition from '~/models/competition-edition.model';
 import Round from '~/models/round.model';
 import Match from '~/models/match.model';
@@ -330,7 +335,7 @@ export default {
       periods,
       referees,
     }: {
-      matches: LeveradeMatch[];
+      matches: (LeveradeMatch & { additionalData?: DirectusMatchAdditionalData })[];
       results?: LeveradeResult[];
       periods?: LeveradePeriod[];
       referees?: LeveradeProfile[];
@@ -411,6 +416,7 @@ export default {
           finished: match.attributes.finished,
           canceled: match.attributes.canceled,
           rest: match.attributes.rest,
+          flickr_photoset_id: match.additionalData?.flickr_photoset_id,
         };
       }),
     });
@@ -670,6 +676,9 @@ export default {
 
     const match = matchResponse.data.data;
 
+    // Loading additional data from Directus
+    const matchAdditionalData = await this.$cmsService.getMatchAdditionalData(matchId);
+
     if (facility) {
       await context.dispatch('insertFacilities', [facility]);
     }
@@ -706,7 +715,12 @@ export default {
     }
 
     await context.dispatch('insertTeams', teams);
-    await context.dispatch('insertMatches', { matches: [match], results, periods, referees });
+    await context.dispatch('insertMatches', {
+      matches: [{ ...match, additionalData: matchAdditionalData }],
+      results,
+      periods,
+      referees,
+    });
   },
 
   async loadUpcomingMatches(context) {
