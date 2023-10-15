@@ -92,4 +92,21 @@ export default class Match extends Model {
     }
     return '';
   }
+
+  static getFutureMatches(phaseId: string): Match[] {
+    return (
+      Match.query()
+        .with('home_team')
+        .with('away_team')
+        .with('facility')
+        .with('faceoff')
+        .with('round', (query) => query.with('phase', (queryP) => queryP.where('id', phaseId)))
+        .where('datetime', (datetime: string) => datetime >= new Date().toISOString().substring(0, 10))
+        .orderBy('datetime')
+        .get()
+        // Somehow, this query retrieves some matches from other phases, without including the phase.
+        // We filter those out here. FIXME: Find a cleaner way to fix this.
+        .filter((match) => match.round.phase)
+    );
+  }
 }

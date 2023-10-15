@@ -13,6 +13,8 @@
 <script lang="ts">
 import Vue, { PropType } from 'vue';
 import Phase from '~/models/phase.model';
+import Round from '~/models/round.model';
+import Match from '~/models/match.model';
 import { LeveradeGroupType } from '~/plugins/leverade';
 import { MenuItem } from '~/store/state';
 
@@ -30,6 +32,12 @@ export default Vue.extend({
     },
   },
   computed: {
+    futureMatches(): Match[] {
+      return Match.getFutureMatches(this.phase.id);
+    },
+    roundsToShow(): Round[] {
+      return this.phase.rounds.filter((round) => round.isPast || round.hasFinishedMatches);
+    },
     phaseNavigation(): MenuItem[] {
       const params = { phase: this.$route.params.phase };
       const phaseNavigation = [];
@@ -42,17 +50,19 @@ export default Vue.extend({
         });
       }
 
-      // TODO: Hide planning if no rounds planned in the future
-      phaseNavigation.push(
-        {
+      if (this.roundsToShow.length > 0) {
+        phaseNavigation.push({
           name: this.$t('competitions.phaseNavigation.results').toString(),
           href: this.localePath({ name: 'competitions-competition-season-phase-results', params }),
-        },
-        {
+        });
+      }
+
+      if (this.futureMatches.length > 0) {
+        phaseNavigation.push({
           name: this.$t('competitions.phaseNavigation.planning').toString(),
           href: this.localePath({ name: 'competitions-competition-season-phase-planning', params }),
-        }
-      );
+        });
+      }
 
       return phaseNavigation;
     },

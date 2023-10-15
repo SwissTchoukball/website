@@ -94,20 +94,7 @@ export default Vue.extend({
   },
   computed: {
     futureMatches(): Match[] {
-      const matches = Match.query()
-        .with('home_team')
-        .with('away_team')
-        .with('facility')
-        .with('faceoff')
-        .with('round', (query) => query.with('phase', (queryP) => queryP.where('id', this.phase.id)))
-        .where('datetime', (datetime: string) => datetime >= this.$formatDate(new Date(), 'yyyy-MM-dd'))
-        .orderBy('datetime')
-        .get()
-        // Somehow, this query retrieves some matches from other phases, without including the phase.
-        // We filter those out here. FIXME: Find a cleaner way to fix this.
-        .filter((match) => match.round.phase);
-
-      return matches;
+      return Match.getFutureMatches(this.phase.id);
     },
   },
   methods: {

@@ -6,6 +6,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
+import Match from '~/models/match.model';
 import Phase from '~/models/phase.model';
 import Round from '~/models/round.model';
 
@@ -23,8 +24,8 @@ export default Vue.extend({
       params: { phase: this.$route.params.phase },
     });
 
-    // If there are no results yet, we rather redirect to the planning
-    if (this.roundsToShow.length <= 0) {
+    // If there are no results yet, and there are planned matches, we rather redirect to the planning
+    if (this.roundsToShow.length <= 0 && this.futureMatches.length > 0) {
       redirectPath = this.localePath({
         name: 'competitions-competition-season-phase-planning',
       });
@@ -39,6 +40,9 @@ export default Vue.extend({
   computed: {
     roundsToShow(): Round[] {
       return this.phase.rounds.filter((round) => round.isPast || round.hasFinishedMatches);
+    },
+    futureMatches(): Match[] {
+      return Match.getFutureMatches(this.phase.id);
     },
   },
 });
