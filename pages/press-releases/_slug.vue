@@ -25,7 +25,7 @@ import { BreadcrumbItem } from '~/components/st-breadcrumb.vue';
 import stRole from '~/components/people/st-role.vue';
 import Role from '~/models/role.model';
 
-const HEAD_OF_COMMUNICATION_ROLE_ID = 3;
+const MEDIA_COORDINATOR_ROLE = 62;
 
 export default Vue.extend({
   components: { stRole },
@@ -61,7 +61,7 @@ export default Vue.extend({
 
     this.pressRelease = await this.$cmsService.getPressRelease(id);
 
-    const headOfCommunicationRole = await this.$cmsService.getRole(HEAD_OF_COMMUNICATION_ROLE_ID);
+    const headOfCommunicationRole = await this.$cmsService.getRole(MEDIA_COORDINATOR_ROLE);
     this.Role.insert({ data: headOfCommunicationRole });
   },
   head(): MetaInfo {
@@ -94,7 +94,7 @@ export default Vue.extend({
       return this.$store.$db().model(Role);
     },
     headOfCommunicationRole(): Role | null {
-      return this.Role.query().whereId(HEAD_OF_COMMUNICATION_ROLE_ID).with('holders').first();
+      return this.Role.query().whereId(MEDIA_COORDINATOR_ROLE).with('holders').first();
     },
     creationDate(): string {
       if (this.pressRelease?.date_created) {
