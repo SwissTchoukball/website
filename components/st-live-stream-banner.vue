@@ -4,7 +4,10 @@
       <fa-icon icon="circle-play" />
       <span>
         {{ $t('liveBanner.live') }}
-        <template v-if="!hasBegun">{{ $formatDateDistanceToNow(new Date(liveStream.stream_start)) }}</template> :
+        <template v-if="!hasBegun(liveStream)">
+          {{ $formatDateDistanceToNow(new Date(liveStream.stream_start)) }}
+        </template>
+        :
         {{ liveStream.title }}
       </span>
     </a>
