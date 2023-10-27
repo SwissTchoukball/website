@@ -132,7 +132,7 @@ export default Vue.extend({
 }
 
 .c-planning__match-round {
-  color: red;
+  color: var(--st-color-planning-match-round);
   font-size: 0.9em;
   font-weight: bold;
   margin-top: var(--st-length-spacing-xxs);

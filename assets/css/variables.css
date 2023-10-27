@@ -37,10 +37,13 @@
   /* Navigation */
   --st-color-burger-menu: var(--st-color-red-swiss-tchoukball);
   --st-color-navigation-drawer-background: var(--st-color-grey-very-light);
+  --st-color-navigation-item-inverted-hover: var(--st-color-red-swiss-tchoukball);
+  --st-color-navigation-item-inverted-active-background: var(--st-color-red-swiss-tchoukball);
   --st-color-wide-navigation-item: black;
   --st-color-wide-navigation-item-active-border: var(--st-color-red-swiss-tchoukball);
   --st-color-wide-navigation-item-active-background: var(--st-color-grey-very-light);
   --st-color-wide-navigation-sub-items-background: white;
+  --st-color-wide-navigation-narrow-sub-item-active: var(--st-color-red-swiss-tchoukball);
   --st-color-wide-navigation-narrow-sub-item-active-background: white;
   --st-color-small-navigation-item-hover-border: var(--st-color-grey-light);
   --st-color-active-lang: var(--st-color-red-swiss-tchoukball);
@@ -63,6 +66,7 @@
   --st-color-footer-tchouksuisse: var(--st-color-red-swiss-tchoukball);
   --st-color-footer-newsletter: var(--st-color-red-swiss-tchoukball);
   --st-color-footer-newsletter-hover: white;
+  --st-color-footer-navigation-background: var(--st-color-red-swiss-tchoukball);
 
   /* Buttons */
   --st-color-button-base-background: white;
@@ -122,11 +126,35 @@
   /* National teams */
   --st-color-national-team-result-location: var(--st-color-grey-dark);
 
+  /* National competition */
+  --st-color-planning-match-round: var(--st-color-red-swiss-tchoukball);
+
   /* Medals */
 
-  --st-color-medal-gold: repeating-conic-gradient(#edc800 0deg, #ffe800 15deg, #f3cf00 30deg, #e3b600 45deg, #edc800 60deg) 10% 10%;
-  --st-color-medal-silver: repeating-conic-gradient(#c3c3c3 0deg, #ccc 15deg, #c6c6c6 30deg, #d7d7d7 45deg, #c3c3c3 60deg) 10% 10%;
-  --st-color-medal-bronze: repeating-conic-gradient(#d96b41 0deg, #b15a39 15deg, #b25b3a 30deg, #d26645 45deg, #d96b41 60deg) 10% 10%;
+  --st-color-medal-gold: repeating-conic-gradient(
+      #edc800 0deg,
+      #ffe800 15deg,
+      #f3cf00 30deg,
+      #e3b600 45deg,
+      #edc800 60deg
+    )
+    10% 10%;
+  --st-color-medal-silver: repeating-conic-gradient(
+      #c3c3c3 0deg,
+      #ccc 15deg,
+      #c6c6c6 30deg,
+      #d7d7d7 45deg,
+      #c3c3c3 60deg
+    )
+    10% 10%;
+  --st-color-medal-bronze: repeating-conic-gradient(
+      #d96b41 0deg,
+      #b15a39 15deg,
+      #b25b3a 30deg,
+      #d26645 45deg,
+      #d96b41 60deg
+    )
+    10% 10%;
   --st-color-medal-gold-simple: #ffd700;
   --st-color-medal-silver-simple: #c0c0c0;
   --st-color-medal-bronze-simple: #cd7f32;
@@ -170,6 +198,19 @@
 
   /* Shadows */
   --st-shadow-navigation: rgba(100 100 111 / 20%) 0 7px 29px 0;
+}
+
+@media (color-gamut: p3) {
+  :root {
+    /* Brand */
+    --st-color-red-swiss-tchoukball: color(display-p3 1 0 0);
+    --st-color-red-swiss-tchoukball-light: color(display-p3 1 0.4 0.37);
+    --st-color-red-swiss-tchoukball-very-light: color(display-p3 1 0.67 0.66);
+    --st-color-red-swiss-tchoukball-ultra-light: color(display-p3 1 0.86 0.86);
+    --st-color-red-swiss-tchoukball-dark: color(display-p3 0.64 0.05 0);
+    --st-color-red-swiss-tchoukball-very-dark: color(display-p3 0.35 0.03 0);
+    --st-color-red-swiss-tchoukball-ultra-dark: color(display-p3 0.14 0.01 0);
+  }
 }
 
 @media (--md-and-up) {

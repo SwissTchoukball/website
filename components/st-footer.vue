@@ -176,7 +176,7 @@ export default Vue.extend({
 }
 
 .c-footer__secondary-navigation {
-  background-color: red;
+  background-color: var(--st-color-footer-navigation-background);
   padding: var(--st-length-spacing-xs) 0;
 }
 

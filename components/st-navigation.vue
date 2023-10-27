@@ -201,7 +201,7 @@ export default Vue.extend({
 }
 
 .c-navigation--inverted .c-navigation__item-name:hover {
-  color: red;
+  color: var(--st-color-navigation-item-inverted-hover);
 }
 
 .c-navigation:not(.c-navigation--selected-on-exact-active) .c-navigation__item-name.nuxt-link-active::after,
@@ -216,7 +216,7 @@ export default Vue.extend({
 }
 
 .c-navigation--inverted .c-navigation__item-name.nuxt-link-active {
-  background-color: red;
+  background-color: var(--st-color-navigation-item-inverted-active-background);
   border-radius: var(--st-length-spacing-xxs);
 }
 
@@ -283,7 +283,7 @@ export default Vue.extend({
 }
 
 .c-navigation__sub-item a.nuxt-link-active {
-  color: red;
+  color: var(--st-color-wide-navigation-narrow-sub-item-active);
 }
 
 .c-navigation__sub-item a:hover,
