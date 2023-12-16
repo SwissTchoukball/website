@@ -47,7 +47,8 @@
     }
   },
   "liveBanner": {
-    "live": "Live"
+    "live": "Live",
+    "atTime": "um {time}"
   },
   "news": {
     "title": "News",

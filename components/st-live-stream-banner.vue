@@ -5,7 +5,12 @@
       <span>
         {{ $t('liveBanner.live') }}
         <template v-if="!hasBegun(liveStream)">
-          {{ $formatDateDistanceToNow(new Date(liveStream.stream_start)) }}
+          <template v-if="beginsInMoreThan44Minutes(liveStream)">
+            {{ $t('liveBanner.atTime', { time: $formatDate(new Date(liveStream.stream_start), 'p') }) }}
+          </template>
+          <template v-else>
+            {{ $formatDateDistanceToNow(new Date(liveStream.stream_start)) }}
+          </template>
         </template>
         :
         {{ liveStream.title }}
@@ -15,7 +20,7 @@
 </template>
 
 <script lang="ts">
-import { isPast } from 'date-fns';
+import { isPast, subMinutes } from 'date-fns';
 import Vue, { PropType } from 'vue';
 import { LiveStream } from '~/plugins/cms-service';
 
@@ -27,8 +32,12 @@ export default Vue.extend({
     },
   },
   methods: {
-    hasBegun: (liveStream: LiveStream) => {
+    hasBegun: (liveStream: LiveStream): boolean => {
       return isPast(new Date(liveStream.stream_start));
+    },
+    beginsInMoreThan44Minutes: (liveStream: LiveStream): boolean => {
+      const streamStartMinus44Minutes = subMinutes(new Date(liveStream.stream_start), 44);
+      return !isPast(streamStartMinus44Minutes);
     },
   },
 });

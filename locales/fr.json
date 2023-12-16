@@ -47,7 +47,8 @@
     }
   },
   "liveBanner": {
-    "live": "En direct"
+    "live": "En direct",
+    "atTime": "à {time}"
   },
   "news": {
     "title": "News",
