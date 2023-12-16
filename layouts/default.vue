@@ -146,7 +146,7 @@ export default Vue.extend({
       return this.$store.$db().model(LiveStream);
     },
     liveStreams(): Collection<LiveStream> {
-      return this.LiveStream.all();
+      return this.LiveStream.query().orderBy('stream_start').all();
     },
   },
   mounted() {
