@@ -12,12 +12,12 @@
       <st-navigation
         v-if="showPhasesNavigation"
         :items="phasesNavigation"
-        :name="$t('otherNavigation', { name: `${competitionEdition.name}, ${competitionEdition.season.name}` })"
+        :name="$t('otherNavigation', { name: `${competitionEdition.name}, ${season.name}` })"
         class="c-competition-edition__phase-navigation"
         small
         inverted
       />
-      <nuxt-child :phase="currentPhase" />
+      <nuxt-child :season="season" :phase="currentPhase" />
     </template>
   </section>
 </template>
@@ -30,6 +30,7 @@ import { MenuItem, RootState } from '~/store/state';
 import { BreadcrumbItem } from '~/components/st-breadcrumb.vue';
 import CompetitionEdition from '~/models/competition-edition.model';
 import Phase from '~/models/phase.model';
+import Season from '~/models/season.model';
 
 export default Vue.extend({
   nuxtI18n: {
@@ -38,8 +39,13 @@ export default Vue.extend({
       de: '/wettbewerbe/:competition/:season',
     },
   },
+  asyncData({ store, route }) {
+    const season: Season = store.getters.getSeasonBySlug(route.params.season);
+    return { season };
+  },
   data() {
     return {
+      season: undefined as Season | undefined,
       lastPhasePath: undefined as string | undefined,
     };
   },
@@ -62,12 +68,15 @@ export default Vue.extend({
     }
 
     try {
+      if (!this.season?.leverade_id) {
+        throw new Error('Season has no Leverade ID');
+      }
       this.lastPhasePath = this.localePath({
         name: 'competitions-competition-season-phase',
         params: {
           competition: this.$route.params.competition,
           season: this.$route.params.season,
-          phase: CompetitionEdition.getLastPhase(this.$route.params.competition, this.$route.params.season).id,
+          phase: CompetitionEdition.getLastPhase(this.$route.params.competition, this.season.leverade_id).id,
         },
       });
     } catch (error) {
@@ -86,11 +95,12 @@ export default Vue.extend({
   computed: {
     competitionEdition(): Item<CompetitionEdition> {
       return CompetitionEdition.query()
+        .where('season_id', this.season?.leverade_id)
         .with('phases', (query) => query.orderBy('order'))
         .with('phases.rounds', (query) => query.orderBy('order'))
         .with([
           'phases.competition_edition',
-          'phases.competition_edition.season',
+          'phases.competition_edition.season_id',
           'phases.rounds.faceoffs',
           'phases.rounds.faceoffs.first_team',
           'phases.rounds.faceoffs.second_team',
@@ -102,12 +112,8 @@ export default Vue.extend({
           'phases.rounds.matches.away_team',
         ])
         .with('competition')
-        .with('season')
         .whereHas('competition', (query) => {
           query.where('slug', this.$route.params.competition);
-        })
-        .whereHas('season', (query) => {
-          query.where('slug', this.$route.params.season);
         })
         .first();
     },
@@ -150,11 +156,11 @@ export default Vue.extend({
         },
       ];
 
-      if (this.competitionEdition) {
+      if (this.season) {
         breadcrumb.push(
           ...[
             {
-              displayName: this.competitionEdition.season.name,
+              displayName: this.season.name,
               pageName: 'seasons-season',
             },
           ]

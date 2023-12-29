@@ -2,7 +2,6 @@ import { Model } from '@vuex-orm/core';
 import Phase from '~/models/phase.model';
 import Competition from '~/models/competition.model';
 import Team from '~/models/team.model';
-import Season from '~/models/season.model';
 
 export default class CompetitionEdition extends Model {
   static entity = 'competition-editions';
@@ -13,7 +12,8 @@ export default class CompetitionEdition extends Model {
   directus_id!: number;
   name!: string;
   gender!: string;
-  season!: Season;
+  /** Leverade Season ID */
+  season_id!: string;
   competition!: Competition;
   phases!: Phase[];
   teams!: Team[];
@@ -26,7 +26,6 @@ export default class CompetitionEdition extends Model {
       gender: this.string(null).nullable(),
       /** Leverade Season ID */
       season_id: this.string(null),
-      season: this.belongsTo(Season, 'season_id', 'leverade_id'),
       competition_id: this.string(null),
       competition: this.belongsTo(Competition, 'competition_id'),
       phases: this.hasMany(Phase, 'competition_edition_id'),
@@ -34,16 +33,13 @@ export default class CompetitionEdition extends Model {
     };
   }
 
-  static getLastPhase(competitionSlug: string, seasonSlug: string): Phase {
+  static getLastPhase(competitionSlug: string, seasonLeveradeId: string): Phase {
     const competitionEdition = this.query()
+      .where('season_id', seasonLeveradeId)
       .with('phases', (query) => query.orderBy('order'))
       .with('competition')
-      .with('season')
       .whereHas('competition', (query) => {
         query.where('slug', competitionSlug);
-      })
-      .whereHas('season', (query) => {
-        query.where('slug', seasonSlug);
       })
       .first();
 

@@ -32,6 +32,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
+import Season from '~/models/season.model';
 import Phase from '~/models/phase.model';
 import Round from '~/models/round.model';
 import stMatchResultList from '~/components/competitions/st-match-result-list.vue';
@@ -48,6 +49,10 @@ export default Vue.extend({
     stMatchResultList,
   },
   props: {
+    season: {
+      type: Object as PropType<Season>,
+      required: true,
+    },
     phase: {
       type: Object as PropType<Phase>,
       required: true,
@@ -57,7 +62,7 @@ export default Vue.extend({
     const title = this.$t('competitions.headTitle.results', {
       phaseName: this.phase.name,
       editionName: this.phase.competition_edition.name,
-      seasonName: this.phase.competition_edition.season.name,
+      seasonName: this.season.name,
     }).toString();
     return {
       title,

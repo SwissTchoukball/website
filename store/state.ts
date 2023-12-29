@@ -1,5 +1,5 @@
 import { LiveStream } from '~/plugins/cms-service';
-import { DirectusImage } from '~/plugins/directus';
+import { DirectusImage, DirectusSeason } from '~/plugins/directus';
 
 export interface MenuItem {
   sort?: number;
@@ -34,6 +34,7 @@ export interface PlayerPositions {
 export interface RootState {
   mainNavigation: MenuItem[];
   secondaryNavigation: MenuItem[];
+  seasons: DirectusSeason[];
   eventTypes?: EventTypes;
   playerPositions?: PlayerPositions;
   liveStreams: LiveStream[];
@@ -44,6 +45,7 @@ export interface RootState {
 export default (): RootState => ({
   mainNavigation: [],
   secondaryNavigation: [],
+  seasons: [],
   eventTypes: undefined,
   playerPositions: undefined,
   liveStreams: [],

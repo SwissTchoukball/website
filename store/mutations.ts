@@ -1,6 +1,7 @@
 import { MutationTree } from 'vuex/types/index';
 import { EventTypes, MenuItem, PlayerPositions, RootState } from './state';
 import { LiveStream } from '~/plugins/cms-service';
+import { DirectusSeason } from '~/plugins/directus';
 
 export default {
   setMainNavigation(state, mainNavigation: MenuItem[]) {
@@ -8,6 +9,9 @@ export default {
   },
   setSecondaryNavigation(state, secondaryNavigation: MenuItem[]) {
     state.secondaryNavigation = secondaryNavigation;
+  },
+  setSeasons(state, seasons: DirectusSeason[]) {
+    state.seasons = seasons;
   },
   setEventTypes(state, eventTypes: EventTypes) {
     state.eventTypes = eventTypes;

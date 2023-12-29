@@ -36,6 +36,7 @@ import Vue from 'vue';
 import Match from '~/models/match.model';
 import stMatchEventSmall from '~/components/competitions/st-match-event-small.vue';
 import Phase from '~/models/phase.model';
+import Season from '~/models/season.model';
 
 export default Vue.extend({
   components: { stMatchEventSmall },
@@ -50,7 +51,7 @@ export default Vue.extend({
         .with('home_team')
         .with('away_team')
         .with('facility')
-        .with('round.phase.competition_edition.competition|season')
+        .with('round.phase.competition_edition.competition')
         .where('datetime', (datetime: string) => datetime >= this.$formatDate(new Date(), 'yyyy-MM-dd'))
         .orderBy('datetime')
         .limit(9)
@@ -75,11 +76,19 @@ export default Vue.extend({
   },
   methods: {
     getPathToPhase(phase: Phase): string {
+      if (
+        !phase.competition_edition ||
+        !phase.competition_edition.competition ||
+        !phase.competition_edition.season_id
+      ) {
+        return '';
+      }
+      const season: Season = this.$store.getters.getSeasonByLeveradeId(phase.competition_edition.season_id);
       return this.localePath({
         name: 'competitions-competition-season-phase-planning',
         params: {
-          competition: phase.competition_edition?.competition?.slug,
-          season: phase.competition_edition?.season?.slug,
+          competition: phase.competition_edition.competition.slug,
+          season: season.slug,
           phase: phase.id,
         },
       });

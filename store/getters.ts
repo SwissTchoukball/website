@@ -1,14 +1,33 @@
 import { GetterTree } from 'vuex/types/index';
-import { Item } from '@vuex-orm/core';
 import { RootState } from '~/store/state';
 import Season from '~/models/season.model';
+import { DirectusSeason } from '~/plugins/directus';
 
 export default {
-  currentSeason: (): Item<Season> => {
+  findSeason:
+    (state) =>
+    (predicate: (value: DirectusSeason, index: number, obj: DirectusSeason[]) => unknown): Season | undefined => {
+      const rawSeason = state.seasons.find(predicate);
+      if (!rawSeason) {
+        return;
+      }
+      return new Season(rawSeason);
+    },
+
+  currentSeason: (_state, getters): Season | undefined => {
     const today = new Date().toISOString().substring(0, 10);
-    return Season.query()
-      .where('date_start', (value: string) => value <= today)
-      .where('date_end', (value: string) => value >= today)
-      .first();
+    return getters.findSeason((season: DirectusSeason) => season.date_start <= today && season.date_end >= today);
   },
+  getSeasonBySlug:
+    (_state, getters) =>
+    (slug: string): Season | undefined => {
+      return getters.findSeason((season: DirectusSeason) => season.slug === slug);
+    },
+  getSeasonByLeveradeId:
+    (_state, getters) =>
+    (leveradeId: string): Season | undefined => {
+      return getters.findSeason(
+        (season: DirectusSeason) => season.leverade_id && season.leverade_id.toString() === leveradeId
+      );
+    },
 } as GetterTree<RootState, RootState>;

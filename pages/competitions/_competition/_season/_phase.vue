@@ -6,12 +6,13 @@
       class="c-competition-phase__navigation"
       small
     />
-    <nuxt-child v-if="phase" :phase="phase" />
+    <nuxt-child v-if="phase" :season="season" :phase="phase" />
   </div>
 </template>
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
+import Season from '~/models/season.model';
 import Phase from '~/models/phase.model';
 import Round from '~/models/round.model';
 import Match from '~/models/match.model';
@@ -26,6 +27,10 @@ export default Vue.extend({
     },
   },
   props: {
+    season: {
+      type: Object as PropType<Season>,
+      required: true,
+    },
     phase: {
       type: Object as PropType<Phase>,
       required: true,

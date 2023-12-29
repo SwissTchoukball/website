@@ -1360,6 +1360,7 @@ const cmsService: Plugin = (context, inject) => {
   const getSeasons: CMSService['getSeasons'] = async () => {
     const seasonsResponse = await context.$directus.items('seasons').readByQuery({
       fields: ['id', 'name', 'slug', 'date_start', 'date_end', 'leverade_id'],
+      sort: ['-slug'],
     });
 
     if (!seasonsResponse?.data) {

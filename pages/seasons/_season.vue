@@ -17,7 +17,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import { Collection, Item } from '@vuex-orm/core';
+import { Collection } from '@vuex-orm/core';
 import CompetitionEdition from '~/models/competition-edition.model';
 import Season from '~/models/season.model';
 import { BreadcrumbItem } from '~/components/st-breadcrumb.vue';
@@ -44,16 +44,14 @@ export default Vue.extend({
     await this.$store.dispatch('loadCompetitionsOfSeason', this.$route.params.season);
   },
   computed: {
-    season(): Item<Season> {
-      return Season.query().where('slug', this.$route.params.season).first();
+    season(): Season | undefined {
+      return this.$store.getters.getSeasonBySlug(this.$route.params.season);
     },
     competitionEditions(): Collection<CompetitionEdition> {
-      return CompetitionEdition.query()
-        .with('competition')
-        .whereHas('season', (query) => {
-          query.where('slug', this.$route.params.season);
-        })
-        .all();
+      if (!this.season) {
+        return [];
+      }
+      return CompetitionEdition.query().with('competition').where('season_id', this.season!.leverade_id).all();
     },
     competitionEditionsNavigation(): MenuItem[] {
       return this.competitionEditions.map((competitionEdition) => {

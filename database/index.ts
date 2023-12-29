@@ -1,6 +1,5 @@
 import { Database } from '@vuex-orm/core';
 import Domain from '~/models/domain.model';
-import Season from '~/models/season.model';
 import Competition from '~/models/competition.model';
 import CompetitionEdition from '~/models/competition-edition.model';
 import Team from '~/models/team.model';
@@ -21,7 +20,6 @@ const database = new Database();
 
 // Core models
 database.register(Domain);
-database.register(Season);
 
 // Competition models
 database.register(Competition);

@@ -53,6 +53,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
+import Season from '~/models/season.model';
 import Phase from '~/models/phase.model';
 import Match from '~/models/match.model';
 import StEventDate from '~/components/events/st-event-date.vue';
@@ -69,6 +70,10 @@ export default Vue.extend({
     StEventDate,
   },
   props: {
+    season: {
+      type: Object as PropType<Season>,
+      required: true,
+    },
     phase: {
       type: Object as PropType<Phase>,
       required: true,
@@ -78,7 +83,7 @@ export default Vue.extend({
     const title = this.$t('competitions.headTitle.planning', {
       phaseName: this.phase.name,
       editionName: this.phase.competition_edition.name,
-      seasonName: this.phase.competition_edition.season.name,
+      seasonName: this.season.name,
     }).toString();
     return {
       title,

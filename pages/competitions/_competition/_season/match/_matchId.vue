@@ -93,17 +93,24 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import Vue, { PropType } from 'vue';
 import Match from '~/models/match.model';
 import StEventDate from '~/components/events/st-event-date.vue';
 import { LeveradeGroupType } from '~/plugins/leverade';
 import { FlickrPhoto } from '~/plugins/flickr';
+import Season from '~/models/season.model';
 
 export default Vue.extend({
   components: {
     StEventDate,
   },
   scrollToTop: true,
+  props: {
+    season: {
+      type: Object as PropType<Season>,
+      required: true,
+    },
+  },
   data() {
     return {
       venueDetailsVisible: false,
@@ -134,7 +141,7 @@ export default Vue.extend({
       if (match.round.phase.name !== match.round.phase.competition_edition.name) {
         title += `${match.round.phase.competition_edition.name} · `;
       }
-      title += match.round.phase.competition_edition.season.name;
+      title += this.season.name;
     }
 
     return {
@@ -159,7 +166,6 @@ export default Vue.extend({
         .with('faceoff')
         .with('round.phase')
         .with('round.phase.competition_edition')
-        .with('round.phase.competition_edition.season')
         .first();
       if (!match) {
         throw new Error('No match found for this ID');

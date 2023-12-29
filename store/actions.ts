@@ -1,6 +1,5 @@
 import { ActionTree } from 'vuex/types/index';
 import { PartialItem } from '@directus/sdk';
-import { Item } from '@vuex-orm/core';
 import { EventTypes, MenuItem, PlayerPositions, RootState } from './state';
 import {
   DirectusMatchAdditionalData,
@@ -135,11 +134,12 @@ export default {
     const directusLiveStreams = await this.$cmsService.getLiveStreams();
     commit('setLiveStreams', directusLiveStreams);
   },
-  async loadSeasons() {
+  async loadSeasons({ commit }) {
     const directusSeasons = await this.$cmsService.getSeasons();
-    Season.insert({
-      data: directusSeasons,
-    });
+    commit(
+      'setSeasons',
+      directusSeasons.map((season) => new Season(season))
+    );
   },
   async loadDomains() {
     const domainsResponse = await this.$directus.items('domains').readByQuery({
@@ -495,7 +495,7 @@ export default {
           leverade_id: competitionEdition.leverade_id,
           directus_id: competitionEdition.directus_id,
           name: (competitionEdition.competition as NationalCompetition).name,
-          season: competitionEdition.season,
+          season_id: competitionEdition.season.leverade_id,
           competition: competitionEdition.competition,
         },
       });
@@ -564,7 +564,7 @@ export default {
           directus_id: competitionEdition.directus_id,
           name: tournament.attributes.name,
           gender: tournament.attributes.gender,
-          season: competitionEdition.season,
+          season_id: competitionEdition.season.leverade_id,
           competition: competitionEdition.competition,
           teams: teams.map((team) => {
             const avatarKeyMatchArray = team.meta?.avatar?.large?.match(/\/(\w+)\.[0-9]/);
@@ -696,9 +696,12 @@ export default {
   },
 
   async loadUpcomingMatches(context) {
-    const currentSeason: Item<Season> = context.getters.currentSeason;
+    const currentSeason: Season = context.getters.currentSeason;
     if (!currentSeason) {
       throw new Error('Current season undefined');
+    }
+    if (!currentSeason.leverade_id) {
+      throw new Error('Current season has no Leverade ID');
     }
 
     const matchesResponse = await this.$leverade.getUpcomingMatches(currentSeason.leverade_id);

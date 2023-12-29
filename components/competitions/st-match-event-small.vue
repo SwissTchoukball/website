@@ -10,6 +10,7 @@
 <script lang="ts">
 import Vue, { PropType } from 'vue';
 import Match from '~/models/match.model';
+import Season from '~/models/season.model';
 import stEventSmall from '~/components/events/st-event-small.vue';
 
 export default Vue.extend({
@@ -24,12 +25,18 @@ export default Vue.extend({
     details(): string {
       return this.match.facility ? `${this.match.facility.name}, ${this.match.facility.city}` : '';
     },
+    season(): Season | undefined {
+      if (!this.match.round?.phase?.competition_edition) {
+        return;
+      }
+      return this.$store.getters.getSeasonByLeveradeId(this.match.round.phase.competition_edition.season_id);
+    },
     to(): string {
       return this.localePath({
         name: 'competitions-competition-season-match-matchId',
         params: {
           competition: this.match.round?.phase?.competition_edition?.competition?.slug,
-          season: this.match.round?.phase?.competition_edition?.season?.slug,
+          season: this.season?.slug || '',
           matchId: this.match.id,
         },
       });
