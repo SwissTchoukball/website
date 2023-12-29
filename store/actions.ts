@@ -33,7 +33,6 @@ import Person from '~/models/person.model';
 import Group from '~/models/group.model';
 import Faceoff from '~/models/faceoff.model';
 import { NationalCompetition, NationalCompetitionEdition } from '~/plugins/cms-service';
-import LiveStream from '~/models/live-stream.model';
 
 export default {
   async nuxtServerInit({ dispatch }) {
@@ -132,11 +131,9 @@ export default {
 
     commit('setSecondaryNavigation', secondaryNavigation);
   },
-  async loadLiveStreams() {
+  async loadLiveStreams({ commit }) {
     const directusLiveStreams = await this.$cmsService.getLiveStreams();
-    LiveStream.insert({
-      data: directusLiveStreams,
-    });
+    commit('setLiveStreams', directusLiveStreams);
   },
   async loadSeasons() {
     const directusSeasons = await this.$cmsService.getSeasons();

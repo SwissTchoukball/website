@@ -1,5 +1,6 @@
 import { MutationTree } from 'vuex/types/index';
 import { EventTypes, MenuItem, PlayerPositions, RootState } from './state';
+import { LiveStream } from '~/plugins/cms-service';
 
 export default {
   setMainNavigation(state, mainNavigation: MenuItem[]) {
@@ -13,6 +14,9 @@ export default {
   },
   setPlayerPositions(state, playerPositions: PlayerPositions) {
     state.playerPositions = playerPositions;
+  },
+  setLiveStreams(state, liveStreams: LiveStream[]) {
+    state.liveStreams = liveStreams;
   },
   setUpcomingMatchesAsLoaded(state) {
     state.upcomingMatchesLoaded = true;

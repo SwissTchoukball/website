@@ -1,3 +1,4 @@
+import { LiveStream } from '~/plugins/cms-service';
 import { DirectusImage } from '~/plugins/directus';
 
 export interface MenuItem {
@@ -35,6 +36,7 @@ export interface RootState {
   secondaryNavigation: MenuItem[];
   eventTypes?: EventTypes;
   playerPositions?: PlayerPositions;
+  liveStreams: LiveStream[];
   upcomingMatchesLoaded: boolean;
   fullyLoadedCompetitionEditions: { season: string; competition: string }[];
 }
@@ -44,6 +46,7 @@ export default (): RootState => ({
   secondaryNavigation: [],
   eventTypes: undefined,
   playerPositions: undefined,
+  liveStreams: [],
   upcomingMatchesLoaded: false,
   fullyLoadedCompetitionEditions: [],
 });

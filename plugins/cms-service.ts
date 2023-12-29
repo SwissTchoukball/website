@@ -1415,6 +1415,7 @@ const cmsService: Plugin = (context, inject) => {
         'date_end',
         'stream_start',
       ],
+      sort: ['stream_start'],
       filter,
     });
 
