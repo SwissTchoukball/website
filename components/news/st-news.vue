@@ -1,7 +1,7 @@
 <template>
   <article class="c-news-entry">
     <st-breadcrumb :items="breadcrumb" />
-    <st-domain-labels :domains="newsEntry.domains" class="c-news-entry__domain-labels" />
+    <st-domain-labels :domains="domains" class="c-news-entry__domain-labels" />
     <h2 class="c-news-entry__title t-headline-1">{{ newsEntry.title }}</h2>
     <img
       v-if="newsEntry.main_image"
@@ -22,6 +22,7 @@
 import Vue, { PropType } from 'vue';
 import { NewsEntry } from '~/components/news/st-news';
 import { BreadcrumbItem } from '~/components/st-breadcrumb.vue';
+import { Domain } from '~/plugins/cms-service';
 import { getAssetURL, getAssetSrcSet } from '~/plugins/directus';
 
 export default Vue.extend({
@@ -76,6 +77,9 @@ export default Vue.extend({
       }
 
       return dates;
+    },
+    domains(): Domain[] {
+      return this.newsEntry.domain_ids.map((domainId) => this.$store.getters.getDomainById(domainId));
     },
   },
   mounted() {

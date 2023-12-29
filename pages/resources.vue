@@ -52,12 +52,9 @@
 </template>
 
 <script lang="ts">
-import { Collection } from '@vuex-orm/core';
 import Vue from 'vue';
 import stResourceList from '~/components/resources/st-resource-list.vue';
-import Domain from '~/models/domain.model';
-import ResourceType from '~/models/resource-type.model';
-import Resource from '~/models/resource.model';
+import { Domain, Resource, ResourceType } from '~/plugins/cms-service';
 
 const ALL_OPTION = 'all';
 
@@ -82,7 +79,7 @@ export default Vue.extend({
   },
   async fetch() {
     // We load the resource types only if we don't have them already
-    if (!this.ResourceType.exists()) {
+    if (!this.$store.state.resourceTypes?.length) {
       await this.$store.dispatch('loadResourceTypes');
     }
     // We don't need to load the domains because they are loaded in nuxtServerInit (as they are needed in multiple places)
@@ -101,21 +98,13 @@ export default Vue.extend({
     };
   },
   computed: {
-    ResourceType() {
-      return this.$store.$db().model(ResourceType);
-    },
     domains() {
-      return (
-        this.$store
-          .$db()
-          .model(Domain)
-          .all()
-          // Hack to have a proper alphabetical sorting of domain names
-          .sort((a, b) => (a as Domain).name.localeCompare((b as Domain).name, this.$i18n.locale))
+      return [...this.$store.state.domains].sort((a, b) =>
+        (a as Domain).name.localeCompare((b as Domain).name, this.$i18n.locale)
       );
     },
-    types(): Collection<ResourceType> {
-      return this.ResourceType.all();
+    types(): ResourceType[] {
+      return this.$store.state.resourceTypes;
     },
     domainIdFilter(): number | undefined {
       if (!(typeof this.selectedDomain === 'number')) {

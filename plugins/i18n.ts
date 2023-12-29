@@ -1,5 +1,4 @@
 import { Plugin } from '@nuxt/types';
-import ResourceType from '~/models/resource-type.model';
 
 const i18nPlugin: Plugin = ({ app, store }) => {
   // onBeforeLanguageSwitch called right before setting a new locale
@@ -26,7 +25,7 @@ const i18nPlugin: Plugin = ({ app, store }) => {
     }
 
     // We load the resource types only if we already have them in the old locale
-    if (store.$db().model(ResourceType).exists()) {
+    if (store.state.resourceTypes.length) {
       dataLoads.push(store.dispatch('loadResourceTypes'));
     }
 

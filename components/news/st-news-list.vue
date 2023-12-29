@@ -23,7 +23,7 @@
           <fa-icon icon="newspaper" class="c-news-list__placeholder-icon" />
         </div>
       </nuxt-link>
-      <st-domain-labels :domains="newsEntry.domains" class="c-news-list__domains" />
+      <st-domain-labels :domains="getDomains(newsEntry)" class="c-news-list__domains" />
       <h3 class="c-news-list__title t-headline-2">
         <nuxt-link :to="getNewsLink(newsEntry)"> {{ newsEntry.title }} </nuxt-link>
       </h3>
@@ -38,6 +38,7 @@
 <script lang="ts">
 import Vue, { PropType } from 'vue';
 import { NewsEntry } from '~/components/news/st-news';
+import { Domain } from '~/plugins/cms-service';
 import { getAssetSrcSet, getAssetURL } from '~/plugins/directus';
 
 const MAX_NEWS_PER_ROW = 4;
@@ -86,6 +87,9 @@ export default Vue.extend({
       return getAssetSrcSet(this.$config.cmsURL, assetId, {
         widths: this.$config.keyVisualSizes,
       });
+    },
+    getDomains(newsEntry: NewsEntry): Domain[] {
+      return newsEntry.domain_ids.map((domainId) => this.$store.getters.getDomainById(domainId));
     },
   },
 });

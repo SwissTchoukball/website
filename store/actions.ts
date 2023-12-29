@@ -26,8 +26,6 @@ import {
 import Team from '~/models/team.model';
 import Phase from '~/models/phase.model';
 import Season from '~/models/season.model';
-import Domain from '~/models/domain.model';
-import ResourceType from '~/models/resource-type.model';
 import Person from '~/models/person.model';
 import Group from '~/models/group.model';
 import Faceoff from '~/models/faceoff.model';
@@ -141,13 +139,9 @@ export default {
       directusSeasons.map((season) => new Season(season))
     );
   },
-  async loadDomains() {
-    const domainsResponse = await this.$directus.items('domains').readByQuery({
-      fields: ['id', 'translations.name'],
-      // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
-      deep: { translations: { _filter: { languages_code: { _eq: this.$i18n.locale } } } },
-    });
-    Domain.addManyFromDirectus(domainsResponse);
+  async loadDomains({ commit }) {
+    const domains = await this.$cmsService.getDomains();
+    commit('setDomains', domains);
   },
   async loadGroups() {
     const groupsResponse = await this.$directus.items('groups').readByQuery({
@@ -197,13 +191,9 @@ export default {
     });
     Person.addManyFromDirectus(peopleResponse);
   },
-  async loadResourceTypes() {
-    const response = await this.$directus.items('resource_types').readByQuery({
-      fields: ['id', 'translations.name'],
-      // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
-      deep: { translations: { _filter: { languages_code: { _eq: this.$i18n.locale } } } },
-    });
-    ResourceType.addManyFromDirectus(response);
+  async loadResourceTypes({ commit }) {
+    const resourceTypes = await this.$cmsService.getResourceTypes();
+    commit('setResourceTypes', resourceTypes);
   },
   async loadEventTypes({ commit }) {
     // TODO: Move logic to CMSService

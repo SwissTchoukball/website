@@ -8,7 +8,6 @@ import { MetaInfo } from 'vue-meta';
 import { Item } from '@vuex-orm/core';
 import { decode } from 'html-entities';
 import stSimplePage from '~/components/st-simple-page.vue';
-import Resource from '~/models/resource.model';
 import Role from '~/models/role.model';
 
 /**
@@ -47,7 +46,7 @@ export default Vue.extend({
         title: page.title,
         body: page.body,
         key_role_ids: page.key_roles,
-        resource_ids: page.resources,
+        resources: page.resources,
       };
     } catch (err: any) {
       switch (err.message) {
@@ -83,9 +82,6 @@ export default Vue.extend({
     Role() {
       return this.$store.$db().model(Role);
     },
-    Resource() {
-      return this.$store.$db().model(Resource);
-    },
     keyRoles(): Item<Role>[] {
       // We use this as any because key_role_ids comes from asyncData and it is not recognised as being part of the Vue component.
       // This is going to be fixed in Nuxt 2.16.
@@ -95,16 +91,6 @@ export default Vue.extend({
         return [];
       }
       return key_role_ids.map((roleId: number) => this.Role.query().with('holders').whereId(roleId).first());
-    },
-    resources(): Item<Resource>[] {
-      // We use this as any because resource_ids comes from asyncData and it is not recognised as being part of the Vue component.
-      // This is going to be fixed in Nuxt 2.16.
-      // See https://github.com/nuxt/nuxt.js/pull/9239 and https://github.com/nuxt/nuxt.js/pull/9660
-      const resource_ids = (this as any).resource_ids;
-      if (!resource_ids) {
-        return [];
-      }
-      return resource_ids.map((resourceId: number) => this.Resource.query().whereId(resourceId).first());
     },
   },
 });

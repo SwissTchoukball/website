@@ -2,6 +2,7 @@ import { GetterTree } from 'vuex/types/index';
 import { RootState } from '~/store/state';
 import Season from '~/models/season.model';
 import { DirectusSeason } from '~/plugins/directus';
+import { Domain } from '~/plugins/cms-service';
 
 export default {
   findSeason:
@@ -29,5 +30,10 @@ export default {
       return getters.findSeason(
         (season: DirectusSeason) => season.leverade_id && season.leverade_id.toString() === leveradeId
       );
+    },
+  getDomainById:
+    (state) =>
+    (id: number): Domain | undefined => {
+      return state.domains.find((domain: Domain) => domain.id === id);
     },
 } as GetterTree<RootState, RootState>;

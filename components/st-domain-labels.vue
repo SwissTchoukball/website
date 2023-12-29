@@ -10,7 +10,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import Domain from '~/models/domain.model';
+import { Domain } from '~/plugins/cms-service';
 
 export default Vue.extend({
   props: {
