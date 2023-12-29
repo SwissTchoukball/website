@@ -1,11 +1,11 @@
 <template>
   <div v-if="role.holders && role.holders.length" class="c-role">
-    <h3 v-if="!roleAsSubname" class="c-role__title t-headline-2">{{ role.nameForHolders }}</h3>
+    <h3 v-if="!roleAsSubname" class="c-role__title t-headline-2">{{ nameForHolders }}</h3>
     <st-person
       v-for="holder in role.holders"
       :key="holder.id"
       :name="`${holder.first_name} ${holder.last_name}`"
-      :sub-name="roleAsSubname ? role.nameForHolders : null"
+      :sub-name="roleAsSubname ? nameForHolders : null"
       :avatar-asset-id="holder.portrait_square_head"
       :details="getHolderDetails(holder)"
       class="c-role__person"
@@ -17,8 +17,7 @@
 <script lang="ts">
 import Vue, { PropType } from 'vue';
 import stPerson, { PersonDetail } from '~/components/people/st-person.vue';
-import Person from '~/models/person.model';
-import Role from '~/models/role.model';
+import { Gender, Person, Role } from '~/plugins/cms-service';
 
 export default Vue.extend({
   components: { stPerson },
@@ -28,6 +27,17 @@ export default Vue.extend({
       required: true,
     },
     roleAsSubname: Boolean,
+  },
+  computed: {
+    nameForHolders(): string {
+      if (this.role.name_feminine && this.role.holders?.every((holder) => holder.gender === Gender.Female)) {
+        return this.role.name_feminine;
+      }
+      if (this.role.name_masculine && this.role.holders?.every((holder) => holder.gender === Gender.Male)) {
+        return this.role.name_masculine;
+      }
+      return this.role.name;
+    },
   },
   methods: {
     getHolderDetails(holder: Person): PersonDetail[] {

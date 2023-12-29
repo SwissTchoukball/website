@@ -23,7 +23,7 @@ import { MetaInfo } from 'vue-meta';
 import { PressRelease } from '~/components/press-releases/press-releases';
 import { BreadcrumbItem } from '~/components/st-breadcrumb.vue';
 import stRole from '~/components/people/st-role.vue';
-import Role from '~/models/role.model';
+import { RoleWithPartialGroupAndHolders } from '~/plugins/cms-service';
 
 const MEDIA_COORDINATOR_ROLE = 62;
 
@@ -38,6 +38,7 @@ export default Vue.extend({
   data() {
     return {
       pressRelease: undefined as PressRelease | undefined,
+      headOfCommunicationRole: undefined as RoleWithPartialGroupAndHolders | undefined,
       breadcrumb: [
         {
           pageName: 'press-releases',
@@ -61,8 +62,7 @@ export default Vue.extend({
 
     this.pressRelease = await this.$cmsService.getPressRelease(id);
 
-    const headOfCommunicationRole = await this.$cmsService.getRole(MEDIA_COORDINATOR_ROLE);
-    this.Role.insert({ data: headOfCommunicationRole });
+    this.headOfCommunicationRole = await this.$cmsService.getRole(MEDIA_COORDINATOR_ROLE);
   },
   head(): MetaInfo {
     const title = this.pressRelease?.title || 'Press release';
@@ -90,12 +90,6 @@ export default Vue.extend({
     return metaInfo;
   },
   computed: {
-    Role() {
-      return this.$store.$db().model(Role);
-    },
-    headOfCommunicationRole(): Role | null {
-      return this.Role.query().whereId(MEDIA_COORDINATOR_ROLE).with('holders').first();
-    },
     creationDate(): string {
       if (this.pressRelease?.date_created) {
         return this.$formatDate(new Date(this.pressRelease.date_created), 'PPP');

@@ -20,8 +20,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import Role from '~/models/role.model';
-import { Resource } from '~/plugins/cms-service';
+import { Resource, Role } from '~/plugins/cms-service';
 import stRole from '~/components/people/st-role.vue';
 import StResourceList from '~/components/resources/st-resource-list.vue';
 

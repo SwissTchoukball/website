@@ -26,8 +26,6 @@ import {
 import Team from '~/models/team.model';
 import Phase from '~/models/phase.model';
 import Season from '~/models/season.model';
-import Person from '~/models/person.model';
-import Group from '~/models/group.model';
 import Faceoff from '~/models/faceoff.model';
 import { NationalCompetition, NationalCompetitionEdition } from '~/plugins/cms-service';
 
@@ -142,54 +140,6 @@ export default {
   async loadDomains({ commit }) {
     const domains = await this.$cmsService.getDomains();
     commit('setDomains', domains);
-  },
-  async loadGroups() {
-    const groupsResponse = await this.$directus.items('groups').readByQuery({
-      fields: ['id', 'translations.name', 'translations.description', 'translations.slug'],
-      // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
-      deep: { translations: { _filter: { languages_code: { _eq: this.$i18n.locale } } } },
-    });
-    await Group.addManyFromDirectus(groupsResponse);
-  },
-  async loadStaff(_context, { groupId, groupSlug }: { groupId: number; groupSlug: string }) {
-    let filter: any = {};
-
-    if (groupId) {
-      filter = { roles: { roles_id: { group: { id: groupId } } } };
-    } else if (groupSlug) {
-      filter = { roles: { roles_id: { group: { translations: { slug: groupSlug } } } } };
-    }
-
-    const peopleResponse = await this.$directus.items('people').readByQuery({
-      fields: [
-        'id',
-        'first_name',
-        'last_name',
-        'portrait_square_head',
-        'gender',
-        'email',
-        'roles.main',
-        'roles.roles_id.id',
-        'roles.roles_id.translations.name',
-        'roles.roles_id.translations.name_feminine',
-        'roles.roles_id.translations.name_masculine',
-        'roles.roles_id.group.id',
-        'roles.roles_id.group.translations.name',
-        'roles.roles_id.group.translations.slug',
-        'roles.roles_id.group.translations.description',
-      ],
-      filter,
-      deep: {
-        roles: {
-          // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
-          roles_id: {
-            translations: { _filter: { languages_code: { _eq: this.$i18n.locale } } },
-            group: { translations: { _filter: { languages_code: { _eq: this.$i18n.locale } } } },
-          },
-        },
-      },
-    });
-    Person.addManyFromDirectus(peopleResponse);
   },
   async loadResourceTypes({ commit }) {
     const resourceTypes = await this.$cmsService.getResourceTypes();

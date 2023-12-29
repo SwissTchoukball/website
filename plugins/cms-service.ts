@@ -6,6 +6,7 @@ import {
   DirectusClub,
   DirectusEvent,
   DirectusFile,
+  DirectusGroup,
   DirectusMatchAdditionalData,
   DirectusNationalCompetitionEdition,
   DirectusPressRelease,
@@ -23,12 +24,9 @@ import {
   NationalTeamForCompetition,
   NationalTeamResult,
 } from '~/components/national-teams/st-national-teams.prop';
-import Role from '~/models/role.model';
 import { processRawPlayers } from '~/plugins/cms-service/national-teams';
 import { PressRelease } from '~/components/press-releases/press-releases';
 import { toISOLocal } from '~/utils/utils';
-import Group from '~/models/group.model';
-import Person, { Gender } from '~/models/person.model';
 
 export interface ResourceType {
   id: number;
@@ -46,15 +44,6 @@ export interface Resource {
   status: DirectusResourceStatus;
 }
 
-export interface SimplePage {
-  languages_code: string;
-  title: string;
-  body: string;
-  path: string;
-  key_roles: number[];
-  resources: Resource[];
-}
-
 export interface TextEntry {
   id: number;
   body: string;
@@ -63,6 +52,59 @@ export interface TextEntry {
 export interface Domain {
   id: number;
   name: string;
+}
+
+export enum Gender {
+  Male = 'male',
+  Female = 'female',
+  Other = 'other',
+}
+
+export interface Person {
+  id: number;
+  first_name: string;
+  last_name: string;
+  portrait_square_head?: string;
+  gender: Gender;
+  email?: string;
+  // eslint-disable-next-line no-use-before-define
+  roles: Role[];
+}
+
+export interface Role {
+  id: number;
+  name: string;
+  name_feminine?: string;
+  name_masculine?: string;
+  // eslint-disable-next-line no-use-before-define
+  group?: Group;
+  holders?: Person[];
+  pivot?: {
+    main?: boolean;
+  };
+}
+
+export type RoleWithPartialGroupAndHolders = Omit<Role, 'group' | 'holders'> & {
+  // eslint-disable-next-line no-use-before-define
+  group?: Partial<Group>;
+  holders?: Partial<Person>[];
+};
+
+export interface Group {
+  id: number;
+  name: string;
+  description?: string;
+  slug: string;
+  roles?: Role[];
+}
+
+export interface SimplePage {
+  languages_code: string;
+  title: string;
+  body: string;
+  path: string;
+  key_roles: Role[];
+  resources: Resource[];
 }
 
 export interface Venue {
@@ -125,9 +167,10 @@ export interface CMSService {
     forHomepage?: boolean;
   }) => Promise<{ data: NewsEntry[]; meta: { total: number; filteredDomainId?: number } }>;
   getOneNews: (newsId: number) => Promise<NewsEntry>;
-  getRole: (
-    roleId: number
-  ) => Promise<Partial<Omit<Role, 'group' | 'holders'> & { group: Partial<Group>; holders: Partial<Person>[] }>>;
+  getGroups: () => Promise<Group[]>;
+  getGroup: ({ id, slug }: { id?: number; slug?: string }) => Promise<Group>;
+  getRole: (roleId: number) => Promise<RoleWithPartialGroupAndHolders>;
+  getStaff: ({ groupId, groupSlug }: { groupId?: number; groupSlug?: string }) => Promise<Person[]>;
   getClubs: (options: { statuses: string[] }) => Promise<PartialItem<DirectusClub>[]>;
   getPressReleaseList: (options: {
     limit: number;
@@ -201,6 +244,39 @@ declare module 'vuex/types/index' {
 }
 
 const cmsService: Plugin = (context, inject) => {
+  const processRoles = (directusRoles: (PartialItem<DirectusRole> | undefined)[]) => {
+    return directusRoles.reduce((roles, role) => {
+      if (!role || !role.id) {
+        return roles;
+      }
+
+      const translatedRoleFields = getTranslatedFields(role);
+
+      if (!translatedRoleFields?.name) {
+        return roles;
+      }
+
+      const translatedGroupFields = role.group ? getTranslatedFields(role.group) : {};
+
+      return [
+        ...roles,
+        {
+          id: role.id,
+          name: translatedRoleFields.name,
+          name_feminine: translatedRoleFields.name_feminine,
+          name_masculine: translatedRoleFields.name_masculine,
+          group: role.group
+            ? {
+                id: role.group.id,
+                name: translatedGroupFields?.name,
+              }
+            : null,
+          holders: role.holders ? role.holders.map((holder) => holder?.people_id).filter((holder) => holder) : [],
+        },
+      ] as Role[];
+    }, [] as Role[]);
+  };
+
   /**
    * Fetches the data of a simple page for a specific locale
    */
@@ -279,12 +355,7 @@ const cmsService: Plugin = (context, inject) => {
 
     if (pageResponse.data[0].key_roles) {
       // We save the roles in the store and only provide the role IDs with the page data
-      pageData.key_roles.push(
-        ...(pageResponse.data[0].key_roles.map((pageRole) => pageRole?.roles_id?.id) as number[])
-      );
-      Role.addManyFromDirectus(
-        pageResponse.data[0].key_roles.map((pageRole) => pageRole?.roles_id) as PartialItem<DirectusRole>[]
-      );
+      pageData.key_roles.push(...processRoles(pageResponse.data[0].key_roles.map((pageRole) => pageRole?.roles_id)));
     }
 
     if (pageResponse.data[0].resources) {
@@ -613,6 +684,115 @@ const cmsService: Plugin = (context, inject) => {
     return pressRelease;
   };
 
+  const processGroup = (group: PartialItem<DirectusGroup>): Group => {
+    const translatedFields = getTranslatedFields(group);
+
+    // We discard entries that don't have mandatory data.
+    if (!group.id || !translatedFields?.name || !translatedFields?.slug) {
+      throw new Error('Group missing mandatory data');
+    }
+
+    return {
+      id: group.id,
+      name: translatedFields.name,
+      description: translatedFields?.description || '',
+      slug: translatedFields?.slug,
+    };
+  };
+
+  const getGroups: CMSService['getGroups'] = async () => {
+    const currentLocale = context.i18n.locale;
+    const groupsResponse = await context.$directus.items('groups').readByQuery({
+      fields: ['id', 'translations.name', 'translations.description', 'translations.slug'],
+      // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
+      deep: { translations: { _filter: { languages_code: { _eq: currentLocale } } } },
+    });
+
+    if (!groupsResponse.data) {
+      throw new Error('Error when retrieving groups');
+    }
+
+    return groupsResponse.data.reduce((groups, rawGroup) => {
+      try {
+        const group = processGroup(rawGroup);
+        return [...groups, group];
+      } catch (error) {
+        console.warn(error);
+        return groups;
+      }
+      // const translatedFields = getTranslatedFields(group);
+
+      // // We discard entries that don't have mandatory data.
+      // if (!group.id || !translatedFields?.name || !translatedFields?.slug) {
+      //   console.warn('Group missing mandatory data', { group });
+      //   return groups;
+      // }
+
+      // return [
+      //   ...groups,
+      //   {
+      //     id: group.id,
+      //     name: translatedFields.name,
+      //     description: translatedFields?.description || '',
+      //     slug: translatedFields?.slug,
+      //   },
+      // ];
+    }, [] as Group[]);
+  };
+
+  const getGroup: CMSService['getGroup'] = async ({ id, slug }) => {
+    if (!id && !slug) {
+      throw new Error('Either ID or slug must be provided');
+    }
+
+    let directusGroup: OneItem<DirectusGroup>;
+    const fields = [
+      'id',
+      'translations.name',
+      'translations.description',
+      'translations.slug',
+      // 'roles.id',
+      // 'roles.translations.name',
+      // 'roles.translations.name_feminine',
+      // 'roles.translations.name_masculine',
+      // 'roles.holders.people_id.id',
+      // 'roles.holders.people_id.first_name',
+      // 'roles.holders.people_id.last_name',
+      // 'roles.holders.people_id.email',
+      // 'roles.holders.people_id.gender',
+      // 'roles.holders.people_id.portrait_square_head',
+    ];
+    const deep = { translations: { _filter: { languages_code: { _eq: context.i18n.locale } } } };
+    if (id) {
+      directusGroup = await context.$directus.items('groups').readOne(id, {
+        fields,
+        // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
+        deep,
+      });
+    } else {
+      const groups = await context.$directus.items('groups').readByQuery({
+        limit: 1,
+        filter: {
+          translations: {
+            // @ts-ignore This should be accepted. To be fixed in Directus SDK
+            slug: { _eq: slug },
+          },
+        },
+        fields,
+        // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
+        deep,
+      });
+
+      directusGroup = groups.data?.[0];
+    }
+
+    if (!directusGroup) {
+      throw new Error('Error when retrieving group');
+    }
+
+    return processGroup(directusGroup);
+  };
+
   const getRole: CMSService['getRole'] = async (roleId: number) => {
     const rawRole = await context.$directus.items('roles').readOne(roleId, {
       fields: [
@@ -675,7 +855,7 @@ const cmsService: Plugin = (context, inject) => {
       });
     });
 
-    const role: Partial<Omit<Role, 'group' | 'holders'> & { group: Partial<Group>; holders: Partial<Person>[] }> = {
+    const role: RoleWithPartialGroupAndHolders = {
       id: rawRole.id,
       name: translatedFields.name,
       name_feminine: translatedFields.name_feminine,
@@ -685,6 +865,109 @@ const cmsService: Plugin = (context, inject) => {
     };
 
     return role;
+  };
+
+  const getStaff: CMSService['getStaff'] = async ({ groupId, groupSlug }) => {
+    let filter: any = {};
+
+    if (groupId) {
+      filter = { roles: { roles_id: { group: { id: groupId } } } };
+    } else if (groupSlug) {
+      filter = { roles: { roles_id: { group: { translations: { slug: groupSlug } } } } };
+    }
+
+    const peopleResponse = await context.$directus.items('people').readByQuery({
+      fields: [
+        'id',
+        'first_name',
+        'last_name',
+        'portrait_square_head',
+        'gender',
+        'email',
+        'roles.main',
+        'roles.roles_id.id',
+        'roles.roles_id.translations.name',
+        'roles.roles_id.translations.name_feminine',
+        'roles.roles_id.translations.name_masculine',
+        'roles.roles_id.group.id',
+        'roles.roles_id.group.translations.name',
+        'roles.roles_id.group.translations.slug',
+        'roles.roles_id.group.translations.description',
+      ],
+      filter,
+      deep: {
+        roles: {
+          // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
+          roles_id: {
+            translations: { _filter: { languages_code: { _eq: context.i18n.locale } } },
+            group: { translations: { _filter: { languages_code: { _eq: context.i18n.locale } } } },
+          },
+        },
+      },
+    });
+
+    if (!peopleResponse.data) {
+      throw new Error('Error when retrieving people');
+    }
+
+    return peopleResponse.data.reduce((people, person) => {
+      // We discard entries that don't have mandatory data.
+      if (!person.id || !person.first_name || !person.last_name) {
+        console.warn('Person missing mandatory data', { person });
+        return people;
+      }
+
+      let roles: Role[] = [];
+      if (person.roles) {
+        roles = person.roles.reduce((roles, role) => {
+          if (!role || !role.roles_id || !role.roles_id.id) {
+            return roles;
+          }
+
+          const translatedRoleFields = getTranslatedFields(role.roles_id);
+
+          if (!translatedRoleFields?.name) {
+            return roles;
+          }
+
+          const translatedGroupFields = role.roles_id.group ? getTranslatedFields(role.roles_id.group) : {};
+
+          return [
+            ...roles,
+            {
+              id: role.roles_id.id,
+              name: translatedRoleFields.name,
+              name_feminine: translatedRoleFields.name_feminine,
+              name_masculine: translatedRoleFields.name_masculine,
+              group: role.roles_id.group
+                ? {
+                    id: role.roles_id.group.id,
+                    name: translatedGroupFields?.name,
+                    slug: translatedGroupFields?.slug,
+                    description: translatedGroupFields?.description,
+                  }
+                : null,
+              pivot: {
+                main: role.main,
+              },
+            } as Role,
+          ];
+        }, [] as Role[]);
+      }
+
+      return [
+        ...people,
+        {
+          id: person.id,
+          first_name: person.first_name,
+          last_name: person.last_name,
+          portrait_square_head: person.portrait_square_head,
+          gender: person.gender,
+          email: person.email,
+          roles,
+        } as Person,
+      ];
+    }, [] as Person[]);
   };
 
   const getClubs: CMSService['getClubs'] = async ({ statuses }) => {
@@ -1176,7 +1459,7 @@ const cmsService: Plugin = (context, inject) => {
       team_photo: rawTeam.team_photo,
       team_photo_vertical_shift: rawTeam.team_photo_vertical_shift,
       players,
-      staff: [] as number[],
+      staff: [] as Role[],
       results,
       nationsCupResults: (rawTeam.nations_cup_results as any) || {},
     };
@@ -1189,9 +1472,7 @@ const cmsService: Plugin = (context, inject) => {
     team.slug = teamTranslations.slug || team.slug;
 
     if (rawTeam.staff) {
-      // We save the roles in the store and only provide the role IDs with the page data
-      team.staff.push(...(rawTeam.staff.map((teamRole) => teamRole?.roles_id?.id) as number[]));
-      Role.addManyFromDirectus(rawTeam.staff.map((teamRole) => teamRole?.roles_id) as PartialItem<DirectusRole>[]);
+      team.staff.push(...processRoles(rawTeam.staff.map((pageRole) => pageRole?.roles_id)));
     }
 
     const today = new Date();
@@ -1883,7 +2164,10 @@ const cmsService: Plugin = (context, inject) => {
     getNews,
     getOneNews,
     getEvent,
+    getGroups,
+    getGroup,
     getRole,
+    getStaff,
     getClubs,
     getPressReleaseList,
     getPressRelease,

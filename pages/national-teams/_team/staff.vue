@@ -1,7 +1,7 @@
 <template>
   <div>
-    <ul v-if="staff.length" class="u-unstyled-list">
-      <li v-for="role of staff" :key="role.id">
+    <ul v-if="team.staff.length" class="u-unstyled-list">
+      <li v-for="role of team.staff" :key="role.id">
         <st-role :role="role" class="c-national-team-staff__role" />
       </li>
     </ul>
@@ -11,10 +11,8 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import { Item } from '@vuex-orm/core';
 import { NationalTeam } from '~/components/national-teams/st-national-teams.prop';
 import stRole from '~/components/people/st-role.vue';
-import Role from '~/models/role.model';
 
 export default Vue.extend({
   components: { stRole },
@@ -43,14 +41,6 @@ export default Vue.extend({
         },
       ],
     };
-  },
-  computed: {
-    Role() {
-      return this.$store.$db().model(Role);
-    },
-    staff(): Item<Role>[] {
-      return this.team.staff.map((roleId: number) => this.Role.query().with('holders').whereId(roleId).first());
-    },
   },
 });
 </script>

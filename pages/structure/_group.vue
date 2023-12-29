@@ -20,12 +20,9 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import { Collection } from '@vuex-orm/core';
-
 import stStaffPerson from '~/components/people/st-staff-person.vue';
-import Group from '~/models/group.model';
-import Person from '~/models/person.model';
 import { BreadcrumbItem } from '~/components/st-breadcrumb.vue';
+import { Group, Person } from '~/plugins/cms-service';
 
 export default Vue.extend({
   nuxtI18n: {
@@ -38,6 +35,8 @@ export default Vue.extend({
   data() {
     return {
       groupSlug: null as string | null,
+      group: undefined as Group | undefined,
+      people: [] as Person[],
       breadcrumb: [
         {
           pageName: 'structure',
@@ -52,7 +51,11 @@ export default Vue.extend({
       this.groupSlug = this.$route.params?.group;
     }
 
-    await this.$store.dispatch('loadStaff', { groupSlug: this.groupSlug });
+    if (this.groupSlug) {
+      this.group = await this.$cmsService.getGroup({ slug: this.groupSlug });
+    }
+
+    this.people = await this.$cmsService.getStaff({ groupSlug: this.groupSlug });
   },
   head() {
     return {
@@ -68,42 +71,11 @@ export default Vue.extend({
     };
   },
   computed: {
-    Group() {
-      return this.$store.$db().model(Group);
-    },
-    group(): Group | null {
-      if (!this.groupSlug) {
-        return null;
-      }
-      return this.Group.query().where('slug', this.groupSlug).with('roles').with('roles.holders').first();
-    },
     groupName(): string {
       return this.group ? this.group.name : this.$t('structure.staff.title').toString();
     },
     groupDescription(): string {
       return this.group ? this.group.description : this.$t('structure.staff.description').toString();
-    },
-    Person() {
-      return this.$store.$db().model(Person);
-    },
-    people(): Collection<Person> {
-      let personQuery = this.Person.query().with('roles').with('roles.group');
-
-      if (this.group) {
-        personQuery = personQuery.whereHas('roles', (query) => {
-          query.where('group_id', this.group?.id);
-        });
-      } else {
-        // If no group is set, it means we show everyone.
-        // However, we don't want to show people that have no roles.
-        personQuery = personQuery.whereHas('roles', (query) => {
-          return query.count() > 0;
-        });
-      }
-
-      personQuery = personQuery.orderBy('last_name');
-
-      return personQuery.get();
     },
   },
 });
