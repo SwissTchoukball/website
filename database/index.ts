@@ -12,7 +12,6 @@ import Facility from '~/models/facility.model';
 import Group from '~/models/group.model';
 import Role from '~/models/role.model';
 import Person from '~/models/person.model';
-import Club from '~/models/club.model';
 import Resource from '~/models/resource.model';
 import ResourceType from '~/models/resource-type.model';
 import DomainResource from '~/models/domain-resource.model';
@@ -41,7 +40,6 @@ database.register(Role);
 database.register(Person);
 
 // Other models
-database.register(Club);
 database.register(Resource);
 database.register(ResourceType);
 database.register(LiveStream);

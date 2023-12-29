@@ -29,7 +29,6 @@ import Phase from '~/models/phase.model';
 import Season from '~/models/season.model';
 import Domain from '~/models/domain.model';
 import ResourceType from '~/models/resource-type.model';
-import Club from '~/models/club.model';
 import Person from '~/models/person.model';
 import Group from '~/models/group.model';
 import Faceoff from '~/models/faceoff.model';
@@ -285,30 +284,6 @@ export default {
     }, {} as PlayerPositions);
 
     commit('setPlayerPositions', positions);
-  },
-
-  /**
-   * Loads all the clubs and regional associations
-   */
-  async loadClubs() {
-    const clubsResponse = await this.$directus.items('clubs').readByQuery({
-      fields: ['id', 'name', 'name_full', 'name_sort', 'status', 'website', 'logo'],
-      filter: {
-        _or: [
-          {
-            status: 'passive',
-          },
-          {
-            status: 'active',
-          },
-          {
-            status: 'regional_association',
-          },
-        ],
-      },
-      sort: ['name_sort'],
-    });
-    Club.addManyFromDirectus(clubsResponse);
   },
 
   async insertFacilities(_context, facilities: LeveradeFacility[]) {

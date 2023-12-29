@@ -3,6 +3,7 @@ import { set } from 'date-fns';
 import { Filter, OneItem, PartialItem } from '@directus/sdk';
 import { Await } from '~/types/types.utils';
 import {
+  DirectusClub,
   DirectusEvent,
   DirectusFile,
   DirectusMatchAdditionalData,
@@ -107,6 +108,7 @@ export interface CMSService {
   getRole: (
     roleId: number
   ) => Promise<Partial<Omit<Role, 'group' | 'holders'> & { group: Partial<Group>; holders: Partial<Person>[] }>>;
+  getClubs: (options: { statuses: string[] }) => Promise<PartialItem<DirectusClub>[]>;
   getPressReleaseList: (options: {
     limit: number;
     page: number;
@@ -643,6 +645,31 @@ const cmsService: Plugin = (context, inject) => {
     };
 
     return role;
+  };
+
+  const getClubs: CMSService['getClubs'] = async ({ statuses }) => {
+    const statusFilter = statuses.reduce((filter, status): { status: string }[] => {
+      return [
+        ...filter,
+        {
+          status,
+        },
+      ];
+    }, [] as { status: string }[]);
+
+    const clubsResponse = await context.$directus.items('clubs').readByQuery({
+      fields: ['id', 'name', 'name_full', 'name_sort', 'status', 'website', 'logo'],
+      filter: {
+        _or: statusFilter,
+      },
+      sort: ['name_sort'],
+    });
+
+    if (!clubsResponse.data) {
+      throw new Error('Error when retrieving clubs');
+    }
+
+    return clubsResponse.data;
   };
 
   const getPressReleaseList: CMSService['getPressReleaseList'] = async ({ limit, page }) => {
@@ -1781,6 +1808,7 @@ const cmsService: Plugin = (context, inject) => {
     getOneNews,
     getEvent,
     getRole,
+    getClubs,
     getPressReleaseList,
     getPressRelease,
     getEvents,
