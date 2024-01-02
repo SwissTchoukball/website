@@ -82,11 +82,6 @@ export default Vue.extend({
           href: 'http://www.tchouk.com',
         },
         {
-          name: 'Infomaniak',
-          slug: 'infomaniak',
-          href: 'https://infomaniak.ch',
-        },
-        {
           name: 'Axanova',
           slug: 'axanova',
           href: 'https://axanova.ch',
@@ -226,10 +221,6 @@ export default Vue.extend({
   object-fit: contain;
 }
 
-.c-footer__org-logo[src*='infomaniak'] {
-  max-width: 10rem;
-}
-
 .c-footer__org-logo[src*='etbf'] {
   min-width: 4rem;
 }
@@ -242,10 +233,6 @@ export default Vue.extend({
 @media (--lg-and-up) {
   .c-footer__org-logo {
     height: 4rem;
-  }
-
-  .c-footer__org-logo[src*='infomaniak'] {
-    max-width: 11.5rem;
   }
 }
 
