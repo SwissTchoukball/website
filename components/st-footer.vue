@@ -8,9 +8,6 @@
         <a href="https://facebook.com/swisstchoukball" class="c-footer__social-icon c-footer__social-icon--facebook">
           <fa-icon :icon="['fab', 'facebook']" />
         </a>
-        <a href="https://twitter.com/swisstchoukball" class="c-footer__social-icon c-footer__social-icon--twitter">
-          <fa-icon :icon="['fab', 'twitter']" />
-        </a>
         <a href="https://flickr.com/swisstchoukball" class="c-footer__social-icon c-footer__social-icon--flickr">
           <st-icon-flickr />
         </a>
@@ -143,10 +140,6 @@ export default Vue.extend({
 .c-footer__social-icon {
   display: inline-block;
   padding: 0.8rem 0.3rem 0.5rem;
-}
-
-.c-footer__social-icon--twitter {
-  color: #1d9bf0;
 }
 
 .c-footer__social-icon--facebook {

@@ -140,7 +140,7 @@ const config: NuxtConfig = {
         'faTimes',
         'faUser',
       ],
-      brands: ['faTwitter', 'faInstagram', 'faFacebook', 'faFlickr', 'faYoutube'],
+      brands: ['faInstagram', 'faFacebook', 'faFlickr', 'faYoutube'],
     },
   },
 
