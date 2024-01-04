@@ -1,6 +1,5 @@
 import { Database } from '@vuex-orm/core';
 import CompetitionEdition from '~/models/competition-edition.model';
-import Team from '~/models/team.model';
 import Phase from '~/models/phase.model';
 import Round from '~/models/round.model';
 import Faceoff from '~/models/faceoff.model';
@@ -10,7 +9,6 @@ const database = new Database();
 
 // Competition models
 database.register(CompetitionEdition);
-database.register(Team);
 database.register(Phase);
 database.register(Round);
 database.register(Faceoff);

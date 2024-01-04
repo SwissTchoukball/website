@@ -294,6 +294,7 @@ interface Leverade {
       | LeveradeFacility
     >
   >;
+  getTeams: (tournamentId: number | string) => Promise<LeveradeResponse<LeveradeTeam[]>>;
 }
 
 const removeAuthorizationHeaders = (headers: any) => {
@@ -358,11 +359,21 @@ const leveradePlugin: Plugin = ({ $config, $axios, $formatDate }, inject) => {
     );
   };
 
+  const getTeams: Leverade['getTeams'] = (tournamentId) => {
+    return $axios.get(`${$config.leveradeURL}/teams?filter=registrable[tournament].id:${tournamentId}`, {
+      transformRequest: (data, headers) => {
+        removeAuthorizationHeaders(headers);
+        return data;
+      },
+    });
+  };
+
   inject('leverade', {
     getFullTournament,
     getStandings,
     getUpcomingMatches,
     getMatch,
+    getTeams,
   });
 };
 

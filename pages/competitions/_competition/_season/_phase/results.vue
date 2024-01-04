@@ -87,7 +87,7 @@ export default Vue.extend({
     isFaceoffAutoQualified(faceoff: Faceoff): boolean {
       // We check this based on the first match only
       const firstMatch = faceoff.matches[0];
-      return (!firstMatch.home_team || !firstMatch.away_team) && firstMatch.finished && faceoff.winner;
+      return (!firstMatch.home_team || !firstMatch.away_team) && firstMatch.finished && !!faceoff.winner;
     },
     /**
      * Checks that a faceoff has a match with a least one team set.

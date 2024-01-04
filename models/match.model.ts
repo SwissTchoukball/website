@@ -3,6 +3,7 @@ import Round from '~/models/round.model';
 import Faceoff from '~/models/faceoff.model';
 import Team from '~/models/team.model';
 import { parseLeveradeDate } from '~/utils/utils';
+import { LeveradeTeam } from '~/plugins/leverade';
 
 export interface Facility {
   id: string;
@@ -23,11 +24,9 @@ export default class Match extends Model {
   round!: Round;
   faceoff_id!: string;
   faceoff!: Faceoff;
-  home_team_id!: string;
-  home_team!: Team;
+  leverade_home_team!: LeveradeTeam;
   home_team_score!: number;
-  away_team_id!: string;
-  away_team!: Team;
+  leverade_away_team!: LeveradeTeam;
   away_team_score!: number;
   periods!: {
     name?: string;
@@ -59,11 +58,9 @@ export default class Match extends Model {
       round: this.belongsTo(Round, 'round_id'),
       faceoff_id: this.string(null).nullable(),
       faceoff: this.belongsTo(Faceoff, 'faceoff_id'),
-      home_team_id: this.string(null).nullable(),
-      home_team: this.belongsTo(Team, 'home_team_id'),
+      leverade_home_team: this.attr(null),
       home_team_score: this.number(null).nullable(),
-      away_team_id: this.string(null).nullable(),
-      away_team: this.belongsTo(Team, 'away_team_id'),
+      leverade_away_team: this.attr(null),
       away_team_score: this.number(null).nullable(),
       periods: this.attr([]),
       referees: this.attr([]),
@@ -81,6 +78,15 @@ export default class Match extends Model {
     if (this.datetime) {
       return parseLeveradeDate(this.datetime);
     }
+  }
+
+  // TODO: Move the logic from the two following getters to the constructor when there will be one.
+  get home_team(): Team | undefined {
+    return this.leverade_home_team ? new Team(this.leverade_home_team) : undefined;
+  }
+
+  get away_team(): Team | undefined {
+    return this.leverade_away_team ? new Team(this.leverade_away_team) : undefined;
   }
 
   get homeTeamName(): string {

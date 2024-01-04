@@ -22,7 +22,6 @@ import {
   LeveradeTeam,
   LeveradeTournament,
 } from '~/plugins/leverade';
-import Team from '~/models/team.model';
 import Phase from '~/models/phase.model';
 import Season from '~/models/season.model';
 import Faceoff from '~/models/faceoff.model';
@@ -226,12 +225,14 @@ export default {
     _context,
     {
       matches,
+      teams,
       results,
       periods,
       referees,
       facilities,
     }: {
       matches: (LeveradeMatch & { additionalData?: DirectusMatchAdditionalData })[];
+      teams: LeveradeTeam[];
       results?: LeveradeResult[];
       periods?: LeveradePeriod[];
       referees?: LeveradeProfile[];
@@ -317,9 +318,9 @@ export default {
         return {
           id: match.id,
           datetime: match.attributes.datetime,
-          home_team_id: match.meta.home_team,
+          leverade_home_team: teams.find((team) => team.id === match.meta.home_team),
           home_team_score,
-          away_team_id: match.meta.away_team,
+          leverade_away_team: teams.find((team) => team.id === match.meta.away_team),
           away_team_score,
           periods: matchPeriods,
           referees: matchReferees,
@@ -335,15 +336,15 @@ export default {
     });
   },
 
-  async insertFaceoffs(_context, faceoffs: LeveradeFaceoff[]) {
+  async insertFaceoffs(_context, { faceoffs, teams }: { faceoffs: LeveradeFaceoff[]; teams: LeveradeTeam[] }) {
     await Faceoff.insert({
       data: faceoffs.map((faceoff) => {
         return {
           id: faceoff.id,
           winner: faceoff.attributes.winner,
-          first_team_id: faceoff.relationships.first_team.data ? faceoff.relationships.first_team.data.id : null,
+          leverade_first_team: teams.find((team) => team.id && team.id === faceoff.relationships.first_team.data?.id),
           first_text: faceoff.attributes.first_text,
-          second_team_id: faceoff.relationships.second_team.data ? faceoff.relationships.second_team.data.id : null,
+          leverade_second_team: teams.find((team) => team.id && team.id === faceoff.relationships.second_team.data?.id),
           second_text: faceoff.attributes.second_text,
           round_id: faceoff.relationships.round.data.id,
         };
@@ -376,20 +377,6 @@ export default {
           type: group.attributes.type,
           group: group.attributes.group,
           competition_edition_id: group.relationships.tournament.data.id,
-        };
-      }),
-    });
-  },
-
-  async insertTeams(_context, teams: LeveradeTeam[]) {
-    await Team.insert({
-      data: teams.map((team) => {
-        const avatarKeyMatchArray = team.meta?.avatar?.large?.match(/\/(\w+)\.[0-9]/);
-
-        return {
-          id: team.id,
-          name: team.attributes.name,
-          avatarKey: avatarKeyMatchArray && avatarKeyMatchArray?.length > 1 ? avatarKeyMatchArray[1] : null,
         };
       }),
     });
@@ -528,8 +515,8 @@ export default {
       });
 
       await context.dispatch('insertRounds', rounds);
-      await context.dispatch('insertFaceoffs', faceoffs);
-      await context.dispatch('insertMatches', { matches, results, facilities });
+      await context.dispatch('insertFaceoffs', { faceoffs, teams });
+      await context.dispatch('insertMatches', { matches, teams, results, facilities });
       context.commit('setCompetitionEditionAsFullyLoaded', { seasonSlug, competitionSlug });
     }
   },
@@ -618,12 +605,13 @@ export default {
     }
 
     if (faceoff) {
-      await context.dispatch('insertFaceoffs', [faceoff]);
+      await context.dispatch('insertFaceoffs', { faceoffs: [faceoff], teams });
     }
 
     await context.dispatch('insertTeams', teams);
     await context.dispatch('insertMatches', {
       matches: [{ ...match, additionalData: matchAdditionalData }],
+      teams,
       results,
       periods,
       referees,
@@ -696,7 +684,7 @@ export default {
     await context.dispatch('insertTeams', teams);
     await context.dispatch('insertPhases', groups);
     await context.dispatch('insertRounds', rounds);
-    await context.dispatch('insertMatches', { matches, facilities });
+    await context.dispatch('insertMatches', { matches, teams, facilities });
     context.commit('setUpcomingMatchesAsLoaded');
   },
 } as ActionTree<RootState, RootState>;
