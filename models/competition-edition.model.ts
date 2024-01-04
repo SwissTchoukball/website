@@ -26,8 +26,7 @@ export default class CompetitionEdition extends Model {
       gender: this.string(null).nullable(),
       /** Leverade Season ID */
       season_id: this.string(null),
-      competition_id: this.string(null),
-      competition: this.belongsTo(Competition, 'competition_id'),
+      competition: this.attr(null),
       phases: this.hasMany(Phase, 'competition_edition_id'),
       teams: this.hasMany(Team, 'competition_edition_id'),
     };
@@ -36,11 +35,8 @@ export default class CompetitionEdition extends Model {
   static getLastPhase(competitionSlug: string, seasonLeveradeId: string): Phase {
     const competitionEdition = this.query()
       .where('season_id', seasonLeveradeId)
+      .where('competition', (competition: Competition) => competition.slug === competitionSlug)
       .with('phases', (query) => query.orderBy('order'))
-      .with('competition')
-      .whereHas('competition', (query) => {
-        query.where('slug', competitionSlug);
-      })
       .first();
 
     if (!competitionEdition) {

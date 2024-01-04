@@ -27,6 +27,7 @@ import {
 import { processRawPlayers } from '~/plugins/cms-service/national-teams';
 import { PressRelease } from '~/components/press-releases/press-releases';
 import { toISOLocal } from '~/utils/utils';
+import Competition from '~/models/competition.model';
 
 export interface ResourceType {
   id: number;
@@ -201,7 +202,7 @@ export interface CMSService {
   ) => Promise<Omit<NationalTeamForCompetition, 'competition'>[]>;
   getSeasons: () => Promise<DirectusSeason[]>;
   getLiveStreams: () => Promise<LiveStream[]>;
-  getNationalCompetition: (competitionSlug: string) => Promise<NationalCompetition>;
+  getNationalCompetition: (competitionSlug: string) => Promise<Competition>;
   getNationalCompetitionEditions: ({
     competitionSlug,
     seasonSlug,
@@ -1813,22 +1814,11 @@ const cmsService: Plugin = (context, inject) => {
 
     const rawCompetition = response.data[0];
 
-    if (!rawCompetition || !rawCompetition.id) {
+    if (!rawCompetition) {
       throw new Error('No competition found');
     }
-    const translatedFields = getTranslatedFields(rawCompetition);
 
-    if (!translatedFields?.name || !translatedFields?.slug) {
-      throw new Error('Competition is missing requested fields');
-    }
-
-    // Fallback for mandatory fields should not happen as we requested those fields
-    return {
-      id: rawCompetition.id,
-      name: translatedFields.name,
-      slug: translatedFields.slug,
-      editions: (rawCompetition.editions as any) || [],
-    };
+    return new Competition(rawCompetition);
   };
 
   const getNationalCompetitionEditions: CMSService['getNationalCompetitionEditions'] = async ({

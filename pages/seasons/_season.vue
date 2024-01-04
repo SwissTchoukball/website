@@ -51,7 +51,7 @@ export default Vue.extend({
       if (!this.season) {
         return [];
       }
-      return CompetitionEdition.query().with('competition').where('season_id', this.season!.leverade_id).all();
+      return CompetitionEdition.query().where('season_id', this.season!.leverade_id).all();
     },
     competitionEditionsNavigation(): MenuItem[] {
       return this.competitionEditions.map((competitionEdition) => {

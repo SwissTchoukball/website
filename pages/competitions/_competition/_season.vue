@@ -31,6 +31,7 @@ import { BreadcrumbItem } from '~/components/st-breadcrumb.vue';
 import CompetitionEdition from '~/models/competition-edition.model';
 import Phase from '~/models/phase.model';
 import Season from '~/models/season.model';
+import Competition from '~/models/competition.model';
 
 export default Vue.extend({
   nuxtI18n: {
@@ -96,6 +97,7 @@ export default Vue.extend({
     competitionEdition(): Item<CompetitionEdition> {
       return CompetitionEdition.query()
         .where('season_id', this.season?.leverade_id)
+        .where('competition', (competition: Competition) => competition.slug === this.$route.params.competition)
         .with('phases', (query) => query.orderBy('order'))
         .with('phases.rounds', (query) => query.orderBy('order'))
         .with([
@@ -111,10 +113,6 @@ export default Vue.extend({
           'phases.rounds.matches.home_team',
           'phases.rounds.matches.away_team',
         ])
-        .with('competition')
-        .whereHas('competition', (query) => {
-          query.where('slug', this.$route.params.competition);
-        })
         .first();
     },
     phasesNavigation(): MenuItem[] {
