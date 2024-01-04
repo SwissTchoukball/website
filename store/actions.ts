@@ -390,7 +390,6 @@ export default {
           id: team.id,
           name: team.attributes.name,
           avatarKey: avatarKeyMatchArray && avatarKeyMatchArray?.length > 1 ? avatarKeyMatchArray[1] : null,
-          competition_edition_id: team.relationships.registrable.data.id,
         };
       }),
     });

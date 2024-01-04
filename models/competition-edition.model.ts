@@ -1,7 +1,6 @@
 import { Model } from '@vuex-orm/core';
 import Phase from '~/models/phase.model';
 import Competition from '~/models/competition.model';
-import Team from '~/models/team.model';
 
 export default class CompetitionEdition extends Model {
   static entity = 'competition-editions';
@@ -16,7 +15,6 @@ export default class CompetitionEdition extends Model {
   season_id!: string;
   competition!: Competition;
   phases!: Phase[];
-  teams!: Team[];
 
   static fields() {
     return {
@@ -28,7 +26,6 @@ export default class CompetitionEdition extends Model {
       season_id: this.string(null),
       competition: this.attr(null),
       phases: this.hasMany(Phase, 'competition_edition_id'),
-      teams: this.hasMany(Team, 'competition_edition_id'),
     };
   }
 
