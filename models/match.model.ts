@@ -2,8 +2,17 @@ import { Model } from '@vuex-orm/core';
 import Round from '~/models/round.model';
 import Faceoff from '~/models/faceoff.model';
 import Team from '~/models/team.model';
-import Facility from '~/models/facility.model';
 import { parseLeveradeDate } from '~/utils/utils';
+
+export interface Facility {
+  id: string;
+  name: string;
+  latitude: number;
+  longitude: number;
+  address: string;
+  postal_code: string;
+  city: string;
+}
 
 export default class Match extends Model {
   static entity = 'matches';
@@ -33,8 +42,8 @@ export default class Match extends Model {
     gender: 'male' | 'female';
   }[];
 
-  facility_id!: string;
   facility!: Facility | null;
+
   finished!: boolean;
   canceled!: boolean;
   rest!: boolean;
@@ -58,8 +67,7 @@ export default class Match extends Model {
       away_team_score: this.number(null).nullable(),
       periods: this.attr([]),
       referees: this.attr([]),
-      facility_id: this.string(null).nullable(),
-      facility: this.belongsTo(Facility, 'facility_id'),
+      facility: this.attr(null),
       finished: this.boolean(false),
       canceled: this.boolean(false),
       rest: this.boolean(false),

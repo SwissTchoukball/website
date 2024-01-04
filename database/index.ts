@@ -5,7 +5,6 @@ import Phase from '~/models/phase.model';
 import Round from '~/models/round.model';
 import Faceoff from '~/models/faceoff.model';
 import Match from '~/models/match.model';
-import Facility from '~/models/facility.model';
 
 const database = new Database();
 
@@ -16,6 +15,5 @@ database.register(Phase);
 database.register(Round);
 database.register(Faceoff);
 database.register(Match);
-database.register(Facility);
 
 export default database;

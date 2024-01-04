@@ -9,8 +9,7 @@ import {
 } from '~/plugins/directus';
 import CompetitionEdition from '~/models/competition-edition.model';
 import Round from '~/models/round.model';
-import Match from '~/models/match.model';
-import Facility from '~/models/facility.model';
+import Match, { Facility } from '~/models/match.model';
 import {
   LeveradeFaceoff,
   LeveradeFacility,
@@ -223,22 +222,6 @@ export default {
     commit('setPlayerPositions', positions);
   },
 
-  async insertFacilities(_context, facilities: LeveradeFacility[]) {
-    await Facility.insert({
-      data: facilities.map((facility) => {
-        return {
-          id: facility.id,
-          name: facility.attributes.name,
-          latitude: facility.attributes.latitude,
-          longitude: facility.attributes.longitude,
-          address: facility.attributes.address,
-          postal_code: facility.attributes.postal_code,
-          city: facility.attributes.city,
-        };
-      }),
-    });
-  },
-
   async insertMatches(
     _context,
     {
@@ -246,11 +229,13 @@ export default {
       results,
       periods,
       referees,
+      facilities,
     }: {
       matches: (LeveradeMatch & { additionalData?: DirectusMatchAdditionalData })[];
       results?: LeveradeResult[];
       periods?: LeveradePeriod[];
       referees?: LeveradeProfile[];
+      facilities?: LeveradeFacility[];
     }
   ) {
     await Match.insert({
@@ -259,6 +244,7 @@ export default {
         let away_team_score: number | null = null;
         let matchPeriods: Match['periods'] | undefined;
         let matchReferees: Match['referees'] | undefined;
+        let facility: Facility | undefined;
 
         const homeResult = results?.find((result) => {
           return (
@@ -313,6 +299,21 @@ export default {
           });
         }
 
+        if (facilities && match.relationships.facility.data) {
+          const leveradeFacility = facilities.find((f) => f.id && f.id === match.relationships.facility.data?.id);
+          if (leveradeFacility) {
+            facility = {
+              id: leveradeFacility.id,
+              name: leveradeFacility.attributes.name,
+              latitude: leveradeFacility.attributes.latitude,
+              longitude: leveradeFacility.attributes.longitude,
+              address: leveradeFacility.attributes.address,
+              postal_code: leveradeFacility.attributes.postal_code,
+              city: leveradeFacility.attributes.city,
+            };
+          }
+        }
+
         return {
           id: match.id,
           datetime: match.attributes.datetime,
@@ -324,7 +325,7 @@ export default {
           referees: matchReferees,
           round_id: match.relationships.round.data.id,
           faceoff_id: match.relationships.faceoff.data ? match.relationships.faceoff.data.id : null,
-          facility_id: match.relationships.facility.data ? match.relationships.facility.data.id : null,
+          facility,
           finished: match.attributes.finished,
           canceled: match.attributes.canceled,
           rest: match.attributes.rest,
@@ -527,10 +528,9 @@ export default {
         },
       });
 
-      await context.dispatch('insertFacilities', facilities);
       await context.dispatch('insertRounds', rounds);
       await context.dispatch('insertFaceoffs', faceoffs);
-      await context.dispatch('insertMatches', { matches, results });
+      await context.dispatch('insertMatches', { matches, results, facilities });
       context.commit('setCompetitionEditionAsFullyLoaded', { seasonSlug, competitionSlug });
     }
   },
@@ -591,10 +591,6 @@ export default {
     // Loading additional data from Directus
     const matchAdditionalData = await this.$cmsService.getMatchAdditionalData(matchId);
 
-    if (facility) {
-      await context.dispatch('insertFacilities', [facility]);
-    }
-
     if (tournament) {
       // Loading Directus-only data
       const competitionEditions = await this.$cmsService.getNationalCompetitionEditions({
@@ -632,6 +628,7 @@ export default {
       results,
       periods,
       referees,
+      facilities: [facility],
     });
   },
 
@@ -696,12 +693,11 @@ export default {
       };
     });
 
-    await context.dispatch('insertFacilities', facilities);
     await context.dispatch('insertCompetitionEditions', tournamentsWithCompetition);
     await context.dispatch('insertTeams', teams);
     await context.dispatch('insertPhases', groups);
     await context.dispatch('insertRounds', rounds);
-    await context.dispatch('insertMatches', { matches });
+    await context.dispatch('insertMatches', { matches, facilities });
     context.commit('setUpcomingMatchesAsLoaded');
   },
 } as ActionTree<RootState, RootState>;
