@@ -10,7 +10,7 @@
   >
     <div
       class="c-match-result__team c-match-result__team--home"
-      :class="{ 'c-match-result__team--winner': hasHomeTeamWon }"
+      :class="{ 'c-match-result__team--winner': match.hasHomeTeamWon }"
     >
       <template v-if="match.home_team">
         <img
@@ -26,7 +26,7 @@
     <div class="c-match-result__score-separator">-</div>
     <div
       class="c-match-result__team c-match-result__team--away"
-      :class="{ 'c-match-result__team--winner': hasAwayTeamWon }"
+      :class="{ 'c-match-result__team--winner': match.hasAwayTeamWon }"
     >
       <template v-if="match.away_team">
         <img
@@ -51,14 +51,6 @@ export default Vue.extend({
     match: {
       type: Object as PropType<Match>,
       required: true,
-    },
-  },
-  computed: {
-    hasHomeTeamWon(): boolean {
-      return this.match.home_team_score > this.match.away_team_score;
-    },
-    hasAwayTeamWon(): boolean {
-      return this.match.home_team_score < this.match.away_team_score;
     },
   },
 });

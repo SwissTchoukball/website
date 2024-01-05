@@ -24,14 +24,23 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import { Store } from 'vuex';
-import { Item } from '@vuex-orm/core';
-import { MenuItem, RootState } from '~/store/state';
+import { MenuItem } from '~/store/state';
 import { BreadcrumbItem } from '~/components/st-breadcrumb.vue';
 import CompetitionEdition from '~/models/competition-edition.model';
 import Phase from '~/models/phase.model';
 import Season from '~/models/season.model';
-import Competition from '~/models/competition.model';
+import { NationalCompetitionEdition } from '~/plugins/cms-service';
+import {
+  Leverade,
+  LeveradeFaceoff,
+  LeveradeFacility,
+  LeveradeGroup,
+  LeveradeMatch,
+  LeveradeResult,
+  LeveradeRound,
+  LeveradeTeam,
+} from '~/plugins/leverade';
+import { Await } from '~/types/types.utils';
 
 export default Vue.extend({
   nuxtI18n: {
@@ -47,37 +56,53 @@ export default Vue.extend({
   data() {
     return {
       season: undefined as Season | undefined,
+      rawCompetitionEdition: undefined as NationalCompetitionEdition | undefined,
+      leveradeTournamentData: undefined as Await<ReturnType<Leverade['getFullTournament']>>['data'] | undefined,
       lastPhasePath: undefined as string | undefined,
     };
   },
   async fetch() {
-    // We load all the competition data from Leverade only if we don't have it already.
-    // We consider that if we have a competition in store and it has a gender (piece of data coming from Leverade),
-    // then we have all the necessary related data.
-    // But if we only try to load a single match, which is a child page of season,
-    // then we don't load the whole competition.
-    if (
-      !(this.$store as Store<RootState>).state.fullyLoadedCompetitionEditions.find(
-        (entry) => entry.season === this.$route.params.season && entry.competition === this.$route.params.competition
-      ) &&
-      !this.$route.name?.startsWith('competitions-competition-season-match-matchId')
-    ) {
-      await this.$store.dispatch('loadCompetitionEdition', {
-        seasonSlug: this.$route.params.season,
-        competitionSlug: this.$route.params.competition,
-      });
+    const rawCompetitionEditions = await this.$cmsService.getNationalCompetitionEditions({
+      seasonSlug: this.$route.params.season,
+      competitionSlug: this.$route.params.competition,
+    });
+    if (!rawCompetitionEditions || rawCompetitionEditions.length < 1) {
+      throw new Error('No competition edition found');
     }
+    // There should be only one edition matching the request parameters.
+    if (rawCompetitionEditions.length > 1) {
+      console.warn('Multiple competition editions matching the request. Taking the first one.');
+    }
+    const rawCompetitionEdition = rawCompetitionEditions[0];
+    if (!rawCompetitionEdition.leverade_id) {
+      throw new Error('This competition edition has no Leverade ID');
+    }
+    this.rawCompetitionEdition = rawCompetitionEdition;
+
+    const tournamentResponse = await this.$leverade.getFullTournament(this.rawCompetitionEdition?.leverade_id!);
+    this.leveradeTournamentData = tournamentResponse.data;
 
     try {
       if (!this.season?.leverade_id) {
         throw new Error('Season has no Leverade ID');
       }
+
+      if (!this.competitionEdition?.lastPhase) {
+        throw new Error('Competition edition does not have any phases');
+      }
+
+      let lastPhasePathName = 'competitions-competition-season-phase';
+      const currentRouteName = this.getRouteBaseName(this.$route);
+      if (currentRouteName?.startsWith(lastPhasePathName)) {
+        lastPhasePathName = currentRouteName;
+      }
+
       this.lastPhasePath = this.localePath({
-        name: 'competitions-competition-season-phase',
+        name: lastPhasePathName,
         params: {
           competition: this.$route.params.competition,
           season: this.$route.params.season,
-          phase: CompetitionEdition.getLastPhase(this.$route.params.competition, this.season.leverade_id).id,
+          phase: this.competitionEdition?.lastPhase.id,
         },
       });
     } catch (error) {
@@ -85,7 +110,11 @@ export default Vue.extend({
     }
 
     // If no phase or match is set, redirect to the last phase
-    if (this.lastPhasePath && !this.$route.params.matchId && !this.$route.params.phase) {
+    if (
+      this.lastPhasePath &&
+      !this.$route.params.matchId &&
+      (!this.$route.params.phase || this.$route.params.phase === 'last')
+    ) {
       if (process.server) {
         this.$nuxt.context.redirect(this.lastPhasePath);
       } else if (process.client) {
@@ -94,29 +123,54 @@ export default Vue.extend({
     }
   },
   computed: {
-    competitionEdition(): Item<CompetitionEdition> {
-      return CompetitionEdition.query()
-        .where('season_id', this.season?.leverade_id)
-        .where('competition', (competition: Competition) => competition.slug === this.$route.params.competition)
-        .with('phases', (query) => query.orderBy('order'))
-        .with('phases.rounds', (query) => query.orderBy('order'))
-        .with([
-          'phases.competition_edition',
-          'phases.competition_edition.season_id',
-          'phases.rounds.faceoffs',
-          'phases.rounds.faceoffs.first_team',
-          'phases.rounds.faceoffs.second_team',
-          'phases.rounds.faceoffs.matches',
-          'phases.rounds.faceoffs.matches.home_team',
-          'phases.rounds.faceoffs.matches.away_team',
-          'phases.rounds.matches',
-          'phases.rounds.matches.home_team',
-          'phases.rounds.matches.away_team',
-        ])
-        .first();
+    competitionEdition(): CompetitionEdition | undefined {
+      if (!this.rawCompetitionEdition || !this.leveradeTournamentData?.included) {
+        return;
+      }
+      const competitionEdition = new CompetitionEdition(this.rawCompetitionEdition, this.season);
+
+      const tournament = this.leveradeTournamentData.data;
+      const teams: LeveradeTeam[] = [];
+      const groups: LeveradeGroup[] = [];
+      const rounds: LeveradeRound[] = [];
+      const faceoffs: LeveradeFaceoff[] = [];
+      const matches: LeveradeMatch[] = [];
+      const facilities: LeveradeFacility[] = [];
+      const results: LeveradeResult[] = [];
+      this.leveradeTournamentData.included.forEach((entity) => {
+        switch (entity.type) {
+          case 'team':
+            teams.push(entity);
+            break;
+          case 'group':
+            groups.push(entity);
+            break;
+          case 'round':
+            rounds.push(entity);
+            break;
+          case 'faceoff':
+            faceoffs.push(entity);
+            break;
+          case 'match':
+            matches.push(entity);
+            break;
+          case 'facility':
+            facilities.push(entity);
+            break;
+          case 'result': {
+            results.push(entity);
+            break;
+          }
+          default:
+        }
+      });
+
+      competitionEdition.addLeveradeData({ tournament, teams, groups, rounds, faceoffs, matches, facilities, results });
+
+      return competitionEdition;
     },
     phasesNavigation(): MenuItem[] {
-      if (!this.competitionEdition) {
+      if (!this.competitionEdition?.phases) {
         return [];
       }
       return this.competitionEdition.phases.map((phase) => ({
@@ -128,7 +182,7 @@ export default Vue.extend({
       }));
     },
     currentPhase(): Phase | undefined {
-      if (!this.$route.params.phase || !this.competitionEdition) {
+      if (!this.$route.params.phase || !this.competitionEdition?.phases) {
         return;
       }
       const phase = this.competitionEdition.phases.find((phase) => phase.id === this.$route.params.phase);

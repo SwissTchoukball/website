@@ -40,8 +40,6 @@ export interface RootState {
   eventTypes?: EventTypes;
   playerPositions?: PlayerPositions;
   liveStreams: LiveStream[];
-  upcomingMatchesLoaded: boolean;
-  fullyLoadedCompetitionEditions: { season: string; competition: string }[];
 }
 
 export default (): RootState => ({
@@ -53,6 +51,4 @@ export default (): RootState => ({
   eventTypes: undefined,
   playerPositions: undefined,
   liveStreams: [],
-  upcomingMatchesLoaded: false,
-  fullyLoadedCompetitionEditions: [],
 });

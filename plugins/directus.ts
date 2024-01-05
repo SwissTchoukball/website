@@ -435,7 +435,7 @@ export const getAssetSrcSet = (cmsURL: string, assetId: string, { widths }: { wi
  * the first available language of the entity translations is returned
  */
 export const getTranslatedFields = (
-  entity: PartialItem<{ [key: string]: any } & { translations: { [key: string]: any }[] }>,
+  entity: PartialItem<Record<string, any> & { translations: Record<string, any>[] }>,
   languageKey?: string
 ) => {
   if (entity.translations) {

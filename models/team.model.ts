@@ -3,14 +3,14 @@ import { LeveradeTeam } from '~/plugins/leverade';
 export default class Team {
   static entity = 'teams';
 
-  id: number;
+  id: string;
   name: string;
   avatarKey?: string;
 
   constructor(leveradeTeam: LeveradeTeam) {
     const avatarKeyMatchArray = leveradeTeam.meta?.avatar?.large?.match(/\/(\w+)\.[0-9]/);
 
-    this.id = +leveradeTeam.id;
+    this.id = leveradeTeam.id;
     this.name = leveradeTeam.attributes.name;
     this.avatarKey = avatarKeyMatchArray && avatarKeyMatchArray?.length > 1 ? avatarKeyMatchArray[1] : undefined;
   }

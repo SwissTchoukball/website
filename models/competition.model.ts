@@ -1,6 +1,4 @@
-import { PartialItem } from '@directus/sdk';
-import { NationalCompetitionEdition } from '~/plugins/cms-service';
-import { DirectusNationalCompetition, getTranslatedFields } from '~/plugins/directus';
+import { NationalCompetition, NationalCompetitionEdition } from '~/plugins/cms-service';
 
 export default class Competition {
   static entity = 'competitions';
@@ -10,18 +8,10 @@ export default class Competition {
   slug: string;
   editions?: NationalCompetitionEdition[];
 
-  constructor(rawCompetition: PartialItem<DirectusNationalCompetition>) {
-    const translatedFields = getTranslatedFields(rawCompetition);
-
-    if (!rawCompetition.id || !translatedFields?.name || !translatedFields?.slug) {
-      throw new Error('Competition is missing requested fields');
-    }
-
-    // Fallback for mandatory fields should not happen as we requested those fields
-
+  constructor(rawCompetition: NationalCompetition) {
     this.id = rawCompetition.id;
-    this.name = translatedFields.name;
-    this.slug = translatedFields.slug;
+    this.name = rawCompetition.name;
+    this.slug = rawCompetition.slug;
     this.editions = (rawCompetition.editions as any) || [];
   }
 

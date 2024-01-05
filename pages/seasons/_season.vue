@@ -17,11 +17,11 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import { Collection } from '@vuex-orm/core';
 import CompetitionEdition from '~/models/competition-edition.model';
 import Season from '~/models/season.model';
 import { BreadcrumbItem } from '~/components/st-breadcrumb.vue';
 import { MenuItem } from '~/store/state';
+import { NationalCompetitionEdition } from '~/plugins/cms-service';
 
 export default Vue.extend({
   nuxtI18n: {
@@ -38,20 +38,27 @@ export default Vue.extend({
           displayName: this.$tc('season.name', 2),
         },
       ] as BreadcrumbItem[],
+      rawCompetitionEditions: [] as NationalCompetitionEdition[],
     };
   },
   async fetch() {
-    await this.$store.dispatch('loadCompetitionsOfSeason', this.$route.params.season);
+    try {
+      this.rawCompetitionEditions = await this.$cmsService.getNationalCompetitionEditions({
+        seasonSlug: this.$route.params.season,
+      });
+    } catch (error) {
+      console.error(error);
+      throw new Error('Could not load the competitions for this season');
+    }
   },
   computed: {
     season(): Season | undefined {
       return this.$store.getters.getSeasonBySlug(this.$route.params.season);
     },
-    competitionEditions(): Collection<CompetitionEdition> {
-      if (!this.season) {
-        return [];
-      }
-      return CompetitionEdition.query().where('season_id', this.season!.leverade_id).all();
+    competitionEditions(): CompetitionEdition[] {
+      return this.rawCompetitionEditions.map(
+        (rawCompetitionEdition) => new CompetitionEdition(rawCompetitionEdition, this.season)
+      );
     },
     competitionEditionsNavigation(): MenuItem[] {
       return this.competitionEditions.map((competitionEdition) => {

@@ -61,7 +61,7 @@ export default Vue.extend({
   head() {
     const title = this.$t('competitions.headTitle.results', {
       phaseName: this.phase.name,
-      editionName: this.phase.competition_edition.name,
+      editionName: this.phase.competition_edition?.name,
       seasonName: this.season.name,
     }).toString();
     return {
@@ -78,6 +78,9 @@ export default Vue.extend({
   },
   computed: {
     roundsToShow(): Round[] {
+      if (!this.phase?.rounds) {
+        return [];
+      }
       return this.phase.rounds
         .filter((round) => round.isPast || round.hasFinishedMatches)
         .sort((roundA, roundB) => roundB.order - roundA.order);
@@ -85,6 +88,9 @@ export default Vue.extend({
   },
   methods: {
     isFaceoffAutoQualified(faceoff: Faceoff): boolean {
+      if (!faceoff.matches?.length) {
+        return false;
+      }
       // We check this based on the first match only
       const firstMatch = faceoff.matches[0];
       return (!firstMatch.home_team || !firstMatch.away_team) && firstMatch.finished && !!faceoff.winner;

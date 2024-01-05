@@ -8,6 +8,7 @@ import {
   DirectusFile,
   DirectusGroup,
   DirectusMatchAdditionalData,
+  DirectusNationalCompetition,
   DirectusNationalCompetitionEdition,
   DirectusPressRelease,
   DirectusResourceStatus,
@@ -27,7 +28,6 @@ import {
 import { processRawPlayers } from '~/plugins/cms-service/national-teams';
 import { PressRelease } from '~/components/press-releases/press-releases';
 import { toISOLocal } from '~/utils/utils';
-import Competition from '~/models/competition.model';
 
 export interface ResourceType {
   id: number;
@@ -136,7 +136,7 @@ export interface NationalCompetitionEdition {
   directus_id: number;
   season: DirectusSeason;
   // eslint-disable-next-line no-use-before-define
-  competition: number | NationalCompetition;
+  competition: NationalCompetition;
   leverade_id?: number;
 }
 
@@ -202,7 +202,7 @@ export interface CMSService {
   ) => Promise<Omit<NationalTeamForCompetition, 'competition'>[]>;
   getSeasons: () => Promise<DirectusSeason[]>;
   getLiveStreams: () => Promise<LiveStream[]>;
-  getNationalCompetition: (competitionSlug: string) => Promise<Competition>;
+  getNationalCompetition: (competitionSlug: string) => Promise<NationalCompetition>;
   getNationalCompetitionEditions: ({
     competitionSlug,
     seasonSlug,
@@ -1780,6 +1780,25 @@ const cmsService: Plugin = (context, inject) => {
     return liveStreams;
   };
 
+  const processNationalCompetition = (
+    rawCompetition: PartialItem<DirectusNationalCompetition>
+  ): NationalCompetition => {
+    const translatedFields = getTranslatedFields(rawCompetition);
+
+    if (!rawCompetition.id || !translatedFields?.name || !translatedFields?.slug) {
+      throw new Error('Competition is missing requested fields');
+    }
+
+    // Fallback for mandatory fields should not happen as we requested those fields
+
+    return {
+      id: rawCompetition.id,
+      name: translatedFields.name,
+      slug: translatedFields.slug,
+      editions: (rawCompetition.editions as any) || [],
+    };
+  };
+
   const getNationalCompetition: CMSService['getNationalCompetition'] = async (competitionSlug) => {
     // We retrieve all the languages and show data in fallback locale if not available in current locale
     const currentLocale = context.i18n.locale;
@@ -1818,7 +1837,7 @@ const cmsService: Plugin = (context, inject) => {
       throw new Error('No competition found');
     }
 
-    return new Competition(rawCompetition);
+    return processNationalCompetition(rawCompetition);
   };
 
   const getNationalCompetitionEditions: CMSService['getNationalCompetitionEditions'] = async ({
@@ -1890,7 +1909,15 @@ const cmsService: Plugin = (context, inject) => {
         return editions;
       }
 
-      const translatedCompetitionFields = getTranslatedFields(rawEdition.competition);
+      let competition: NationalCompetition;
+
+      try {
+        competition = processNationalCompetition(rawEdition.competition);
+      } catch (error) {
+        console.error(error);
+        console.warn('Could not instantiate Competition when retrieving editions');
+        return editions;
+      }
 
       if (
         !rawEdition.id ||
@@ -1900,9 +1927,6 @@ const cmsService: Plugin = (context, inject) => {
         !rawEdition.season?.date_start ||
         !rawEdition.season?.date_end ||
         !rawEdition.season?.leverade_id ||
-        !rawEdition.competition.id ||
-        !translatedCompetitionFields?.name ||
-        !translatedCompetitionFields?.slug ||
         !rawEdition.leverade_id
       ) {
         return editions;
@@ -1920,11 +1944,7 @@ const cmsService: Plugin = (context, inject) => {
             date_end: rawEdition.season.date_end,
             leverade_id: rawEdition.season.leverade_id,
           },
-          competition: {
-            id: rawEdition.competition.id,
-            name: translatedCompetitionFields?.name,
-            slug: translatedCompetitionFields?.slug,
-          },
+          competition,
           leverade_id: rawEdition.leverade_id,
         },
       ];

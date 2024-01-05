@@ -1,19 +1,19 @@
 <template>
-  <div>
+  <div v-if="match">
     <nuxt-link class="c-match__phase-round" :to="phaseRoundLink">
       <span v-if="isPhaseNameVisible">
-        {{ match.round.phase.name }}
+        {{ phase.name }}
       </span>
       <span v-if="isRoundNameVisible">
-        {{ match.round.name }}
+        {{ round.name }}
       </span>
     </nuxt-link>
     <h2 class="c-match__name">
-      <span class="c-match__team c-match__team--home" :class="{ 'c-match__team--winner': hasHomeTeamWon(match) }">
+      <span class="c-match__team c-match__team--home" :class="{ 'c-match__team--winner': match.hasHomeTeamWon }">
         {{ match.homeTeamName }}
       </span>
       <span class="c-match__cross">&#9587;</span>
-      <span class="c-match__team c-match__team--away" :class="{ 'c-match__team--winner': hasAwayTeamWon(match) }">
+      <span class="c-match__team c-match__team--away" :class="{ 'c-match__team--winner': match.hasAwayTeamWon }">
         {{ match.awayTeamName }}
       </span>
     </h2>
@@ -25,7 +25,7 @@
       />
       <div v-else class="c-match__team-avatar"></div>
 
-      <div v-if="isOver" class="c-match__score">{{ match.home_team_score }} - {{ match.away_team_score }}</div>
+      <div v-if="match.isOver" class="c-match__score">{{ match.home_team_score }} - {{ match.away_team_score }}</div>
       <div v-else class="c-match__no-score"></div>
 
       <img
@@ -35,8 +35,8 @@
       />
       <div v-else class="c-match__team-avatar"></div>
     </div>
-    <ul v-if="periods" class="c-match__detailed-score u-unstyled-list">
-      <template v-for="period in periods">
+    <ul v-if="match.periods" class="c-match__detailed-score u-unstyled-list">
+      <template v-for="period in match.periods">
         <li
           v-if="period.home_team_score || period.away_team_score"
           :key="period.order"
@@ -78,11 +78,16 @@
           <strong>{{ match.facility.name }}</strong> <br />
           {{ match.facility.address }}<br />
           {{ match.facility.postal_code }} {{ match.facility.city }}<br />
-          <a :href="mapsUrl">{{ $t('venue.openInMaps') }}</a>
+          <a :href="match.mapsUrl">{{ $t('venue.openInMaps') }}</a>
         </div>
       </div>
       <client-only>
-        <iframe v-if="swisstopoMapUrl" :src="swisstopoMapUrl" frameborder="0" class="c-match__map"></iframe>
+        <iframe
+          v-if="match.hasFacility"
+          :src="match.getSwisstopoMapUrl($i18n.locale)"
+          frameborder="0"
+          class="c-match__map"
+        ></iframe>
       </client-only>
     </div>
     <template v-if="photos.length">
@@ -96,9 +101,24 @@
 import Vue, { PropType } from 'vue';
 import Match from '~/models/match.model';
 import StEventDate from '~/components/events/st-event-date.vue';
-import { LeveradeGroupType } from '~/plugins/leverade';
+import {
+  Leverade,
+  LeveradeFacility,
+  LeveradeGroupType,
+  LeveradePeriod,
+  LeveradeProfile,
+  LeveradeResult,
+} from '~/plugins/leverade';
 import { FlickrPhoto } from '~/plugins/flickr';
 import Season from '~/models/season.model';
+import { Await } from '~/types/types.utils';
+import { DirectusMatchAdditionalData } from '~/plugins/directus';
+import Team from '~/models/team.model';
+import Faceoff from '~/models/faceoff.model';
+import Round from '~/models/round.model';
+import CompetitionEdition from '~/models/competition-edition.model';
+import Phase from '~/models/phase.model';
+import { NationalCompetitionEdition } from '~/plugins/cms-service';
 
 export default Vue.extend({
   components: {
@@ -115,16 +135,38 @@ export default Vue.extend({
     return {
       venueDetailsVisible: false,
       photos: [] as FlickrPhoto[],
+      leveradeMatchData: undefined as Await<ReturnType<Leverade['getMatch']>>['data'] | undefined,
+      matchAdditionalData: null as DirectusMatchAdditionalData | null,
+      directusCompetitionEdition: undefined as NationalCompetitionEdition | undefined,
     };
   },
   async fetch() {
-    await this.$store.dispatch('loadMatch', this.$route.params.matchId);
+    const matchResponse = await this.$leverade.getMatch(this.$route.params.matchId);
+    this.leveradeMatchData = matchResponse.data;
+    this.matchAdditionalData = await this.$cmsService.getMatchAdditionalData(+this.$route.params.matchId);
 
-    if (this.match.flickr_photoset_id) {
+    if (!this.leveradeMatchData?.included) {
+      throw new Error('Missing related match data');
+    }
+
+    // Loading Directus-only data
+    const tournament = this.leveradeMatchData.included.find((data) => data.type === 'tournament');
+    if (tournament) {
+      const competitionEditions = await this.$cmsService.getNationalCompetitionEditions({
+        leveradeIds: [tournament.id],
+      });
+      // There should be only one edition matching the request parameters.
+      if (competitionEditions.length > 1) {
+        console.warn('Multiple competition editions matching the request. Taking the first one.');
+      }
+      this.directusCompetitionEdition = competitionEditions[0];
+    }
+
+    if (this.matchAdditionalData?.flickr_photoset_id) {
       // Doc: https://www.flickr.com/services/api/flickr.photosets.getPhotos.html
       const flickrResponse = await this.$flickr.photosets.getPhotos({
         user_id: this.$config.flickr.userId,
-        photoset_id: this.match.flickr_photoset_id,
+        photoset_id: this.matchAdditionalData.flickr_photoset_id,
         extras: 'url_q,url_m',
       });
       this.photos = flickrResponse.body.photoset.photo;
@@ -132,14 +174,18 @@ export default Vue.extend({
   },
   head() {
     const match: Match = (this as any).match;
+    const round: Round = (this as any).round;
+    const phase: Phase = (this as any).phase;
+    const competitionEdition: CompetitionEdition = (this as any).competitionEdition;
+
     let title = '';
-    if (match.home_team && match.away_team) {
+    if (match?.home_team && match?.away_team) {
       title += `${match.home_team.name} - ${match.away_team.name} · `;
     }
-    if (match.round?.phase) {
-      title += `${match.round.name} · ${match.round.phase.name} · `;
-      if (match.round.phase.name !== match.round.phase.competition_edition.name) {
-        title += `${match.round.phase.competition_edition.name} · `;
+    if (phase) {
+      title += `${round.name} · ${phase.name} · `;
+      if (competitionEdition && phase.name !== competitionEdition.name) {
+        title += `${competitionEdition.name} · `;
       }
       title += this.season.name;
     }
@@ -157,34 +203,102 @@ export default Vue.extend({
     };
   },
   computed: {
-    match(): Match {
-      const match = Match.query()
-        .whereId(this.$route.params.matchId)
-        .with('home_team')
-        .with('away_team')
-        .with('facility')
-        .with('faceoff')
-        .with('round.phase')
-        .with('round.phase.competition_edition')
-        .first();
-      if (!match) {
-        throw new Error('No match found for this ID');
+    distributedMatchData():
+      | {
+          match: Match;
+          round: Round | undefined;
+          phase: Phase | undefined;
+          edition: CompetitionEdition | undefined;
+        }
+      | undefined {
+      if (!this.leveradeMatchData?.included) {
+        return;
       }
-      return match;
+
+      const match = new Match(this.leveradeMatchData.data);
+      const teams: Team[] = [];
+      let faceoff: Faceoff | undefined;
+      let round: Round | undefined;
+      let phase: Phase | undefined;
+      let edition: CompetitionEdition | undefined;
+      let facility: LeveradeFacility | undefined;
+      const results: LeveradeResult[] = [];
+      const periods: LeveradePeriod[] = [];
+      const referees: LeveradeProfile[] = [];
+
+      if (this.directusCompetitionEdition) {
+        edition = new CompetitionEdition(this.directusCompetitionEdition);
+      }
+
+      this.leveradeMatchData.included.forEach((entity) => {
+        switch (entity.type) {
+          case 'team':
+            teams.push(new Team(entity));
+            break;
+          case 'faceoff':
+            faceoff = new Faceoff(entity);
+            break;
+          case 'round':
+            round = new Round(entity);
+            break;
+          case 'group':
+            phase = new Phase(entity);
+            break;
+          case 'tournament':
+            edition?.addLeveradeData({ tournament: entity });
+            break;
+          case 'facility':
+            facility = entity;
+            break;
+          case 'result':
+            results.push(entity);
+            break;
+          case 'period':
+            periods.push(entity);
+            break;
+          case 'profile':
+            // For now it's fine to do this because the only profiles we get for a match are referees.
+            // If later one we retrieve the players, then we'll have to add more logic to differentiate them.
+            referees.push(entity);
+            break;
+          default:
+        }
+      });
+      match.flickr_photoset_id = this.matchAdditionalData?.flickr_photoset_id;
+      match.faceoff = faceoff;
+      match.setTeams(teams);
+      match.setResults(results);
+      match.setPeriods(periods, results);
+      match.setReferees(referees);
+      if (facility) {
+        match.setFacility([facility]);
+      }
+
+      return {
+        match,
+        round,
+        phase,
+        edition,
+      };
     },
-    periods(): Match['periods'] {
-      return [...this.match.periods].sort((periodA, periodB) => periodA.order - periodB.order);
+    match(): Match | undefined {
+      return this.distributedMatchData?.match;
     },
-    isOver(): boolean {
-      return this.match.home_team_score > 0 || this.match.away_team_score > 0;
+    phase(): Phase | undefined {
+      return this.distributedMatchData?.phase;
+    },
+    round(): Round | undefined {
+      return this.distributedMatchData?.round;
+    },
+    competitionEdition(): CompetitionEdition | undefined {
+      return this.distributedMatchData?.edition;
     },
     isPhaseNameVisible(): boolean {
-      return this.match.round.phase && this.match.round.phase.type !== LeveradeGroupType.PLAY_OFF;
+      return !!this.phase && this.phase.type !== LeveradeGroupType.PLAY_OFF;
     },
     isRoundNameVisible(): boolean {
       return (
-        !!this.match.round?.phase?.name &&
-        (!this.isPhaseNameVisible || this.match.round.name !== this.match.round.phase.name)
+        !!this.phase?.name && !!this.round?.name && (!this.isPhaseNameVisible || this.round.name !== this.phase.name)
       );
     },
     /**
@@ -193,37 +307,16 @@ export default Vue.extend({
      */
     phaseRoundLink(): string {
       let pathName = 'competitions-competition-season-phase-planning';
-      if (this.isOver) {
+      if (this.match?.isOver) {
         pathName = 'competitions-competition-season-phase-results';
       }
-      if (!this.match.round?.phase) {
+      if (!this.phase) {
         return '';
       }
-      return this.localePath({ name: pathName, params: { phase: this.match.round.phase.id } });
-    },
-    mapsUrl(): string | null {
-      if (!this.match.facility) {
-        return null;
-      }
-      // This link will fallback to Google Maps if Apple Maps is not available
-      return `//maps.apple.com/?q=${this.match.facility.address},${this.match.facility.postal_code}+${this.match.facility.city}`;
-    },
-    swisstopoMapUrl(): string | null {
-      if (!this.match.facility) {
-        return null;
-      }
-      const swisssearch = `${this.match.facility.address}, ${this.match.facility.postal_code} ${this.match.facility.city} limit: 1`;
-      const bgLayer = 'ch.swisstopo.pixelkarte-farbe';
-      return `//map.geo.admin.ch/embed.html?swisssearch=${swisssearch}&lang=${this.$i18n.locale}&bgLayer=${bgLayer}&showTooltip=true`;
+      return this.localePath({ name: pathName, params: { phase: this.phase.id } });
     },
   },
   methods: {
-    hasHomeTeamWon(match: Match): boolean {
-      return match.home_team_score > match.away_team_score;
-    },
-    hasAwayTeamWon(match: Match): boolean {
-      return match.home_team_score < match.away_team_score;
-    },
     showVenueDetails(): void {
       this.venueDetailsVisible = true;
       this.$router.push('#match-details');

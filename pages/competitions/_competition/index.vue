@@ -1,5 +1,6 @@
 <script lang="ts">
 import Vue from 'vue';
+import Competition from '~/models/competition.model';
 
 export default Vue.extend({
   nuxtI18n: {
@@ -8,16 +9,15 @@ export default Vue.extend({
       de: '/wettbewerbe/:competition',
     },
   },
-  async asyncData({ app, route, redirect, store }) {
+  async asyncData({ app, route, redirect }) {
     const competition = await app.$cmsService.getNationalCompetition(route.params.competition);
+    const nationalCompetition = new Competition(competition);
 
-    store.commit('competitions/setCompetitions', competition);
-
-    if (!competition.lastEdition) {
+    if (!nationalCompetition.lastEdition) {
       throw new Error('Competition has no editions');
     }
 
-    if (typeof competition.lastEdition.season === 'number') {
+    if (typeof nationalCompetition.lastEdition.season === 'number') {
       throw new TypeError('Season of last edition is not populated');
     }
 
@@ -30,7 +30,7 @@ export default Vue.extend({
         name: 'competitions-competition-season',
         params: {
           competition: route.params.competition,
-          season: competition.lastEdition.season.slug,
+          season: nationalCompetition.lastEdition.season.slug,
         },
       })
     );

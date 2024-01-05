@@ -1,48 +1,49 @@
-import { Model } from '@vuex-orm/core';
-import Round from '~/models/round.model';
 import Team from '~/models/team.model';
 import Match from '~/models/match.model';
-import { LeveradeTeam } from '~/plugins/leverade';
+import { LeveradeFaceoff, LeveradeTeam } from '~/plugins/leverade';
 
-export default class Faceoff extends Model {
+export default class Faceoff {
   static entity = 'faceoffs';
 
-  id!: string;
-  round_id!: string;
-  round!: Round;
-  leverade_first_team!: LeveradeTeam;
+  id: string;
+  round_id: string;
+  first_team_id: string | null;
+  leverade_first_team?: LeveradeTeam;
+  first_team?: Team;
   /**
    * Placeholder for when the first team is not defined yet
    */
-  first_text!: string;
-  leverade_second_team!: LeveradeTeam;
+  first_text: string | null;
+  second_team_id: string | null;
+  leverade_second_team?: LeveradeTeam;
+  second_team?: Team;
   /**
    * Placeholder for when the second team is not defined yet
    */
-  second_text!: string;
-  winner!: 'first' | 'second' | null;
-  matches!: Match[];
+  second_text: string | null;
+  winner: 'first' | 'second' | null;
+  matches?: Match[];
 
-  static fields() {
-    return {
-      id: this.string(null),
-      round_id: this.string(null),
-      round: this.belongsTo(Round, 'round_id'),
-      leverade_first_team: this.attr(null),
-      first_text: this.string(null).nullable(),
-      leverade_second_team: this.attr(null),
-      second_text: this.string(null).nullable(),
-      winner: this.string(null).nullable(),
-      matches: this.hasMany(Match, 'faceoff_id'),
-    };
+  constructor(faceoff: LeveradeFaceoff) {
+    this.id = faceoff.id;
+    this.round_id = faceoff.relationships.round.data.id;
+    this.first_team_id = faceoff.relationships.first_team.data?.id || null;
+    this.first_text = faceoff.attributes.first_text;
+    this.second_team_id = faceoff.relationships.second_team.data?.id || null;
+    this.second_text = faceoff.attributes.second_text;
+    this.winner = faceoff.attributes.winner;
   }
 
-  // TODO: Move the logic from the two following getters to the constructor when there will be one.
-  get first_team(): Team | undefined {
-    return this.leverade_first_team ? new Team(this.leverade_first_team) : undefined;
-  }
+  /**
+   * Sets the first and second team instances out of the provided list of teams
+   */
+  setTeams(teams: Team[]) {
+    if (this.first_team_id) {
+      this.first_team = teams.find((team) => team.id === this.first_team_id);
+    }
 
-  get second_team(): Team | undefined {
-    return this.leverade_second_team ? new Team(this.leverade_second_team) : undefined;
+    if (this.second_team_id) {
+      this.second_team = teams.find((team) => team.id === this.second_team_id);
+    }
   }
 }

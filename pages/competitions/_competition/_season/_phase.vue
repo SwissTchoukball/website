@@ -15,7 +15,6 @@ import Vue, { PropType } from 'vue';
 import Season from '~/models/season.model';
 import Phase from '~/models/phase.model';
 import Round from '~/models/round.model';
-import Match from '~/models/match.model';
 import { LeveradeGroupType } from '~/plugins/leverade';
 import { MenuItem } from '~/store/state';
 
@@ -37,11 +36,8 @@ export default Vue.extend({
     },
   },
   computed: {
-    futureMatches(): Match[] {
-      return Match.getFutureMatches(this.phase.id);
-    },
     roundsToShow(): Round[] {
-      return this.phase.rounds.filter((round) => round.isPast || round.hasFinishedMatches);
+      return this.phase?.rounds?.filter((round) => round.isPast || round.hasFinishedMatches) || [];
     },
     phaseNavigation(): MenuItem[] {
       const params = { phase: this.$route.params.phase };
@@ -62,7 +58,7 @@ export default Vue.extend({
         });
       }
 
-      if (this.futureMatches.length > 0) {
+      if (this.phase.futureMatches.length > 0) {
         phaseNavigation.push({
           name: this.$t('competitions.phaseNavigation.planning').toString(),
           href: this.localePath({ name: 'competitions-competition-season-phase-planning', params }),

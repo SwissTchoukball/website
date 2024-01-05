@@ -1,14 +1,14 @@
 <template>
   <div>
-    <template v-if="futureMatches.length > 0">
-      <ul v-for="match of futureMatches" :key="match.id" class="u-unstyled-list">
+    <template v-if="phase.futureMatches.length > 0">
+      <ul v-for="match of phase.futureMatches" :key="match.id" class="u-unstyled-list">
         <li v-if="showMatch(match)">
           <nuxt-link
             class="c-planning__match"
             :to="localePath({ name: 'competitions-competition-season-match-matchId', params: { matchId: match.id } })"
           >
             <st-event-date :start-date="match.parsedDate()" always-one-line />
-            <div v-if="showMatchRound(match)" class="c-planning__match-round">{{ match.round.name }}</div>
+            <div v-if="showMatchRound" class="c-planning__match-round">{{ match.round.name }}</div>
             <h4 v-if="match.homeTeamName || match.awayTeamName" class="c-planning__match-name">
               <div class="c-planning__match-team c-planning__match-team--home">
                 <img
@@ -69,6 +69,7 @@ export default Vue.extend({
   components: {
     StEventDate,
   },
+  scrollToTop: true,
   props: {
     season: {
       type: Object as PropType<Season>,
@@ -82,7 +83,7 @@ export default Vue.extend({
   head() {
     const title = this.$t('competitions.headTitle.planning', {
       phaseName: this.phase.name,
-      editionName: this.phase.competition_edition.name,
+      editionName: this.phase.competition_edition?.name,
       seasonName: this.season.name,
     }).toString();
     return {
@@ -98,16 +99,13 @@ export default Vue.extend({
     };
   },
   computed: {
-    futureMatches(): Match[] {
-      return Match.getFutureMatches(this.phase.id);
+    showMatchRound(): boolean {
+      return this.phase.type === LeveradeGroupType.PLAY_OFF;
     },
   },
   methods: {
     showMatch(match: Match) {
-      return this.showMatchRound(match) || match.home_team || match.away_team || !match.canceled;
-    },
-    showMatchRound(match: Match) {
-      return match.round.phase.type === LeveradeGroupType.PLAY_OFF;
+      return this.showMatchRound || match.home_team || match.away_team || !match.canceled;
     },
     showTime(match: Match) {
       // This can be a problem if a match is actually scheduled at midnight.

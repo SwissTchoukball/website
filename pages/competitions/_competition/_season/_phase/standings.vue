@@ -83,7 +83,7 @@ export default Vue.extend({
       }
     }
 
-    const teamsResponse = await this.$leverade.getTeams(this.phase.competition_edition.leverade_id);
+    const teamsResponse = await this.$leverade.getTeams(this.phase.competition_edition_id);
     const standingsResponse = await this.$leverade.getStandings(this.phase.id);
     this.rawStandings = standingsResponse.data.meta.standingsrows.map((row: any) => ({
       position: row.position,
@@ -94,7 +94,7 @@ export default Vue.extend({
   head() {
     const title = this.$t('competitions.headTitle.standings', {
       phaseName: this.phase.name,
-      editionName: this.phase.competition_edition.name,
+      editionName: this.phase.competition_edition?.name,
       seasonName: this.season.name,
     }).toString();
     return {

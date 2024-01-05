@@ -1,9 +1,15 @@
-import { Model } from '@vuex-orm/core';
-import Round from '~/models/round.model';
 import Faceoff from '~/models/faceoff.model';
 import Team from '~/models/team.model';
+// import Round from '~/models/round.model';
 import { parseLeveradeDate } from '~/utils/utils';
-import { LeveradeTeam } from '~/plugins/leverade';
+import {
+  LeveradeFacility,
+  LeveradeMatch,
+  LeveradePeriod,
+  LeveradeProfile,
+  LeveradeResult,
+  LeveradeTeam,
+} from '~/plugins/leverade';
 
 export interface Facility {
   id: string;
@@ -15,78 +21,156 @@ export interface Facility {
   city: string;
 }
 
-export default class Match extends Model {
+export interface Period {
+  name?: string;
+  order: number;
+  home_team_score?: number;
+  away_team_score?: number;
+}
+
+export interface Referee {
+  first_name: string;
+  last_name: string;
+  gender: 'male' | 'female';
+}
+
+export default class Match {
   static entity = 'matches';
 
-  id!: string;
-  datetime!: string | null;
-  round_id!: string;
-  round!: Round;
-  faceoff_id!: string;
-  faceoff!: Faceoff;
-  leverade_home_team!: LeveradeTeam;
-  home_team_score!: number;
-  leverade_away_team!: LeveradeTeam;
-  away_team_score!: number;
-  periods!: {
-    name?: string;
-    order: number;
-    home_team_score?: number;
-    away_team_score?: number;
-  }[];
-
-  referees!: {
-    first_name: string;
-    last_name: string;
-    gender: 'male' | 'female';
-  }[];
-
-  facility!: Facility | null;
-
-  finished!: boolean;
-  canceled!: boolean;
-  rest!: boolean;
+  id: string;
+  datetime: string | null;
+  round_id: string;
+  faceoff_id: string | null;
+  faceoff?: Faceoff;
+  home_team_id: string | null;
+  leverade_home_team?: LeveradeTeam;
+  home_team?: Team;
+  home_team_score?: number | null;
+  away_team_id: string | null;
+  leverade_away_team?: LeveradeTeam;
+  away_team?: Team;
+  away_team_score?: number | null;
+  periods?: Period[];
+  referees?: Referee[];
+  facility_id: string | null;
+  facility?: Facility | null;
+  finished: boolean;
+  canceled: boolean;
+  rest: boolean;
 
   // Non-Leverade fields:
   flickr_photoset_id?: string;
 
-  static fields() {
-    return {
-      id: this.string(null),
-      datetime: this.string(null).nullable(),
-      round_id: this.string(null),
-      round: this.belongsTo(Round, 'round_id'),
-      faceoff_id: this.string(null).nullable(),
-      faceoff: this.belongsTo(Faceoff, 'faceoff_id'),
-      leverade_home_team: this.attr(null),
-      home_team_score: this.number(null).nullable(),
-      leverade_away_team: this.attr(null),
-      away_team_score: this.number(null).nullable(),
-      periods: this.attr([]),
-      referees: this.attr([]),
-      facility: this.attr(null),
-      finished: this.boolean(false),
-      canceled: this.boolean(false),
-      rest: this.boolean(false),
+  constructor(match: LeveradeMatch) {
+    this.id = match.id;
+    this.datetime = match.attributes.datetime;
+    this.finished = match.attributes.finished;
+    this.canceled = match.attributes.canceled;
+    this.rest = match.attributes.rest;
 
-      // Non-Leverade fields:
-      flickr_photoset_id: this.string(null).nullable(),
-    };
+    this.home_team_id = match.meta.home_team;
+    this.away_team_id = match.meta.away_team;
+
+    this.round_id = match.relationships.round.data.id;
+    this.faceoff_id = match.relationships.faceoff.data?.id || null;
+    this.facility_id = match.relationships.facility.data?.id || null;
+  }
+
+  /**
+   * Sets the home and away team instances out of the provided list of teams
+   */
+  setTeams(teams: Team[]) {
+    if (this.home_team_id) {
+      this.home_team = teams.find((team) => team.id === this.home_team_id);
+    }
+    if (this.away_team_id) {
+      this.away_team = teams.find((team) => team.id === this.away_team_id);
+    }
+  }
+
+  setFaceoff(faceoffs: Faceoff[]) {
+    if (this.faceoff_id) {
+      this.faceoff = faceoffs.find((faceoff) => faceoff.id === this.faceoff_id);
+    }
+  }
+
+  setResults(results: LeveradeResult[]) {
+    const homeResult = results?.find((result) => {
+      return (
+        result.relationships?.match?.data?.id === this.id &&
+        result.relationships?.team?.data?.id === this.home_team_id &&
+        result.relationships?.parent?.data?.type === 'match'
+      );
+    });
+
+    const awayResult = results?.find(
+      (result) =>
+        result.relationships?.match?.data?.id === this.id &&
+        result.relationships?.team?.data?.id === this.away_team_id &&
+        result.relationships?.parent?.data?.type === 'match'
+    );
+
+    if (homeResult && awayResult) {
+      this.home_team_score = homeResult.attributes.value;
+      this.away_team_score = awayResult.attributes.value;
+    }
+  }
+
+  setPeriods(periods: LeveradePeriod[], results: LeveradeResult[]) {
+    this.periods = periods
+      .filter((period) => period.relationships?.periodable?.data?.id === this.id)
+      .map((period) => {
+        return {
+          name: period.attributes.name,
+          order: period.attributes.order,
+          home_team_score:
+            results?.find(
+              (result) =>
+                result.relationships?.period?.data?.id === period.id &&
+                result.relationships?.team?.data?.id === this.home_team_id
+            )?.attributes.value || undefined,
+          away_team_score:
+            results?.find(
+              (result) =>
+                result.relationships?.period?.data?.id === period.id &&
+                result.relationships?.team?.data?.id === this.away_team_id
+            )?.attributes.value || undefined,
+        };
+      })
+      .sort((periodA, periodB) => periodA.order - periodB.order);
+  }
+
+  setReferees(referees: LeveradeProfile[]) {
+    this.referees = referees.map((referee) => {
+      return {
+        first_name: referee.attributes.first_name,
+        last_name: referee.attributes.last_name,
+        gender: referee.attributes.gender,
+      };
+    });
+  }
+
+  setFacility(facilities: LeveradeFacility[]) {
+    if (this.facility_id) {
+      const leveradeFacility = facilities.find((f) => f.id && f.id === this.facility_id);
+      if (leveradeFacility) {
+        this.facility = {
+          id: leveradeFacility.id,
+          name: leveradeFacility.attributes.name,
+          latitude: leveradeFacility.attributes.latitude,
+          longitude: leveradeFacility.attributes.longitude,
+          address: leveradeFacility.attributes.address,
+          postal_code: leveradeFacility.attributes.postal_code,
+          city: leveradeFacility.attributes.city,
+        };
+      }
+    }
   }
 
   parsedDate() {
     if (this.datetime) {
       return parseLeveradeDate(this.datetime);
     }
-  }
-
-  // TODO: Move the logic from the two following getters to the constructor when there will be one.
-  get home_team(): Team | undefined {
-    return this.leverade_home_team ? new Team(this.leverade_home_team) : undefined;
-  }
-
-  get away_team(): Team | undefined {
-    return this.leverade_away_team ? new Team(this.leverade_away_team) : undefined;
   }
 
   get homeTeamName(): string {
@@ -107,20 +191,36 @@ export default class Match extends Model {
     return '';
   }
 
-  static getFutureMatches(phaseId: string): Match[] {
-    return (
-      Match.query()
-        .with('home_team')
-        .with('away_team')
-        .with('facility')
-        .with('faceoff')
-        .with('round', (query) => query.with('phase', (queryP) => queryP.where('id', phaseId)))
-        .where('datetime', (datetime: string) => datetime >= new Date().toISOString().substring(0, 10))
-        .orderBy('datetime')
-        .get()
-        // Somehow, this query retrieves some matches from other phases, without including the phase.
-        // We filter those out here. FIXME: Find a cleaner way to fix this.
-        .filter((match) => match.round.phase)
-    );
+  get isOver(): boolean {
+    return (!!this.home_team_score && this.home_team_score > 0) || (!!this.away_team_score && this.away_team_score > 0);
+  }
+
+  get hasHomeTeamWon(): boolean {
+    return !!this.home_team_score && !!this.away_team_score && this.home_team_score > this.away_team_score;
+  }
+
+  get hasAwayTeamWon(): boolean {
+    return !!this.home_team_score && !!this.away_team_score && this.home_team_score < this.away_team_score;
+  }
+
+  get mapsUrl(): string | null {
+    if (!this.facility) {
+      return null;
+    }
+    // This link will fallback to Google Maps if Apple Maps is not available
+    return `//maps.apple.com/?q=${this.facility.address},${this.facility.postal_code}+${this.facility.city}`;
+  }
+
+  get hasFacility(): boolean {
+    return !!this.facility;
+  }
+
+  getSwisstopoMapUrl(locale: string): string | null {
+    if (!this.facility) {
+      return null;
+    }
+    const swisssearch = `${this.facility.address}, ${this.facility.postal_code} ${this.facility.city} limit: 1`;
+    const bgLayer = 'ch.swisstopo.pixelkarte-farbe';
+    return `//map.geo.admin.ch/embed.html?swisssearch=${swisssearch}&lang=${locale}&bgLayer=${bgLayer}&showTooltip=true`;
   }
 }

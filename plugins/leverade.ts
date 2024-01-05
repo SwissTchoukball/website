@@ -1,4 +1,6 @@
 import { Plugin } from '@nuxt/types';
+import { AxiosResponse, AxiosRequestConfig } from 'axios';
+import { Await } from '~/types/types.utils';
 
 export interface LeveradeResponse<T, E = {}> {
   data: {
@@ -70,8 +72,8 @@ export interface LeveradeMatch extends LeveradeEntity {
     rest: boolean;
   };
   meta: {
-    home_team: string;
-    away_team: string;
+    home_team: string | null;
+    away_team: string | null;
   };
   relationships: {
     round: {
@@ -258,7 +260,7 @@ export interface LeveradeProfile extends LeveradeEntity {
   };
 }
 
-interface Leverade {
+export interface Leverade {
   getFullTournament: (
     tournamentId: number | string
   ) => Promise<
@@ -304,50 +306,51 @@ const removeAuthorizationHeaders = (headers: any) => {
 };
 
 const leveradePlugin: Plugin = ({ $config, $axios, $formatDate }, inject) => {
+  const leveradeApi = $axios.create({
+    baseURL: $config.leveradeURL,
+    transformRequest: (data, headers) => {
+      removeAuthorizationHeaders(headers);
+      return data;
+    },
+  });
+
+  const cache: Record<string, any> = {};
+
+  const getCachedQuery = async <T = any>(
+    path: string,
+    config?: AxiosRequestConfig & { invalidateCache?: boolean }
+  ): Promise<AxiosResponse<T>> => {
+    if (!config?.invalidateCache && cache[path]) {
+      return cache[path];
+    }
+    const response = await leveradeApi.get(path, config);
+    cache[path] = response;
+    return response;
+  };
+
   const getFullTournament: Leverade['getFullTournament'] = (tournamentId) => {
-    return $axios.get(
-      `${$config.leveradeURL}/tournaments/${tournamentId}?include=groups,groups.rounds,groups.rounds.faceoffs,groups.rounds.matches,groups.rounds.matches.facility,groups.rounds.matches.results,teams`,
-      {
-        transformRequest: (data, headers) => {
-          removeAuthorizationHeaders(headers);
-          return data;
-        },
-      }
+    return getCachedQuery(
+      `/tournaments/${tournamentId}?include=groups,groups.rounds,groups.rounds.faceoffs,groups.rounds.matches,groups.rounds.matches.facility,groups.rounds.matches.results,teams`
     );
   };
 
   const getStandings: Leverade['getStandings'] = (groupId) => {
-    return $axios.get(`${$config.leveradeURL}/groups/${groupId}/standings`, {
-      transformRequest: (data, headers) => {
-        removeAuthorizationHeaders(headers);
-        return data;
-      },
-    });
+    return getCachedQuery<Await<ReturnType<Leverade['getStandings']>>>(`/groups/${groupId}/standings`);
   };
 
   const getUpcomingMatches: Leverade['getUpcomingMatches'] = (seasonLeveradeId) => {
     const today = $formatDate(new Date(), 'yyyy-MM-dd');
-    return $axios.get(
-      `${$config.leveradeURL}/matches?filter=datetime>${today},round.group.tournament.season.id:${seasonLeveradeId}&sort=datetime&include=round.group.tournament,teams,facility`,
-      {
-        transformRequest: (data, headers) => {
-          removeAuthorizationHeaders(headers);
-          return data;
-        },
-      }
+    return getCachedQuery(
+      `/matches?filter=datetime>${today},round.group.tournament.season.id:${seasonLeveradeId}&sort=datetime&include=round.group.tournament,teams,facility`
     );
   };
 
   const getMatch: Leverade['getMatch'] = (matchId) => {
     // We use the endpoint to get a list of matches even though we want only one,
     // because `GET /matches/{id}` is behind authentication
-    return $axios.get(
-      `${$config.leveradeURL}/matches?filter=id:${matchId}&include=round,round.group,round.group.tournament,faceoff,teams,results,periods,matchreferees.license.profile,periods.results,results,facility`,
+    return getCachedQuery(
+      `/matches?filter=id:${matchId}&include=round,round.group,round.group.tournament,faceoff,teams,results,periods,matchreferees.license.profile,periods.results,results,facility`,
       {
-        transformRequest: (data, headers) => {
-          removeAuthorizationHeaders(headers);
-          return data;
-        },
         transformResponse: (data) => {
           const jsonData = JSON.parse(data);
           return {
@@ -360,12 +363,7 @@ const leveradePlugin: Plugin = ({ $config, $axios, $formatDate }, inject) => {
   };
 
   const getTeams: Leverade['getTeams'] = (tournamentId) => {
-    return $axios.get(`${$config.leveradeURL}/teams?filter=registrable[tournament].id:${tournamentId}`, {
-      transformRequest: (data, headers) => {
-        removeAuthorizationHeaders(headers);
-        return data;
-      },
-    });
+    return getCachedQuery(`/teams?filter=registrable[tournament].id:${tournamentId}`);
   };
 
   inject('leverade', {
