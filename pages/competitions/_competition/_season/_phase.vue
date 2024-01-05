@@ -6,7 +6,7 @@
       class="c-competition-phase__navigation"
       small
     />
-    <nuxt-child v-if="phase" :season="season" :phase="phase" />
+    <nuxt-child v-if="phase" :season="season" :competition-edition="competitionEdition" :phase="phase" />
   </div>
 </template>
 
@@ -15,6 +15,7 @@ import Vue, { PropType } from 'vue';
 import Season from '~/models/season.model';
 import Phase from '~/models/phase.model';
 import Round from '~/models/round.model';
+import CompetitionEdition from '~/models/competition-edition.model';
 import { LeveradeGroupType } from '~/plugins/leverade';
 import { MenuItem } from '~/store/state';
 
@@ -28,6 +29,10 @@ export default Vue.extend({
   props: {
     season: {
       type: Object as PropType<Season>,
+      required: true,
+    },
+    competitionEdition: {
+      type: Object as PropType<CompetitionEdition>,
       required: true,
     },
     phase: {

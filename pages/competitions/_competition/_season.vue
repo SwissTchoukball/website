@@ -17,7 +17,7 @@
         small
         inverted
       />
-      <nuxt-child :season="season" :phase="currentPhase" />
+      <nuxt-child :season="season" :competition-edition="competitionEdition" :phase="currentPhase" />
     </template>
   </section>
 </template>

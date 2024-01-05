@@ -1,7 +1,6 @@
 import { LeveradeGroup, LeveradeGroupType } from '~/plugins/leverade';
 import Round from '~/models/round.model';
 import Match from '~/models/match.model';
-import CompetitionEdition from '~/models/competition-edition.model';
 
 export default class Phase {
   static entity = 'phases';
@@ -12,7 +11,6 @@ export default class Phase {
   type: LeveradeGroupType;
   group: string | null;
   competition_edition_id: string;
-  competition_edition?: CompetitionEdition;
   rounds?: Round[];
 
   constructor(leveradeGroup: LeveradeGroup) {

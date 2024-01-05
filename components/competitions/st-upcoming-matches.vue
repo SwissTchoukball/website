@@ -57,8 +57,6 @@ export default Vue.extend({
     };
   },
   async fetch() {
-    // TODO: Set up caching in Leverade and Directus plugin to avoid refetching
-
     const currentSeason: Season = this.$store.getters.currentSeason;
     if (!currentSeason) {
       throw new Error('Current season undefined');

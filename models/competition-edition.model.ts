@@ -121,7 +121,6 @@ export default class CompetitionEdition {
       this.phases = groups.map((group) => {
         const phase = new Phase(group);
         phase.rounds = this.rounds?.filter((round) => round.phase_id === phase.id);
-        // phase.competition_edition = this;
         return phase;
       });
     }

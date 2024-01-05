@@ -37,6 +37,7 @@ import Phase from '~/models/phase.model';
 import Round from '~/models/round.model';
 import stMatchResultList from '~/components/competitions/st-match-result-list.vue';
 import Faceoff from '~/models/faceoff.model';
+import CompetitionEdition from '~/models/competition-edition.model';
 
 export default Vue.extend({
   nuxtI18n: {
@@ -53,6 +54,10 @@ export default Vue.extend({
       type: Object as PropType<Season>,
       required: true,
     },
+    competitionEdition: {
+      type: Object as PropType<CompetitionEdition>,
+      required: true,
+    },
     phase: {
       type: Object as PropType<Phase>,
       required: true,
@@ -61,7 +66,7 @@ export default Vue.extend({
   head() {
     const title = this.$t('competitions.headTitle.results', {
       phaseName: this.phase.name,
-      editionName: this.phase.competition_edition?.name,
+      editionName: this.competitionEdition.name,
       seasonName: this.season.name,
     }).toString();
     return {

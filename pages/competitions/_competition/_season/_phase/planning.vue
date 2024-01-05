@@ -56,6 +56,7 @@ import Vue, { PropType } from 'vue';
 import Season from '~/models/season.model';
 import Phase from '~/models/phase.model';
 import Match from '~/models/match.model';
+import CompetitionEdition from '~/models/competition-edition.model';
 import StEventDate from '~/components/events/st-event-date.vue';
 import { LeveradeGroupType } from '~/plugins/leverade';
 
@@ -75,6 +76,10 @@ export default Vue.extend({
       type: Object as PropType<Season>,
       required: true,
     },
+    competitionEdition: {
+      type: Object as PropType<CompetitionEdition>,
+      required: true,
+    },
     phase: {
       type: Object as PropType<Phase>,
       required: true,
@@ -83,7 +88,7 @@ export default Vue.extend({
   head() {
     const title = this.$t('competitions.headTitle.planning', {
       phaseName: this.phase.name,
-      editionName: this.phase.competition_edition?.name,
+      editionName: this.competitionEdition.name,
       seasonName: this.season.name,
     }).toString();
     return {

@@ -45,6 +45,7 @@ import VueI18n from 'vue-i18n';
 import Season from '~/models/season.model';
 import Phase from '~/models/phase.model';
 import Team from '~/models/team.model';
+import CompetitionEdition from '~/models/competition-edition.model';
 import { LeveradeGroupType } from '~/plugins/leverade';
 
 export default Vue.extend({
@@ -57,6 +58,10 @@ export default Vue.extend({
   props: {
     season: {
       type: Object as PropType<Season>,
+      required: true,
+    },
+    competitionEdition: {
+      type: Object as PropType<CompetitionEdition>,
       required: true,
     },
     phase: {
@@ -94,7 +99,7 @@ export default Vue.extend({
   head() {
     const title = this.$t('competitions.headTitle.standings', {
       phaseName: this.phase.name,
-      editionName: this.phase.competition_edition?.name,
+      editionName: this.competitionEdition.name,
       seasonName: this.season.name,
     }).toString();
     return {
