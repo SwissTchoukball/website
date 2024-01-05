@@ -37,7 +37,7 @@
 
     <section class="l-main-content-section">
       <h2 class="t-headline-1">Tchoukball</h2>
-      <p class="l-paragraph l-paragraph--large" v-html="tchoukballDescription"></p>
+      <div class="directus-formatted-content .directus-formatted-content--large" v-html="tchoukballDescription"></div>
       <nav>
         <ul class="c-index__tchoukball-nav u-unstyled-list">
           <li v-for="item of tchoukballNavigation" :key="item.name" class="c-index__tchoukball-nav-item">

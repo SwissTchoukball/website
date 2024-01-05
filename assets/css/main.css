@@ -43,7 +43,8 @@ a:visited {
   max-width: 100%;
 }
 
-.l-paragraph--large {
+.l-paragraph--large,
+.directus-formatted-content.directus-formatted-content--large p {
   font-size: 1.2em;
 }
 
