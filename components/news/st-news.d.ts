@@ -1,5 +1,3 @@
-import Domain from '~/models/domain.model';
-
 export interface NewsEntry {
   id: number;
   title: string;
@@ -11,5 +9,5 @@ export interface NewsEntry {
   body?: string;
   date_created: string;
   date_updated?: string;
-  domains: Domain[];
+  domain_ids: number[];
 }

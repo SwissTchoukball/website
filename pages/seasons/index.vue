@@ -14,8 +14,8 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import { Collection } from '@vuex-orm/core';
 import Season from '~/models/season.model';
+import { DirectusSeason } from '~/plugins/directus';
 import { MenuItem } from '~/store/state';
 
 export default Vue.extend({
@@ -26,8 +26,8 @@ export default Vue.extend({
     },
   },
   computed: {
-    seasons(): Collection<Season> {
-      return Season.query().orderBy('slug', 'desc').all();
+    seasons(): Season[] {
+      return (this.$store.state.seasons as DirectusSeason[]).map((season) => new Season(season));
     },
     seasonsNavigation(): MenuItem[] {
       return this.seasons.map((season) => {

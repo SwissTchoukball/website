@@ -32,10 +32,12 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
+import Season from '~/models/season.model';
 import Phase from '~/models/phase.model';
 import Round from '~/models/round.model';
 import stMatchResultList from '~/components/competitions/st-match-result-list.vue';
 import Faceoff from '~/models/faceoff.model';
+import CompetitionEdition from '~/models/competition-edition.model';
 
 export default Vue.extend({
   nuxtI18n: {
@@ -48,6 +50,14 @@ export default Vue.extend({
     stMatchResultList,
   },
   props: {
+    season: {
+      type: Object as PropType<Season>,
+      required: true,
+    },
+    competitionEdition: {
+      type: Object as PropType<CompetitionEdition>,
+      required: true,
+    },
     phase: {
       type: Object as PropType<Phase>,
       required: true,
@@ -56,8 +66,8 @@ export default Vue.extend({
   head() {
     const title = this.$t('competitions.headTitle.results', {
       phaseName: this.phase.name,
-      editionName: this.phase.competition_edition.name,
-      seasonName: this.phase.competition_edition.season.name,
+      editionName: this.competitionEdition.name,
+      seasonName: this.season.name,
     }).toString();
     return {
       title,
@@ -73,6 +83,9 @@ export default Vue.extend({
   },
   computed: {
     roundsToShow(): Round[] {
+      if (!this.phase?.rounds) {
+        return [];
+      }
       return this.phase.rounds
         .filter((round) => round.isPast || round.hasFinishedMatches)
         .sort((roundA, roundB) => roundB.order - roundA.order);
@@ -80,9 +93,12 @@ export default Vue.extend({
   },
   methods: {
     isFaceoffAutoQualified(faceoff: Faceoff): boolean {
+      if (!faceoff.matches?.length) {
+        return false;
+      }
       // We check this based on the first match only
       const firstMatch = faceoff.matches[0];
-      return (!firstMatch.home_team || !firstMatch.away_team) && firstMatch.finished && faceoff.winner;
+      return (!firstMatch.home_team || !firstMatch.away_team) && firstMatch.finished && !!faceoff.winner;
     },
     /**
      * Checks that a faceoff has a match with a least one team set.

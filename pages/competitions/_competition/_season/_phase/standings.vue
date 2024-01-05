@@ -4,32 +4,36 @@
     <p v-else-if="$fetchState.error">{{ $t('error.otherError') }} : {{ $fetchState.error.message }}</p>
     <div v-else class="c-standings__table-container">
       <table class="c-standings__table">
-        <tr>
-          <th
-            v-for="(value, index) of standingsHeader"
-            :key="index"
-            class="c-standings__table-cell c-standings__table-cell--header"
-          >
-            {{ value }}
-          </th>
-        </tr>
-        <tr v-for="standing of standings" :key="standing.team.id">
-          <td class="c-standings__table-cell">{{ standing.position }}</td>
-          <td class="c-standings__table-cell">
-            <div class="c-standings__team">
-              <img
-                v-if="standing.team.avatarMediumUrl"
-                :src="standing.team.avatarMediumUrl"
-                class="c-standings__team-avatar"
-              />
-              <div v-else class="c-standings__team-avatar c-standings__team-avatar--placeholder"></div>
-              {{ standing.team.name }}
-            </div>
-          </td>
-          <td v-for="statKey of standingsStatKeys" :key="statKey" class="c-standings__table-cell">
-            {{ standing.stats.find((stat) => stat.type === statKey).value }}
-          </td>
-        </tr>
+        <thead>
+          <tr>
+            <th
+              v-for="(value, index) of standingsHeader"
+              :key="index"
+              class="c-standings__table-cell c-standings__table-cell--header"
+            >
+              {{ value }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="standing of standings" :key="standing.team.id">
+            <td class="c-standings__table-cell">{{ standing.position }}</td>
+            <td class="c-standings__table-cell">
+              <div class="c-standings__team">
+                <img
+                  v-if="standing.team.avatarMediumUrl"
+                  :src="standing.team.avatarMediumUrl"
+                  class="c-standings__team-avatar"
+                />
+                <div v-else class="c-standings__team-avatar c-standings__team-avatar--placeholder"></div>
+                {{ standing.team.name }}
+              </div>
+            </td>
+            <td v-for="statKey of standingsStatKeys" :key="statKey" class="c-standings__table-cell">
+              {{ standing.stats.find((stat) => stat.type === statKey).value }}
+            </td>
+          </tr>
+        </tbody>
       </table>
     </div>
   </div>
@@ -38,8 +42,10 @@
 <script lang="ts">
 import Vue, { PropType } from 'vue';
 import VueI18n from 'vue-i18n';
+import Season from '~/models/season.model';
 import Phase from '~/models/phase.model';
 import Team from '~/models/team.model';
+import CompetitionEdition from '~/models/competition-edition.model';
 import { LeveradeGroupType } from '~/plugins/leverade';
 
 export default Vue.extend({
@@ -50,6 +56,14 @@ export default Vue.extend({
     },
   },
   props: {
+    season: {
+      type: Object as PropType<Season>,
+      required: true,
+    },
+    competitionEdition: {
+      type: Object as PropType<CompetitionEdition>,
+      required: true,
+    },
     phase: {
       type: Object as PropType<Phase>,
       required: true,
@@ -74,21 +88,19 @@ export default Vue.extend({
       }
     }
 
-    const response = await this.$leverade.getStandings(this.phase.id);
-    this.rawStandings = response.data.meta.standingsrows.map((row: any) => {
-      const standing = {
-        position: row.position,
-        teamId: row.id,
-        stats: row.standingsstats,
-      };
-      return standing;
-    });
+    const teamsResponse = await this.$leverade.getTeams(this.phase.competition_edition_id);
+    const standingsResponse = await this.$leverade.getStandings(this.phase.id);
+    this.rawStandings = standingsResponse.data.meta.standingsrows.map((row: any) => ({
+      position: row.position,
+      rawTeam: teamsResponse.data.data.find((team) => +team.id === row.id),
+      stats: row.standingsstats,
+    }));
   },
   head() {
     const title = this.$t('competitions.headTitle.standings', {
       phaseName: this.phase.name,
-      editionName: this.phase.competition_edition.name,
-      seasonName: this.phase.competition_edition.season.name,
+      editionName: this.competitionEdition.name,
+      seasonName: this.season.name,
     }).toString();
     return {
       title,
@@ -132,7 +144,7 @@ export default Vue.extend({
     standings(): any[] {
       return this.rawStandings.map((standingRow) => ({
         position: standingRow.position,
-        team: Team.find(standingRow.teamId),
+        team: new Team(standingRow.rawTeam),
         stats: standingRow.stats,
       }));
     },

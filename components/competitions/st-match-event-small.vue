@@ -11,6 +11,7 @@
 import Vue, { PropType } from 'vue';
 import Match from '~/models/match.model';
 import stEventSmall from '~/components/events/st-event-small.vue';
+import CompetitionEdition from '~/models/competition-edition.model';
 
 export default Vue.extend({
   components: { stEventSmall },
@@ -18,6 +19,10 @@ export default Vue.extend({
     match: {
       type: Object as PropType<Match>,
       required: true,
+    },
+    competitionEdition: {
+      type: Object as PropType<CompetitionEdition>,
+      default: undefined,
     },
   },
   computed: {
@@ -28,8 +33,8 @@ export default Vue.extend({
       return this.localePath({
         name: 'competitions-competition-season-match-matchId',
         params: {
-          competition: this.match.round?.phase?.competition_edition?.competition?.slug,
-          season: this.match.round?.phase?.competition_edition?.season?.slug,
+          competition: this.competitionEdition?.competition.slug || '',
+          season: this.competitionEdition?.season?.slug || '',
           matchId: this.match.id,
         },
       });

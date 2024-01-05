@@ -9,13 +9,18 @@
 </template>
 
 <script lang="ts">
-import { Collection } from '@vuex-orm/core';
+import { PartialItem } from '@directus/sdk';
 import Vue from 'vue';
 import stClubList from '~/components/st-club-list.vue';
-import Club from '~/models/club.model';
+import { DirectusClub } from '~/plugins/directus';
 
 export default Vue.extend({
   components: { stClubList },
+  data() {
+    return {
+      associations: [] as PartialItem<DirectusClub>[],
+    };
+  },
   nuxtI18n: {
     paths: {
       fr: '/associations-regionales',
@@ -23,10 +28,7 @@ export default Vue.extend({
     },
   },
   async fetch() {
-    // We load the clubs (which include regional associations) only if we don't have them already
-    if (!this.Club.exists()) {
-      await this.$store.dispatch('loadClubs');
-    }
+    this.associations = await this.$cmsService.getClubs({ statuses: ['regional_association'] });
   },
   head() {
     return {
@@ -40,15 +42,6 @@ export default Vue.extend({
         },
       ],
     };
-  },
-  computed: {
-    Club() {
-      return this.$store.$db().model(Club);
-    },
-    associations(): Collection<Club> {
-      // Regional associations are also saved as clubs
-      return this.Club.query().where('status', 'regional_association').orderBy('name_sort').get();
-    },
   },
 });
 </script>

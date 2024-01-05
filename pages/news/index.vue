@@ -34,7 +34,7 @@ export default Vue.extend({
       newsList: [] as NewsEntry[],
       newsEntriesPerPage: 12,
       totalNewsEntries: undefined as number | undefined,
-      filteredDomainName: undefined as string | undefined,
+      filteredDomainId: undefined as number | undefined,
     };
   },
   async fetch() {
@@ -50,7 +50,7 @@ export default Vue.extend({
 
     this.newsList = newsResult.data;
     this.totalNewsEntries = newsResult.meta.total;
-    this.filteredDomainName = newsResult.meta.filteredDomainName;
+    this.filteredDomainId = newsResult.meta.filteredDomainId;
   },
   head(): MetaInfo {
     return {
@@ -78,6 +78,12 @@ export default Vue.extend({
       }
 
       return 1;
+    },
+    filteredDomainName(): string | undefined {
+      if (!this.filteredDomainId) {
+        return;
+      }
+      return this.$store.getters.getDomainById(this.filteredDomainId);
     },
   },
   watch: {

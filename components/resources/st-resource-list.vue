@@ -12,7 +12,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import Resource from '~/models/resource.model';
+import { Resource } from '~/plugins/cms-service';
 import stResource from '~/components/resources/st-resource.vue';
 
 export default Vue.extend({

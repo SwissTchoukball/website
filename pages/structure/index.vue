@@ -14,9 +14,8 @@
 </template>
 
 <script lang="ts">
-import { Collection } from '@vuex-orm/core';
 import Vue from 'vue';
-import Group from '~/models/group.model';
+import { Group } from '~/plugins/cms-service';
 import { MenuItem } from '~/store/state';
 
 export default Vue.extend({
@@ -26,8 +25,13 @@ export default Vue.extend({
       de: '/struktur',
     },
   },
+  data() {
+    return {
+      groups: [] as Group[],
+    };
+  },
   async fetch() {
-    await this.$store.dispatch('loadGroups');
+    this.groups = await this.$cmsService.getGroups();
   },
   head() {
     return {
@@ -36,12 +40,6 @@ export default Vue.extend({
     };
   },
   computed: {
-    Group() {
-      return this.$store.$db().model(Group);
-    },
-    groups(): Collection<Group> {
-      return this.Group.query().orderBy('name').get();
-    },
     groupsNavigation(): MenuItem[] {
       if (!this.groups) {
         return [];

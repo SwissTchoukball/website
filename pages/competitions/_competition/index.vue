@@ -11,15 +11,13 @@ export default Vue.extend({
   },
   async asyncData({ app, route, redirect }) {
     const competition = await app.$cmsService.getNationalCompetition(route.params.competition);
-    Competition.insert({ data: competition, insertOrUpdate: ['competition-editions', 'seasons'] });
+    const nationalCompetition = new Competition(competition);
 
-    if (!competition.editions) {
+    if (!nationalCompetition.lastEdition) {
       throw new Error('Competition has no editions');
     }
-    // FIXME: This is a naive selection of the last edition. It might not work, i.e. when adding older editions.
-    const lastEdition = competition.editions[competition.editions.length - 1];
 
-    if (typeof lastEdition.season === 'number') {
+    if (typeof nationalCompetition.lastEdition.season === 'number') {
       throw new TypeError('Season of last edition is not populated');
     }
 
@@ -32,7 +30,7 @@ export default Vue.extend({
         name: 'competitions-competition-season',
         params: {
           competition: route.params.competition,
-          season: lastEdition.season.slug,
+          season: nationalCompetition.lastEdition.season.slug,
         },
       })
     );

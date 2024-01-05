@@ -35,8 +35,8 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import { Collection } from '@vuex-orm/core';
-import LiveStream from '~/models/live-stream.model';
+import { MenuItem } from '~/store/state';
+import { LiveStream } from '~/plugins/cms-service';
 
 export default Vue.extend({
   data() {
@@ -136,17 +136,14 @@ export default Vue.extend({
     };
   },
   computed: {
-    mainNavigation(): any {
+    mainNavigation(): MenuItem[] {
       return this.$store.state.mainNavigation;
     },
-    secondaryNavigation(): any {
+    secondaryNavigation(): MenuItem[] {
       return this.$store.state.secondaryNavigation;
     },
-    LiveStream(): any {
-      return this.$store.$db().model(LiveStream);
-    },
-    liveStreams(): Collection<LiveStream> {
-      return this.LiveStream.query().orderBy('stream_start').all();
+    liveStreams(): LiveStream[] {
+      return this.$store.state.liveStreams;
     },
   },
   mounted() {

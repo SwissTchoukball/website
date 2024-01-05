@@ -13,7 +13,7 @@
           class="c-staff-person__role"
           :class="{ 'c-staff-person__role--main': (role.pivot && role.pivot.main) || roles.length === 1 }"
         >
-          {{ role.getNameForPerson(person) }}
+          {{ getRoleNameForPerson(role, person) }}
         </li>
       </ul>
     </template>
@@ -23,8 +23,7 @@
 <script lang="ts">
 import Vue, { PropType } from 'vue';
 import stPerson, { PersonDetail } from '~/components/people/st-person.vue';
-import Person from '~/models/person.model';
-import Role from '~/models/role.model';
+import { Gender, Person, Role } from '~/plugins/cms-service';
 
 export default Vue.extend({
   components: { stPerson },
@@ -76,6 +75,14 @@ export default Vue.extend({
     },
   },
   methods: {
+    getRoleNameForPerson(role: Role, person: Person): string {
+      if (person.gender === Gender.Female) {
+        return role.name_feminine || role.name;
+      } else if (person.gender === Gender.Male) {
+        return role.name_masculine || role.name;
+      }
+      return role.name;
+    },
     getTooltipForRole(role: Role) {
       if (!role.group) {
         return;

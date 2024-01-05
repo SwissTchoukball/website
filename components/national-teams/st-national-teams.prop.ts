@@ -1,4 +1,4 @@
-import { Gender } from '~/models/person.model';
+import { Gender, Role } from '~/plugins/cms-service';
 import { DirectusImage } from '~/plugins/directus';
 
 export interface Player {
@@ -54,7 +54,7 @@ export interface NationalTeam {
   /**
    * Array of role IDs
    */
-  staff: number[];
+  staff: Role[];
   results: NationalTeamResult[];
   nationsCupResults: {
     [year: string]: string;

@@ -11,7 +11,7 @@
 import Vue, { PropType } from 'vue';
 import stPerson, { PersonDetail } from '~/components/people/st-person.vue';
 import { Player } from '~/components/national-teams/st-national-teams.prop';
-import { Gender } from '~/models/person.model';
+import { Gender } from '~/plugins/cms-service';
 
 export default Vue.extend({
   components: { stPerson },

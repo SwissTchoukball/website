@@ -1,27 +1,22 @@
-import { Model } from '@vuex-orm/core';
-import CompetitionEdition from '~/models/competition-edition.model';
+import { DirectusSeason } from '~/plugins/directus';
 
-export default class Season extends Model {
+export default class Season {
   static entity = 'seasons';
 
-  id!: number;
-  leverade_id!: string;
-  name!: string;
-  slug!: string;
-  date_start!: string;
-  date_end!: string;
-  competition_editions!: CompetitionEdition[];
+  id: number;
+  leverade_id?: string;
+  name: string;
+  slug: string;
+  date_start: string;
+  date_end: string;
 
-  static fields() {
-    return {
-      id: this.number(null),
-      leverade_id: this.string(null),
-      name: this.string(null),
-      slug: this.string(null).nullable(),
-      date_start: this.string(null),
-      date_end: this.string(null),
-      competition_editions: this.hasMany(CompetitionEdition, 'season_id'),
-    };
+  constructor(season: DirectusSeason) {
+    this.id = season.id;
+    this.leverade_id = season.leverade_id ? season.leverade_id.toString() : undefined;
+    this.name = season.name;
+    this.slug = season.slug;
+    this.date_start = season.date_start;
+    this.date_end = season.date_end;
   }
 
   get year_start(): number {

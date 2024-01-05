@@ -9,20 +9,20 @@
         :alt="$t('clubs.logoOf', { name: club.name })"
         class="c-club-list__club-logo"
       />
-      <a :href="club.website" class="c-club-list__club-website">{{ club.websiteDisplay }}</a>
+      <a :href="club.website" class="c-club-list__club-website">{{ getWebsiteDisplay(club.website) }}</a>
     </li>
   </ul>
 </template>
 
 <script lang="ts">
+import { PartialItem } from '@directus/sdk';
 import Vue, { PropType } from 'vue';
-import Club from '~/models/club.model';
-import { getAssetURL } from '~/plugins/directus';
+import { DirectusClub, getAssetURL } from '~/plugins/directus';
 
 export default Vue.extend({
   props: {
     clubs: {
-      type: Array as PropType<Club[]>,
+      type: Array as PropType<PartialItem<DirectusClub>[]>,
       required: true,
     },
   },
@@ -32,6 +32,16 @@ export default Vue.extend({
     },
     logoSrcSet(assetId: string): string {
       return `${getAssetURL(this.$config.cmsURL, assetId, { width: 400 })} 2x`;
+    },
+    getWebsiteDisplay(website: string): string | null {
+      if (!website) {
+        return null;
+      }
+      const result = website.match(/http(?:s?):\/\/(?:www\.)?(.*)/);
+      if (result && result.length >= 2) {
+        return result[1];
+      }
+      return website;
     },
   },
 });

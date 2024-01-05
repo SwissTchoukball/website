@@ -3,24 +3,28 @@
     <h2 class="t-headline-1">{{ $t('competitions.upcomingMatches') }}</h2>
     <st-loader v-if="$fetchState.pending" :main="true" />
     <p v-else-if="$fetchState.error">{{ $t('error.otherError') }} : {{ $fetchState.error.message }}</p>
-    <template v-else-if="upcomingMatches.length > 0">
+    <template v-else-if="upcomingMatchesData.length > 0">
       <ul class="u-unstyled-list c-upcoming-matches__list">
-        <template v-for="match of upcomingMatches">
-          <li v-if="match.home_team && match.away_team" :key="match.id" class="c-upcoming-matches__match">
-            <st-match-event-small :match="match" />
+        <template v-for="matchData of upcomingMatchesData">
+          <li
+            v-if="matchData.match.home_team && matchData.match.away_team"
+            :key="matchData.match.id"
+            class="c-upcoming-matches__match"
+          >
+            <st-match-event-small :match="matchData.match" :competition-edition="matchData.edition" />
           </li>
         </template>
       </ul>
       <st-link-action
-        v-for="phase of relatedPhasesByEdition"
-        :key="phase.id"
+        v-for="edition of competitionEditions"
+        :key="edition.directus_id"
         with-arrow
-        :to="getPathToPhase(phase)"
+        :to="getPathToLastPhaseOfEdition(edition)"
         class="c-upcoming-matches__see-more-link"
       >
         {{
           $t('competitions.upcomingMatchesOfCompetition', {
-            competitionName: getPhaseCompetitionName(phase),
+            competitionName: edition.name,
           })
         }}
       </st-link-action>
@@ -36,56 +40,113 @@ import Vue from 'vue';
 import Match from '~/models/match.model';
 import stMatchEventSmall from '~/components/competitions/st-match-event-small.vue';
 import Phase from '~/models/phase.model';
+import Season from '~/models/season.model';
+import { Leverade, LeveradeFacility } from '~/plugins/leverade';
+import { Await } from '~/types/types.utils';
+import Team from '~/models/team.model';
+import Round from '~/models/round.model';
+import CompetitionEdition from '~/models/competition-edition.model';
+import { NationalCompetitionEdition } from '~/plugins/cms-service';
 
 export default Vue.extend({
   components: { stMatchEventSmall },
+  data() {
+    return {
+      leveradeUpcomingMatchData: undefined as Await<ReturnType<Leverade['getUpcomingMatches']>>['data'] | undefined,
+      directusCompetitionEditions: undefined as NationalCompetitionEdition[] | undefined,
+    };
+  },
   async fetch() {
-    if (!this.$store.state.upcomingMatchesLoaded) {
-      await this.$store.dispatch('loadUpcomingMatches');
+    const currentSeason: Season = this.$store.getters.currentSeason;
+    if (!currentSeason) {
+      throw new Error('Current season undefined');
     }
+    if (!currentSeason.leverade_id) {
+      throw new Error('Current season has no Leverade ID');
+    }
+
+    const matchesResponse = await this.$leverade.getUpcomingMatches(currentSeason.leverade_id);
+    this.leveradeUpcomingMatchData = matchesResponse.data;
+
+    this.directusCompetitionEditions = await this.$cmsService.getNationalCompetitionEditions({
+      seasonSlug: currentSeason.slug,
+    });
   },
   computed: {
-    upcomingMatches() {
-      return Match.query()
-        .with('home_team')
-        .with('away_team')
-        .with('facility')
-        .with('round.phase.competition_edition.competition|season')
-        .where('datetime', (datetime: string) => datetime >= this.$formatDate(new Date(), 'yyyy-MM-dd'))
-        .orderBy('datetime')
-        .limit(9)
-        .get();
-    },
-    /**
-     * Returns the first phase of each edition from all the upcoming matches
-     */
-    relatedPhasesByEdition(): Phase[] {
-      const phases = this.upcomingMatches.reduce((phases, match) => {
-        const matchPhase = match.round.phase;
-        if (
-          phases.some((phase) => phase.competition_edition.directus_id === matchPhase.competition_edition.directus_id)
-        ) {
-          return phases;
-        }
-        return [...phases, match.round.phase];
-      }, [] as Phase[]);
+    upcomingMatchesData(): { match: Match; edition?: CompetitionEdition }[] {
+      if (!this.leveradeUpcomingMatchData?.included || !this.directusCompetitionEditions) {
+        return [];
+      }
 
-      return phases;
+      const teams: Team[] = [];
+      const phases: Phase[] = [];
+      const rounds: Round[] = [];
+      const competitionEditions: CompetitionEdition[] = [];
+      const facilities: LeveradeFacility[] = [];
+
+      this.directusCompetitionEditions.forEach((edition) => {
+        competitionEditions.push(new CompetitionEdition(edition, this.$store.getters.currentSeason));
+      });
+      this.leveradeUpcomingMatchData.included.forEach((entity) => {
+        switch (entity.type) {
+          case 'team':
+            teams.push(new Team(entity));
+            break;
+          case 'group':
+            phases.push(new Phase(entity));
+            break;
+          case 'round':
+            rounds.push(new Round(entity));
+            break;
+          case 'tournament': {
+            const competitionEdition = competitionEditions.find(
+              (edition) => edition.leverade_id && edition.leverade_id === entity.id
+            );
+            competitionEdition?.addLeveradeData({ tournament: entity });
+            break;
+          }
+          case 'facility':
+            facilities.push(entity);
+            break;
+          default:
+        }
+      });
+
+      return this.leveradeUpcomingMatchData.data.map((rawMatch) => {
+        const match = new Match(rawMatch);
+        match.setTeams(teams);
+        match.setFacility(facilities);
+
+        const round = rounds.find((round) => round.id === match.round_id);
+        const phase = phases.find((phase) => !!round && phase.id === round.phase_id);
+        const edition = competitionEditions.find(
+          (competitionEdition) => !!phase && competitionEdition.leverade_id === phase.competition_edition_id
+        );
+        return { match, edition };
+      });
+    },
+    competitionEditions(): CompetitionEdition[] {
+      return this.upcomingMatchesData.reduce((editions, matchData) => {
+        if (!matchData.edition || editions.find((edition) => edition.directus_id === matchData.edition?.directus_id)) {
+          return editions;
+        }
+        return [...editions, matchData.edition];
+      }, [] as CompetitionEdition[]);
     },
   },
   methods: {
-    getPathToPhase(phase: Phase): string {
+    getPathToLastPhaseOfEdition(edition: CompetitionEdition): string {
+      if (!edition.season) {
+        return '';
+      }
       return this.localePath({
         name: 'competitions-competition-season-phase-planning',
         params: {
-          competition: phase.competition_edition?.competition?.slug,
-          season: phase.competition_edition?.season?.slug,
-          phase: phase.id,
+          competition: edition.competition.slug,
+          season: edition.season.slug,
+          phase: 'last',
         },
       });
-    },
-    getPhaseCompetitionName(phase: Phase): string {
-      return phase.competition_edition?.competition?.name || '';
     },
   },
 });
