@@ -35,8 +35,15 @@ export default class Phase {
       }
     }, [] as Match[]);
 
-    return matches.filter((match) => {
-      return match.datetime && match.datetime >= new Date().toISOString().split('T')[0];
-    });
+    return matches
+      .filter((match) => {
+        return match.datetime && match.datetime >= new Date().toISOString().split('T')[0];
+      })
+      .sort((matchA, matchB) => {
+        if (matchA.datetime && matchB.datetime) {
+          return matchA.datetime < matchB.datetime ? -1 : matchA.datetime > matchB.datetime ? 1 : 0;
+        }
+        return matchA.datetime ? 1 : matchB.datetime ? -1 : 0;
+      });
   }
 }
