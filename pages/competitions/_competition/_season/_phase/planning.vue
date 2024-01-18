@@ -8,7 +8,9 @@
             :to="localePath({ name: 'competitions-competition-season-match-matchId', params: { matchId: match.id } })"
           >
             <st-event-date :start-date="match.parsedDate()" always-one-line />
-            <div v-if="showMatchRound" class="c-planning__match-round">{{ match.round.name }}</div>
+            <div v-if="showMatchRound" class="c-planning__match-round">
+              {{ getRound(match.round_id) ? getRound(match.round_id).name : '' }}
+            </div>
             <h4 v-if="match.homeTeamName || match.awayTeamName" class="c-planning__match-name">
               <div class="c-planning__match-team c-planning__match-team--home">
                 <img
@@ -59,6 +61,7 @@ import Match from '~/models/match.model';
 import CompetitionEdition from '~/models/competition-edition.model';
 import StEventDate from '~/components/events/st-event-date.vue';
 import { LeveradeGroupType } from '~/plugins/leverade';
+import Round from '~/models/round.model';
 
 export default Vue.extend({
   nuxtI18n: {
@@ -117,6 +120,9 @@ export default Vue.extend({
       // Unfortunately, there's currently no way to differentiate a match for which the date is not set from one where it is scheduled at midnight.
       const matchParsedDate = match.parsedDate();
       return matchParsedDate && this.$formatDate(matchParsedDate, 'HH:mm') !== '00:00';
+    },
+    getRound(roundId: string): Round | undefined {
+      return this.phase?.rounds?.find((round) => round.id === roundId);
     },
   },
 });
