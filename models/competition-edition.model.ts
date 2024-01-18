@@ -118,11 +118,13 @@ export default class CompetitionEdition {
     }
 
     if (groups) {
-      this.phases = groups.map((group) => {
-        const phase = new Phase(group);
-        phase.rounds = this.rounds?.filter((round) => round.phase_id === phase.id);
-        return phase;
-      });
+      this.phases = groups
+        .sort((phaseA, phaseB) => phaseA.attributes.order - phaseB.attributes.order)
+        .map((group) => {
+          const phase = new Phase(group);
+          phase.rounds = this.rounds?.filter((round) => round.phase_id === phase.id);
+          return phase;
+        });
     }
     this.facilities = facilities;
     this.results = results;
