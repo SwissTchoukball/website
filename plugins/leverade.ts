@@ -363,7 +363,7 @@ const leveradePlugin: Plugin = ({ $config, $axios, $formatDate }, inject) => {
   };
 
   const getTeams: Leverade['getTeams'] = (tournamentId) => {
-    return getCachedQuery(`/teams?filter=registrable[tournament].id:${tournamentId}`);
+    return getCachedQuery(`/teams?filter=registrable[tournament].id:${tournamentId}&page[size]=500`);
   };
 
   inject('leverade', {
