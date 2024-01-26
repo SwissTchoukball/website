@@ -326,7 +326,7 @@
     "yearAndLess": "{year} et moins"
   },
   "internationalCompetition": {
-    "viewTweets": "Revoir les tweets publiés durant la compétition",
+    "shortDescription": "Informations au sujet de la participation des équipes suisses aux {name}",
     "navigation": {
       "live": "En direct",
       "about": "À propos",
@@ -349,18 +349,6 @@
     "teams": {
       "selection": "sélection",
       "coach": "Coach | Coachs"
-    },
-    "etc2022": {
-      "title": "Championnats d'Europe 2022",
-      "shortDescription": "Informations au sujet de la participation des équipes suisses aux Championnats d'Europe 2022"
-    },
-    "wtc2023": {
-      "title": "Championnats du monde 2023",
-      "shortDescription": "Informations au sujet de la participation des équipes suisses aux Championnats du monde 2023"
-    },
-    "wytc2023": {
-      "title": "Championnats du monde de la jeunesse 2023",
-      "shortDescription": "Informations au sujet de la participation de l'équipe suisse masculine M18 aux Championnats du monde de la jeunesse 2023"
     }
   }
 }

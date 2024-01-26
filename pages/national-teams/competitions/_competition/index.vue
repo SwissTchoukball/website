@@ -1,0 +1,30 @@
+<template>
+  <div></div>
+</template>
+
+<script lang="ts">
+import Vue, { PropType } from 'vue';
+import { MenuItem } from '~/store/state';
+
+export default Vue.extend({
+  nuxtI18n: {
+    paths: {
+      fr: '/equipes-nationales/competitions/:competition',
+      de: '/nationalteams/wettbewerbe/:competition',
+    },
+  },
+  props: {
+    navigation: {
+      type: Array as PropType<MenuItem[]>,
+      required: true,
+    },
+  },
+  created() {
+    if (this.navigation[0].href) {
+      this.$router.push(this.navigation[0].href);
+    } else {
+      console.warn('No navigation to redirect to');
+    }
+  },
+});
+</script>

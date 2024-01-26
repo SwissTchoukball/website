@@ -220,15 +220,21 @@ export interface DirectusPlayer {
 
 export interface DirectusNationalTeamCompetition {
   id: number;
+  slug: string | null;
   year: number;
   date_start: string;
   date_end: string;
   logo: string;
   telegram_channel: string;
+  teams: number[];
   translations: {
     name: string;
     city: string;
     country: string;
+    live: string | null;
+    about: string | null;
+    schedule: string | null;
+    medias: string | null;
   }[];
 }
 
@@ -439,9 +445,17 @@ export const getTranslatedFields = (
   languageKey?: string
 ) => {
   if (entity.translations) {
-    if (languageKey) {
+    if (languageKey && entity.translations.length > 1) {
       const translation = entity.translations.find((t) => t?.languages_code === languageKey);
+      const firstAlternativeTranslation = entity.translations.find((t) => t?.languages_code !== languageKey);
       if (translation) {
+        if (firstAlternativeTranslation) {
+          for (const [key, translatedText] of Object.entries(translation)) {
+            if (!translatedText) {
+              translation[key] = firstAlternativeTranslation[key];
+            }
+          }
+        }
         return translation;
       }
     }

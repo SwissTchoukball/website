@@ -1,9 +1,10 @@
+import { TranslateResult } from 'vue-i18n';
 import { Domain, LiveStream, ResourceType } from '~/plugins/cms-service';
 import { DirectusImage, DirectusSeason } from '~/plugins/directus';
 
 export interface MenuItem {
   sort?: number;
-  name: string;
+  name: string | TranslateResult;
   href?: string;
   isExternal?: boolean;
   children?: MenuItem[];

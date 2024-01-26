@@ -21,13 +21,19 @@ export interface Player {
 
 export interface NationalTeamCompetition {
   id: number;
+  slug: string | null;
   name: string;
   year: number;
   logo?: string;
   city: string;
   country: string;
+  live: string | null;
+  about: string | null;
+  schedule: string | null;
+  medias: string | null;
   date_start?: string;
   date_end?: string;
+  teams: number[];
   telegram_channel?: string;
 }
 

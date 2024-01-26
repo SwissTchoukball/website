@@ -192,7 +192,7 @@ export interface CMSService {
     excludeCancelled?: boolean;
   }) => Promise<{ data: CalendarEvent[]; meta: { total: number } }>;
   getTeam: (teamSlug: string) => Promise<NationalTeam>;
-  getNationalTeamCompetition: (nationalTeamCompetitionId: number) => Promise<NationalTeamCompetition>;
+  getNationalTeamCompetition: ({ id, slug }: { id?: number; slug?: string }) => Promise<NationalTeamCompetition>;
   getNationalTeamCompetitionUpdates: (
     nationalTeamCompetitionId: number,
     options: { limit: number; page: number }
@@ -1486,30 +1486,39 @@ const cmsService: Plugin = (context, inject) => {
     return team;
   };
 
-  const getNationalTeamCompetition: CMSService['getNationalTeamCompetition'] = async (nationalTeamCompetitionId) => {
-    // We retrieve all the languages and show news in fallback locale if not available in current locale
+  const getNationalTeamCompetition: CMSService['getNationalTeamCompetition'] = async ({ id, slug }) => {
+    // We retrieve all the languages and display texts in fallback locale if not available in current locale
     const currentLocale = context.i18n.locale;
+
+    let filter: any = {};
+
+    if (id) {
+      filter = { id };
+    } else if (slug) {
+      filter = { slug };
+    }
+
     const competitionResponse = await context.$directus.items('national_team_competitions').readByQuery({
       limit: 1,
-      filter: {
-        id: nationalTeamCompetitionId,
-      },
+      filter,
       fields: [
         'id',
+        'slug',
         'logo',
         'year',
         'date_start',
         'date_end',
         'telegram_channel',
-        'translations.language_code',
+        'teams',
+        'translations.languages_code',
         'translations.name',
         'translations.city',
         'translations.country',
+        'translations.live',
+        'translations.about',
+        'translations.schedule',
+        'translations.medias',
       ],
-      deep: {
-        // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
-        translations: { _filter: { languages_code: { _eq: currentLocale } } },
-      },
     });
 
     if (!competitionResponse?.data) {
@@ -1522,7 +1531,7 @@ const cmsService: Plugin = (context, inject) => {
       throw new Error('No national team competition found');
     }
 
-    const translations = getTranslatedFields(rawNationalTeamCompetition);
+    const translations = getTranslatedFields(rawNationalTeamCompetition, currentLocale);
 
     if (
       !rawNationalTeamCompetition?.id ||
@@ -1536,13 +1545,19 @@ const cmsService: Plugin = (context, inject) => {
 
     return {
       id: rawNationalTeamCompetition.id,
+      slug: rawNationalTeamCompetition.slug || null,
       logo: rawNationalTeamCompetition.logo,
       year: rawNationalTeamCompetition.year,
       date_start: rawNationalTeamCompetition.date_start,
       date_end: rawNationalTeamCompetition.date_end,
       name: translations.name,
       city: translations.city,
+      live: translations.live || null,
+      about: translations.about || null,
+      schedule: translations.schedule || null,
+      medias: translations.medias || null,
       country: translations.country,
+      teams: (rawNationalTeamCompetition.teams as number[]) || [],
       telegram_channel: rawNationalTeamCompetition.telegram_channel,
     };
   };

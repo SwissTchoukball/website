@@ -81,7 +81,8 @@ const config: NuxtConfig = {
     baseUrl: process.env.ST_WEBSITE_BASE_URL,
     defaultLocale: 'fr',
     langDir: 'locales/',
-    strategy: 'prefix_and_default',
+    // TODO: Switch to `prefix_and_default` if it works properly (e.g. when it won't add `/fr/` when it was not present before)
+    strategy: 'prefix_except_default',
     lazy: true,
     detectBrowserLanguage: {
       useCookie: false,

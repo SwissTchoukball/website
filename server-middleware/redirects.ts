@@ -12,6 +12,15 @@ const redirectMiddleware: ServerMiddleware = (req, res, next) => {
   } else if (req.url?.startsWith('/staff')) {
     res.writeHead(301, { Location: '/structure' });
     res.end();
+  } else if (req.url?.startsWith('/wtc2023')) {
+    res.writeHead(301, { Location: '/equipes-nationales/competitions/wtc2023' });
+    res.end();
+  } else if (req.url?.startsWith('/wytc2023')) {
+    res.writeHead(301, { Location: '/equipes-nationales/competitions/wytc2023' });
+    res.end();
+  } else if (req.url?.startsWith('/etc2022')) {
+    res.writeHead(301, { Location: '/equipes-nationales/competitions/etc2022' });
+    res.end();
   } else {
     next();
   }
