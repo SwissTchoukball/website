@@ -226,7 +226,14 @@ export interface DirectusNationalTeamCompetition {
   date_end: string;
   logo: string;
   telegram_channel: string;
-  teams: number[];
+  teams: {
+    team: {
+      id: number;
+      translations: {
+        name: string;
+      }[];
+    };
+  }[];
   translations: {
     name: string;
     city: string;
@@ -236,20 +243,6 @@ export interface DirectusNationalTeamCompetition {
     schedule: string | null;
     medias: string | null;
   }[];
-}
-
-export type DirectusNationalTeamCompetitionUpdateStatus = 'published' | 'draft' | 'archived';
-
-export interface DirectusNationalTeamCompetitionUpdate {
-  id: number;
-  translations: {
-    body: string;
-  }[];
-  image?: DirectusImage;
-  competition: DirectusNationalTeamCompetition;
-  status: DirectusNationalTeamCompetitionUpdateStatus;
-  date_created: string;
-  date_updated: string;
 }
 
 export interface DirectusTeamResult {
@@ -285,6 +278,24 @@ export interface DirectusNationalTeamCompetitionsTeam {
   coaches: {
     people_id: DirectusPerson;
   }[];
+}
+
+export type DirectusNationalTeamCompetitionUpdateStatus = 'published' | 'draft' | 'archived';
+
+export interface DirectusNationalTeamCompetitionUpdate {
+  id: number;
+  translations: {
+    body: string;
+  }[];
+  image?: DirectusImage;
+  competition: DirectusNationalTeamCompetition;
+  status: DirectusNationalTeamCompetitionUpdateStatus;
+  is_key: boolean | null;
+  teams: {
+    team_id: DirectusNationalTeamCompetitionsTeam;
+  }[];
+  date_created: string;
+  date_updated: string;
 }
 
 export interface DirectusSeason {

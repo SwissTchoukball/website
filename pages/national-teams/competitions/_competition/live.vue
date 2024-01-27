@@ -5,6 +5,7 @@
     <div class="directus-formatted-content" v-html="competition.live"></div>
     <st-national-team-competition-update-list
       :competition-id="competition.id"
+      :teams="competition.teams"
       :live-refresh="isRunning"
       :telegram-channel-name="competition.telegram_channel"
       class="c-international-competition-live__updates"

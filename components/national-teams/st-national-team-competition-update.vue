@@ -1,8 +1,19 @@
 <template>
-  <article class="c-national-team-competition-update">
-    <time :datetime="update.date_created" class="c-national-team-competition-update__time">
-      {{ formattedDate }}
-    </time>
+  <article
+    class="c-national-team-competition-update"
+    :class="{ 'c-national-team-competition-update--key': update.is_key }"
+  >
+    <div class="c-national-team-competition-update__header">
+      <time :datetime="update.date_created" class="c-national-team-competition-update__time">
+        {{ formattedDate }}
+      </time>
+      <span v-if="update.teams.length">·</span>
+      <ul class="u-unstyled-list c-national-team-competition-update__teams">
+        <li v-for="team of update.teams" :key="team.name" class="c-national-team-competition-update__team">
+          {{ team.name }}
+        </li>
+      </ul>
+    </div>
     <!-- eslint-disable-next-line vue/no-v-html -->
     <p class="c-national-team-competition-update__body" v-html="formattedBody"></p>
     <img
@@ -71,10 +82,42 @@ export default Vue.extend({
 </script>
 
 <style scoped>
-.c-national-team-competition-update__time {
-  display: block;
+.c-national-team-competition-update--key {
+  font-weight: bold;
+}
+
+.c-national-team-competition-update__header {
+  display: flex;
+  gap: 0.5rem;
   font-size: 0.8em;
   color: var(--st-color-text-lighter);
+}
+
+.c-national-team-competition-update__teams,
+.c-national-team-competition-update__time,
+.c-national-team-competition-update__team {
+  display: flex;
+}
+
+.c-national-team-competition-update__teams {
+  flex-wrap: wrap;
+}
+
+.c-national-team-competition-update__time {
+  white-space: nowrap;
+}
+
+.c-national-team-competition-update__team::after {
+  content: ', ';
+  margin-right: 0.25rem;
+}
+
+.c-national-team-competition-update__team:last-child::after {
+  content: '';
+}
+
+.c-national-team-competition-update--key .c-national-team-competition-update__header {
+  color: var(--st-color-red-swiss-tchoukball);
 }
 
 .c-national-team-competition-update__time::first-letter {

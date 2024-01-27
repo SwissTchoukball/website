@@ -137,6 +137,7 @@ const config: NuxtConfig = {
         'faQuestion',
         'faRss',
         'faShieldHalved',
+        'faSliders',
         'faSquareRss',
         'faTimes',
         'faUser',

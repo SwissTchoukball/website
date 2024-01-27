@@ -340,7 +340,15 @@
         "title": "Neueste Nachrichten",
         "subscribe": "Abonnieren",
         "autoRefresh": "Automatische Aktualisierung",
-        "loadingError": "Fehler beim Laden der letzten Nachrichten"
+        "noUpdatesYet": "Es gibt noch keine Nachrichten zum Anzeigen.",
+        "noUpdatesMatchingFilters": "Es gibt keine Nachrichten, die den ausgewählten Filtern entsprechen.",
+        "loadingError": "Fehler beim Laden der letzten Nachrichten.",
+        "filters": {
+          "keyEvents": "Schlüsselereignisse",
+          "withImage": "Mit Bild",
+          "teams": "Teams",
+          "noTeamFilter": "Keine Teamfilter"
+        }
       }
     },
     "medias": {

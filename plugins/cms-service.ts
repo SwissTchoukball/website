@@ -195,7 +195,7 @@ export interface CMSService {
   getNationalTeamCompetition: ({ id, slug }: { id?: number; slug?: string }) => Promise<NationalTeamCompetition>;
   getNationalTeamCompetitionUpdates: (
     nationalTeamCompetitionId: number,
-    options: { limit: number; page: number }
+    options: { limit: number; page: number; keyOnly?: boolean; withImage?: boolean; teamId?: number }
   ) => Promise<{ data: NationalTeamCompetitionUpdate[]; meta: { total: number } }>;
   getNationalTeamsForCompetition: (
     nationalTeamCompetitionId: number
@@ -1509,7 +1509,9 @@ const cmsService: Plugin = (context, inject) => {
         'date_start',
         'date_end',
         'telegram_channel',
-        'teams',
+        'teams.team.id',
+        'teams.team.translations.languages_code',
+        'teams.team.translations.name',
         'translations.languages_code',
         'translations.name',
         'translations.city',
@@ -1543,6 +1545,22 @@ const cmsService: Plugin = (context, inject) => {
       throw new Error('National team competition is missing requested fields');
     }
 
+    let teams: { id: number; name: string }[] = [];
+    if (rawNationalTeamCompetition.teams?.length) {
+      teams = rawNationalTeamCompetition.teams.reduce((teams, team) => {
+        let teamTranslations;
+
+        if (team?.team?.id) {
+          teamTranslations = getTranslatedFields(team.team, currentLocale);
+          if (teamTranslations?.name) {
+            return [...teams, { id: team.team.id, name: teamTranslations.name as string }];
+          }
+        }
+
+        return teams;
+      }, [] as { id: number; name: string }[]);
+    }
+
     return {
       id: rawNationalTeamCompetition.id,
       slug: rawNationalTeamCompetition.slug || null,
@@ -1557,33 +1575,52 @@ const cmsService: Plugin = (context, inject) => {
       schedule: translations.schedule || null,
       medias: translations.medias || null,
       country: translations.country,
-      teams: (rawNationalTeamCompetition.teams as number[]) || [],
+      teams,
       telegram_channel: rawNationalTeamCompetition.telegram_channel,
     };
   };
 
   const getNationalTeamCompetitionUpdates: CMSService['getNationalTeamCompetitionUpdates'] = async (
     nationalTeamCompetitionId,
-    { limit, page }
+    { limit, page, keyOnly, withImage, teamId }
   ) => {
     // We retrieve all the languages and show news in fallback locale if not available in current locale
     const currentLocale = context.i18n.locale;
+
+    const filter: any = {
+      competition: {
+        id: nationalTeamCompetitionId,
+      },
+      status: 'published',
+    };
+
+    if (keyOnly) {
+      filter.is_key = true;
+    }
+
+    if (withImage) {
+      filter.image = { _nnull: true };
+    }
+
+    if (teamId) {
+      filter.teams = { team_id: { team: { id: { _eq: teamId } } } };
+    }
+
     const updatesResponse = await context.$directus.items('national_teams_competitions_updates').readByQuery({
       meta: 'filter_count',
       limit,
       page,
-      filter: {
-        competition: {
-          id: nationalTeamCompetitionId,
-        },
-        status: 'published',
-      },
+      filter,
       fields: [
         'id',
         'translations.body',
         'translations.languages_code',
         'image.id',
         'image.description',
+        'is_key',
+        'teams.team_id.team.id',
+        'teams.team_id.team.translations.languages_code',
+        'teams.team_id.team.translations.name',
         'date_created',
         'date_updated',
       ],
@@ -1606,12 +1643,30 @@ const cmsService: Plugin = (context, inject) => {
         return updates;
       }
 
+      let teams: { id: number; name: string }[] = [];
+      if (rawUpdate.teams?.length) {
+        teams = rawUpdate.teams.reduce((teams, team) => {
+          let teamTranslations;
+
+          if (team?.team_id?.team?.id) {
+            teamTranslations = getTranslatedFields(team.team_id.team, currentLocale);
+            if (teamTranslations?.name) {
+              return [...teams, { id: team.team_id.team.id, name: teamTranslations.name as string }];
+            }
+          }
+
+          return teams;
+        }, [] as { id: number; name: string }[]);
+      }
+
       return [
         ...updates,
         {
           id: rawUpdate.id,
           image: rawUpdate.image,
           body: updateTranslations.body,
+          is_key: !!rawUpdate.is_key,
+          teams,
           date_created: rawUpdate.date_created,
           date_updated: rawUpdate.date_updated,
         },

@@ -340,7 +340,15 @@
         "title": "Dernières nouvelles",
         "subscribe": "S'abonner",
         "autoRefresh": "Mise à jour automatique",
-        "loadingError": "Erreur lors du chargement des dernières nouvelles"
+        "noUpdatesYet": "Il n'y a pas encore de nouvelles à afficher.",
+        "noUpdatesMatchingFilters": "Il n'y a pas de nouvelles correspondant aux filtres sélectionnés.",
+        "loadingError": "Erreur lors du chargement des dernières nouvelles.",
+        "filters": {
+          "keyEvents": "Événements clés",
+          "withImage": "Avec image",
+          "teams": "Équipes",
+          "noTeamFilter": "Aucun filtre d'équipe"
+        }
       }
     },
     "medias": {

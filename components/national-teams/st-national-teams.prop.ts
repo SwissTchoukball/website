@@ -33,7 +33,7 @@ export interface NationalTeamCompetition {
   medias: string | null;
   date_start?: string;
   date_end?: string;
-  teams: number[];
+  teams: { id: number; name: string }[];
   telegram_channel?: string;
 }
 
@@ -41,6 +41,8 @@ export interface NationalTeamCompetitionUpdate {
   id: number;
   body: string;
   image?: DirectusImage;
+  is_key: boolean;
+  teams: { id: number; name: string }[];
   date_created: string;
   date_updated?: string;
 }
