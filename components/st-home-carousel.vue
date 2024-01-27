@@ -59,7 +59,7 @@ export default Vue.extend({
   },
   mounted() {
     const bodyStyles = window.getComputedStyle(document.body);
-    const lXlBreakpoint = bodyStyles.getPropertyValue('--st-breakpoing-l-xl');
+    const lXlBreakpoint = bodyStyles.getPropertyValue('--st-breakpoint-l-xl');
     this.imgTagSizes = `(min-width: ${lXlBreakpoint}) ${lXlBreakpoint}, 100vw`;
   },
   methods: {
@@ -160,8 +160,8 @@ export default Vue.extend({
 
 @media (--xl-and-up) {
   .st-home-carousel {
-    width: var(--st-breakpoing-l-xl);
-    margin-left: calc(-1 * (var(--st-breakpoing-l-xl) - var(--st-length-main-content-max-width)) / 2);
+    width: var(--st-breakpoint-l-xl);
+    margin-left: calc(-1 * (var(--st-breakpoint-l-xl) - var(--st-length-main-content-max-width)) / 2);
   }
 }
 

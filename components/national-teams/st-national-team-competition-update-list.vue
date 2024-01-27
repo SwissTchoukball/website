@@ -215,7 +215,7 @@ export default Vue.extend({
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--st-length-spacing-xxs);
 }
 
 .c-national-team-competition-update-list__title {
@@ -259,18 +259,18 @@ export default Vue.extend({
 
 .c-national-team-competition-update-list__subscribe-link {
   display: inline-block;
-  margin-left: 1rem;
+  margin-left: var(--st-length-spacing-xs);
   font-weight: normal;
   font-size: 0.8em;
 }
 
 .c-national-team-competition-update-list__filters {
-  margin-top: 0.5rem;
+  margin-top: var(--st-length-spacing-xxs);
   display: flex;
   flex-wrap: wrap;
-  column-gap: 1rem;
-  row-gap: 0.5rem;
-  font-size: 0.8rem;
+  column-gap: var(--st-length-spacing-xs);
+  row-gap: var(--st-length-spacing-xxs);
+  font-size: 0.8em;
   align-items: center;
 }
 
@@ -299,7 +299,7 @@ export default Vue.extend({
 }
 
 .c-national-team-competition-update-list__blank-slate {
-  margin-top: 3rem;
+  margin-top: var(--st-length-spacing-m);
   text-align: center;
   font-weight: bold;
 }

@@ -88,7 +88,7 @@ export default Vue.extend({
 
 .c-national-team-competition-update__header {
   display: flex;
-  gap: 0.5rem;
+  gap: var(--st-length-spacing-xxs);
   font-size: 0.8em;
   color: var(--st-color-text-lighter);
 }

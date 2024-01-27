@@ -194,7 +194,7 @@
   --st-length-main-content-side-padding: var(--st-length-spacing-xs);
 
   /* Breakpoints */
-  --st-breakpoing-l-xl: 1905px;
+  --st-breakpoint-l-xl: 1905px;
 
   /* Shadows */
   --st-shadow-navigation: rgba(100 100 111 / 20%) 0 7px 29px 0;
