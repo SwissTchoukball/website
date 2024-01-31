@@ -42,6 +42,8 @@ export default class Team {
       slug = 'vernier_turtles_b';
     } else if (this.name.includes('Vernier Turtles')) {
       slug = 'vernier_turtles';
+    } else if (this.name.includes('Team Vaud')) {
+      slug = 'team_vaud';
     }
 
     if (slug) {
