@@ -1208,7 +1208,7 @@ const cmsService: Plugin = (context, inject) => {
         _and: [
           {
             date_start: {
-              _gte: month,
+              _gte: month + '-01',
             },
           },
           {
