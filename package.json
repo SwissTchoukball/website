@@ -3,7 +3,7 @@
   "version": "5.0.0",
   "private": true,
   "engines": {
-    "node": "16.20"
+    "node": "18.19"
   },
   "scripts": {
     "dev": "nuxt",
