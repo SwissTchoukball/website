@@ -53,9 +53,8 @@ export default Vue.extend({
 
     if (this.groupSlug) {
       this.group = await this.$cmsService.getGroup({ slug: this.groupSlug });
+      this.people = await this.$cmsService.getStaff({ groupSlug: this.groupSlug });
     }
-
-    this.people = await this.$cmsService.getStaff({ groupSlug: this.groupSlug });
   },
   head() {
     return {
@@ -75,7 +74,7 @@ export default Vue.extend({
       return this.group ? this.group.name : this.$t('structure.staff.title').toString();
     },
     groupDescription(): string {
-      return this.group ? this.group.description : this.$t('structure.staff.description').toString();
+      return this.group ? this.group.description || '' : this.$t('structure.staff.description').toString();
     },
   },
 });
