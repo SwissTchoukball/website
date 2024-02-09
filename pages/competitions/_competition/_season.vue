@@ -79,7 +79,7 @@ export default Vue.extend({
     }
     this.rawCompetitionEdition = rawCompetitionEdition;
 
-    const tournamentResponse = await this.$leverade.getFullTournament(this.rawCompetitionEdition?.leverade_id!);
+    const tournamentResponse = await this.$leverade.getFullTournament(this.rawCompetitionEdition.leverade_id!);
     this.leveradeTournamentData = tournamentResponse.data;
 
     try {
