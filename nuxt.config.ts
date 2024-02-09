@@ -40,7 +40,6 @@ const config: NuxtConfig = {
   buildModules: [
     // https://go.nuxtjs.dev/typescript
     '@nuxt/typescript-build',
-    '@nuxt/postcss8',
     // https://go.nuxtjs.dev/stylelint
     '@nuxtjs/stylelint-module',
     '@nuxtjs/fontawesome',
@@ -156,22 +155,24 @@ const config: NuxtConfig = {
   build: {
     transpile: ['vue-tooltip'],
     postcss: {
-      plugins: {
-        'postcss-custom-media': {
-          // See options: https://github.com/postcss/postcss-custom-media#options
-          importFrom: [
-            {
-              // Somehow, having those defined in variables.css doesn't work.
-              // That's why we defined the viewports here.
-              customMedia: {
-                '--xs-only': '(max-width: 600px)',
-                '--sm-and-up': '(min-width: 601px)',
-                '--md-and-up': '(min-width: 961px)',
-                '--lg-and-up': '(min-width: 1265px)',
-                '--xl-and-up': '(min-width: 1905px)',
+      postcssOptions: {
+        plugins: {
+          'postcss-custom-media': {
+            // See options: https://github.com/postcss/postcss-custom-media#options
+            importFrom: [
+              {
+                // Somehow, having those defined in variables.css doesn't work.
+                // That's why we defined the viewports here.
+                customMedia: {
+                  '--xs-only': '(max-width: 600px)',
+                  '--sm-and-up': '(min-width: 601px)',
+                  '--md-and-up': '(min-width: 961px)',
+                  '--lg-and-up': '(min-width: 1265px)',
+                  '--xl-and-up': '(min-width: 1905px)',
+                },
               },
-            },
-          ],
+            ],
+          },
         },
       },
     },
