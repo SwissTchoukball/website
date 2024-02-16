@@ -36,14 +36,14 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import { NewsEntry } from '~/components/news/st-news';
 import { Domain } from '~/plugins/cms-service';
 import { getAssetSrcSet, getAssetURL } from '~/plugins/directus';
 
 const MAX_NEWS_PER_ROW = 4;
 
-export default Vue.extend({
+export default defineComponent({
   props: {
     news: {
       type: Array as PropType<NewsEntry[]>,

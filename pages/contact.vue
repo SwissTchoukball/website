@@ -83,11 +83,11 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import { defineComponent } from 'vue';
 import { MetaInfo } from 'vue-meta';
 import VueHcaptcha from '@hcaptcha/vue-hcaptcha';
 
-export default Vue.extend({
+export default defineComponent({
   components: {
     VueHcaptcha,
   },

@@ -7,10 +7,10 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import { defineComponent } from 'vue';
 import newsletterMixin from '~/mixins/newsletter.mixin';
 
-export default Vue.extend({
+export default defineComponent({
   mixins: [newsletterMixin],
   head() {
     return {

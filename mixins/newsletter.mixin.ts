@@ -1,10 +1,10 @@
-import Vue from 'vue';
+import { defineComponent } from 'vue';
 
 const newsletterSlugs = ['general', 'instructors', 'medias-fr', 'medias-de'];
 
 export type NewsletterSlug = (typeof newsletterSlugs)[number];
 
-export default Vue.extend({
+export default defineComponent({
   asyncData({ route }) {
     return {
       selectedNewsletter:

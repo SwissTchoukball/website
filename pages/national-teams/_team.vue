@@ -2,7 +2,7 @@
   <section class="l-main-content-section">
     <st-loader v-if="$fetchState.pending" :main="true" />
     <p v-else-if="$fetchState.error">{{ $t('error.otherError') }} : {{ $fetchState.error.message }}</p>
-    <template v-else>
+    <template v-else-if="team">
       <h2 class="t-headline-1">{{ team.name }}</h2>
       <img
         v-if="team.team_photo"
@@ -25,13 +25,13 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import { defineComponent } from 'vue';
 import { MetaInfo } from 'vue-meta';
 import { NationalTeam } from '~/components/national-teams/st-national-teams.prop';
 import { getAssetSrcSet, getAssetURL } from '~/plugins/directus';
 import { MenuItem } from '~/store/state';
 
-export default Vue.extend({
+export default defineComponent({
   nuxtI18n: {
     paths: {
       fr: '/equipes-nationales/:team',

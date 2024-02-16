@@ -16,15 +16,16 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import { LocaleObject } from '@nuxtjs/i18n';
+import { defineComponent } from 'vue';
 
-export default Vue.extend({
+export default defineComponent({
   computed: {
     currentLocale() {
       return this.$i18n.locale;
     },
     availableLocales() {
-      return this.$i18n.locales;
+      return this.$i18n.locales as LocaleObject[];
     },
   },
 });

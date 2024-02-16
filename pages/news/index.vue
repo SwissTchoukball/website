@@ -20,14 +20,14 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import { defineComponent } from 'vue';
 import { MetaInfo } from 'vue-meta';
 import stLoader from '~/components/st-loader.vue';
 import stNewsList from '~/components/news/st-news-list.vue';
 import { NewsEntry } from '~/components/news/st-news';
 import StPagination from '~/components/st-pagination.vue';
 
-export default Vue.extend({
+export default defineComponent({
   components: { stLoader, stNewsList, StPagination },
   data() {
     return {

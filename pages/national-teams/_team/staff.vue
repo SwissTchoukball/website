@@ -10,11 +10,11 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import { NationalTeam } from '~/components/national-teams/st-national-teams.prop';
 import stRole from '~/components/people/st-role.vue';
 
-export default Vue.extend({
+export default defineComponent({
   components: { stRole },
   nuxtI18n: {
     paths: {
@@ -29,7 +29,9 @@ export default Vue.extend({
     },
   },
   head() {
-    const title = this.$t(`nationalTeams.headTitle.staff`, { teamName: this.team.name.toLowerCase() }).toString();
+    const title = this.$t(`nationalTeams.headTitle.staff`, {
+      teamName: (this as any).team.name.toLowerCase(),
+    }).toString();
     return {
       title,
       meta: [

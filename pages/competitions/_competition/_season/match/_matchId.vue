@@ -1,10 +1,10 @@
 <template>
   <div v-if="match">
     <nuxt-link class="c-match__phase-round" :to="phaseRoundLink">
-      <span v-if="isPhaseNameVisible">
+      <span v-if="isPhaseNameVisible && phase">
         {{ phase.name }}
       </span>
-      <span v-if="isRoundNameVisible">
+      <span v-if="isRoundNameVisible && round">
         {{ round.name }}
       </span>
     </nuxt-link>
@@ -58,9 +58,9 @@
       </ul>
     </div>
     <div id="match-details" class="c-match__details">
-      <st-event-date v-if="match.parsedDate()" :start-date="match.parsedDate()" always-one-line />
-      <div v-if="match.parsedDate()">
-        <fa-icon icon="clock" class="c-match__icon" /> {{ $formatDate(match.parsedDate(), 'HH:mm') }}
+      <st-event-date v-if="match.parsedDate" :start-date="match.parsedDate" always-one-line />
+      <div v-if="match.parsedDate">
+        <fa-icon icon="clock" class="c-match__icon" /> {{ $formatDate(match.parsedDate, 'HH:mm') }}
       </div>
       <button v-if="match.facility" class="u-unstyled-button c-match__venue" @click="showVenueDetails">
         <fa-icon icon="location-dot" class="c-match__icon" /> {{ match.facility.name }},
@@ -78,13 +78,13 @@
           <strong>{{ match.facility.name }}</strong> <br />
           {{ match.facility.address }}<br />
           {{ match.facility.postal_code }} {{ match.facility.city }}<br />
-          <a :href="match.mapsUrl">{{ $t('venue.openInMaps') }}</a>
+          <a v-if="match.mapsUrl" :href="match.mapsUrl">{{ $t('venue.openInMaps') }}</a>
         </div>
       </div>
       <client-only>
         <iframe
           v-if="match.hasFacility"
-          :src="match.getSwisstopoMapUrl($i18n.locale)"
+          :src="match.getSwisstopoMapUrl($i18n.locale) || ''"
           frameborder="0"
           class="c-match__map"
         ></iframe>
@@ -98,7 +98,7 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import Match from '~/models/match.model';
 import StEventDate from '~/components/events/st-event-date.vue';
 import {
@@ -120,7 +120,7 @@ import CompetitionEdition from '~/models/competition-edition.model';
 import Phase from '~/models/phase.model';
 import { NationalCompetitionEdition } from '~/plugins/cms-service';
 
-export default Vue.extend({
+export default defineComponent({
   components: {
     StEventDate,
   },

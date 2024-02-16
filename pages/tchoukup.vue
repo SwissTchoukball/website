@@ -15,13 +15,13 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import { defineComponent } from 'vue';
 import { MetaInfo } from 'vue-meta';
 import CatchAllPage from '~/pages/_.vue';
 import stTchoukupList from '~/components/tchoukup/st-tchoukup-list.vue';
 import { Tchoukup } from '~/components/tchoukup/st-tchoukup';
 
-export default Vue.extend({
+export default defineComponent({
   components: {
     stTchoukupList,
   },

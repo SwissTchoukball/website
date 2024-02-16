@@ -44,7 +44,7 @@
         <a v-for="partner of partners" :key="partner.slug" :href="partner.href">
           <img
             :src="`/images/logo-${partner.slug}.svg`"
-            :alt="$t('footer.logoFrom', { orgName: partner.name })"
+            :alt="$t('footer.logoFrom', { orgName: partner.name }).toString()"
             :title="partner.name"
             class="c-footer__org-logo"
           />
@@ -55,7 +55,7 @@
         <a v-for="affiliation of affiliations" :key="affiliation.slug" :href="affiliation.href">
           <img
             :src="`/images/logo-${affiliation.slug}.svg`"
-            :alt="$t('footer.logoFrom', { orgName: affiliation.name })"
+            :alt="$t('footer.logoFrom', { orgName: affiliation.name }).toString()"
             :title="affiliation.name"
             class="c-footer__org-logo"
           />
@@ -70,9 +70,9 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import { defineComponent } from 'vue';
 
-export default Vue.extend({
+export default defineComponent({
   data() {
     return {
       partners: [

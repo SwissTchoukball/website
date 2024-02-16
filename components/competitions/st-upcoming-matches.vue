@@ -36,7 +36,7 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import { defineComponent } from 'vue';
 import Match from '~/models/match.model';
 import stMatchEventSmall from '~/components/competitions/st-match-event-small.vue';
 import Phase from '~/models/phase.model';
@@ -48,7 +48,7 @@ import Round from '~/models/round.model';
 import CompetitionEdition from '~/models/competition-edition.model';
 import { NationalCompetitionEdition } from '~/plugins/cms-service';
 
-export default Vue.extend({
+export default defineComponent({
   components: { stMatchEventSmall },
   data() {
     return {

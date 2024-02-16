@@ -38,12 +38,12 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import { NationalTeamForCompetition } from './st-national-teams.prop';
 import StPlayer from '~/components/national-teams/st-player.vue';
 import StPerson from '~/components/people/st-person.vue';
 
-export default Vue.extend({
+export default defineComponent({
   components: { StPerson, StPlayer },
   props: {
     teams: {

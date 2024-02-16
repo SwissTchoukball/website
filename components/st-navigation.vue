@@ -23,7 +23,7 @@
         <component
           :is="item.href ? 'nuxt-link' : 'button'"
           v-else
-          :to="localePath(item.href)"
+          :to="item.href ? localePath(item.href) : undefined"
           :aria-haspopup="item.children && !!item.children.length"
           :aria-expanded="openStates[itemIndex]"
           class="u-unstyled-button c-navigation__item-name"
@@ -37,9 +37,12 @@
           class="u-unstyled-list c-navigation__sub-items"
         >
           <li v-for="(subItem, subItemIndex) in item.children" :key="subItemIndex" class="c-navigation__sub-item">
-            <nuxt-link :to="localePath(subItem.href)" @click.native="onItemClickNative(subItem)">{{
-              subItem.name
-            }}</nuxt-link>
+            <nuxt-link
+              :to="subItem.href ? localePath(subItem.href) : undefined"
+              @click.native="onItemClickNative(subItem)"
+            >
+              {{ subItem.name }}
+            </nuxt-link>
           </li>
         </ul>
       </li>
@@ -48,11 +51,11 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import vClickOutside from 'v-click-outside';
 import { MenuItem } from '~/store/state';
 
-export default Vue.extend({
+export default defineComponent({
   directives: {
     clickOutside: vClickOutside.directive,
   },

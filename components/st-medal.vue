@@ -1,10 +1,12 @@
 <template>
-  <div class="c-medal" :class="medalVariantClass" :title="$t('nationalTeams.results.rank', { rank })">{{ rank }}</div>
+  <div class="c-medal" :class="medalVariantClass" :title="$t('nationalTeams.results.rank', { rank }).toString()">
+    {{ rank }}
+  </div>
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
-export default Vue.extend({
+import { defineComponent } from 'vue';
+export default defineComponent({
   props: {
     rank: {
       type: Number,

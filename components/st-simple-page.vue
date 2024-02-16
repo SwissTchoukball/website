@@ -13,18 +13,18 @@
     </template>
 
     <template v-for="role in keyRoles">
-      <st-role v-if="role.holders.length > 0" :key="role.id" class="c-simple-page__role" :role="role" />
+      <st-role v-if="role.holders && role.holders.length > 0" :key="role.id" class="c-simple-page__role" :role="role" />
     </template>
   </section>
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import { Resource, Role } from '~/plugins/cms-service';
 import stRole from '~/components/people/st-role.vue';
 import StResourceList from '~/components/resources/st-resource-list.vue';
 
-export default Vue.extend({
+export default defineComponent({
   components: { stRole, StResourceList },
   props: {
     title: {

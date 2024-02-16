@@ -7,9 +7,9 @@
             class="c-planning__match"
             :to="localePath({ name: 'competitions-competition-season-match-matchId', params: { matchId: match.id } })"
           >
-            <st-event-date :start-date="match.parsedDate()" always-one-line />
+            <st-event-date v-if="match.parsedDate" :start-date="match.parsedDate" always-one-line />
             <div v-if="showMatchRound" class="c-planning__match-round">
-              {{ getRound(match.round_id) ? getRound(match.round_id).name : '' }}
+              {{ getRoundName(match) }}
             </div>
             <h4 v-if="match.homeTeamName || match.awayTeamName" class="c-planning__match-name">
               <div class="c-planning__match-team c-planning__match-team--home">
@@ -39,10 +39,12 @@
               <template v-else>
                 <template v-if="showTime(match)">
                   <fa-icon icon="clock" class="c-planning__match-icon" />
-                  {{ $formatDate(match.parsedDate(), 'HH:mm') }}
+                  {{ match.parsedDate ? $formatDate(match.parsedDate, 'HH:mm') : '' }}
                 </template>
-                <fa-icon icon="location-dot" class="c-planning__match-icon" />
-                {{ match.facility.name }}, {{ match.facility.city }}
+                <template v-if="match.facility">
+                  <fa-icon icon="location-dot" class="c-planning__match-icon" />
+                  {{ match.facility.name }}, {{ match.facility.city }}
+                </template>
               </template>
             </div>
           </nuxt-link>
@@ -54,7 +56,7 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import Season from '~/models/season.model';
 import Phase from '~/models/phase.model';
 import Match from '~/models/match.model';
@@ -63,7 +65,7 @@ import StEventDate from '~/components/events/st-event-date.vue';
 import { LeveradeGroupType } from '~/plugins/leverade';
 import Round from '~/models/round.model';
 
-export default Vue.extend({
+export default defineComponent({
   nuxtI18n: {
     paths: {
       StEventDatefr: '/competitions/:competition/:season/:phase/programme',
@@ -90,9 +92,9 @@ export default Vue.extend({
   },
   head() {
     const title = this.$t('competitions.headTitle.planning', {
-      phaseName: this.phase.name,
-      editionName: this.competitionEdition.name,
-      seasonName: this.season.name,
+      phaseName: (this as any).phase.name,
+      editionName: (this as any).competitionEdition.name,
+      seasonName: (this as any).season.name,
     }).toString();
     return {
       title,
@@ -118,11 +120,14 @@ export default Vue.extend({
     showTime(match: Match) {
       // This can be a problem if a match is actually scheduled at midnight.
       // Unfortunately, there's currently no way to differentiate a match for which the date is not set from one where it is scheduled at midnight.
-      const matchParsedDate = match.parsedDate();
-      return matchParsedDate && this.$formatDate(matchParsedDate, 'HH:mm') !== '00:00';
+      return match.parsedDate && this.$formatDate(match.parsedDate, 'HH:mm') !== '00:00';
     },
     getRound(roundId: string): Round | undefined {
       return this.phase?.rounds?.find((round) => round.id === roundId);
+    },
+    getRoundName(match: Match): string {
+      const round = this.getRound(match.round_id);
+      return round?.name || '';
     },
   },
 });

@@ -21,7 +21,7 @@
           <st-cancelled-label v-if="isCancelled" class="c-event__cancelled-label" />
         </h3>
         <nuxt-link
-          v-if="eventType.name"
+          v-if="eventType && eventType.name"
           :to="
             localePath({ name: 'events-slug', params: { slug: `${eventType.id}-${$slugify(eventType.name_plural)}` } })
           "
@@ -71,7 +71,7 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import { defineComponent, PropType } from 'vue';
 // import { Location } from 'vue-router';
 import { Store } from 'vuex';
 import { CalendarEvent } from '~/plugins/cms-service';
@@ -79,7 +79,7 @@ import { EventType, EventTypes, RootState } from '~/store/state';
 import { getAssetSrcSet, getAssetURL } from '~/plugins/directus';
 import stEventDate from '~/components/events/st-event-date.vue';
 
-export default Vue.extend({
+export default defineComponent({
   components: { stEventDate },
   props: {
     event: {
@@ -154,9 +154,9 @@ export default Vue.extend({
     mainImageDescription(): string {
       return this.event?.image?.description || this.eventType?.image?.description || '';
     },
-    mapsUrl(): string | null {
+    mapsUrl(): string | undefined {
       if (!this.event.venue) {
-        return null;
+        return undefined;
       }
       // This link will fallback to Google Maps if Apple Maps is not available
       return `//maps.apple.com/?q=${this.event.venue.address?.replace('\n', ', ')}`;

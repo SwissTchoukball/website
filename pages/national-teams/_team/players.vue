@@ -10,11 +10,11 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import { NationalTeam } from '~/components/national-teams/st-national-teams.prop';
 import StPlayer from '~/components/national-teams/st-player.vue';
 
-export default Vue.extend({
+export default defineComponent({
   components: { StPlayer },
   nuxtI18n: {
     paths: {
@@ -38,8 +38,8 @@ export default Vue.extend({
     }
   },
   head() {
-    const title = this.$t(`nationalTeams.headTitle.players.${this.team.gender}`, {
-      teamName: this.team.name.toLowerCase(),
+    const title = this.$t(`nationalTeams.headTitle.players.${(this as any).team.gender}`, {
+      teamName: (this as any).team.name.toLowerCase(),
     }).toString();
     return {
       title,
@@ -48,7 +48,7 @@ export default Vue.extend({
         {
           hid: 'og:description',
           property: 'og:description',
-          content: this.$t(`nationalTeams.description.players.${this.team.gender}`).toString(),
+          content: this.$t(`nationalTeams.description.players.${(this as any).team.gender}`).toString(),
         },
       ],
     };

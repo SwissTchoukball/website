@@ -15,7 +15,12 @@
             v-if="result.competition.logo"
             :src="logoSrc(result.competition.logo)"
             :srcset="logoSrcSet(result.competition.logo)"
-            :alt="$t('nationalTeams.results.logoOf', { name: result.competition.name, year: result.competition.year })"
+            :alt="
+              $t('nationalTeams.results.logoOf', {
+                name: result.competition.name,
+                year: result.competition.year,
+              }).toString()
+            "
             class="c-results__competition-logo"
           />
           <h4 class="t-headline-3 c-results__competition-name">
@@ -34,7 +39,7 @@
       <h3 class="u-visually-hidden">{{ $t('nationalTeams.results.nationsCup') }}</h3>
       <img
         :src="`/images/logo-nations-cup.svg`"
-        :alt="$t('footer.logoFrom', { orgName: $t('nationalTeams.results.nationsCup') })"
+        :alt="$t('footer.logoFrom', { orgName: $t('nationalTeams.results.nationsCup') }).toString()"
         class="c-results__nations-cup-logo"
       />
       <ul class="u-unstyled-list">
@@ -51,11 +56,11 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import { NationalTeam } from '~/components/national-teams/st-national-teams.prop';
 import { getAssetURL } from '~/plugins/directus';
 
-export default Vue.extend({
+export default defineComponent({
   nuxtI18n: {
     paths: {
       fr: '/equipes-nationales/:team/resultats',
@@ -69,7 +74,9 @@ export default Vue.extend({
     },
   },
   head() {
-    const title = this.$t(`nationalTeams.headTitle.results`, { teamName: this.team.name.toLowerCase() }).toString();
+    const title = this.$t(`nationalTeams.headTitle.results`, {
+      teamName: (this as any).team.name.toLowerCase(),
+    }).toString();
     return {
       title,
       meta: [

@@ -34,10 +34,10 @@ export const humanFileSize = (bytes: number, dp = 1, locale = 'en') => {
  *
  * This makes sure the timezone information is properly added to the Date.
  */
-export const parseLeveradeDate = (leveradeDate: string): Date | null => {
+export const parseLeveradeDate = (leveradeDate: string): Date | undefined => {
   // We manually and explicitely set that the provided date is UTC (Z)
   const parsedDate = parse(`${leveradeDate} Z`, 'yyyy-MM-dd HH:mm:ss X', new Date());
-  return parsedDate || null;
+  return parsedDate || undefined;
 };
 
 export const toISOLocal = (d: Date) => {

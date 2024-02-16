@@ -13,11 +13,11 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import { defineComponent } from 'vue';
 import { MetaInfo } from 'vue-meta';
 import { MenuItem } from '~/store/state';
 
-export default Vue.extend({
+export default defineComponent({
   data() {
     return {
       navigation: [

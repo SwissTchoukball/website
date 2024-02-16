@@ -9,10 +9,10 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import { Domain } from '~/plugins/cms-service';
 
-export default Vue.extend({
+export default defineComponent({
   props: {
     domains: {
       type: Array as PropType<Domain[]>,

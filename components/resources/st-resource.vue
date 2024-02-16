@@ -13,12 +13,12 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import { TranslateResult } from 'vue-i18n';
 import { Resource } from '~/plugins/cms-service';
 import { humanFileSize } from '~/utils/utils';
 
-export default Vue.extend({
+export default defineComponent({
   props: {
     resource: {
       type: Object as PropType<Resource>,

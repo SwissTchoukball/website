@@ -5,7 +5,7 @@
       v-for="holder in role.holders"
       :key="holder.id"
       :name="`${holder.first_name} ${holder.last_name}`"
-      :sub-name="roleAsSubname ? nameForHolders : null"
+      :sub-name="roleAsSubname ? nameForHolders : undefined"
       :avatar-asset-id="holder.portrait_square_head"
       :details="getHolderDetails(holder)"
       class="c-role__person"
@@ -15,15 +15,15 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import stPerson, { PersonDetail } from '~/components/people/st-person.vue';
-import { Gender, Person, Role } from '~/plugins/cms-service';
+import { Gender, Person, Role, RoleWithPartialGroupAndHolders } from '~/plugins/cms-service';
 
-export default Vue.extend({
+export default defineComponent({
   components: { stPerson },
   props: {
     role: {
-      type: Object as PropType<Role>,
+      type: Object as PropType<Role | RoleWithPartialGroupAndHolders>,
       required: true,
     },
     roleAsSubname: Boolean,
@@ -40,9 +40,9 @@ export default Vue.extend({
     },
   },
   methods: {
-    getHolderDetails(holder: Person): PersonDetail[] {
+    getHolderDetails(holder: Person | Partial<Person> | undefined): PersonDetail[] {
       const details = [];
-      if (holder.email) {
+      if (holder?.email) {
         details.push({
           icon: 'envelope',
           text: holder.email,

@@ -13,12 +13,12 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import { defineComponent } from 'vue';
 import Season from '~/models/season.model';
 import { DirectusSeason } from '~/plugins/directus';
 import { MenuItem } from '~/store/state';
 
-export default Vue.extend({
+export default defineComponent({
   nuxtI18n: {
     paths: {
       fr: '/saisons',

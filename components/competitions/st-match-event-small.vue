@@ -1,19 +1,20 @@
 <template>
   <st-event-small
-    :start-date="match.parsedDate()"
-    :name="`${match.home_team.name} - ${match.away_team.name}`"
+    v-if="match.parsedDate"
+    :start-date="match.parsedDate"
+    :name="matchName"
     :details="details"
     :to="to"
   />
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import Match from '~/models/match.model';
 import stEventSmall from '~/components/events/st-event-small.vue';
 import CompetitionEdition from '~/models/competition-edition.model';
 
-export default Vue.extend({
+export default defineComponent({
   components: { stEventSmall },
   props: {
     match: {
@@ -38,6 +39,9 @@ export default Vue.extend({
           matchId: this.match.id,
         },
       });
+    },
+    matchName(): string {
+      return `${this.match.home_team?.name} - ${this.match.away_team?.name}`;
     },
   },
 });

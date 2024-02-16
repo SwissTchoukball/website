@@ -4,7 +4,7 @@
       v-if="avatarAssetId"
       :src="avatarSrc"
       :srcset="avatarSrcSet"
-      :alt="$t('person.photoOf', { name })"
+      :alt="$t('person.photoOf', { name }).toString()"
       class="c-person__avatar"
     />
     <div v-else class="c-person__avatar">
@@ -30,7 +30,7 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import { getAssetURL } from '~/plugins/directus';
 
 export interface PersonDetail {
@@ -40,7 +40,7 @@ export interface PersonDetail {
   href?: string;
 }
 
-export default Vue.extend({
+export default defineComponent({
   props: {
     avatarAssetId: {
       type: String,

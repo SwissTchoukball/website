@@ -24,7 +24,7 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import { getAssetSrcSet, getAssetURL } from '~/plugins/directus';
 
 export interface CarouselItem {
@@ -38,7 +38,7 @@ export interface CarouselItem {
 
 // TODO: Switch to Swiper when we'll be using Vue 3.
 //       https://swiperjs.com/vue
-export default Vue.extend({
+export default defineComponent({
   props: {
     items: {
       type: Array as PropType<CarouselItem[]>,
