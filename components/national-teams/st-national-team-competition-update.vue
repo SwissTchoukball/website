@@ -28,13 +28,13 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import { differenceInDays } from 'date-fns';
 import linkifyString from 'linkify-string';
 import { getAssetSrcSet, getAssetURL } from '~/plugins/directus';
 import { NationalTeamCompetitionUpdate } from '~/components/national-teams/st-national-teams.prop';
 
-export default Vue.extend({
+export default defineComponent({
   props: {
     update: {
       type: Object as PropType<NationalTeamCompetitionUpdate>,

@@ -2,7 +2,7 @@
   <section class="l-main-content-section">
     <st-loader v-if="$fetchState.pending" :main="true" />
     <p v-else-if="$fetchState.error">{{ $t('error.otherError') }} : {{ $fetchState.error.message }}</p>
-    <article v-else class="c-press-release">
+    <article v-else-if="pressRelease" class="c-press-release">
       <st-breadcrumb :items="breadcrumb" />
       <div v-if="isDraft" class="c-press-release__draft-label">{{ $t('pressReleases.draft') }}</div>
       <div v-if="pressRelease.context" class="c-press-release__context">{{ pressRelease.context }}</div>
@@ -18,7 +18,7 @@
 
 <script lang="ts">
 import { decode } from 'html-entities';
-import Vue from 'vue';
+import { defineComponent } from 'vue';
 import { MetaInfo } from 'vue-meta';
 import { PressRelease } from '~/components/press-releases/press-releases';
 import { BreadcrumbItem } from '~/components/st-breadcrumb.vue';
@@ -27,7 +27,7 @@ import { RoleWithPartialGroupAndHolders } from '~/plugins/cms-service';
 
 const MEDIA_COORDINATOR_ROLE = 62;
 
-export default Vue.extend({
+export default defineComponent({
   components: { stRole },
   nuxtI18n: {
     paths: {

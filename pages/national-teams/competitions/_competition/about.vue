@@ -5,10 +5,10 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import { NationalTeamCompetition } from '~/components/national-teams/st-national-teams.prop';
 
-export default Vue.extend({
+export default defineComponent({
   nuxtI18n: {
     paths: {
       fr: '/equipes-nationales/competitions/:competition/a-propos',

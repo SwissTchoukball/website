@@ -166,7 +166,7 @@ export default class Match {
     }
   }
 
-  parsedDate() {
+  get parsedDate(): Date | undefined {
     if (this.datetime) {
       return parseLeveradeDate(this.datetime);
     }

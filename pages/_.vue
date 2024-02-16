@@ -3,7 +3,7 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import { defineComponent } from 'vue';
 import { MetaInfo } from 'vue-meta';
 import { decode } from 'html-entities';
 import stSimplePage from '~/components/st-simple-page.vue';
@@ -13,7 +13,7 @@ import stSimplePage from '~/components/st-simple-page.vue';
  * Based on the given path, we call the Directus API to get the page content.
  * If there's no match, we redirect to the 404 page.
  */
-export default Vue.extend({
+export default defineComponent({
   components: { stSimplePage },
   async asyncData({ app, route, redirect, error, i18n }) {
     let splitPath = route.path.match('^/.{2}(/.*)$');
@@ -58,6 +58,14 @@ export default Vue.extend({
           error({ message: `Error when retrieving simple page: ${err}` });
       }
     }
+  },
+  data() {
+    return {
+      title: '',
+      body: '',
+      keyRoles: [],
+      resources: [],
+    };
   },
   head(): MetaInfo {
     // We use this as any because body comes from asyncData and it is not recognised as being part of the Vue component.

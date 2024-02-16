@@ -3,9 +3,9 @@
     <template v-if="roundsToShow.length > 0">
       <ul class="u-unstyled-list c-results__round">
         <li v-for="round of roundsToShow" :key="round.id" class="c-results__round">
-          <template v-if="!round.faceoffs.length">
+          <template v-if="!round.faceoffs || !round.faceoffs.length">
             <h3 class="t-headline-2 c-results__round-name">{{ round.name }}</h3>
-            <st-match-result-list :matches="round.matches" />
+            <st-match-result-list :matches="round.matches || []" />
           </template>
 
           <template v-else>
@@ -16,10 +16,10 @@
                   <template v-if="round.faceoffs.length > 1">{{ index + 1 }}</template>
                 </h3>
 
-                <div v-if="isFaceoffAutoQualified(faceoff)">
-                  {{ $t('competitions.results.autoQualified', { teamName: faceoff[`${faceoff.winner}_team`].name }) }}
+                <div v-if="isFaceoffAutoQualified(faceoff) && faceoff.winner">
+                  {{ $t('competitions.results.autoQualified', { teamName: getFaceoffWinnerName(faceoff) }) }}
                 </div>
-                <st-match-result-list v-else :matches="faceoff.matches" />
+                <st-match-result-list v-else :matches="faceoff.matches || []" />
               </template>
             </div>
           </template>
@@ -31,7 +31,7 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import Season from '~/models/season.model';
 import Phase from '~/models/phase.model';
 import Round from '~/models/round.model';
@@ -39,7 +39,7 @@ import stMatchResultList from '~/components/competitions/st-match-result-list.vu
 import Faceoff from '~/models/faceoff.model';
 import CompetitionEdition from '~/models/competition-edition.model';
 
-export default Vue.extend({
+export default defineComponent({
   nuxtI18n: {
     paths: {
       fr: '/competitions/:competition/:season/:phase/resultats',
@@ -65,9 +65,9 @@ export default Vue.extend({
   },
   head() {
     const title = this.$t('competitions.headTitle.results', {
-      phaseName: this.phase.name,
-      editionName: this.competitionEdition.name,
-      seasonName: this.season.name,
+      phaseName: (this as any).phase.name,
+      editionName: (this as any).competitionEdition.name,
+      seasonName: (this as any).season.name,
     }).toString();
     return {
       title,
@@ -110,6 +110,9 @@ export default Vue.extend({
       // We check this based on the first match only
       const firstMatch = faceoff.matches[0];
       return !!(firstMatch.home_team || firstMatch.away_team);
+    },
+    getFaceoffWinnerName(faceoff: Faceoff): string {
+      return faceoff.winner ? faceoff[`${faceoff.winner}_team`]?.name || '' : '';
     },
   },
 });

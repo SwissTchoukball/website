@@ -3,10 +3,10 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import { defineComponent } from 'vue';
 import CatchAllPage from '~/pages/_.vue';
 
-export default Vue.extend({
+export default defineComponent({
   extends: CatchAllPage,
   nuxtI18n: {
     paths: {

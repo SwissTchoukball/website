@@ -12,12 +12,12 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import { defineComponent } from 'vue';
 import stEventList from '~/components/events/st-event-list.vue';
 import { BreadcrumbItem } from '~/components/st-breadcrumb.vue';
 import { CalendarEvent } from '~/plugins/cms-service';
 
-export default Vue.extend({
+export default defineComponent({
   components: { stEventList },
   nuxtI18n: {
     paths: {

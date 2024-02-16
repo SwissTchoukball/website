@@ -10,11 +10,11 @@
 
 <script lang="ts">
 import { PartialItem } from '@directus/sdk';
-import Vue from 'vue';
+import { defineComponent } from 'vue';
 import stClubList from '~/components/st-club-list.vue';
 import { DirectusClub } from '~/plugins/directus';
 
-export default Vue.extend({
+export default defineComponent({
   components: { stClubList },
   data() {
     return {

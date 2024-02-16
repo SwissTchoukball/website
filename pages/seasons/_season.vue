@@ -3,7 +3,7 @@
     <st-breadcrumb :items="breadcrumb" class="c-season__breadcrumb" />
     <st-loader v-if="$fetchState.pending" :main="true" />
     <p v-else-if="$fetchState.error">{{ $t('error.otherError') }} : {{ $fetchState.error.message }}</p>
-    <template v-else>
+    <template v-else-if="season">
       <h2 class="t-headline-1">{{ $tc('season.name', 1) }} {{ season.name }}</h2>
       <h3 class="t-headline-2">{{ $t('competitions.title') }}</h3>
       <st-link-list
@@ -16,14 +16,14 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import { defineComponent } from 'vue';
 import CompetitionEdition from '~/models/competition-edition.model';
 import Season from '~/models/season.model';
 import { BreadcrumbItem } from '~/components/st-breadcrumb.vue';
 import { MenuItem } from '~/store/state';
 import { NationalCompetitionEdition } from '~/plugins/cms-service';
 
-export default Vue.extend({
+export default defineComponent({
   nuxtI18n: {
     paths: {
       fr: '/saisons/:season',

@@ -41,7 +41,7 @@
       <nav>
         <ul class="c-index__tchoukball-nav u-unstyled-list">
           <li v-for="item of tchoukballNavigation" :key="item.name" class="c-index__tchoukball-nav-item">
-            <nuxt-link :to="item.path[$i18n.locale]">{{ $t(`tchoukball.nav.${item.name}`) }}</nuxt-link>
+            <nuxt-link :to="item.path[currentLocale]">{{ $t(`tchoukball.nav.${item.name}`) }}</nuxt-link>
           </li>
         </ul>
       </nav>
@@ -65,7 +65,7 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import { defineComponent } from 'vue';
 import { MetaInfo } from 'vue-meta';
 import { CarouselItem } from '~/components/st-home-carousel.vue';
 import { CalendarEvent } from '~/plugins/cms-service';
@@ -73,7 +73,7 @@ import stEventSmall from '~/components/events/st-event-small.vue';
 import stUpcomingMatches from '~/components/competitions/st-upcoming-matches.vue';
 import { FlickrPhotoset } from '~/plugins/flickr';
 
-export default Vue.extend({
+export default defineComponent({
   components: {
     stEventSmall,
     stUpcomingMatches,
@@ -176,6 +176,11 @@ export default Vue.extend({
     return {
       meta: [{ property: 'og:title', content: this.$t('title').toString() }],
     };
+  },
+  computed: {
+    currentLocale() {
+      return this.$i18n.locale as 'fr' | 'de';
+    },
   },
 });
 </script>

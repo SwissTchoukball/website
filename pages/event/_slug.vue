@@ -9,14 +9,14 @@
 
 <script lang="ts">
 import { decode } from 'html-entities';
-import Vue from 'vue';
+import { defineComponent } from 'vue';
 import { MetaInfo } from 'vue-meta';
 import stEvent from '~/components/events/st-event.vue';
 import { BreadcrumbItem } from '~/components/st-breadcrumb.vue';
 import { CalendarEvent } from '~/plugins/cms-service';
 import { getAssetURL } from '~/plugins/directus';
 
-export default Vue.extend({
+export default defineComponent({
   nuxtI18n: {
     paths: {
       fr: '/evenement/:slug',

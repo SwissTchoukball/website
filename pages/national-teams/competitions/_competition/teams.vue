@@ -2,19 +2,19 @@
   <div>
     <st-loader v-if="$fetchState.pending" :main="true" />
     <p v-else-if="$fetchState.error">{{ $t('error.otherError') }} : {{ $fetchState.error.message }}</p>
-    <st-national-team-competition-team-list v-else :teams="teams" />
+    <st-national-team-competition-team-list v-else-if="teams" :teams="teams" />
   </div>
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import {
   NationalTeamCompetition,
   NationalTeamForCompetition,
 } from '~/components/national-teams/st-national-teams.prop';
 import StNationalTeamCompetitionTeamList from '~/components/national-teams/st-national-team-competition-team-list.vue';
 
-export default Vue.extend({
+export default defineComponent({
   components: { StNationalTeamCompetitionTeamList },
   nuxtI18n: {
     paths: {

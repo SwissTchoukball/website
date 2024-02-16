@@ -1,22 +1,23 @@
+import { PartialItem } from '@directus/sdk';
 import { Gender, Role } from '~/plugins/cms-service';
-import { DirectusImage } from '~/plugins/directus';
+import { DirectusImage, DirectusPerson } from '~/plugins/directus';
 
 export interface Player {
   id: number;
   first_name: string;
   last_name: string;
-  number: number;
+  number?: number;
   is_captain: boolean;
-  birth_year: number;
-  gender: Gender;
-  club: {
+  birth_year?: number;
+  gender?: Gender;
+  club?: {
     name: string;
   };
-  positions: string[];
-  date_start: string;
-  date_end: string;
-  track_record: string;
-  portrait_square_head: string;
+  positions: number[];
+  date_start?: string;
+  date_end?: string;
+  track_record?: string;
+  portrait_square_head?: string;
 }
 
 export interface NationalTeamCompetition {
@@ -72,7 +73,10 @@ export interface NationalTeam {
 export interface NationalTeamForCompetition {
   id: number;
   competition: NationalTeamCompetition;
-  team: Pick<NationalTeam, 'name'>;
+  team: Pick<NationalTeam, 'name' | 'slug'>;
   players: Player[];
-  coaches: number[];
+  coaches: PartialItem<DirectusPerson>[];
 }
+
+// Just to clear a Nuxt warning.
+export default {};

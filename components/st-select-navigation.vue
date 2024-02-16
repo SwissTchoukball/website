@@ -16,17 +16,19 @@
     </button>
     <ul v-if="open" class="u-unstyled-list c-select-navigation__options">
       <li v-for="(option, index) in options" :key="index" class="c-select-navigation__option">
-        <nuxt-link :to="localePath(option.href)" @click.native="onItemClickNative(option)">{{ option.name }}</nuxt-link>
+        <nuxt-link :to="option.href ? localePath(option.href) : undefined" @click.native="onItemClickNative(option)">
+          {{ option.name }}
+        </nuxt-link>
       </li>
     </ul>
   </nav>
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import { MenuItem } from '~/store/state';
 
-export default Vue.extend({
+export default defineComponent({
   props: {
     /**
      * Name of the navigation, visible to screen readers.

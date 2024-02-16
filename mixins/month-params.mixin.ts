@@ -1,7 +1,7 @@
-import Vue from 'vue';
+import { defineComponent } from 'vue';
 import { isDigitsString } from '~/utils/utils';
 
-export default Vue.extend({
+export default defineComponent({
   validate({ params }) {
     return isDigitsString(params.year) && isDigitsString(params.month);
   },

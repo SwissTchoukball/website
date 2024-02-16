@@ -10,7 +10,7 @@
         </nuxt-link>
       </h2>
       <st-navigation
-        v-if="showPhasesNavigation"
+        v-if="showPhasesNavigation && competitionEdition"
         :items="phasesNavigation"
         :name="$t('otherNavigation', { name: `${competitionEdition.name}, ${season.name}` })"
         class="c-competition-edition__phase-navigation"
@@ -23,7 +23,7 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import { defineComponent } from 'vue';
 import { MenuItem } from '~/store/state';
 import { BreadcrumbItem } from '~/components/st-breadcrumb.vue';
 import CompetitionEdition from '~/models/competition-edition.model';
@@ -42,7 +42,7 @@ import {
 } from '~/plugins/leverade';
 import { Await } from '~/types/types.utils';
 
-export default Vue.extend({
+export default defineComponent({
   nuxtI18n: {
     paths: {
       fr: '/competitions/:competition/:season',

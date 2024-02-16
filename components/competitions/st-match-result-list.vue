@@ -13,11 +13,11 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import stMatchResult from '~/components/competitions/st-match-result.vue';
 import Match from '~/models/match.model';
 
-export default Vue.extend({
+export default defineComponent({
   components: {
     stMatchResult,
   },

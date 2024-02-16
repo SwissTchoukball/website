@@ -47,7 +47,7 @@
           <select
             v-model="filters.selectedTeamId"
             class="c-national-team-competition-update-list__team-filter"
-            :aria-label="$t('internationalCompetition.live.updates.filters.teams')"
+            :aria-label="$t('internationalCompetition.live.updates.filters.teams').toString()"
           >
             <option :value="undefined">{{ $t('internationalCompetition.live.updates.filters.noTeamFilter') }}</option>
             <option v-for="team of teams" :key="team.id" :value="team.id">{{ team.name }}</option>
@@ -85,14 +85,14 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import { NationalTeamCompetitionUpdate } from './st-national-teams.prop';
 import StNationalTeamCompetitionUpdate from '~/components/national-teams/st-national-team-competition-update.vue';
 
 const UPDATES_PER_PAGE = 10;
 const REFRESH_INTERVAL = 30; // In seconds
 
-export default Vue.extend({
+export default defineComponent({
   components: {
     StNationalTeamCompetitionUpdate,
   },

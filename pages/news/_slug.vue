@@ -2,19 +2,19 @@
   <section class="l-main-content-section">
     <st-loader v-if="$fetchState.pending" :main="true" />
     <p v-else-if="$fetchState.error">{{ $t('error.otherError') }} : {{ $fetchState.error.message }}</p>
-    <st-news v-else :news-entry="newsEntry" />
+    <st-news v-else-if="newsEntry" :news-entry="newsEntry" />
   </section>
 </template>
 
 <script lang="ts">
 import { decode } from 'html-entities';
-import Vue from 'vue';
+import { defineComponent } from 'vue';
 import { MetaInfo } from 'vue-meta';
 import { NewsEntry } from '~/components/news/st-news';
 import stNews from '~/components/news/st-news.vue';
 import { getAssetURL } from '~/plugins/directus';
 
-export default Vue.extend({
+export default defineComponent({
   components: { stNews },
   data() {
     return {

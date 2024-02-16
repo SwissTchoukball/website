@@ -21,13 +21,13 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import { defineComponent } from 'vue';
 import { MetaInfo } from 'vue-meta';
 import { NationalTeamCompetition } from '~/components/national-teams/st-national-teams.prop';
 import { getAssetURL } from '~/plugins/directus';
 import { MenuItem } from '~/store/state';
 
-export default Vue.extend({
+export default defineComponent({
   data() {
     return {
       competition: undefined as NationalTeamCompetition | undefined,

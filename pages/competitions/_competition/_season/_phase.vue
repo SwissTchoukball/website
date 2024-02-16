@@ -11,7 +11,7 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import Season from '~/models/season.model';
 import Phase from '~/models/phase.model';
 import Round from '~/models/round.model';
@@ -19,7 +19,7 @@ import CompetitionEdition from '~/models/competition-edition.model';
 import { LeveradeGroupType } from '~/plugins/leverade';
 import { MenuItem } from '~/store/state';
 
-export default Vue.extend({
+export default defineComponent({
   nuxtI18n: {
     paths: {
       fr: '/competitions/:competition/:season/:phase',

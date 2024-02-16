@@ -8,12 +8,12 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import { defineComponent } from 'vue';
 import { Store } from 'vuex';
 import CatchAllPage from '~/pages/_.vue';
 import { RootState } from '~/store/state';
 
-export default Vue.extend({
+export default defineComponent({
   extends: CatchAllPage,
   nuxtI18n: {
     paths: {

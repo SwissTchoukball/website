@@ -21,11 +21,11 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import stPerson, { PersonDetail } from '~/components/people/st-person.vue';
 import { Gender, Person, Role } from '~/plugins/cms-service';
 
-export default Vue.extend({
+export default defineComponent({
   components: { stPerson },
   props: {
     person: {

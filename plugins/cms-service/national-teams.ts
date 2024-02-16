@@ -1,25 +1,38 @@
 import { PartialItem } from '@directus/sdk';
-import { DirectusPlayer } from '../directus';
+import { DirectusPerson, DirectusPlayer } from '../directus';
+import { Gender } from '../cms-service';
+import { Player } from '~/components/national-teams/st-national-teams.prop';
 
-export const processRawPlayers = (rawPlayers: (PartialItem<DirectusPlayer> | undefined)[] | undefined) => {
+export const processRawPlayers = (rawPlayers: (PartialItem<DirectusPlayer> | undefined)[] | undefined): Player[] => {
   if (!rawPlayers) {
     return [];
   }
 
-  const players = rawPlayers.map((player) => {
-    if (player?.positions) {
-      return {
-        ...player,
-        positions: player.positions.map((position) => {
-          if (position) {
-            return position.player_positions_id;
-          }
-          return position;
-        }),
-      };
+  const players: Player[] = rawPlayers.reduce((playersAcc, player) => {
+    if (!player?.id || !player.positions || !player.first_name || !player.last_name) {
+      return playersAcc;
     }
-    return player;
-  });
+
+    return [
+      ...playersAcc,
+      {
+        ...player,
+        id: player.id,
+        first_name: player.first_name,
+        last_name: player.last_name,
+        is_captain: !!player.is_captain,
+        gender: player.gender as Gender,
+        club: player.club?.name ? { name: player.club.name } : undefined,
+        positions:
+          player.positions.reduce((positions, position) => {
+            if (position?.player_positions_id) {
+              return [...positions, position.player_positions_id];
+            }
+            return positions;
+          }, [] as number[]) || [],
+      },
+    ];
+  }, [] as Player[]);
 
   // We sort the players because the API can't do it yet (only at the root)
   // Captain first, then alphabetically by last name, and then first name.
@@ -30,4 +43,19 @@ export const processRawPlayers = (rawPlayers: (PartialItem<DirectusPlayer> | und
       (playerA?.first_name || '').localeCompare(playerB?.first_name || '')
     );
   });
+};
+
+export const processRawCoaches = (
+  rawCoaches: (PartialItem<DirectusPerson> | undefined)[] | undefined
+): PartialItem<DirectusPerson>[] => {
+  if (!rawCoaches) {
+    return [];
+  }
+
+  return rawCoaches.reduce((coaches, coach) => {
+    if (!coach) {
+      return coaches;
+    }
+    return [...coaches, coach];
+  }, [] as PartialItem<DirectusPerson>[]);
 };

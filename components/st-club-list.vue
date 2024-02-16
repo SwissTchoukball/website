@@ -6,20 +6,22 @@
         v-if="club.logo"
         :src="logoSrc(club.logo)"
         :srcset="logoSrcSet(club.logo)"
-        :alt="$t('clubs.logoOf', { name: club.name })"
+        :alt="$t('clubs.logoOf', { name: club.name }).toString()"
         class="c-club-list__club-logo"
       />
-      <a :href="club.website" class="c-club-list__club-website">{{ getWebsiteDisplay(club.website) }}</a>
+      <a v-if="club.website" :href="club.website" class="c-club-list__club-website">
+        {{ getWebsiteDisplay(club.website) }}
+      </a>
     </li>
   </ul>
 </template>
 
 <script lang="ts">
 import { PartialItem } from '@directus/sdk';
-import Vue, { PropType } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import { DirectusClub, getAssetURL } from '~/plugins/directus';
 
-export default Vue.extend({
+export default defineComponent({
   props: {
     clubs: {
       type: Array as PropType<PartialItem<DirectusClub>[]>,

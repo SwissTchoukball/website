@@ -16,9 +16,9 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="standing of standings" :key="standing.team.id">
+          <tr v-for="(standing, index) of standings" :key="standing.team ? standing.team.id : `unknown-${index}`">
             <td class="c-standings__table-cell">{{ standing.position }}</td>
-            <td class="c-standings__table-cell">
+            <td v-if="standing.team" class="c-standings__table-cell">
               <div class="c-standings__team">
                 <img
                   v-if="standing.team.avatarMediumUrl"
@@ -30,7 +30,7 @@
               </div>
             </td>
             <td v-for="statKey of standingsStatKeys" :key="statKey" class="c-standings__table-cell">
-              {{ standing.stats.find((stat) => stat.type === statKey).value }}
+              {{ getStatValueForKey(standing, statKey) }}
             </td>
           </tr>
         </tbody>
@@ -40,15 +40,21 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import VueI18n from 'vue-i18n';
 import Season from '~/models/season.model';
 import Phase from '~/models/phase.model';
 import Team from '~/models/team.model';
 import CompetitionEdition from '~/models/competition-edition.model';
-import { LeveradeGroupType } from '~/plugins/leverade';
+import { LeveradeGroupType, LeveradeStandings, LeveradeTeam } from '~/plugins/leverade';
 
-export default Vue.extend({
+interface StandingRow<T> {
+  position: number;
+  team: T | undefined;
+  stats: LeveradeStandings['standingsrows'][0]['standingsstats'];
+}
+
+export default defineComponent({
   nuxtI18n: {
     paths: {
       fr: '/competitions/:competition/:season/:phase/classement',
@@ -71,7 +77,7 @@ export default Vue.extend({
   },
   data() {
     return {
-      rawStandings: [] as any[],
+      rawStandings: [] as StandingRow<LeveradeTeam>[],
       stats: [],
     };
   },
@@ -90,9 +96,9 @@ export default Vue.extend({
 
     const teamsResponse = await this.$leverade.getTeams(this.phase.competition_edition_id);
     const standingsResponse = await this.$leverade.getStandings(this.phase.id);
-    this.rawStandings = standingsResponse.data.meta.standingsrows.map((row: any) => ({
+    this.rawStandings = standingsResponse.data.meta.standingsrows.map((row) => ({
       position: row.position,
-      rawTeam: teamsResponse.data.data.find((team) => +team.id === row.id),
+      team: teamsResponse.data.data.find((team) => +team.id === row.id),
       stats: row.standingsstats,
     }));
   },
@@ -141,10 +147,10 @@ export default Vue.extend({
         'score',
       ];
     },
-    standings(): any[] {
+    standings(): StandingRow<Team>[] {
       return this.rawStandings.map((standingRow) => ({
         position: standingRow.position,
-        team: new Team(standingRow.rawTeam),
+        team: standingRow.team ? new Team(standingRow.team) : undefined,
         stats: standingRow.stats,
       }));
     },
@@ -153,6 +159,11 @@ export default Vue.extend({
     '$route.params.phase': '$fetch',
     '$route.params.season': '$fetch',
     '$route.params.competition': '$fetch',
+  },
+  methods: {
+    getStatValueForKey(standing: StandingRow<Team>, statKey: string): number {
+      return standing.stats.find((stat) => stat.type === statKey)?.value || 0;
+    },
   },
 });
 </script>

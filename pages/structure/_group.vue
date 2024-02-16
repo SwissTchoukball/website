@@ -19,12 +19,12 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import { defineComponent } from 'vue';
 import stStaffPerson from '~/components/people/st-staff-person.vue';
 import { BreadcrumbItem } from '~/components/st-breadcrumb.vue';
 import { Group, Person } from '~/plugins/cms-service';
 
-export default Vue.extend({
+export default defineComponent({
   nuxtI18n: {
     paths: {
       fr: '/structure/:group',

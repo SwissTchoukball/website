@@ -1,7 +1,7 @@
 <template>
   <ul class="c-tchoukup-list u-unstyled-list">
     <li v-for="issue of issues" :key="`tchoukup-${issue.id}`" class="c-tchoukup-list__entry">
-      <a class="c-tchoukup-list__image-container" :href="getIssueDownloadLink(issue)" :download="download">
+      <a class="c-tchoukup-list__image-container" :href="getIssueDownloadLink(issue)">
         <img
           v-if="issue.cover"
           class="c-tchoukup-list__image"
@@ -17,7 +17,7 @@
         />
       </a>
       <h3 class="c-tchoukup-list__title t-headline-3">
-        <a :href="getIssueDownloadLink(issue)" :download="download">
+        <a :href="getIssueDownloadLink(issue)">
           {{ $t('tchoukup.no') }} {{ issue.number }} – {{ getReleaseMonth(issue) }}
         </a>
       </h3>
@@ -27,13 +27,13 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import { Tchoukup } from '~/components/tchoukup/st-tchoukup';
 import { getAssetSrcSet, getAssetURL } from '~/plugins/directus';
 
 const MAX_NEWS_PER_ROW = 4;
 
-export default Vue.extend({
+export default defineComponent({
   props: {
     issues: {
       type: Array as PropType<Tchoukup[]>,

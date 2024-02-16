@@ -23,10 +23,10 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import { isSameDay, isSameMonth } from 'date-fns';
 
-export default Vue.extend({
+export default defineComponent({
   props: {
     startDate: {
       type: Date as PropType<Date>,

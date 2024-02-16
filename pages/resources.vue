@@ -52,13 +52,13 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import { defineComponent } from 'vue';
 import stResourceList from '~/components/resources/st-resource-list.vue';
 import { Domain, Resource, ResourceType } from '~/plugins/cms-service';
 
 const ALL_OPTION = 'all';
 
-export default Vue.extend({
+export default defineComponent({
   components: { stResourceList },
   nuxtI18n: {
     paths: {

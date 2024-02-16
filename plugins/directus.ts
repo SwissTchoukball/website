@@ -22,12 +22,14 @@ export interface DirectusRole {
   holders: DirectusRolePerson[];
 }
 
+export type DirectusGender = 'male' | 'female' | 'other';
+
 export interface DirectusPerson {
   id: number;
   first_name: string;
   last_name: string;
   portrait_square_head: string;
-  gender: string;
+  gender: DirectusGender;
   email: string;
   // eslint-disable-next-line no-use-before-define
   roles: DirectusRolePerson[];
@@ -205,7 +207,7 @@ export interface DirectusPlayer {
   number: number;
   is_captain: boolean;
   birth_year: number;
-  gender: string;
+  gender: DirectusGender;
   club: {
     name: string;
   };
@@ -253,7 +255,7 @@ export interface DirectusTeamResult {
 
 export interface DirectusTeam {
   id: number;
-  gender: string;
+  gender: DirectusGender;
   translations: {
     name: string;
     slug: string;

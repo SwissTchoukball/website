@@ -21,10 +21,10 @@
 
 <script lang="ts">
 import { isPast, subMinutes } from 'date-fns';
-import Vue, { PropType } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import { LiveStream } from '~/plugins/cms-service';
 
-export default Vue.extend({
+export default defineComponent({
   props: {
     liveStreams: {
       type: Array as PropType<LiveStream[]>,

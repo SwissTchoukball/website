@@ -8,12 +8,12 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import stPerson, { PersonDetail } from '~/components/people/st-person.vue';
 import { Player } from '~/components/national-teams/st-national-teams.prop';
 import { Gender } from '~/plugins/cms-service';
 
-export default Vue.extend({
+export default defineComponent({
   components: { stPerson },
   props: {
     player: {
@@ -22,8 +22,8 @@ export default Vue.extend({
     },
   },
   computed: {
-    subName(): string | null {
-      return this.player.is_captain ? this.$t('nationalTeams.captain').toString() : null;
+    subName(): string | undefined {
+      return this.player.is_captain ? this.$t('nationalTeams.captain').toString() : undefined;
     },
     details(): PersonDetail[] {
       const details = [];

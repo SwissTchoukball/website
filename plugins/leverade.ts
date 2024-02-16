@@ -1,11 +1,11 @@
 import { Plugin } from '@nuxt/types';
 import { AxiosResponse, AxiosRequestConfig } from 'axios';
-import { Await } from '~/types/types.utils';
 
-export interface LeveradeResponse<T, E = {}> {
+export interface LeveradeResponse<T, E = {}, M = unknown> {
   data: {
     data: T;
     included?: E[];
+    meta: M;
   };
 }
 
@@ -251,6 +251,18 @@ export interface LeveradeLicense extends LeveradeEntity {
   };
 }
 
+export interface LeveradeStandings {
+  standingsrows: {
+    id: number;
+    name: string;
+    position: number;
+    standingsstats: {
+      type: string;
+      value: number;
+    }[];
+  }[];
+}
+
 export interface LeveradeProfile extends LeveradeEntity {
   type: 'profile';
   attributes: {
@@ -269,7 +281,7 @@ export interface Leverade {
       LeveradeGroup | LeveradeMatch | LeveradeFaceoff | LeveradeRound | LeveradeTeam | LeveradeFacility | LeveradeResult
     >
   >;
-  getStandings: (groupId: number | string) => Promise<any>;
+  getStandings: (groupId: number | string) => Promise<LeveradeResponse<unknown, unknown, LeveradeStandings>>;
   getUpcomingMatches: (
     seasonLeveradeId: string
   ) => Promise<
@@ -335,7 +347,7 @@ const leveradePlugin: Plugin = ({ $config, $axios, $formatDate }, inject) => {
   };
 
   const getStandings: Leverade['getStandings'] = (groupId) => {
-    return getCachedQuery<Await<ReturnType<Leverade['getStandings']>>>(`/groups/${groupId}/standings`);
+    return getCachedQuery(`/groups/${groupId}/standings`);
   };
 
   const getUpcomingMatches: Leverade['getUpcomingMatches'] = (seasonLeveradeId) => {

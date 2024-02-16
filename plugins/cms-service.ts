@@ -25,7 +25,7 @@ import {
   NationalTeamForCompetition,
   NationalTeamResult,
 } from '~/components/national-teams/st-national-teams.prop';
-import { processRawPlayers } from '~/plugins/cms-service/national-teams';
+import { processRawCoaches, processRawPlayers } from '~/plugins/cms-service/national-teams';
 import { PressRelease } from '~/components/press-releases/press-releases';
 import { toISOLocal } from '~/utils/utils';
 
@@ -119,6 +119,8 @@ export interface CalendarEvent {
   name: string;
   date_start: Date;
   date_end: Date;
+  time_start: string;
+  time_end: string;
   isFullDay: boolean;
   showEndTime: boolean;
   status: string;
@@ -1743,8 +1745,8 @@ const cmsService: Plugin = (context, inject) => {
           name: teamTranslations.name,
           slug: teamTranslations.slug,
         },
-        players: processRawPlayers(rawTeam.players?.map((player) => player?.national_team_players_id)) as any[],
-        coaches: rawTeam.coaches?.map((coach) => coach?.people_id) as any[],
+        players: processRawPlayers(rawTeam.players?.map((player) => player?.national_team_players_id)),
+        coaches: processRawCoaches(rawTeam.coaches?.map((coach) => coach?.people_id)),
       };
     });
   };

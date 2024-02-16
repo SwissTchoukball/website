@@ -19,13 +19,13 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import { NewsEntry } from '~/components/news/st-news';
 import { BreadcrumbItem } from '~/components/st-breadcrumb.vue';
 import { Domain } from '~/plugins/cms-service';
 import { getAssetURL, getAssetSrcSet } from '~/plugins/directus';
 
-export default Vue.extend({
+export default defineComponent({
   props: {
     newsEntry: {
       type: Object as PropType<NewsEntry>,

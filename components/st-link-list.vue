@@ -2,7 +2,7 @@
   <nav>
     <h2 class="u-visually-hidden">{{ name }}</h2>
     <ul class="c-link-list">
-      <li v-for="item in items" :key="item.name" class="c-link-list-item">
+      <li v-for="item in items" :key="item.name.toString()" class="c-link-list-item">
         <nuxt-link :to="item.href">
           {{ item.name }}
         </nuxt-link>
@@ -12,10 +12,10 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import { MenuItem } from '~/store/state';
 
-export default Vue.extend({
+export default defineComponent({
   props: {
     /**
      * Name of the navigation, visible to screen readers.
