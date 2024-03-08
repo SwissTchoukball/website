@@ -1,4 +1,4 @@
-import { PartialItem } from '@directus/sdk';
+import { ItemInput } from '@directus/sdk';
 import { Gender, Role } from '~/plugins/cms-service';
 import { DirectusImage, DirectusPerson } from '~/plugins/directus';
 
@@ -75,7 +75,7 @@ export interface NationalTeamForCompetition {
   competition: NationalTeamCompetition;
   team: Pick<NationalTeam, 'name' | 'slug'>;
   players: Player[];
-  coaches: PartialItem<DirectusPerson>[];
+  coaches: ItemInput<DirectusPerson>[];
 }
 
 // Just to clear a Nuxt warning.

@@ -11,7 +11,7 @@
 </template>
 
 <script lang="ts">
-import { PartialItem } from '@directus/sdk';
+import { ItemInput } from '@directus/sdk';
 import { defineComponent } from 'vue';
 import stClubList from '~/components/st-club-list.vue';
 import { DirectusClub } from '~/plugins/directus';
@@ -20,7 +20,7 @@ export default defineComponent({
   components: { stClubList },
   data() {
     return {
-      clubs: [] as PartialItem<DirectusClub>[],
+      clubs: [] as ItemInput<DirectusClub>[],
     };
   },
   nuxtI18n: {

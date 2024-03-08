@@ -1,9 +1,10 @@
 import { Plugin } from '@nuxt/types';
-import { Directus, PartialItem } from '@directus/sdk';
+import { Directus, ItemInput } from '@directus/sdk';
 
 export interface DirectusGroup {
   id: number;
   translations: {
+    languages_code: string;
     name: string;
     description: string;
     slug: string;
@@ -13,6 +14,7 @@ export interface DirectusGroup {
 export interface DirectusRole {
   id: number;
   translations: {
+    languages_code: string;
     name: string;
     name_feminine: string;
     name_masculine: string;
@@ -68,6 +70,7 @@ export interface DirectusImage {
 export interface DirectusResourceType {
   id: number;
   translations: {
+    languages_code: string;
     name: string;
   }[];
 }
@@ -80,6 +83,7 @@ export enum DirectusResourceStatus {
 export interface DirectusResource {
   id: number;
   translations: {
+    languages_code: string;
     name: string;
     file?: DirectusFile;
     link?: string;
@@ -120,6 +124,7 @@ export interface DirectusText {
 export interface DirectusDomain {
   id: number;
   translations: {
+    languages_code: string;
     name: string;
   }[];
 }
@@ -168,6 +173,7 @@ export interface DirectusVenue {
 export interface DirectusEvent {
   id: number;
   translations: {
+    languages_code: string;
     name: string;
     description: string;
   }[];
@@ -186,7 +192,9 @@ export interface DirectusEvent {
 export interface DirectusEventType {
   id: number;
   translations: {
+    languages_code: string;
     name: string;
+    name_plural: string;
   }[];
   image?: DirectusImage;
 }
@@ -194,6 +202,7 @@ export interface DirectusEventType {
 export interface DirectusPlayerPosition {
   id: number;
   translations: {
+    languages_code: string;
     name: string;
     name_feminine: string;
     name_masculine: string;
@@ -232,11 +241,13 @@ export interface DirectusNationalTeamCompetition {
     team: {
       id: number;
       translations: {
+        languages_code: string;
         name: string;
       }[];
     };
   }[];
   translations: {
+    languages_code: string;
     name: string;
     city: string;
     country: string;
@@ -257,6 +268,7 @@ export interface DirectusTeam {
   id: number;
   gender: DirectusGender;
   translations: {
+    languages_code: string;
     name: string;
     slug: string;
   }[];
@@ -287,6 +299,7 @@ export type DirectusNationalTeamCompetitionUpdateStatus = 'published' | 'draft' 
 export interface DirectusNationalTeamCompetitionUpdate {
   id: number;
   translations: {
+    languages_code: string;
     body: string;
   }[];
   image?: DirectusImage;
@@ -312,6 +325,7 @@ export interface DirectusSeason {
 export interface DirectusLiveStream {
   id: number;
   translations: {
+    languages_code: string;
     title: string;
   }[];
   url: string;
@@ -338,6 +352,7 @@ export interface DirectusNationalCompetition {
   id: number;
   editions: DirectusNationalCompetitionEdition[];
   translations: {
+    languages_code: string;
     name: string;
     slug: string;
   }[];
@@ -454,7 +469,7 @@ export const getAssetSrcSet = (cmsURL: string, assetId: string, { widths }: { wi
  * the first available language of the entity translations is returned
  */
 export const getTranslatedFields = (
-  entity: PartialItem<Record<string, any> & { translations: Record<string, any>[] }>,
+  entity: ItemInput<Record<string, any> & { translations: Record<string, any>[] }>,
   languageKey?: string
 ) => {
   if (entity.translations) {
