@@ -1,5 +1,5 @@
 import { ActionTree } from 'vuex/types/index';
-import { PartialItem } from '@directus/sdk';
+import { ItemInput } from '@directus/sdk';
 import { EventTypes, MenuItem, PlayerPositions, RootState } from './state';
 import { DirectusMenuItem, getTranslatedFields } from '~/plugins/directus';
 import Season from '~/models/season.model';
@@ -36,7 +36,7 @@ export default {
       ],
     });
 
-    const transformForStore = (menuItem: PartialItem<DirectusMenuItem> | undefined): MenuItem => {
+    const transformForStore = (menuItem: ItemInput<DirectusMenuItem> | undefined): MenuItem => {
       const translatedFields = menuItem ? getTranslatedFields(menuItem) : undefined;
 
       let children: MenuItem[] = [];

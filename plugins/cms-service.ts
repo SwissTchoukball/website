@@ -1,6 +1,6 @@
 import { Plugin } from '@nuxt/types';
 import { set } from 'date-fns';
-import { Filter, OneItem, PartialItem } from '@directus/sdk';
+import { Filter, OneItem, ItemInput } from '@directus/sdk';
 import { Await } from '~/types/types.utils';
 import {
   DirectusClub,
@@ -159,7 +159,7 @@ export interface LiveStream {
 }
 
 export interface CMSService {
-  getPage: (options: { pagePath: string }) => Promise<PartialItem<SimplePage>>;
+  getPage: (options: { pagePath: string }) => Promise<ItemInput<SimplePage>>;
   getText: (textId: number) => Promise<TextEntry>;
   getDomains: () => Promise<Domain[]>;
   getNews: (options: {
@@ -174,7 +174,7 @@ export interface CMSService {
   getGroup: ({ id, slug }: { id?: number; slug?: string }) => Promise<Group>;
   getRole: (roleId: number) => Promise<RoleWithPartialGroupAndHolders>;
   getStaff: ({ groupId, groupSlug }: { groupId?: number; groupSlug?: string }) => Promise<Person[]>;
-  getClubs: (options: { statuses: string[] }) => Promise<PartialItem<DirectusClub>[]>;
+  getClubs: (options: { statuses: string[] }) => Promise<ItemInput<DirectusClub>[]>;
   getPressReleaseList: (options: {
     limit: number;
     page: number;
@@ -247,7 +247,7 @@ declare module 'vuex/types/index' {
 }
 
 const cmsService: Plugin = (context, inject) => {
-  const processRoles = (directusRoles: (PartialItem<DirectusRole> | undefined)[]) => {
+  const processRoles = (directusRoles: (ItemInput<DirectusRole> | undefined)[]) => {
     return directusRoles.reduce((roles, role) => {
       if (!role || !role.id) {
         return roles;
@@ -663,7 +663,7 @@ const cmsService: Plugin = (context, inject) => {
     return newsEntry;
   };
 
-  const processPressRelease = (directusPressRelease: PartialItem<DirectusPressRelease>): PressRelease => {
+  const processPressRelease = (directusPressRelease: ItemInput<DirectusPressRelease>): PressRelease => {
     // We retrieve all the languages and show news in fallback locale if not available in current locale
     const currentLocale = context.i18n.locale;
 
@@ -687,7 +687,7 @@ const cmsService: Plugin = (context, inject) => {
     return pressRelease;
   };
 
-  const processGroup = (group: PartialItem<DirectusGroup>): Group => {
+  const processGroup = (group: ItemInput<DirectusGroup>): Group => {
     const translatedFields = getTranslatedFields(group);
 
     // We discard entries that don't have mandatory data.
@@ -1074,7 +1074,7 @@ const cmsService: Plugin = (context, inject) => {
     return processPressRelease(directusPressRelease);
   };
 
-  const processEvent = (directusEvent: PartialItem<DirectusEvent>, locale: string): CalendarEvent => {
+  const processEvent = (directusEvent: ItemInput<DirectusEvent>, locale: string): CalendarEvent => {
     const translatedFields = getTranslatedFields(directusEvent, locale);
     if (!directusEvent?.date_start || !translatedFields?.name) {
       throw new Error('Event is missing name or start date');
@@ -1853,9 +1853,7 @@ const cmsService: Plugin = (context, inject) => {
     return liveStreams;
   };
 
-  const processNationalCompetition = (
-    rawCompetition: PartialItem<DirectusNationalCompetition>
-  ): NationalCompetition => {
+  const processNationalCompetition = (rawCompetition: ItemInput<DirectusNationalCompetition>): NationalCompetition => {
     const translatedFields = getTranslatedFields(rawCompetition);
 
     if (!rawCompetition.id || !translatedFields?.name || !translatedFields?.slug) {
