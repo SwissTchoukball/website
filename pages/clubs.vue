@@ -11,7 +11,6 @@
 </template>
 
 <script lang="ts">
-import { ItemInput } from '@directus/sdk';
 import { defineComponent } from 'vue';
 import stClubList from '~/components/st-club-list.vue';
 import { DirectusClub } from '~/plugins/directus';
@@ -20,7 +19,7 @@ export default defineComponent({
   components: { stClubList },
   data() {
     return {
-      clubs: [] as ItemInput<DirectusClub>[],
+      clubs: [] as DirectusClub[],
     };
   },
   nuxtI18n: {

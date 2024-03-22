@@ -19,7 +19,7 @@
     <img
       v-if="update.image"
       class="c-national-team-competition-update__image"
-      :alt="update.image.description"
+      :alt="update.image.description || undefined"
       :src="imageFallbackSrc"
       :srcset="imageSrcSet"
       sizes="(min-width: 800px}) 800px, 96vw"

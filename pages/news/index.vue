@@ -26,6 +26,7 @@ import stLoader from '~/components/st-loader.vue';
 import stNewsList from '~/components/news/st-news-list.vue';
 import { NewsEntry } from '~/components/news/st-news';
 import StPagination from '~/components/st-pagination.vue';
+import { DirectusDomain } from '~/plugins/directus';
 
 export default defineComponent({
   components: { stLoader, stNewsList, StPagination },
@@ -83,7 +84,9 @@ export default defineComponent({
       if (!this.filteredDomainId) {
         return;
       }
-      return this.$store.getters.getDomainById(this.filteredDomainId);
+      const domain: DirectusDomain = this.$store.getters.getDomainById(this.filteredDomainId);
+
+      return domain.name;
     },
   },
   watch: {

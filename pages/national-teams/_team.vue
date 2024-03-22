@@ -8,7 +8,7 @@
         v-if="team.team_photo"
         class="c-team__photo"
         :style="`object-position: 0 ${teamPhotoVerticalShiftInPercentage}%;`"
-        :alt="team.team_photo.description"
+        :alt="team.team_photo.description || undefined"
         :src="mainImageFallbackSrc"
         :srcset="mainImageSrcSet"
         :sizes="imgTagSizes"

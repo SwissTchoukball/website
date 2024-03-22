@@ -1,9 +1,8 @@
-import { ItemInput } from '@directus/sdk';
 import { DirectusPerson, DirectusPlayer } from '../directus';
 import { Gender } from '../cms-service';
 import { Player } from '~/components/national-teams/st-national-teams.prop';
 
-export const processRawPlayers = (rawPlayers: (ItemInput<DirectusPlayer> | undefined)[] | undefined): Player[] => {
+export const processRawPlayers = (rawPlayers: (DirectusPlayer | undefined)[] | undefined): Player[] => {
   if (!rawPlayers) {
     return [];
   }
@@ -45,9 +44,7 @@ export const processRawPlayers = (rawPlayers: (ItemInput<DirectusPlayer> | undef
   });
 };
 
-export const processRawCoaches = (
-  rawCoaches: (ItemInput<DirectusPerson> | undefined)[] | undefined
-): ItemInput<DirectusPerson>[] => {
+export const processRawCoaches = (rawCoaches: (DirectusPerson | undefined)[] | undefined): DirectusPerson[] => {
   if (!rawCoaches) {
     return [];
   }
@@ -57,5 +54,5 @@ export const processRawCoaches = (
       return coaches;
     }
     return [...coaches, coach];
-  }, [] as ItemInput<DirectusPerson>[]);
+  }, [] as DirectusPerson[]);
 };

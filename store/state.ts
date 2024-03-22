@@ -1,6 +1,7 @@
+import { type DirectusFile } from '@directus/sdk';
 import { TranslateResult } from 'vue-i18n';
 import { Domain, LiveStream, ResourceType } from '~/plugins/cms-service';
-import { DirectusImage, DirectusSeason } from '~/plugins/directus';
+import { DirectusSchema, DirectusSeason } from '~/plugins/directus';
 
 export interface MenuItem {
   sort?: number;
@@ -14,7 +15,7 @@ export interface EventType {
   id: number;
   name: string;
   name_plural: string;
-  image?: DirectusImage;
+  image?: DirectusFile<DirectusSchema>;
 }
 
 export interface EventTypes {
