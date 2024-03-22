@@ -907,6 +907,7 @@ const cmsService: Plugin = (context, inject) => {
           },
         },
       },
+      sort: ['last_name'],
     });
 
     if (!peopleResponse.data) {
