@@ -37,7 +37,12 @@ export default defineComponent({
         // but with the path in another language.
         // This can notably happen when using the language switcher.
         // We just redirect to fix the path.
-        redirect(`/${i18n.locale}${page.path}`);
+        let pathLocale = `/${i18n.locale}`;
+        // The current strategy doesn't put a prefix for the default language
+        if (i18n.locale === i18n.defaultLocale) {
+          pathLocale = '';
+        }
+        redirect(`${pathLocale}${page.path}`);
       }
 
       return {
