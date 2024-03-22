@@ -1,26 +1,30 @@
+/* eslint-disable no-use-before-define */
 import { Plugin } from '@nuxt/types';
-import { Directus, ItemInput } from '@directus/sdk';
+import { type DirectusClient, type RestClient, createDirectus, rest, type DirectusFile } from '@directus/sdk';
+
+interface DirectusGroupTranslation {
+  languages_code: string;
+  name: string;
+  description: string;
+  slug: string;
+}
 
 export interface DirectusGroup {
   id: number;
-  translations: {
-    languages_code: string;
-    name: string;
-    description: string;
-    slug: string;
-  }[];
+  translations: DirectusGroupTranslation[];
+}
+
+interface DirectusRoleTranslation {
+  languages_code: string;
+  name: string;
+  name_feminine: string;
+  name_masculine: string;
 }
 
 export interface DirectusRole {
   id: number;
-  translations: {
-    languages_code: string;
-    name: string;
-    name_feminine: string;
-    name_masculine: string;
-  }[];
+  translations: DirectusRoleTranslation[];
   group: DirectusGroup;
-  // eslint-disable-next-line no-use-before-define
   holders: DirectusRolePerson[];
 }
 
@@ -33,46 +37,48 @@ export interface DirectusPerson {
   portrait_square_head: string;
   gender: DirectusGender;
   email: string;
-  // eslint-disable-next-line no-use-before-define
   roles: DirectusRolePerson[];
 }
 
-export interface DirectusRolePerson {
+interface DirectusRolePerson {
   id: number;
   roles_id: DirectusRole;
   people_id: DirectusPerson;
   main: boolean;
 }
 
+interface DirectusMenuItemTranslation {
+  languages_code: string;
+  name: string;
+  href?: string;
+}
+
 export interface DirectusMenuItem {
   sort: number;
   parent: number;
-  translations: {
-    languages_code: string;
-    name: string;
-    href?: string;
-  }[];
+  translations: DirectusMenuItemTranslation[];
   children: DirectusMenuItem[];
 }
 
-export interface DirectusFile {
-  id: number;
-  type: string;
-  filesize: number;
-  filename_download: string;
+interface DirectusDomainTranslation {
+  languages_code: string;
+  name: string;
 }
 
-export interface DirectusImage {
-  id: string;
-  description: string;
+export interface DirectusDomain {
+  id: number;
+  name: string;
+  translations: DirectusDomainTranslation[];
+}
+
+interface DirectusResourceTypeTranslation {
+  languages_code: string;
+  name: string;
 }
 
 export interface DirectusResourceType {
   id: number;
-  translations: {
-    languages_code: string;
-    name: string;
-  }[];
+  translations: DirectusResourceTypeTranslation[];
 }
 
 export enum DirectusResourceStatus {
@@ -80,53 +86,63 @@ export enum DirectusResourceStatus {
   ARCHIVED = 'archived',
 }
 
+interface DirectusPageResource {
+  id: number;
+  pages_id: number | DirectusPage;
+  resources_id: DirectusResource;
+}
+
+interface DirectusPageRole {
+  id: number;
+  pages_id: number | DirectusPage;
+  roles_id: DirectusRole;
+}
+
+interface DirectusResourceDomain {
+  id: number;
+  domains_id: DirectusDomain;
+  resources_id: DirectusResource;
+}
+
+interface DirectusResourceTranslation {
+  languages_code: string;
+  name: string;
+  file?: DirectusFile<DirectusSchema>;
+  link?: string;
+}
+
 export interface DirectusResource {
   id: number;
-  translations: {
-    languages_code: string;
-    name: string;
-    file?: DirectusFile;
-    link?: string;
-  }[];
+  translations: DirectusResourceTranslation[];
   type: DirectusResourceType;
-  domains: number[];
+  domains: DirectusResourceDomain[];
   date: string;
+  keywords: string;
   status: DirectusResourceStatus;
 }
 
+interface DirectusPageTranslation {
+  languages_code: string;
+  path: string;
+  title: string;
+  body: string;
+}
+
 export interface DirectusPage {
-  translations: {
-    languages_code: string;
-    path: string;
-    title: string;
-    body: string;
-  }[];
-  key_roles: {
-    id: number;
-    pages_id: DirectusPage;
-    roles_id: DirectusRole;
-  }[];
-  resources: {
-    id: number;
-    pages_id: DirectusPage;
-    resources_id: DirectusResource;
-  }[];
+  id: number;
+  translations: DirectusPageTranslation[];
+  key_roles: DirectusPageRole[];
+  resources: DirectusPageResource[];
+}
+
+interface DirectusTextTranslation {
+  languages_code: string;
+  body: string;
 }
 
 export interface DirectusText {
   id: number;
-  translations: {
-    languages_code: string;
-    body: string;
-  }[];
-}
-
-export interface DirectusDomain {
-  id: number;
-  translations: {
-    languages_code: string;
-    name: string;
-  }[];
+  translations: DirectusTextTranslation[];
 }
 
 export interface DirectusNewsDomainPivot {
@@ -134,32 +150,38 @@ export interface DirectusNewsDomainPivot {
   domains_id: DirectusDomain;
 }
 
+interface DirectusNewsTranslation {
+  languages_code: string;
+  slug: string;
+  title: string;
+  body: string;
+}
+
 export interface DirectusNews {
   id: number;
-  date_created: string;
-  date_updated: string;
-  main_image: DirectusImage;
-  translations: {
-    languages_code: string;
-    slug: string;
-    title: string;
-    body: string;
-  }[];
+  status: string;
+  hide_from_home: boolean;
+  date_created: 'datetime';
+  date_updated: 'datetime';
+  main_image: DirectusFile<DirectusSchema>;
+  translations: DirectusNewsTranslation[];
   domains: DirectusNewsDomainPivot[];
+}
+
+interface DirectusPressReleaseTranslation {
+  languages_code: string;
+  context?: string;
+  title: string;
+  slug: string;
+  body: string;
 }
 
 export interface DirectusPressRelease {
   id: number;
-  date_created: string;
-  date_updated?: string;
+  date_created: 'datetime';
+  date_updated?: 'datetime';
   status: string;
-  translations: {
-    languages_code: string;
-    context?: string;
-    title: string;
-    slug: string;
-    body: string;
-  }[];
+  translations: DirectusPressReleaseTranslation[];
 }
 
 export interface DirectusVenue {
@@ -170,43 +192,49 @@ export interface DirectusVenue {
   url?: string;
 }
 
-export interface DirectusEvent {
-  id: number;
-  translations: {
-    languages_code: string;
-    name: string;
-    description: string;
-  }[];
-  date_start: string;
-  time_start: string;
-  date_end: string;
-  time_end: string;
-  status: string;
-  venue?: DirectusVenue;
-  venue_other?: string;
-  image?: DirectusImage;
-  url?: string;
-  type?: number;
+interface DirectusEventTypeTranslation {
+  languages_code: string;
+  name: string;
+  name_plural: string;
 }
 
 export interface DirectusEventType {
   id: number;
-  translations: {
-    languages_code: string;
-    name: string;
-    name_plural: string;
-  }[];
-  image?: DirectusImage;
+  translations: DirectusEventTypeTranslation[];
+  image?: DirectusFile<DirectusSchema>;
+}
+
+interface DirectusEventTranslation {
+  languages_code: string;
+  name: string;
+  description: string;
+}
+
+export interface DirectusEvent {
+  id: number;
+  translations: DirectusEventTranslation[];
+  date_start: 'datetime';
+  time_start: string;
+  date_end: 'datetime';
+  time_end: string;
+  status: string;
+  venue?: DirectusVenue;
+  venue_other?: string;
+  image?: DirectusFile<DirectusSchema>;
+  url?: string;
+  type?: DirectusEventType;
+}
+
+interface DirectusPlayerPositionTranslation {
+  languages_code: string;
+  name: string;
+  name_feminine: string;
+  name_masculine: string;
 }
 
 export interface DirectusPlayerPosition {
   id: number;
-  translations: {
-    languages_code: string;
-    name: string;
-    name_feminine: string;
-    name_masculine: string;
-  }[];
+  translations: DirectusPlayerPositionTranslation[];
 }
 
 export interface DirectusPlayer {
@@ -217,45 +245,42 @@ export interface DirectusPlayer {
   is_captain: boolean;
   birth_year: number;
   gender: DirectusGender;
-  club: {
-    name: string;
-  };
+  club: DirectusClub;
   positions: {
     player_positions_id: number;
   }[];
-  date_start: string;
-  date_end: string;
+  date_start: 'datetime';
+  date_end: 'datetime';
   track_record: string;
   portrait_square_head: string;
+}
+
+interface DirectusNationalTeamCompetitionTranslation {
+  languages_code: string;
+  name: string;
+  city: string;
+  country: string;
+  live: string | null;
+  about: string | null;
+  schedule: string | null;
+  medias: string | null;
 }
 
 export interface DirectusNationalTeamCompetition {
   id: number;
   slug: string | null;
   year: number;
-  date_start: string;
-  date_end: string;
+  date_start: 'datetime';
+  date_end: 'datetime';
   logo: string;
   telegram_channel: string;
   teams: {
     team: {
       id: number;
-      translations: {
-        languages_code: string;
-        name: string;
-      }[];
+      translations: DirectusTeamTranslation[];
     };
   }[];
-  translations: {
-    languages_code: string;
-    name: string;
-    city: string;
-    country: string;
-    live: string | null;
-    about: string | null;
-    schedule: string | null;
-    medias: string | null;
-  }[];
+  translations: DirectusNationalTeamCompetitionTranslation[];
 }
 
 export interface DirectusTeamResult {
@@ -264,15 +289,17 @@ export interface DirectusTeamResult {
   ranking: number;
 }
 
+interface DirectusTeamTranslation {
+  languages_code: string;
+  name: string;
+  slug: string;
+}
+
 export interface DirectusTeam {
   id: number;
   gender: DirectusGender;
-  translations: {
-    languages_code: string;
-    name: string;
-    slug: string;
-  }[];
-  team_photo?: DirectusImage;
+  translations: DirectusTeamTranslation[];
+  team_photo?: DirectusFile<DirectusSchema>;
   team_photo_vertical_shift?: number;
   players: DirectusPlayer[];
   staff: { roles_id: DirectusRole }[];
@@ -296,48 +323,51 @@ export interface DirectusNationalTeamCompetitionsTeam {
 
 export type DirectusNationalTeamCompetitionUpdateStatus = 'published' | 'draft' | 'archived';
 
+interface DirectusNationalTeamCompetitionUpdateTranslation {
+  languages_code: string;
+  body: string;
+}
+
 export interface DirectusNationalTeamCompetitionUpdate {
   id: number;
-  translations: {
-    languages_code: string;
-    body: string;
-  }[];
-  image?: DirectusImage;
+  translations: DirectusNationalTeamCompetitionUpdateTranslation[];
+  image?: DirectusFile<DirectusSchema>;
   competition: DirectusNationalTeamCompetition;
   status: DirectusNationalTeamCompetitionUpdateStatus;
   is_key: boolean | null;
   teams: {
     team_id: DirectusNationalTeamCompetitionsTeam;
   }[];
-  date_created: string;
-  date_updated: string;
+  date_created: 'datetime';
+  date_updated: 'datetime';
 }
 
 export interface DirectusSeason {
   id: number;
   name: string;
   slug: string;
-  date_start: string;
-  date_end: string;
+  date_start: 'datetime';
+  date_end: 'datetime';
   leverade_id?: number;
+}
+
+interface DirectusLiveStreamTranslation {
+  languages_code: string;
+  title: string;
 }
 
 export interface DirectusLiveStream {
   id: number;
-  translations: {
-    languages_code: string;
-    title: string;
-  }[];
+  translations: DirectusLiveStreamTranslation[];
   url: string;
-  date_start: string;
-  date_end: string;
+  date_start: 'datetime';
+  date_end: 'datetime';
   stream_start: string;
 }
 
 export interface DirectusNationalCompetitionEdition {
   id: number;
   season: DirectusSeason;
-  // eslint-disable-next-line no-use-before-define
   competition: DirectusNationalCompetition;
   leverade_id?: number;
 }
@@ -348,14 +378,16 @@ export interface DirectusMatchAdditionalData {
   flickr_photoset_id?: string;
 }
 
+interface DirectusNationalCompetitionTranslation {
+  languages_code: string;
+  name: string;
+  slug: string;
+}
+
 export interface DirectusNationalCompetition {
   id: number;
   editions: DirectusNationalCompetitionEdition[];
-  translations: {
-    languages_code: string;
-    name: string;
-    slug: string;
-  }[];
+  translations: DirectusNationalCompetitionTranslation[];
 }
 
 export interface DirectusClub {
@@ -372,59 +404,89 @@ export interface DirectusTchoukup {
   id: number;
   number: string;
   releaseDate: string;
-  cover: DirectusImage;
-  file: DirectusFile;
+  cover: DirectusFile<DirectusSchema>;
+  file: DirectusFile<DirectusSchema>;
 }
 
-type CustomTypes = {
+export type DirectusSchema = {
   /*
 	This type will be merged with Directus user type.
 	It's important that the naming matches a directus
 	collection name exactly. Typos won't get caught here
 	since SDK will assume it's a custom user collection.
 	*/
-  menus: DirectusMenuItem;
-  pages: DirectusPage;
-  texts: DirectusText;
-  news: DirectusNews;
-  press_releases: DirectusPressRelease;
-  events: DirectusEvent;
-  event_types: DirectusEventType;
-  national_teams: DirectusTeam;
-  national_team_competitions: DirectusNationalTeamCompetition;
-  national_team_competitions_teams: DirectusNationalTeamCompetitionsTeam;
-  national_teams_competitions_updates: DirectusNationalTeamCompetitionUpdate;
-  player_positions: DirectusPlayerPosition;
-  seasons: DirectusSeason;
-  live_streams: DirectusLiveStream;
-  national_competitions: DirectusNationalCompetition;
-  national_competition_editions: DirectusNationalCompetitionEdition;
-  match_additional_data: DirectusMatchAdditionalData;
-  domains: DirectusDomain;
-  resources: DirectusResource;
-  resource_types: DirectusResourceType;
-  clubs: DirectusClub;
-  groups: DirectusGroup;
-  roles: DirectusRole;
-  people: DirectusPerson;
-  tchoukup: DirectusTchoukup;
+  menus: DirectusMenuItem[];
+  menu_translations: DirectusMenuItemTranslation[];
+  pages: DirectusPage[];
+  page_translations: DirectusPageTranslation[];
+  texts: DirectusText[];
+  text_translation: DirectusTextTranslation[];
+  news: DirectusNews[];
+  news_translations: DirectusNewsTranslation[];
+  press_releases: DirectusPressRelease[];
+  press_release_translations: DirectusPressReleaseTranslation[];
+  events: DirectusEvent[];
+  event_translations: DirectusEventTranslation[];
+  event_types: DirectusEventType[];
+  event_type_translations: DirectusEventTypeTranslation[];
+  venues: DirectusVenue[];
+  national_teams: DirectusTeam[];
+  national_team_translations: DirectusTeamTranslation[];
+  national_team_competitions: DirectusNationalTeamCompetition[];
+  national_team_competition_translations: DirectusNationalTeamCompetitionTranslation[];
+  national_team_competitions_teams: DirectusNationalTeamCompetitionsTeam[];
+  national_teams_competitions_updates: DirectusNationalTeamCompetitionUpdate[];
+  national_teams_competitions_update_translations: DirectusNationalTeamCompetitionUpdateTranslation[];
+  player_positions: DirectusPlayerPosition[];
+  player_position_translations: DirectusPlayerPositionTranslation[];
+  seasons: DirectusSeason[];
+  live_streams: DirectusLiveStream[];
+  live_stream_translations: DirectusLiveStreamTranslation[];
+  national_competitions: DirectusNationalCompetition[];
+  national_competition_translations: DirectusNationalCompetitionTranslation[];
+  national_competition_editions: DirectusNationalCompetitionEdition[];
+  match_additional_data: DirectusMatchAdditionalData[];
+  domains: DirectusDomain[];
+  domain_translations: DirectusMenuItemTranslation[];
+  resources: DirectusResource[];
+  resource_translations: DirectusResourceTranslation[];
+  resource_types: DirectusResourceType[];
+  resource_type_translations: DirectusResourceTypeTranslation[];
+  clubs: DirectusClub[];
+  groups: DirectusGroup[];
+  group_translations: DirectusGroupTranslation[];
+  roles: DirectusRole[];
+  role_translations: DirectusRoleTranslation[];
+  people: DirectusPerson[];
+  tchoukup: DirectusTchoukup[];
+
+  // Relation models
+  relation_roles_people: DirectusRolePerson[];
+  relation_pages_resources: DirectusPageResource[];
+  relation_page_roles: DirectusPageRole[];
+  relation_news_domain: DirectusNewsDomainPivot[];
+
+  // Because of an ongoing bug, we have to declare the Directus types that we use.
+  // See https://github.com/directus/directus/issues/19815
+  // TODO: Remove those when the bug will be resolved.
+  directus_files: DirectusFile<object>[];
 };
 
 declare module 'vue/types/vue' {
   // this.$directus inside Vue components
   interface Vue {
-    $directus: Directus<CustomTypes>;
+    $directus: DirectusClient<DirectusSchema> & RestClient<DirectusSchema>;
   }
 }
 
 declare module '@nuxt/types' {
   // nuxtContext.app.$directus inside asyncData, fetch, plugins, middleware, nuxtServerInit
   interface NuxtAppOptions {
-    $directus: Directus<CustomTypes>;
+    $directus: DirectusClient<DirectusSchema> & RestClient<DirectusSchema>;
   }
   // nuxtContext.$directus
   interface Context {
-    $directus: Directus<CustomTypes>;
+    $directus: DirectusClient<DirectusSchema> & RestClient<DirectusSchema>;
   }
 }
 
@@ -432,12 +494,17 @@ declare module 'vuex/types/index' {
   // this.$directus inside Vuex stores
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface Store<S> {
-    $directus: Directus<CustomTypes>;
+    $directus: DirectusClient<DirectusSchema> & RestClient<DirectusSchema>;
   }
 }
 
 const directusPlugin: Plugin = (context, inject) => {
-  const directus = new Directus<CustomTypes>(context.$config.cmsURL);
+  // const directus = new Directus<DirectusSchema>(context.$config.cmsURL);
+
+  // We need to do this for the plugin to be able to get initialise properly in SSR.
+  globalThis.URL = URL;
+
+  const directus = createDirectus<DirectusSchema>(context.$config.cmsURL, { globals: { URL } }).with(rest());
 
   inject('directus', directus);
 };
@@ -469,7 +536,7 @@ export const getAssetSrcSet = (cmsURL: string, assetId: string, { widths }: { wi
  * the first available language of the entity translations is returned
  */
 export const getTranslatedFields = (
-  entity: ItemInput<Record<string, any> & { translations: Record<string, any>[] }>,
+  entity: Record<string, any> & { translations: Record<string, any>[] },
   languageKey?: string
 ) => {
   if (entity.translations) {

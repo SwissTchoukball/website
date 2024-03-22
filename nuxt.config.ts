@@ -151,7 +151,7 @@ const config: NuxtConfig = {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
-    transpile: ['vue-tooltip'],
+    transpile: ['vue-tooltip', '@directus/sdk', '@directus/system-data'],
     postcss: {
       postcssOptions: {
         plugins: {

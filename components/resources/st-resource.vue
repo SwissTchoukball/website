@@ -51,6 +51,7 @@ export default defineComponent({
       if (!this.resource?.file) {
         return;
       }
+      // @ts-ignore TODO: Check the actual type
       return humanFileSize(this.resource.file.filesize, 2, this.$i18n.locale);
     },
     fileName(): string {

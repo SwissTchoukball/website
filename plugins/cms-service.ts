@@ -1,19 +1,35 @@
 import { Plugin } from '@nuxt/types';
 import { set } from 'date-fns';
-import { Filter, OneItem, ItemInput } from '@directus/sdk';
+import { aggregate, readItem, readItems, type DirectusFile, type Query } from '@directus/sdk';
 import { Await } from '~/types/types.utils';
 import {
   DirectusClub,
+  DirectusDomain,
   DirectusEvent,
-  DirectusFile,
+  DirectusEventType,
   DirectusGroup,
+  DirectusLiveStream,
   DirectusMatchAdditionalData,
+  DirectusMenuItem,
   DirectusNationalCompetition,
   DirectusNationalCompetitionEdition,
+  DirectusNationalTeamCompetition,
+  DirectusNationalTeamCompetitionUpdate,
+  DirectusNationalTeamCompetitionsTeam,
+  DirectusNews,
+  DirectusPage,
+  DirectusPerson,
+  DirectusPlayerPosition,
   DirectusPressRelease,
+  DirectusResource,
   DirectusResourceStatus,
+  DirectusResourceType,
   DirectusRole,
+  DirectusSchema,
   DirectusSeason,
+  DirectusTchoukup,
+  DirectusTeam,
+  DirectusText,
   getTranslatedFields,
 } from '~/plugins/directus';
 import { NewsEntry } from '~/components/news/st-news';
@@ -28,6 +44,7 @@ import {
 import { processRawCoaches, processRawPlayers } from '~/plugins/cms-service/national-teams';
 import { PressRelease } from '~/components/press-releases/press-releases';
 import { toISOLocal } from '~/utils/utils';
+import { EventTypes, PlayerPositions } from '~/store/state';
 
 export interface ResourceType {
   id: number;
@@ -37,7 +54,7 @@ export interface ResourceType {
 export interface Resource {
   id: number;
   name: string;
-  file: DirectusFile;
+  file: DirectusFile<DirectusSchema>;
   link: string;
   type: ResourceType;
   domain_ids: number[];
@@ -159,7 +176,8 @@ export interface LiveStream {
 }
 
 export interface CMSService {
-  getPage: (options: { pagePath: string }) => Promise<ItemInput<SimplePage>>;
+  getMainNavigation: () => Promise<DirectusMenuItem[]>;
+  getPage: (options: { pagePath: string }) => Promise<SimplePage>;
   getText: (textId: number) => Promise<TextEntry>;
   getDomains: () => Promise<Domain[]>;
   getNews: (options: {
@@ -174,12 +192,13 @@ export interface CMSService {
   getGroup: ({ id, slug }: { id?: number; slug?: string }) => Promise<Group>;
   getRole: (roleId: number) => Promise<RoleWithPartialGroupAndHolders>;
   getStaff: ({ groupId, groupSlug }: { groupId?: number; groupSlug?: string }) => Promise<Person[]>;
-  getClubs: (options: { statuses: string[] }) => Promise<ItemInput<DirectusClub>[]>;
+  getClubs: (options: { statuses: string[] }) => Promise<DirectusClub[]>;
   getPressReleaseList: (options: {
     limit: number;
     page: number;
   }) => Promise<{ data: PressRelease[]; meta: { total: number } }>;
   getPressRelease: (pressReleaseId: number) => Promise<PressRelease>;
+  getEventTypes: () => Promise<EventTypes>;
   getEvent: (eventId: number) => Promise<CalendarEvent>;
   getEvents: (options: {
     limit: number;
@@ -193,6 +212,7 @@ export interface CMSService {
     upcoming?: boolean;
     excludeCancelled?: boolean;
   }) => Promise<{ data: CalendarEvent[]; meta: { total: number } }>;
+  getPlayerPositions: () => Promise<PlayerPositions>;
   getTeam: (teamSlug: string) => Promise<NationalTeam>;
   getNationalTeamCompetition: ({ id, slug }: { id?: number; slug?: string }) => Promise<NationalTeamCompetition>;
   getNationalTeamCompetitionUpdates: (
@@ -247,7 +267,7 @@ declare module 'vuex/types/index' {
 }
 
 const cmsService: Plugin = (context, inject) => {
-  const processRoles = (directusRoles: (ItemInput<DirectusRole> | undefined)[]) => {
+  const processRoles = (directusRoles: (DirectusRole | undefined)[]) => {
     return directusRoles.reduce((roles, role) => {
       if (!role || !role.id) {
         return roles;
@@ -284,87 +304,97 @@ const cmsService: Plugin = (context, inject) => {
    * Fetches the data of a simple page for a specific locale
    */
   const fetchPage = async (pagePath: string, locale: string) => {
-    const pageResponse = await context.$directus.items('pages').readByQuery({
-      // @ts-ignore Bug with Directus SDK. It's okay to filter more than one level deep.
-      filter: { translations: { path: { _eq: pagePath } } },
-      fields: [
-        'id',
-        'translations.languages_code',
-        'translations.path',
-        'translations.title',
-        'translations.body',
-        'key_roles.roles_id.id',
-        'key_roles.roles_id.translations.name',
-        'key_roles.roles_id.translations.name_feminine',
-        'key_roles.roles_id.translations.name_masculine',
-        'key_roles.roles_id.holders.people_id.id',
-        'key_roles.roles_id.holders.people_id.first_name',
-        'key_roles.roles_id.holders.people_id.last_name',
-        'key_roles.roles_id.holders.people_id.email',
-        'key_roles.roles_id.holders.people_id.gender',
-        'key_roles.roles_id.holders.people_id.portrait_square_head',
-        'resources.resources_id.id',
-        'resources.resources_id.name',
-        'resources.resources_id.file.id',
-        'resources.resources_id.file.type',
-        'resources.resources_id.file.filesize',
-        'resources.resources_id.file.filename_download',
-        'resources.resources_id.link',
-        'resources.resources_id.type',
-        'resources.resources_id.domains.domains_id',
-        'resources.resources_id.translations.name',
-        'resources.resources_id.translations.file.id',
-        'resources.resources_id.translations.file.type',
-        'resources.resources_id.translations.file.filesize',
-        'resources.resources_id.translations.file.filename_download',
-        'resources.resources_id.translations.link',
-      ],
-      deep: {
-        // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
-        translations: { _filter: { languages_code: { _eq: locale } } },
-        // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
-        key_roles: { roles_id: { translations: { _filter: { languages_code: { _eq: locale } } } } },
-        // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
-        resources: { resources_id: { translations: { _filter: { languages_code: { _eq: locale } } } } },
-      },
-      limit: 1,
-    });
+    const pages = await context.$directus.request<DirectusPage[]>(
+      readItems('pages', {
+        filter: { translations: { path: { _eq: pagePath } } },
+        fields: [
+          'id',
+          {
+            translations: ['languages_code', 'path', 'title', 'body'],
+            key_roles: [
+              {
+                roles_id: [
+                  'id',
+                  {
+                    translations: ['name', 'name_feminine', 'name_masculine'],
+                    holders: [
+                      {
+                        people_id: ['id', 'first_name', 'last_name', 'email', 'gender', 'portrait_square_head'],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+            resources: [
+              {
+                resources_id: [
+                  'id',
+                  'type',
+                  {
+                    file: ['id', 'type', 'filesize', 'filename_download'],
+                    domains: ['id'],
+                    translations: [
+                      'name',
+                      'link',
+                      {
+                        file: ['id', 'type', 'filesize', 'filename_download'],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+        deep: {
+          translations: { _filter: { languages_code: { _eq: locale } } },
+          key_roles: { roles_id: { translations: { _filter: { languages_code: { _eq: locale } } } } },
+          resources: { resources_id: { translations: { _filter: { languages_code: { _eq: locale } } } } },
+        },
+        limit: 1,
+      })
+    );
 
-    if (!pageResponse.data?.length) {
+    if (!pages?.length) {
       throw new Error('pageNotFound');
     }
 
-    if (!pageResponse.data[0].translations?.length || !pageResponse.data[0].translations[0]) {
+    const requestedPage = pages[0];
+
+    if (!requestedPage.translations?.length || !requestedPage.translations[0]) {
       throw new Error('noData');
     }
 
+    const requestedPageTranslations = requestedPage.translations[0];
+
     if (
-      !pageResponse.data[0].translations[0].languages_code ||
-      !pageResponse.data[0].translations[0].path ||
-      !pageResponse.data[0].translations[0].title ||
-      !pageResponse.data[0].translations[0].body
+      !requestedPageTranslations.languages_code ||
+      !requestedPageTranslations.path ||
+      !requestedPageTranslations.title ||
+      !requestedPageTranslations.body
     ) {
       throw new Error('Missing required data for simple page');
     }
 
     const pageData: SimplePage = {
-      languages_code: pageResponse.data[0].translations[0].languages_code,
-      path: pageResponse.data[0].translations[0].path,
-      title: pageResponse.data[0].translations[0].title,
-      body: pageResponse.data[0].translations[0].body,
+      languages_code: requestedPageTranslations.languages_code,
+      path: requestedPageTranslations.path,
+      title: requestedPageTranslations.title,
+      body: requestedPageTranslations.body,
       key_roles: [],
       resources: [],
     };
 
-    if (pageResponse.data[0].key_roles) {
+    if (requestedPage.key_roles) {
       // We save the roles in the store and only provide the role IDs with the page data
-      pageData.key_roles.push(...processRoles(pageResponse.data[0].key_roles.map((pageRole) => pageRole?.roles_id)));
+      pageData.key_roles.push(...processRoles(requestedPage.key_roles.map((pageRole) => pageRole?.roles_id)));
     }
 
-    if (pageResponse.data[0].resources) {
+    if (requestedPage.resources) {
       // We save the resources in the store and only provide the resource IDs with the page data
       pageData.resources.push(
-        ...pageResponse.data[0].resources.reduce((resources, resourcePageRelation) => {
+        ...requestedPage.resources.reduce((resources, resourcePageRelation) => {
           if (!resourcePageRelation?.resources_id?.id) {
             return resources;
           }
@@ -392,12 +422,39 @@ const cmsService: Plugin = (context, inject) => {
     return pageData;
   };
 
+  const getMainNavigation: CMSService['getMainNavigation'] = async () => {
+    const currentLocale = context.i18n.locale;
+    return await context.$directus.request<DirectusMenuItem[]>(
+      readItems('menus', {
+        filter: { parent: { _eq: 1 } },
+        sort: ['sort'],
+        deep: {
+          translations: { _filter: { languages_code: { _eq: currentLocale } } },
+          children: { translations: { _filter: { languages_code: { _eq: currentLocale } } } },
+        },
+        fields: [
+          {
+            translations: ['languages_code', 'name', 'href'],
+            children: [
+              'sort', // The API cannot sort in a relation yet. We do it ourselves.
+              {
+                translations: ['languages_code', 'name', 'href'],
+              },
+            ],
+          },
+        ],
+      })
+    );
+  };
+
   const getText: CMSService['getText'] = async (textId) => {
     // We retrieve all the languages and show text in fallback locale if not available in current locale
     const currentLocale = context.i18n.locale;
-    const directusTextEntry = await context.$directus.items('texts').readOne(textId, {
-      fields: ['id', 'translations.languages_code', 'translations.body'],
-    });
+    const directusTextEntry = await context.$directus.request<DirectusText>(
+      readItem('texts', textId, {
+        fields: ['id', { translations: ['languages_code', 'body'] }],
+      })
+    );
 
     if (!directusTextEntry) {
       throw new Error('Error when retrieving text entry');
@@ -419,17 +476,18 @@ const cmsService: Plugin = (context, inject) => {
 
   const getDomains: CMSService['getDomains'] = async () => {
     const currentLocale = context.i18n.locale;
-    const domainsResponse = await context.$directus.items('domains').readByQuery({
-      fields: ['id', 'translations.name'],
-      // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
-      deep: { translations: { _filter: { languages_code: { _eq: currentLocale } } } },
-    });
+    const domainsResponse = await context.$directus.request<DirectusDomain[]>(
+      readItems('domains', {
+        fields: ['id', { translations: ['name'] }],
+        deep: { translations: { _filter: { languages_code: { _eq: currentLocale } } } },
+      })
+    );
 
-    if (!domainsResponse.data) {
+    if (!domainsResponse) {
       throw new Error('Error when retrieving domains');
     }
 
-    const domains = domainsResponse.data.reduce((domains, domain) => {
+    const domains = domainsResponse.reduce((domains, domain) => {
       const translatedFields = getTranslatedFields(domain);
 
       // We discard entries that don't have mandatory data.
@@ -474,71 +532,45 @@ const cmsService: Plugin = (context, inject) => {
     // We retrieve all the languages and show news in fallback locale if not available in current locale
     const currentLocale = context.i18n.locale;
 
-    // Preparing the filter to retrieve the news
-    const publishedFilter = {
-      status: {
-        _eq: 'published',
-      },
-    };
+    // TODO: Move this out of the function to call it only once
+    const aggregationOutput = await context.$directus.request(
+      aggregate('news', {
+        aggregate: { count: '*' },
+      })
+    );
 
-    let domainFilter: any;
-    if (domainId) {
-      domainFilter = {
-        domains: { domains_id: { id: { _eq: domainId } } },
-      };
-    }
+    const newsResponse = await context.$directus.request<DirectusNews[]>(
+      readItems('news', {
+        limit,
+        page,
+        filter: {
+          _and: [
+            { status: { _eq: 'published' } },
+            ...(domainId ? [{ domains: { domains_id: { id: { _eq: domainId } } } }] : []),
+            ...(withImageOnly ? [{ main_image: { _nnull: true } }] : []),
+            ...(forHomepage ? [{ hide_from_home: { _eq: false } }] : []),
+          ],
+        },
+        fields: [
+          'id',
+          'date_created',
+          'date_updated',
+          {
+            main_image: ['id', 'description'],
+            translations: ['languages_code', 'slug', 'title'],
+            domains: [{ domains_id: ['id'] }],
+          },
+        ],
+        sort: ['-date_created'],
+      })
+    );
 
-    let imageFilter: any;
-    if (withImageOnly) {
-      imageFilter = { main_image: { _nnull: true } };
-    }
-
-    let homepageFilter: any;
-    if (forHomepage) {
-      homepageFilter = { hide_from_home: { _eq: false } };
-    }
-
-    const filter: any = { _and: [publishedFilter] };
-    if (domainFilter) {
-      filter._and.push(domainFilter);
-    }
-    if (imageFilter) {
-      filter._and.push(imageFilter);
-    }
-    if (homepageFilter) {
-      filter._and.push(homepageFilter);
-    }
-
-    const newsResponse = await context.$directus.items('news').readByQuery({
-      meta: 'filter_count',
-      limit,
-      page,
-      filter,
-      fields: [
-        'id',
-        'date_created',
-        'date_updated',
-        'main_image.id',
-        'main_image.description',
-        'translations.languages_code',
-        'translations.slug',
-        'translations.title',
-        'domains.domains_id.id',
-      ],
-      sort: ['-date_created'],
-    });
-
-    let totalNewsEntries = 0;
-    if (newsResponse?.meta?.filter_count) {
-      totalNewsEntries = newsResponse.meta.filter_count;
-    }
-
-    let newsList = [];
-    if (!newsResponse?.data) {
+    let newsList: NewsEntry[] = [];
+    if (!newsResponse) {
       throw new Error('Error when retrieving news');
     }
 
-    newsList = newsResponse.data.reduce((news, directusNewsEntry) => {
+    newsList = newsResponse.reduce((news, directusNewsEntry) => {
       if (!directusNewsEntry) {
         return news;
       }
@@ -562,7 +594,7 @@ const cmsService: Plugin = (context, inject) => {
       if (directusNewsEntry.main_image && directusNewsEntry.main_image.id) {
         newsEntry.main_image = {
           id: directusNewsEntry.main_image.id,
-          description: directusNewsEntry.main_image.description,
+          description: directusNewsEntry.main_image.description || undefined,
         };
       }
 
@@ -587,7 +619,7 @@ const cmsService: Plugin = (context, inject) => {
     return {
       data: newsList,
       meta: {
-        total: totalNewsEntries,
+        total: aggregationOutput[0].count ? +aggregationOutput[0].count : 0,
         filteredDomainId,
       },
     };
@@ -597,26 +629,23 @@ const cmsService: Plugin = (context, inject) => {
   const getOneNews: CMSService['getOneNews'] = async (newsId) => {
     // We retrieve all the languages and show news in fallback locale if not available in current locale
     const currentLocale = context.i18n.locale;
-    const directusNewsEntry = await context.$directus.items('news').readOne(newsId, {
-      fields: [
-        'id',
-        'date_created',
-        'date_updated',
-        'main_image.id',
-        'main_image.description',
-        'translations.languages_code',
-        'translations.slug',
-        'translations.title',
-        'translations.body',
-        'domains.domains_id.id',
-        'domains.domains_id.name',
-        'domains.domains_id.translations.name',
-      ],
-      deep: {
-        // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
-        domains: { domains_id: { translations: { _filter: { languages_code: { _eq: currentLocale } } } } },
-      },
-    });
+    const directusNewsEntry = await context.$directus.request<DirectusNews>(
+      readItem('news', newsId, {
+        fields: [
+          'id',
+          'date_created',
+          'date_updated',
+          {
+            main_image: ['id', 'description'],
+            translations: ['languages_code', 'slug', 'title', 'body'],
+            domains: [{ domains_id: ['id', { translations: ['name'] }] }],
+          },
+        ],
+        deep: {
+          domains: { domains_id: { translations: { _filter: { languages_code: { _eq: currentLocale } } } } },
+        },
+      })
+    );
 
     if (!directusNewsEntry) {
       throw new Error('Error when retrieving news');
@@ -646,7 +675,7 @@ const cmsService: Plugin = (context, inject) => {
     if (directusNewsEntry.main_image && directusNewsEntry.main_image.id) {
       newsEntry.main_image = {
         id: directusNewsEntry.main_image.id,
-        description: directusNewsEntry.main_image.description,
+        description: directusNewsEntry.main_image.description || undefined,
       };
     }
 
@@ -663,7 +692,7 @@ const cmsService: Plugin = (context, inject) => {
     return newsEntry;
   };
 
-  const processPressRelease = (directusPressRelease: ItemInput<DirectusPressRelease>): PressRelease => {
+  const processPressRelease = (directusPressRelease: DirectusPressRelease): PressRelease => {
     // We retrieve all the languages and show news in fallback locale if not available in current locale
     const currentLocale = context.i18n.locale;
 
@@ -687,7 +716,7 @@ const cmsService: Plugin = (context, inject) => {
     return pressRelease;
   };
 
-  const processGroup = (group: ItemInput<DirectusGroup>): Group => {
+  const processGroup = (group: DirectusGroup): Group => {
     const translatedFields = getTranslatedFields(group);
 
     // We discard entries that don't have mandatory data.
@@ -705,17 +734,18 @@ const cmsService: Plugin = (context, inject) => {
 
   const getGroups: CMSService['getGroups'] = async () => {
     const currentLocale = context.i18n.locale;
-    const groupsResponse = await context.$directus.items('groups').readByQuery({
-      fields: ['id', 'translations.name', 'translations.description', 'translations.slug'],
-      // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
-      deep: { translations: { _filter: { languages_code: { _eq: currentLocale } } } },
-    });
+    const groupsResponse = await context.$directus.request<DirectusGroup[]>(
+      readItems('groups', {
+        fields: ['id', { translations: ['name', 'description', 'slug'] }],
+        deep: { translations: { _filter: { languages_code: { _eq: currentLocale } } } },
+      })
+    );
 
-    if (!groupsResponse.data) {
+    if (!groupsResponse) {
       throw new Error('Error when retrieving groups');
     }
 
-    return groupsResponse.data.reduce((groups, rawGroup) => {
+    return groupsResponse.reduce((groups, rawGroup) => {
       try {
         const group = processGroup(rawGroup);
         return [...groups, group];
@@ -723,23 +753,6 @@ const cmsService: Plugin = (context, inject) => {
         console.warn(error);
         return groups;
       }
-      // const translatedFields = getTranslatedFields(group);
-
-      // // We discard entries that don't have mandatory data.
-      // if (!group.id || !translatedFields?.name || !translatedFields?.slug) {
-      //   console.warn('Group missing mandatory data', { group });
-      //   return groups;
-      // }
-
-      // return [
-      //   ...groups,
-      //   {
-      //     id: group.id,
-      //     name: translatedFields.name,
-      //     description: translatedFields?.description || '',
-      //     slug: translatedFields?.slug,
-      //   },
-      // ];
     }, [] as Group[]);
   };
 
@@ -748,45 +761,36 @@ const cmsService: Plugin = (context, inject) => {
       throw new Error('Either ID or slug must be provided');
     }
 
-    let directusGroup: OneItem<DirectusGroup>;
-    const fields = [
+    let directusGroup: DirectusGroup;
+    const fields: Query<DirectusSchema, DirectusGroup>['fields'] = [
       'id',
-      'translations.name',
-      'translations.description',
-      'translations.slug',
-      // 'roles.id',
-      // 'roles.translations.name',
-      // 'roles.translations.name_feminine',
-      // 'roles.translations.name_masculine',
-      // 'roles.holders.people_id.id',
-      // 'roles.holders.people_id.first_name',
-      // 'roles.holders.people_id.last_name',
-      // 'roles.holders.people_id.email',
-      // 'roles.holders.people_id.gender',
-      // 'roles.holders.people_id.portrait_square_head',
+      {
+        translations: ['name', 'description', 'slug'],
+      },
     ];
     const deep = { translations: { _filter: { languages_code: { _eq: context.i18n.locale } } } };
     if (id) {
-      directusGroup = await context.$directus.items('groups').readOne(id, {
-        fields,
-        // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
-        deep,
-      });
+      directusGroup = await context.$directus.request<DirectusGroup>(
+        readItem('groups', id, {
+          fields,
+          deep,
+        })
+      );
     } else {
-      const groups = await context.$directus.items('groups').readByQuery({
-        limit: 1,
-        filter: {
-          translations: {
-            // @ts-ignore This should be accepted. To be fixed in Directus SDK
-            slug: { _eq: slug },
+      const groups = await context.$directus.request<DirectusGroup[]>(
+        readItems('groups', {
+          limit: 1,
+          filter: {
+            translations: {
+              slug: { _eq: slug },
+            },
           },
-        },
-        fields,
-        // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
-        deep,
-      });
+          fields,
+          deep,
+        })
+      );
 
-      directusGroup = groups.data?.[0];
+      directusGroup = groups?.[0];
     }
 
     if (!directusGroup) {
@@ -797,25 +801,27 @@ const cmsService: Plugin = (context, inject) => {
   };
 
   const getRole: CMSService['getRole'] = async (roleId: number) => {
-    const rawRole = await context.$directus.items('roles').readOne(roleId, {
-      fields: [
-        'id',
-        'translations.name',
-        'translations.name_feminine',
-        'translations.name_masculine',
-        'translations.languages_code',
-        'group.id',
-        'group.translations.name',
-        'group.translations.slug',
-        'group.translations.languages_code',
-        'holders.people_id.id',
-        'holders.people_id.first_name',
-        'holders.people_id.last_name',
-        'holders.people_id.email',
-        'holders.people_id.gender',
-        'holders.people_id.portrait_square_head',
-      ],
-    });
+    const rawRole = await context.$directus.request<DirectusRole>(
+      readItem('roles', roleId, {
+        fields: [
+          'id',
+          {
+            translations: ['name', 'name_feminine', 'name_masculine', 'languages_code'],
+            group: [
+              'id',
+              {
+                translations: ['name', 'slug', 'languages_code'],
+              },
+            ],
+            holders: [
+              {
+                people_id: ['id', 'first_name', 'last_name', 'email', 'gender', 'portrait_square_head'],
+              },
+            ],
+          },
+        ],
+      })
+    );
 
     if (!rawRole) {
       throw new Error('Error when retrieving role');
@@ -879,42 +885,53 @@ const cmsService: Plugin = (context, inject) => {
       filter = { roles: { roles_id: { group: { translations: { slug: groupSlug } } } } };
     }
 
-    const peopleResponse = await context.$directus.items('people').readByQuery({
-      fields: [
-        'id',
-        'first_name',
-        'last_name',
-        'portrait_square_head',
-        'gender',
-        'email',
-        'roles.main',
-        'roles.roles_id.id',
-        'roles.roles_id.translations.name',
-        'roles.roles_id.translations.name_feminine',
-        'roles.roles_id.translations.name_masculine',
-        'roles.roles_id.group.id',
-        'roles.roles_id.group.translations.name',
-        'roles.roles_id.group.translations.slug',
-        'roles.roles_id.group.translations.description',
-      ],
-      filter,
-      deep: {
-        roles: {
-          // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
-          roles_id: {
-            translations: { _filter: { languages_code: { _eq: context.i18n.locale } } },
-            group: { translations: { _filter: { languages_code: { _eq: context.i18n.locale } } } },
+    const peopleResponse = await context.$directus.request<DirectusPerson[]>(
+      readItems('people', {
+        fields: [
+          'id',
+          'first_name',
+          'last_name',
+          'portrait_square_head',
+          'gender',
+          'email',
+          {
+            roles: [
+              'main',
+              {
+                roles_id: [
+                  'id',
+                  {
+                    translations: ['name', 'name_feminine', 'name_masculine'],
+                    group: [
+                      'id',
+                      {
+                        translations: ['name', 'slug', 'description'],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+        filter,
+        deep: {
+          roles: {
+            roles_id: {
+              translations: { _filter: { languages_code: { _eq: context.i18n.locale } } },
+              group: { translations: { _filter: { languages_code: { _eq: context.i18n.locale } } } },
+            },
           },
         },
-      },
-      sort: ['last_name'],
-    });
+        sort: ['last_name'],
+      })
+    );
 
-    if (!peopleResponse.data) {
+    if (!peopleResponse) {
       throw new Error('Error when retrieving people');
     }
 
-    return peopleResponse.data.reduce((people, person) => {
+    return peopleResponse.reduce((people, person) => {
       // We discard entries that don't have mandatory data.
       if (!person.id || !person.first_name || !person.last_name) {
         console.warn('Person missing mandatory data', { person });
@@ -975,69 +992,73 @@ const cmsService: Plugin = (context, inject) => {
   };
 
   const getClubs: CMSService['getClubs'] = async ({ statuses }) => {
-    const statusFilter = statuses.reduce((filter, status): { status: string }[] => {
+    const statusFilter = statuses.reduce((filter, status) => {
       return [
         ...filter,
         {
-          status,
+          status: { _eq: status },
         },
       ];
-    }, [] as { status: string }[]);
+    }, [] as { status: { _eq: string } }[]);
 
-    const clubsResponse = await context.$directus.items('clubs').readByQuery({
-      fields: ['id', 'name', 'name_full', 'name_sort', 'status', 'website', 'logo'],
-      filter: {
-        _or: statusFilter,
-      },
-      sort: ['name_sort'],
-    });
+    const clubsResponse = await context.$directus.request<DirectusClub[]>(
+      readItems('clubs', {
+        fields: ['id', 'name', 'name_full', 'name_sort', 'status', 'website', 'logo'],
+        filter: {
+          _or: statusFilter,
+        },
+        sort: ['name_sort'],
+      })
+    );
 
-    if (!clubsResponse.data) {
+    if (!clubsResponse) {
       throw new Error('Error when retrieving clubs');
     }
 
-    return clubsResponse.data;
+    return clubsResponse;
   };
 
   const getPressReleaseList: CMSService['getPressReleaseList'] = async ({ limit, page }) => {
-    // Preparing the filter to retrieve the news
+    // Preparing the filter to retrieve the press release
     const publishedFilter = {
       status: {
         _eq: 'published',
       },
     };
 
-    const filter: any = { _and: [publishedFilter] };
+    const filter = { _and: [publishedFilter] };
 
-    const pressReleaseResponse = await context.$directus.items('press_releases').readByQuery({
-      meta: 'filter_count',
-      limit,
-      page,
-      filter,
-      fields: [
-        'id',
-        'date_created',
-        'date_updated',
-        'status',
-        'translations.languages_code',
-        'translations.slug',
-        'translations.title',
-        'translations.context',
-      ],
-      sort: ['-date_created'],
-    });
+    const pressReleaseResponse = await context.$directus.request<DirectusPressRelease[]>(
+      readItems('press_releases', {
+        limit,
+        page,
+        filter,
+        fields: [
+          'id',
+          'date_created',
+          'date_updated',
+          'status',
+          {
+            translations: ['languages_code', 'slug', 'title', 'context'],
+          },
+        ],
+        sort: ['-date_created'],
+      })
+    );
 
-    let totalPressReleaseEntries = 0;
-    if (pressReleaseResponse?.meta?.filter_count) {
-      totalPressReleaseEntries = pressReleaseResponse.meta.filter_count;
-    }
+    // TODO: Move this out of the function to call it only once
+    const aggregationOutput = await context.$directus.request(
+      aggregate('press_releases', {
+        aggregate: { count: '*' },
+      })
+    );
 
     let pressReleaseList = [];
-    if (!pressReleaseResponse?.data) {
+    if (!pressReleaseResponse) {
       throw new Error('Error when retrieving press releases');
     }
 
-    pressReleaseList = pressReleaseResponse.data.reduce((pressReleaseList, directusPressRelease) => {
+    pressReleaseList = pressReleaseResponse.reduce((pressReleaseList, directusPressRelease) => {
       if (!directusPressRelease) {
         return pressReleaseList;
       }
@@ -1047,25 +1068,23 @@ const cmsService: Plugin = (context, inject) => {
     return {
       data: pressReleaseList,
       meta: {
-        total: totalPressReleaseEntries,
+        total: aggregationOutput[0].count ? +aggregationOutput[0].count : 0,
       },
     };
   };
 
   const getPressRelease: CMSService['getPressRelease'] = async (pressReleaseId) => {
-    const directusPressRelease = await context.$directus.items('press_releases').readOne(pressReleaseId, {
-      fields: [
-        'id',
-        'date_created',
-        'date_updated',
-        'status',
-        'translations.languages_code',
-        'translations.slug',
-        'translations.title',
-        'translations.context',
-        'translations.body',
-      ],
-    });
+    const directusPressRelease = await context.$directus.request<DirectusPressRelease>(
+      readItem('press_releases', pressReleaseId, {
+        fields: [
+          'id',
+          'date_created',
+          'date_updated',
+          'status',
+          { translations: ['languages_code', 'slug', 'title', 'context', 'body'] },
+        ],
+      })
+    );
 
     if (!directusPressRelease) {
       throw new Error('Error when retrieving news');
@@ -1074,7 +1093,42 @@ const cmsService: Plugin = (context, inject) => {
     return processPressRelease(directusPressRelease);
   };
 
-  const processEvent = (directusEvent: ItemInput<DirectusEvent>, locale: string): CalendarEvent => {
+  const getEventTypes: CMSService['getEventTypes'] = async () => {
+    const eventTypes = await context.$directus.request<DirectusEventType[]>(
+      readItems('event_types', {
+        deep: {
+          translations: { _filter: { languages_code: { _eq: context.i18n.locale } } },
+        },
+        fields: [
+          'id',
+          {
+            translations: ['languages_code', 'name', 'name_plural'],
+            image: ['id', 'description'],
+          },
+        ],
+      })
+    );
+
+    return eventTypes.reduce((types, type) => {
+      const translatedFields = getTranslatedFields(type);
+
+      if (!type?.id || !translatedFields?.name || !translatedFields?.name_plural) {
+        return types;
+      }
+
+      return {
+        ...types,
+        [type.id]: {
+          id: type.id,
+          name: translatedFields.name,
+          name_plural: translatedFields.name_plural,
+          image: type.image,
+        },
+      };
+    }, {} as EventTypes);
+  };
+
+  const processEvent = (directusEvent: DirectusEvent, locale: string): CalendarEvent => {
     const translatedFields = getTranslatedFields(directusEvent, locale);
     if (!directusEvent?.date_start || !translatedFields?.name) {
       throw new Error('Event is missing name or start date');
@@ -1129,34 +1183,26 @@ const cmsService: Plugin = (context, inject) => {
   };
 
   const getEvent: CMSService['getEvent'] = async (eventId) => {
-    let response: OneItem<DirectusEvent>;
-    try {
-      response = await context.$directus.items('events').readOne(eventId, {
+    const response = await context.$directus.request<DirectusEvent>(
+      readItem('events', eventId, {
         fields: [
           'id',
-          'translations.languages_code',
-          'translations.name',
-          'translations.description',
           'date_start',
           'time_start',
           'date_end',
           'time_end',
           'status',
-          'venue.id',
-          'venue.name',
-          'venue.city',
-          'venue.address',
-          'venue_other',
-          'image.id',
-          'image.description',
           'url',
           'type',
+          'venue_other',
+          {
+            translations: ['languages_code', 'name', 'description'],
+            venue: ['id', 'name', 'city', 'address'],
+            image: ['id', 'description'],
+          },
         ],
-      });
-    } catch (error) {
-      console.error('Error when retrieving event');
-      throw error;
-    }
+      })
+    );
 
     if (!response) {
       throw new Error('No event found for requested ID');
@@ -1179,157 +1225,59 @@ const cmsService: Plugin = (context, inject) => {
   }) => {
     const currentLocale = context.i18n.locale;
 
-    // Preparing the filter to retrieve the events
-    const publishedFilter = {
-      _and: [
-        {
-          status: {
-            _neq: 'draft',
-          },
-        },
-      ],
-    };
-
-    if (excludeCancelled) {
-      publishedFilter._and.push({
-        status: {
-          _neq: 'cancelled',
-        },
-      });
-    }
-
-    let typeFilter: any;
-    if (typeId) {
-      typeFilter = {
-        type: { id: { _eq: typeId } },
-      };
-    }
-
-    let monthFilter: any;
-    if (month) {
-      monthFilter = {
-        _and: [
-          {
-            date_start: {
-              _gte: month + '-01',
+    const response = await context.$directus.request<DirectusEvent[]>(
+      readItems('events', {
+        limit,
+        page: page || 1,
+        filter: {
+          _and: [
+            {
+              _and: [{ status: { _neq: 'draft' } }, ...(excludeCancelled ? [{ status: { _neq: 'cancelled' } }] : [])],
             },
-          },
+            ...(typeId ? [{ type: { id: { _eq: typeId } } }] : []),
+            // It doesn't matter if not all months have 31 days. The filter still does the job as expected.
+            ...(month
+              ? [{ _and: [{ date_start: { _gte: month + '-01' } }, { date_start: { _lte: month + '-31' } }] }]
+              : []),
+            ...(startDateBefore ? [{ date_start: { _lte: startDateBefore.toISOString() } }] : []),
+            ...(startDateAfter ? [{ date_start: { _gte: startDateAfter.toISOString() } }] : []),
+            ...(endDateBefore ? [{ date_end: { _lte: endDateBefore.toISOString() } }] : []),
+            ...(endDateAfter ? [{ date_end: { _gte: endDateAfter.toISOString() } }] : []),
+            ...(upcoming ? [{ date_start: { _gte: new Date().toISOString() } }] : []),
+          ],
+        },
+        fields: [
+          'id',
+          'date_start',
+          'time_start',
+          'date_end',
+          'time_end',
+          'status',
+          'url',
+          'type',
+          'venue_other',
           {
-            date_start: {
-              // It doesn't matter if not all months have 31 days. The filter still does the job as expected.
-              _lte: month + '-31',
-            },
+            translations: ['languages_code', 'name', 'description'],
+            venue: ['id', 'name', 'city', 'address'],
+            image: ['id', 'description'],
           },
         ],
-      };
-    }
+      })
+    );
 
-    let startDateBeforeFilter: any;
-    if (startDateBefore) {
-      startDateBeforeFilter = {
-        date_start: {
-          _lte: startDateBefore.toISOString(),
-        },
-      };
-    }
-
-    let startDateAfterFilter: any;
-    if (startDateAfter) {
-      startDateAfterFilter = {
-        date_start: {
-          _gte: startDateAfter.toISOString(),
-        },
-      };
-    }
-
-    let endDateBeforeFilter: any;
-    if (endDateBefore) {
-      endDateBeforeFilter = {
-        date_end: {
-          _lte: endDateBefore.toISOString(),
-        },
-      };
-    }
-
-    let endDateAfterFilter: any;
-    if (endDateAfter) {
-      endDateAfterFilter = {
-        date_end: {
-          _gte: endDateAfter.toISOString(),
-        },
-      };
-    }
-
-    let upcomingFilter: any;
-    if (upcoming) {
-      upcomingFilter = {
-        date_start: {
-          _gte: new Date().toISOString(),
-        },
-      };
-    }
-
-    const filter: any = { _and: [publishedFilter] };
-    if (typeFilter) {
-      filter._and.push(typeFilter);
-    }
-    if (monthFilter) {
-      filter._and.push(monthFilter);
-    }
-    if (startDateBeforeFilter) {
-      filter._and.push(startDateBeforeFilter);
-    }
-    if (startDateAfterFilter) {
-      filter._and.push(startDateAfterFilter);
-    }
-    if (endDateBeforeFilter) {
-      filter._and.push(endDateBeforeFilter);
-    }
-    if (endDateAfterFilter) {
-      filter._and.push(endDateAfterFilter);
-    }
-    if (upcomingFilter) {
-      filter._and.push(upcomingFilter);
-    }
-
-    const response = await context.$directus.items('events').readByQuery({
-      meta: 'filter_count',
-      limit,
-      page: page || 1,
-      filter,
-      fields: [
-        'id',
-        'translations.languages_code',
-        'translations.name',
-        'translations.description',
-        'date_start',
-        'time_start',
-        'date_end',
-        'time_end',
-        'status',
-        'venue.id',
-        'venue.name',
-        'venue.city',
-        'venue.address',
-        'venue_other',
-        'image.id',
-        'image.description',
-        'url',
-        'type',
-      ],
-    });
-
-    let totalEvents = 0;
-    if (response?.meta?.filter_count) {
-      totalEvents = response.meta.filter_count;
-    }
+    // TODO: Move this out of the function to call it only once
+    const aggregationOutput = await context.$directus.request(
+      aggregate('events', {
+        aggregate: { count: '*' },
+      })
+    );
 
     let events = [];
-    if (!response?.data) {
+    if (!response) {
       throw new Error('Error when retrieving events');
     }
 
-    events = response.data.reduce((events, directusEvent) => {
+    events = response.reduce((events, directusEvent) => {
       let event: CalendarEvent;
       try {
         event = processEvent(directusEvent, currentLocale);
@@ -1345,82 +1293,128 @@ const cmsService: Plugin = (context, inject) => {
     return {
       data: events,
       meta: {
-        total: totalEvents,
+        total: aggregationOutput[0].count ? +aggregationOutput[0].count : 0,
       },
     };
+  };
+
+  const getPlayerPositions: CMSService['getPlayerPositions'] = async () => {
+    const playerPositions = await context.$directus.request<DirectusPlayerPosition[]>(
+      readItems('player_positions', {
+        deep: {
+          translations: { _filter: { languages_code: { _eq: context.i18n.locale } } },
+        },
+        fields: [
+          'id',
+          {
+            translations: ['languages_code', 'name', 'name_feminine', 'name_masculine'],
+          },
+        ],
+      })
+    );
+
+    return playerPositions.reduce((positions, position) => {
+      const translatedFields = getTranslatedFields(position);
+
+      if (!position?.id || !translatedFields?.name) {
+        return positions;
+      }
+
+      return {
+        ...positions,
+        [position.id]: {
+          id: position.id,
+          name: translatedFields.name,
+          name_feminine: translatedFields.name_feminine,
+          name_masculine: translatedFields.name_masculine,
+        },
+      };
+    }, {} as PlayerPositions);
   };
 
   const getTeam: CMSService['getTeam'] = async (teamSlug) => {
     // We retrieve all the languages and show news in fallback locale if not available in current locale
     const currentLocale = context.i18n.locale;
-    const teamResponse = await context.$directus.items('national_teams').readByQuery({
-      limit: 1,
-      filter: {
-        translations: {
-          // @ts-ignore This should be accepted. To be fixed in Directus SDK
-          slug: { _eq: teamSlug },
+    const teamResponse = await context.$directus.request<DirectusTeam[]>(
+      readItems('national_teams', {
+        limit: 1,
+        filter: {
+          translations: {
+            slug: { _eq: teamSlug },
+          },
         },
-      },
-      fields: [
-        'gender',
-        'team_photo.id',
-        'team_photo.description',
-        'team_photo_vertical_shift',
-        'translations.languages_code',
-        'translations.name',
-        'translations.slug',
-        'players.id',
-        'players.first_name',
-        'players.last_name',
-        'players.number',
-        'players.is_captain',
-        'players.birth_year',
-        'players.gender',
-        'players.club.name',
-        'players.positions.player_positions_id',
-        'players.date_start',
-        'players.date_end',
-        'players.track_record',
-        'players.portrait_square_head',
-        'staff.roles_id.id',
-        'staff.roles_id.translations.name',
-        'staff.roles_id.translations.name_feminine',
-        'staff.roles_id.translations.name_masculine',
-        'staff.roles_id.holders.people_id.id',
-        'staff.roles_id.holders.people_id.first_name',
-        'staff.roles_id.holders.people_id.last_name',
-        'staff.roles_id.holders.people_id.gender',
-        'staff.roles_id.holders.people_id.email',
-        'staff.roles_id.holders.people_id.portrait_square_head',
-        'results.competition_id.year',
-        'results.competition_id.logo',
-        'results.competition_id.translations.languages_code',
-        'results.competition_id.translations.name',
-        'results.competition_id.translations.city',
-        'results.competition_id.translations.country',
-        'results.ranking',
-        'nations_cup_results',
-      ],
-      deep: {
-        // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
-        translations: { _filter: { languages_code: { _eq: currentLocale } } },
-        // @ts-ignore Bug with Directus SDK, it should accept roles_id here.
-        staff: { roles_id: { translations: { _filter: { languages_code: { _eq: currentLocale } } } } },
-        // TODO: uncomment the filter below once the filter on date fields is fixed https://github.com/directus/directus/issues/6494
-        // players: {
-        //   // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
-        //   _filter: {
-        //     _or: [{ date_end: { _gte: context.$formatDate(new Date(), 'yyyy-MM-dd') } }, { date_end: { _null: true } }],
-        //   },
-        // },
-      },
-    });
+        fields: [
+          'gender',
+          'nations_cup_results',
+          'team_photo_vertical_shift',
+          {
+            team_photo: ['id', 'description'],
+            translations: ['languages_code', 'name', 'slug'],
+            players: [
+              'id',
+              'first_name',
+              'last_name',
+              'number',
+              'is_captain',
+              'birth_year',
+              'gender',
+              'date_start',
+              'date_end',
+              'track_record',
+              'portrait_square_head',
 
-    if (!teamResponse?.data) {
+              {
+                club: ['name'],
+                positions: ['player_positions_id'],
+              },
+            ],
+            staff: [
+              {
+                roles_id: [
+                  'id',
+                  {
+                    translations: ['name', 'name_feminine', 'name_masculine'],
+                    holders: [
+                      {
+                        people_id: ['id', 'first_name', 'last_name', 'gender', 'email', 'portrait_square_head'],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+            results: [
+              'ranking',
+              {
+                competition_id: [
+                  'logo',
+                  'year',
+                  {
+                    translations: ['languages_code', 'name', 'city', 'country'],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+        deep: {
+          translations: { _filter: { languages_code: { _eq: currentLocale } } },
+          staff: { roles_id: { translations: { _filter: { languages_code: { _eq: currentLocale } } } } },
+          // TODO: uncomment the filter below once the filter on date fields is fixed https://github.com/directus/directus/issues/6494
+          // players: {
+          //   _filter: {
+          //     _or: [{ date_end: { _gte: context.$formatDate(new Date(), 'yyyy-MM-dd') } }, { date_end: { _null: true } }],
+          //   },
+          // },
+        },
+      })
+    );
+
+    if (!teamResponse) {
       throw new Error('Error when retrieving team');
     }
 
-    const rawTeam = teamResponse.data[0];
+    const rawTeam = teamResponse[0];
 
     if (!rawTeam) {
       throw new Error('No team found');
@@ -1501,36 +1495,40 @@ const cmsService: Plugin = (context, inject) => {
       filter = { slug };
     }
 
-    const competitionResponse = await context.$directus.items('national_team_competitions').readByQuery({
-      limit: 1,
-      filter,
-      fields: [
-        'id',
-        'slug',
-        'logo',
-        'year',
-        'date_start',
-        'date_end',
-        'telegram_channel',
-        'teams.team.id',
-        'teams.team.translations.languages_code',
-        'teams.team.translations.name',
-        'translations.languages_code',
-        'translations.name',
-        'translations.city',
-        'translations.country',
-        'translations.live',
-        'translations.about',
-        'translations.schedule',
-        'translations.medias',
-      ],
-    });
+    const competitionResponse = await context.$directus.request<DirectusNationalTeamCompetition[]>(
+      readItems('national_team_competitions', {
+        limit: 1,
+        filter,
+        fields: [
+          'id',
+          'slug',
+          'logo',
+          'year',
+          'date_start',
+          'date_end',
+          'telegram_channel',
+          {
+            teams: [
+              {
+                team: [
+                  'id',
+                  {
+                    translations: ['languages_code', 'name'],
+                  },
+                ],
+              },
+            ],
+            translations: ['languages_code', 'name', 'city', 'country', 'live', 'about', 'schedule', 'medias'],
+          },
+        ],
+      })
+    );
 
-    if (!competitionResponse?.data) {
+    if (!competitionResponse) {
       throw new Error('Error when retrieving national team competition');
     }
 
-    const rawNationalTeamCompetition = competitionResponse.data[0];
+    const rawNationalTeamCompetition = competitionResponse[0];
 
     if (!rawNationalTeamCompetition) {
       throw new Error('No national team competition found');
@@ -1609,37 +1607,50 @@ const cmsService: Plugin = (context, inject) => {
       filter.teams = { team_id: { team: { id: { _eq: teamId } } } };
     }
 
-    const updatesResponse = await context.$directus.items('national_teams_competitions_updates').readByQuery({
-      meta: 'filter_count',
-      limit,
-      page,
-      filter,
-      fields: [
-        'id',
-        'translations.body',
-        'translations.languages_code',
-        'image.id',
-        'image.description',
-        'is_key',
-        'teams.team_id.team.id',
-        'teams.team_id.team.translations.languages_code',
-        'teams.team_id.team.translations.name',
-        'date_created',
-        'date_updated',
-      ],
-      sort: ['-date_created'],
-    });
+    const updatesResponse = await context.$directus.request<DirectusNationalTeamCompetitionUpdate[]>(
+      readItems('national_teams_competitions_updates', {
+        limit,
+        page,
+        filter,
+        fields: [
+          'id',
+          'is_key',
+          'date_created',
+          'date_updated',
+          {
+            translations: ['languages_code', 'body'],
+            image: ['id', 'description'],
+            teams: [
+              {
+                team_id: [
+                  {
+                    team: [
+                      'id',
+                      {
+                        translations: ['languages_code', 'name'],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+        sort: ['-date_created'],
+      })
+    );
 
-    let totalUpdates = 0;
-    if (updatesResponse?.meta?.filter_count) {
-      totalUpdates = updatesResponse.meta.filter_count;
-    }
-
-    if (!updatesResponse?.data) {
+    // TODO: Move this out of the function to call it only once
+    const aggregationOutput = await context.$directus.request(
+      aggregate('national_teams_competitions_updates', {
+        aggregate: { count: '*' },
+      })
+    );
+    if (!updatesResponse) {
       throw new Error('Error when retrieving updates for national team competitions');
     }
 
-    const updateList = updatesResponse.data.reduce((updates, rawUpdate) => {
+    const updateList = updatesResponse.reduce((updates, rawUpdate) => {
       const updateTranslations = getTranslatedFields(rawUpdate, currentLocale);
       if (!rawUpdate.id || !rawUpdate.date_created || !updateTranslations?.body) {
         console.warn(`Update for national team competition with ID ${rawUpdate.id} is missing requested fields`);
@@ -1679,7 +1690,7 @@ const cmsService: Plugin = (context, inject) => {
     return {
       data: updateList,
       meta: {
-        total: totalUpdates,
+        total: aggregationOutput[0].count ? +aggregationOutput[0].count : 0,
       },
     };
   };
@@ -1689,48 +1700,60 @@ const cmsService: Plugin = (context, inject) => {
   ) => {
     // We retrieve all the languages and show news in fallback locale if not available in current locale
     const currentLocale = context.i18n.locale;
-    const teamResponse = await context.$directus.items('national_team_competitions_teams').readByQuery({
-      filter: {
-        competition: {
-          id: nationalTeamCompetitionId,
+    const teamResponse = await context.$directus.request<DirectusNationalTeamCompetitionsTeam[]>(
+      readItems('national_team_competitions_teams', {
+        filter: {
+          competition: {
+            id: { _eq: nationalTeamCompetitionId },
+          },
         },
-      },
-      fields: [
-        'id',
-        // 'team.translations.languages_code',
-        'team.translations.name',
-        'team.translations.slug',
-        'players.national_team_players_id.id',
-        'players.national_team_players_id.first_name',
-        'players.national_team_players_id.last_name',
-        'players.national_team_players_id.number',
-        'players.national_team_players_id.is_captain',
-        'players.national_team_players_id.birth_year',
-        'players.national_team_players_id.gender',
-        'players.national_team_players_id.club.name',
-        'players.national_team_players_id.positions.player_positions_id',
-        'players.national_team_players_id.date_start',
-        'players.national_team_players_id.date_end',
-        'players.national_team_players_id.track_record',
-        'players.national_team_players_id.portrait_square_head',
-        'coaches.people_id.id',
-        'coaches.people_id.first_name',
-        'coaches.people_id.last_name',
-        'coaches.people_id.gender',
-        'coaches.people_id.email',
-        'coaches.people_id.portrait_square_head',
-      ],
-      deep: {
-        // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
-        team: { translation: { _filter: { language_code: { _eq: currentLocale } } } },
-      },
-    });
+        fields: [
+          'id',
+          {
+            team: [
+              {
+                translations: ['languages_code', 'name', 'slug'],
+              },
+            ],
+            players: [
+              {
+                national_team_players_id: [
+                  'id',
+                  'first_name',
+                  'last_name',
+                  'number',
+                  'is_captain',
+                  'birth_year',
+                  'gender',
+                  'date_start',
+                  'date_end',
+                  'track_record',
+                  'portrait_square_head',
+                  {
+                    club: ['name'],
+                    positions: ['player_positions_id'],
+                  },
+                ],
+              },
+            ],
+            coaches: [
+              {
+                people_id: ['id', 'first_name', 'last_name', 'gender', 'email', 'portrait_square_head'],
+              },
+            ],
+          },
+        ],
+        deep: {
+          team: { translation: { _filter: { language_code: { _eq: currentLocale } } } },
+        },
+      })
+    );
 
-    if (!teamResponse?.data) {
+    if (!teamResponse) {
       throw new Error('Error when retrieving national teams for competitions');
     }
 
-    return teamResponse.data.map((rawTeam) => {
+    return teamResponse.map((rawTeam) => {
       if (!rawTeam.id || !rawTeam.team) {
         throw new Error(`Team for national competition with ID ${rawTeam.id} is missing team or competition`);
       }
@@ -1753,16 +1776,18 @@ const cmsService: Plugin = (context, inject) => {
   };
 
   const getSeasons: CMSService['getSeasons'] = async () => {
-    const seasonsResponse = await context.$directus.items('seasons').readByQuery({
-      fields: ['id', 'name', 'slug', 'date_start', 'date_end', 'leverade_id'],
-      sort: ['-slug'],
-    });
+    const seasonsResponse = await context.$directus.request<DirectusSeason[]>(
+      readItems('seasons', {
+        fields: ['id', 'name', 'slug', 'date_start', 'date_end', 'leverade_id'],
+        sort: ['-slug'],
+      })
+    );
 
-    if (!seasonsResponse?.data) {
+    if (!seasonsResponse) {
       throw new Error('Error when retrieving seasons');
     }
 
-    const seasons = seasonsResponse.data.reduce((seasons, season) => {
+    const seasons = seasonsResponse.reduce((seasons, season) => {
       // We discard seasons that don't have mandatory data.
       if (season.id && season.name && season.slug && season.date_start && season.date_end) {
         return [
@@ -1786,43 +1811,45 @@ const cmsService: Plugin = (context, inject) => {
 
   const getLiveStreams: CMSService['getLiveStreams'] = async () => {
     const now = new Date();
-    const filter = {
-      _and: [
-        {
-          date_start: {
-            _lte: toISOLocal(now),
-          },
-        },
-        {
-          date_end: {
-            _gte: toISOLocal(now),
-          },
-        },
-      ],
-    };
 
-    const liveStreamsResponse = await context.$directus.items('live_streams').readByQuery({
-      fields: [
-        'id',
-        'translations.languages_code',
-        'translations.title',
-        'url',
-        'date_start',
-        'date_end',
-        'stream_start',
-      ],
-      sort: ['stream_start'],
-      filter,
-    });
+    const liveStreamsResponse = await context.$directus.request<DirectusLiveStream[]>(
+      readItems('live_streams', {
+        fields: [
+          'id',
+          'url',
+          'date_start',
+          'date_end',
+          'stream_start',
+          {
+            translations: ['languages_code', 'title'],
+          },
+        ],
+        sort: ['stream_start'],
+        filter: {
+          _and: [
+            {
+              date_start: {
+                _lte: toISOLocal(now),
+              },
+            },
+            {
+              date_end: {
+                _gte: toISOLocal(now),
+              },
+            },
+          ],
+        },
+      })
+    );
 
-    if (!liveStreamsResponse?.data) {
+    if (!liveStreamsResponse) {
       throw new Error('Error when retrieving seasons');
     }
 
     // We retrieve all the languages and show text in fallback locale if not available in current locale
     const currentLocale = context.i18n.locale;
 
-    const liveStreams = liveStreamsResponse.data.reduce((liveStreams, liveStream) => {
+    const liveStreams = liveStreamsResponse.reduce((liveStreams, liveStream) => {
       const translatedFields = getTranslatedFields(liveStream, currentLocale);
 
       // We discard live streams that don't have mandatory data.
@@ -1853,7 +1880,7 @@ const cmsService: Plugin = (context, inject) => {
     return liveStreams;
   };
 
-  const processNationalCompetition = (rawCompetition: ItemInput<DirectusNationalCompetition>): NationalCompetition => {
+  const processNationalCompetition = (rawCompetition: DirectusNationalCompetition): NationalCompetition => {
     const translatedFields = getTranslatedFields(rawCompetition);
 
     if (!rawCompetition.id || !translatedFields?.name || !translatedFields?.slug) {
@@ -1873,36 +1900,37 @@ const cmsService: Plugin = (context, inject) => {
   const getNationalCompetition: CMSService['getNationalCompetition'] = async (competitionSlug) => {
     // We retrieve all the languages and show data in fallback locale if not available in current locale
     const currentLocale = context.i18n.locale;
-    const response = await context.$directus.items('national_competitions').readByQuery({
-      limit: 1,
-      filter: {
-        translations: {
-          // @ts-ignore This should be accepted. To be fixed in Directus SDK
-          slug: { _eq: competitionSlug },
+    const response = await context.$directus.request<DirectusNationalCompetition[]>(
+      readItems('national_competitions', {
+        limit: 1,
+        filter: {
+          translations: {
+            slug: { _eq: competitionSlug },
+          },
         },
-      },
-      fields: [
-        'id',
-        'translations.languages_code',
-        'translations.name',
-        'translations.slug',
-        'editions.season.id',
-        'editions.season.name',
-        'editions.season.slug',
-        'editions.season.leverade_id',
-        'editions.leverade_id',
-      ],
-      deep: {
-        // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
-        translations: { _filter: { languages_code: { _eq: currentLocale } } },
-      },
-    });
+        fields: [
+          'id',
+          {
+            translations: ['languages_code', 'name', 'slug'],
+            editions: [
+              'leverade_id',
+              {
+                season: ['id', 'name', 'slug', 'leverade_id'],
+              },
+            ],
+          },
+        ],
+        deep: {
+          translations: { _filter: { languages_code: { _eq: currentLocale } } },
+        },
+      })
+    );
 
-    if (!response?.data) {
+    if (!response) {
       throw new Error('Error when retrieving competition');
     }
 
-    const rawCompetition = response.data[0];
+    const rawCompetition = response[0];
 
     if (!rawCompetition) {
       throw new Error('No competition found');
@@ -1919,7 +1947,7 @@ const cmsService: Plugin = (context, inject) => {
     // We retrieve all the languages and show data in fallback locale if not available in current locale
     const currentLocale = context.i18n.locale;
 
-    let filter: Filter<DirectusNationalCompetitionEdition> = {};
+    let filter: Query<DirectusSchema, DirectusNationalCompetitionEdition>['filter'] = {};
 
     if (leveradeIds) {
       filter = {
@@ -1932,17 +1960,16 @@ const cmsService: Plugin = (context, inject) => {
         _and: [],
       };
       if (competitionSlug) {
-        filter._and.push({
+        filter._and!.push({
           competition: {
             translations: {
-              // @ts-ignore This should be accepted. To be fixed in Directus SDK
               slug: { _eq: competitionSlug },
             },
           },
         });
       }
       if (seasonSlug) {
-        filter._and.push({
+        filter._and!.push({
           season: {
             slug: { _eq: seasonSlug },
           },
@@ -1950,32 +1977,28 @@ const cmsService: Plugin = (context, inject) => {
       }
     }
 
-    const response = await context.$directus.items('national_competition_editions').readByQuery({
-      filter,
-      fields: [
-        'id',
-        'season.id',
-        'season.name',
-        'season.slug',
-        'season.date_start',
-        'season.date_end',
-        'season.leverade_id',
-        'competition.id',
-        'competition.translations.name',
-        'competition.translations.slug',
-        'leverade_id',
-      ],
-      deep: {
-        // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
-        competition: { translations: { _filter: { languages_code: { _eq: currentLocale } } } },
-      },
-    });
+    const response = await context.$directus.request<DirectusNationalCompetitionEdition[]>(
+      readItems('national_competition_editions', {
+        filter,
+        fields: [
+          'id',
+          'leverade_id',
+          {
+            season: ['id', 'name', 'slug', 'date_start', 'date_end', 'leverade_id'],
+            competition: ['id', { translations: ['name', 'slug'] }],
+          },
+        ],
+        deep: {
+          competition: { translations: { _filter: { languages_code: { _eq: currentLocale } } } },
+        },
+      })
+    );
 
-    if (!response?.data) {
+    if (!response) {
       throw new Error('Error when retrieving competition edition');
     }
 
-    return response.data.reduce((editions, rawEdition) => {
+    return response.reduce((editions, rawEdition) => {
       if (!rawEdition.competition) {
         return editions;
       }
@@ -2023,24 +2046,28 @@ const cmsService: Plugin = (context, inject) => {
   };
 
   const getMatchAdditionalData: CMSService['getMatchAdditionalData'] = async (leveradeId) => {
-    const response = await context.$directus.items('match_additional_data').readByQuery({
-      limit: 1,
-      filter: {
-        leverade_id: leveradeId,
-      },
-      fields: ['id', 'leverade_id', 'flickr_photoset_id'],
-    });
+    const response = await context.$directus.request<DirectusMatchAdditionalData[]>(
+      readItems('match_additional_data', {
+        limit: 1,
+        filter: {
+          leverade_id: {
+            _eq: leveradeId,
+          },
+        },
+        fields: ['id', 'leverade_id', 'flickr_photoset_id'],
+      })
+    );
 
-    if (!response?.data) {
+    if (!response) {
       throw new Error('Could not retrieve match additional data');
     }
 
-    if (!response.data.length) {
+    if (!response.length) {
       // No additional data for this match
       return null;
     }
 
-    const rawData = response.data[0];
+    const rawData = response[0];
 
     if (!rawData.id || !rawData.leverade_id) {
       throw new Error('Match additional data is missing mandatory attributes');
@@ -2054,50 +2081,50 @@ const cmsService: Plugin = (context, inject) => {
   };
 
   const getTchoukups: CMSService['getTchoukups'] = async ({ limit, page }) => {
-    const tchoukupResponse = await context.$directus.items('tchoukup').readByQuery({
-      meta: 'filter_count',
-      limit,
-      page,
-      fields: [
-        'id',
-        'number',
-        'releaseDate',
-        'cover.id',
-        'cover.description',
-        'file',
-        'file.id',
-        'file.type',
-        'file.filesize',
-        'file.filename_download',
-      ],
-      sort: ['-releaseDate'],
-    });
+    const tchoukupResponse = await context.$directus.request<DirectusTchoukup[]>(
+      readItems('tchoukup', {
+        limit,
+        page,
+        fields: [
+          'id',
+          'number',
+          'releaseDate',
+          {
+            cover: ['id', 'description'],
+            file: ['id', 'type', 'filesize', 'filename_download'],
+          },
+        ],
+        sort: ['-releaseDate'],
+      })
+    );
 
-    let totalIssues = 0;
-    if (tchoukupResponse?.meta?.filter_count) {
-      totalIssues = tchoukupResponse.meta.filter_count;
-    }
+    // TODO: Move this out of the function to call it only once
+    const aggregationOutput = await context.$directus.request(
+      aggregate('tchoukup', {
+        aggregate: { count: '*' },
+      })
+    );
 
-    let tchoukups = [];
-    if (!tchoukupResponse?.data) {
+    let tchoukupList = [];
+    if (!tchoukupResponse) {
       throw new Error('Error when retrieving Tchoukups');
     }
 
-    tchoukups = tchoukupResponse.data.reduce((news, directusTchoukup) => {
+    tchoukupList = tchoukupResponse.reduce((tchoukups, directusTchoukup) => {
       if (!directusTchoukup) {
-        return news;
+        return tchoukups;
       }
 
       if (!directusTchoukup.id || !directusTchoukup.number || !directusTchoukup.file) {
         console.warn(`Tchoukup entry with ID ${directusTchoukup.id} is missing requested fields`);
-        return news;
+        return tchoukups;
       }
 
       const tchoukupIssue: Tchoukup = {
         id: directusTchoukup.id,
         number: directusTchoukup.number,
         releaseDate: directusTchoukup.releaseDate,
-        file: directusTchoukup.file as DirectusFile,
+        file: directusTchoukup.file as DirectusFile<DirectusSchema>,
       };
 
       if (directusTchoukup.cover && directusTchoukup.cover.id) {
@@ -2107,30 +2134,31 @@ const cmsService: Plugin = (context, inject) => {
         };
       }
 
-      return [...news, tchoukupIssue];
+      return [...tchoukups, tchoukupIssue];
     }, [] as Tchoukup[]);
 
     return {
-      data: tchoukups,
+      data: tchoukupList,
       meta: {
-        total: totalIssues,
+        total: aggregationOutput[0].count ? +aggregationOutput[0].count : 0,
       },
     };
   };
 
   const getResourceTypes: CMSService['getResourceTypes'] = async () => {
     const currentLocale = context.i18n.locale;
-    const response = await context.$directus.items('resource_types').readByQuery({
-      fields: ['id', 'translations.name'],
-      // @ts-ignore Bug with Directus SDK, which expects `filter` instead of `_filter`. It doesn't work with `filter`.
-      deep: { translations: { _filter: { languages_code: { _eq: currentLocale } } } },
-    });
+    const response = await context.$directus.request<DirectusResourceType[]>(
+      readItems('resource_types', {
+        fields: ['id', { translations: ['name'] }],
+        deep: { translations: { _filter: { languages_code: { _eq: currentLocale } } } },
+      })
+    );
 
-    if (!response.data) {
+    if (!response) {
       throw new Error('Error when retrieving resource types');
     }
 
-    const resourceTypes = response.data.reduce((resourceTypes, resourceType) => {
+    const resourceTypes = response.reduce((resourceTypes, resourceType) => {
       const translatedFields = getTranslatedFields(resourceType);
 
       // We discard entries that don't have mandatory data.
@@ -2155,19 +2183,17 @@ const cmsService: Plugin = (context, inject) => {
     // We retrieve all the languages and show resources in fallback locale if not available in current locale
     const currentLocale = context.i18n.locale;
 
-    // Type should be Filter<DirectusResourceType>, but there is a bug in the Directus SDK.
-    // We use any as a workaround until the _and is properly recognised. See https://github.com/directus/directus/issues/7475
-    const filter: any = {
+    const filter: Query<DirectusSchema, DirectusResource>['filter'] = {
       _and: [
         {
-          status: { _eq: 'visible' },
+          status: { _eq: DirectusResourceStatus.VISIBLE },
         },
       ],
     };
 
     if (searchTerm) {
       // We use the filter because the search capability of Directus only work on root level items, not relations
-      filter._and.push({
+      filter._and!.push({
         _or: [
           {
             keywords: { _contains: searchTerm },
@@ -2182,39 +2208,44 @@ const cmsService: Plugin = (context, inject) => {
     }
 
     if (domainId) {
-      filter._and.push({
-        domains: { domains_id: { _eq: domainId } },
+      filter._and!.push({
+        domains: { domains_id: { id: { _eq: domainId } } },
       });
     }
 
     if (typeId) {
-      filter._and.push({
-        type: { _eq: typeId },
+      filter._and!.push({
+        type: { id: { _eq: typeId } },
       });
     }
 
-    const response = await context.$directus.items('resources').readByQuery({
-      filter,
-      fields: [
-        'id',
-        'date',
-        'type',
-        'domains.domains_id',
-        'translations.languages_code',
-        'translations.name',
-        'translations.file.id',
-        'translations.file.type',
-        'translations.file.filesize',
-        'translations.file.filename_download',
-        'translations.link',
-      ],
-    });
+    const response = await context.$directus.request<DirectusResource[]>(
+      readItems('resources', {
+        filter,
+        fields: [
+          'id',
+          'date',
+          'type',
+          {
+            domains: ['id'],
+            translations: [
+              'languages_code',
+              'name',
+              'link',
+              {
+                file: ['id', 'type', 'filesize', 'filename_download'],
+              },
+            ],
+          },
+        ],
+      })
+    );
 
-    if (!response.data) {
+    if (!response) {
       throw new Error('Error when retrieving resources');
     }
 
-    return response.data
+    return response
       .reduce((resources, resource) => {
         if (!resource) {
           return resources;
@@ -2239,11 +2270,13 @@ const cmsService: Plugin = (context, inject) => {
   };
 
   inject('cmsService', {
+    getMainNavigation,
     getPage,
     getText,
     getDomains,
     getNews,
     getOneNews,
+    getEventTypes,
     getEvent,
     getGroups,
     getGroup,
@@ -2253,6 +2286,7 @@ const cmsService: Plugin = (context, inject) => {
     getPressReleaseList,
     getPressRelease,
     getEvents,
+    getPlayerPositions,
     getTeam,
     getNationalTeamCompetition,
     getNationalTeamCompetitionUpdates,

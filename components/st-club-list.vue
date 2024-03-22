@@ -17,14 +17,13 @@
 </template>
 
 <script lang="ts">
-import { ItemInput } from '@directus/sdk';
 import { defineComponent, PropType } from 'vue';
 import { DirectusClub, getAssetURL } from '~/plugins/directus';
 
 export default defineComponent({
   props: {
     clubs: {
-      type: Array as PropType<ItemInput<DirectusClub>[]>,
+      type: Array as PropType<DirectusClub[]>,
       required: true,
     },
   },

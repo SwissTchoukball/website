@@ -1,6 +1,6 @@
-import { ItemInput } from '@directus/sdk';
+import { type DirectusFile } from '@directus/sdk';
 import { Gender, Role } from '~/plugins/cms-service';
-import { DirectusImage, DirectusPerson } from '~/plugins/directus';
+import { DirectusPerson, DirectusSchema } from '~/plugins/directus';
 
 export interface Player {
   id: number;
@@ -41,7 +41,7 @@ export interface NationalTeamCompetition {
 export interface NationalTeamCompetitionUpdate {
   id: number;
   body: string;
-  image?: DirectusImage;
+  image?: DirectusFile<DirectusSchema>;
   is_key: boolean;
   teams: { id: number; name: string }[];
   date_created: string;
@@ -57,7 +57,7 @@ export interface NationalTeam {
   name: string;
   slug: string;
   gender: string;
-  team_photo?: DirectusImage;
+  team_photo?: DirectusFile<DirectusSchema>;
   team_photo_vertical_shift?: number;
   players: Player[];
   /**
@@ -75,7 +75,7 @@ export interface NationalTeamForCompetition {
   competition: NationalTeamCompetition;
   team: Pick<NationalTeam, 'name' | 'slug'>;
   players: Player[];
-  coaches: ItemInput<DirectusPerson>[];
+  coaches: DirectusPerson[];
 }
 
 // Just to clear a Nuxt warning.
