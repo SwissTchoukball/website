@@ -73,6 +73,15 @@ a:visited {
   text-align: left;
 }
 
+.directus-formatted-content figure {
+  margin-top: var(--st-length-spacing-xs);
+}
+
+.directus-formatted-content figcaption {
+  font-size: 0.8em;
+  text-align: center;
+}
+
 .directus-formatted-content img {
   max-width: 100%;
 }
