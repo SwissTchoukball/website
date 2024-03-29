@@ -35,6 +35,10 @@ export default defineComponent({
   },
   async fetch() {
     this.teams = await this.$cmsService.getNationalTeamsForCompetition(this.competition.id);
+    // We load the positions only if we don't have them already
+    if (!this.$store.state.playerPositions) {
+      await this.$store.dispatch('loadPlayerPositions');
+    }
   },
 });
 </script>
