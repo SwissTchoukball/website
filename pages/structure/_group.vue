@@ -34,7 +34,7 @@ export default defineComponent({
   components: { stStaffPerson },
   data() {
     return {
-      groupSlug: null as string | null,
+      groupSlug: undefined as string | undefined,
       group: undefined as Group | undefined,
       people: [] as Person[],
       breadcrumb: [
@@ -53,8 +53,9 @@ export default defineComponent({
 
     if (this.groupSlug) {
       this.group = await this.$cmsService.getGroup({ slug: this.groupSlug });
-      this.people = await this.$cmsService.getStaff({ groupSlug: this.groupSlug });
     }
+
+    this.people = await this.$cmsService.getStaff({ groupSlug: this.groupSlug });
   },
   head() {
     return {
