@@ -883,6 +883,9 @@ const cmsService: Plugin = (context, inject) => {
       filter = { roles: { roles_id: { group: { id: groupId } } } };
     } else if (groupSlug) {
       filter = { roles: { roles_id: { group: { translations: { slug: groupSlug } } } } };
+    } else {
+      // If no group is provided (i.e. the whole staff is requested), we filter the people that don't have any role
+      filter = { roles: { _null: false } };
     }
 
     const peopleResponse = await context.$directus.request<DirectusPerson[]>(
