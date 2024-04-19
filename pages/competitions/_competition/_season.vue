@@ -173,13 +173,38 @@ export default defineComponent({
       if (!this.competitionEdition?.phases) {
         return [];
       }
-      return this.competitionEdition.phases.map((phase) => ({
-        name: phase.name,
-        href: this.localePath({
-          name: 'competitions-competition-season-phase',
-          params: { competition: this.$route.params.competition, season: this.$route.params.season, phase: phase.id },
-        }),
-      }));
+
+      const phases: MenuItem[] = [];
+
+      this.competitionEdition.phases.forEach((phase) => {
+        const phaseMenuItem = {
+          name: phase.name,
+          href: this.localePath({
+            name: 'competitions-competition-season-phase',
+            params: { competition: this.$route.params.competition, season: this.$route.params.season, phase: phase.id },
+          }),
+        };
+
+        if (phase.group) {
+          const existingGroupItem = phases.find((menuItem) => menuItem.name === phase.group);
+          if (existingGroupItem) {
+            if (existingGroupItem.children) {
+              existingGroupItem.children.push(phaseMenuItem);
+            } else {
+              existingGroupItem.children = [phaseMenuItem];
+            }
+          } else {
+            phases.push({
+              name: phase.group,
+              children: [phaseMenuItem],
+            });
+          }
+        } else {
+          phases.push(phaseMenuItem);
+        }
+      });
+
+      return phases;
     },
     currentPhase(): Phase | undefined {
       if (!this.$route.params.phase || !this.competitionEdition?.phases) {

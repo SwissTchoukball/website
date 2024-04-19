@@ -33,8 +33,15 @@
           {{ item.name }}
         </component>
         <ul
-          v-if="openStates[itemIndex] && item.children && item.children.length"
+          v-if="item.children && item.children.length"
+          v-show="openStates[itemIndex]"
           class="u-unstyled-list c-navigation__sub-items"
+          :class="{
+            'c-navigation__sub-items--active': item.children.some(
+              (subItem) => subItem.href && $route.path.startsWith(localePath(subItem.href))
+            ),
+            [$route.path]: true,
+          }"
         >
           <li v-for="(subItem, subItemIndex) in item.children" :key="subItemIndex" class="c-navigation__sub-item">
             <nuxt-link
@@ -203,12 +210,15 @@ export default defineComponent({
   background-color: transparent;
 }
 
+.c-navigation--inverted .c-navigation__item-group--open .c-navigation__item-name,
 .c-navigation--inverted .c-navigation__item-name:hover {
   color: var(--st-color-navigation-item-inverted-hover);
+  background-color: transparent;
 }
 
 .c-navigation:not(.c-navigation--selected-on-exact-active) .c-navigation__item-name.nuxt-link-active::after,
-.c-navigation--selected-on-exact-active .c-navigation__item-name.nuxt-link-exact-active::after {
+.c-navigation--selected-on-exact-active .c-navigation__item-name.nuxt-link-exact-active::after,
+.c-navigation__item-name:has(+ .c-navigation__sub-items--active)::after {
   content: '';
   display: block;
   width: 100%;
@@ -218,12 +228,14 @@ export default defineComponent({
   left: 0;
 }
 
-.c-navigation--inverted .c-navigation__item-name.nuxt-link-active {
+.c-navigation--inverted .c-navigation__item-name.nuxt-link-active,
+.c-navigation--inverted .c-navigation__item-name:has(+ .c-navigation__sub-items--active) {
   background-color: var(--st-color-navigation-item-inverted-active-background);
   border-radius: var(--st-length-spacing-xxs);
 }
 
-.c-navigation--inverted .c-navigation__item-name.nuxt-link-active:hover {
+.c-navigation--inverted .c-navigation__item-name.nuxt-link-active:hover,
+.c-navigation--inverted .c-navigation__item-name:has(+ .c-navigation__sub-items--active):hover {
   color: white;
 }
 
@@ -238,6 +250,7 @@ export default defineComponent({
 }
 
 .c-navigation.c-navigation--inverted .c-navigation__item-name.nuxt-link-active::after,
+.c-navigation.c-navigation--inverted .c-navigation__item-name:has(+ .c-navigation__sub-items--active)::after,
 .c-navigation.c-navigation--inverted .c-navigation__item-name:hover:not(.nuxt-link-active)::after,
 .c-navigation--selected-on-exact-active .c-navigation--narrow .c-navigation__item-name.nuxt-link-active::after,
 .c-navigation--selected-on-exact-active .c-navigation--inverted .c-navigation__item-name.nuxt-link-active::after,

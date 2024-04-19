@@ -1,5 +1,6 @@
 <template>
   <div>
+    <h3 v-if="phase.group" class="t-headline-2">{{ phase.name }}</h3>
     <st-navigation
       :items="phaseNavigation"
       :name="$t('otherNavigation', { name: phase.name })"
