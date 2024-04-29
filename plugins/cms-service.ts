@@ -539,6 +539,14 @@ const cmsService: Plugin = (context, inject) => {
       })
     );
 
+    const sort: Query<DirectusSchema, DirectusNews>['sort'] = [];
+
+    if (forHomepage) {
+      sort.push('-prioritise_on_home');
+    }
+
+    sort.push('-date_created');
+
     const newsResponse = await context.$directus.request<DirectusNews[]>(
       readItems('news', {
         limit,
@@ -561,7 +569,7 @@ const cmsService: Plugin = (context, inject) => {
             domains: [{ domains_id: ['id'] }],
           },
         ],
-        sort: ['-date_created'],
+        sort,
       })
     );
 

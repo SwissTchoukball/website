@@ -161,6 +161,7 @@ export interface DirectusNews {
   id: number;
   status: string;
   hide_from_home: boolean;
+  prioritise_on_home: boolean;
   date_created: 'datetime';
   date_updated: 'datetime';
   main_image: DirectusFile<DirectusSchema>;
