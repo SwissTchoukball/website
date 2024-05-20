@@ -9,11 +9,9 @@
       class="c-flickr-album-link__photo"
     />
     <div class="c-flickr-album-link__overlay"></div>
-    <caption class="c-flickr-album-link__caption">
-      {{
-        album.title._content
-      }}
-    </caption>
+    <div class="c-flickr-album-link__caption">
+      {{ album.title._content }}
+    </div>
   </a>
 </template>
 
