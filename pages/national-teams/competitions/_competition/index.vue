@@ -20,7 +20,7 @@ export default defineComponent({
     },
   },
   created() {
-    if (this.navigation[0].href) {
+    if (this.navigation[0]?.href) {
       this.$router.push(this.navigation[0].href);
     } else {
       console.warn('No navigation to redirect to');
