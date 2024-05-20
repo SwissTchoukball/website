@@ -1,5 +1,8 @@
 <template>
-  <section class="l-main-content-section c-upcoming-matches">
+  <section
+    v-if="$fetchState.pending || $fetchState.error || upcomingMatchesData.length > 0"
+    class="l-main-content-section c-upcoming-matches"
+  >
     <h2 class="t-headline-1">{{ $t('competitions.upcomingMatches') }}</h2>
     <st-loader v-if="$fetchState.pending" :main="true" />
     <p v-else-if="$fetchState.error">{{ $t('error.otherError') }} : {{ $fetchState.error.message }}</p>
@@ -30,6 +33,8 @@
       </st-link-action>
     </template>
     <p v-else class="l-blank-slate-message">
+      <!-- This will never be visible as we don't show the section when there are no matches. -->
+      <!-- We still keep the blank slate in case we change our mind -->
       {{ $t('competitions.noUpcomingMatches') }}
     </p>
   </section>

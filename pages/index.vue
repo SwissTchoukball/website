@@ -35,7 +35,7 @@
 
     <st-upcoming-matches />
 
-    <section class="l-main-content-section">
+    <section class="l-main-content-section c-index__tchoukball">
       <h2 class="t-headline-1">Tchoukball</h2>
       <div class="directus-formatted-content .directus-formatted-content--large" v-html="tchoukballDescription"></div>
       <nav>
@@ -199,6 +199,10 @@ export default defineComponent({
   display: block;
   text-align: right;
   margin-top: var(--st-length-spacing-xs);
+}
+
+:not(.c-upcoming-matches) + .c-index__tchoukball {
+  background-color: var(--st-color-main-content-alternative-background);
 }
 
 .c-index__tchoukball-nav {
