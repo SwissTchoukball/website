@@ -3,19 +3,22 @@
     <!-- We have to use v-html here as we get html content directly from Directus -->
     <!-- eslint-disable-next-line vue/no-v-html -->
     <div class="directus-formatted-content" v-html="competition.live"></div>
-    <st-national-team-competition-update-list
-      :competition-id="competition.id"
-      :teams="competition.teams"
-      :live-refresh="isRunning"
-      :telegram-channel-name="competition.telegram_channel"
-      class="c-international-competition-live__updates"
-    />
+    <client-only>
+      <st-national-team-competition-update-list
+        :competition-id="competition.id"
+        :teams="competition.teams"
+        :live-refresh="isRunning"
+        :is-past="isPast"
+        :telegram-channel-name="competition.telegram_channel"
+        class="c-international-competition-live__updates"
+      />
+    </client-only>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
-import { isWithinInterval } from 'date-fns';
+import { isWithinInterval, isPast } from 'date-fns';
 import stNationalTeamCompetitionUpdateList from '~/components/national-teams/st-national-team-competition-update-list.vue';
 import { NationalTeamCompetition } from '~/components/national-teams/st-national-teams.prop';
 
@@ -43,6 +46,9 @@ export default defineComponent({
           end: new Date(this.competition.date_end),
         })
       );
+    },
+    isPast(): boolean {
+      return !!this.competition?.date_end && isPast(new Date(this.competition.date_end));
     },
   },
 });

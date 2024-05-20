@@ -1,7 +1,7 @@
 <template>
-  <div>
-    <div v-if="updates" class="c-national-team-competition-update-list__header">
-      <st-live-indicator v-show="liveRefresh" v-tooltip.top="$t('internationalCompetition.live.updates.autoRefresh')" />
+  <div v-if="$fetchState.pending || $fetchState.error || (updates && (updates.length || !isPast))">
+    <div class="c-national-team-competition-update-list__header">
+      <st-live-indicator v-if="liveRefresh" v-tooltip.top="$t('internationalCompetition.live.updates.autoRefresh')" />
       <h3 class="t-headline-2 c-national-team-competition-update-list__title">
         {{ $t('internationalCompetition.live.updates.title') }}
       </h3>
@@ -110,6 +110,7 @@ export default defineComponent({
       default: undefined,
     },
     liveRefresh: Boolean,
+    isPast: Boolean,
   },
   data() {
     return {
