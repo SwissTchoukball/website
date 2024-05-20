@@ -532,13 +532,6 @@ const cmsService: Plugin = (context, inject) => {
     // We retrieve all the languages and show news in fallback locale if not available in current locale
     const currentLocale = context.i18n.locale;
 
-    // TODO: Move this out of the function to call it only once
-    const aggregationOutput = await context.$directus.request(
-      aggregate('news', {
-        aggregate: { count: '*' },
-      })
-    );
-
     const sort: Query<DirectusSchema, DirectusNews>['sort'] = [];
 
     if (forHomepage) {
@@ -547,18 +540,20 @@ const cmsService: Plugin = (context, inject) => {
 
     sort.push('-date_created');
 
+    const filter = {
+      _and: [
+        { status: { _eq: 'published' } },
+        ...(domainId ? [{ domains: { domains_id: { id: { _eq: domainId } } } }] : []),
+        ...(withImageOnly ? [{ main_image: { _nnull: true } }] : []),
+        ...(forHomepage ? [{ hide_from_home: { _eq: false } }] : []),
+      ],
+    };
+
     const newsResponse = await context.$directus.request<DirectusNews[]>(
       readItems('news', {
         limit,
         page,
-        filter: {
-          _and: [
-            { status: { _eq: 'published' } },
-            ...(domainId ? [{ domains: { domains_id: { id: { _eq: domainId } } } }] : []),
-            ...(withImageOnly ? [{ main_image: { _nnull: true } }] : []),
-            ...(forHomepage ? [{ hide_from_home: { _eq: false } }] : []),
-          ],
-        },
+        filter,
         fields: [
           'id',
           'date_created',
@@ -623,6 +618,14 @@ const cmsService: Plugin = (context, inject) => {
     if (domainId) {
       filteredDomainId = newsList[0].domain_ids.find((id) => id === domainId);
     }
+
+    // TODO: Move this out of the function to call it only once
+    const aggregationOutput = await context.$directus.request(
+      aggregate('news', {
+        aggregate: { count: '*' },
+        query: { filter },
+      })
+    );
 
     return {
       data: newsList,
@@ -1061,6 +1064,7 @@ const cmsService: Plugin = (context, inject) => {
     const aggregationOutput = await context.$directus.request(
       aggregate('press_releases', {
         aggregate: { count: '*' },
+        query: { filter },
       })
     );
 
@@ -1236,27 +1240,29 @@ const cmsService: Plugin = (context, inject) => {
   }) => {
     const currentLocale = context.i18n.locale;
 
+    const filter = {
+      _and: [
+        {
+          _and: [{ status: { _neq: 'draft' } }, ...(excludeCancelled ? [{ status: { _neq: 'cancelled' } }] : [])],
+        },
+        ...(typeId ? [{ type: { id: { _eq: typeId } } }] : []),
+        // It doesn't matter if not all months have 31 days. The filter still does the job as expected.
+        ...(month
+          ? [{ _and: [{ date_start: { _gte: month + '-01' } }, { date_start: { _lte: month + '-31' } }] }]
+          : []),
+        ...(startDateBefore ? [{ date_start: { _lte: startDateBefore.toISOString() } }] : []),
+        ...(startDateAfter ? [{ date_start: { _gte: startDateAfter.toISOString() } }] : []),
+        ...(endDateBefore ? [{ date_end: { _lte: endDateBefore.toISOString() } }] : []),
+        ...(endDateAfter ? [{ date_end: { _gte: endDateAfter.toISOString() } }] : []),
+        ...(upcoming ? [{ date_start: { _gte: new Date().toISOString() } }] : []),
+      ],
+    };
+
     const response = await context.$directus.request<DirectusEvent[]>(
       readItems('events', {
         limit,
         page: page || 1,
-        filter: {
-          _and: [
-            {
-              _and: [{ status: { _neq: 'draft' } }, ...(excludeCancelled ? [{ status: { _neq: 'cancelled' } }] : [])],
-            },
-            ...(typeId ? [{ type: { id: { _eq: typeId } } }] : []),
-            // It doesn't matter if not all months have 31 days. The filter still does the job as expected.
-            ...(month
-              ? [{ _and: [{ date_start: { _gte: month + '-01' } }, { date_start: { _lte: month + '-31' } }] }]
-              : []),
-            ...(startDateBefore ? [{ date_start: { _lte: startDateBefore.toISOString() } }] : []),
-            ...(startDateAfter ? [{ date_start: { _gte: startDateAfter.toISOString() } }] : []),
-            ...(endDateBefore ? [{ date_end: { _lte: endDateBefore.toISOString() } }] : []),
-            ...(endDateAfter ? [{ date_end: { _gte: endDateAfter.toISOString() } }] : []),
-            ...(upcoming ? [{ date_start: { _gte: new Date().toISOString() } }] : []),
-          ],
-        },
+        filter,
         fields: [
           'id',
           'date_start',
@@ -1280,6 +1286,7 @@ const cmsService: Plugin = (context, inject) => {
     const aggregationOutput = await context.$directus.request(
       aggregate('events', {
         aggregate: { count: '*' },
+        query: { filter },
       })
     );
 
@@ -1655,6 +1662,7 @@ const cmsService: Plugin = (context, inject) => {
     const aggregationOutput = await context.$directus.request(
       aggregate('national_teams_competitions_updates', {
         aggregate: { count: '*' },
+        query: { filter },
       })
     );
     if (!updatesResponse) {
