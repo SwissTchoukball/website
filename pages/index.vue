@@ -33,7 +33,13 @@
       </st-link-action>
     </section>
 
-    <st-upcoming-matches />
+    <!--
+      We render this component client-side only because its rendering does not match server-side rendered content.
+      The reason is that we initially show the component, then hide it if the fetch returns no matches.
+    -->
+    <client-only>
+      <st-upcoming-matches />
+    </client-only>
 
     <section class="l-main-content-section c-index__tchoukball">
       <h2 class="t-headline-1">Tchoukball</h2>
