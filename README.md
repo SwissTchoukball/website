@@ -1,6 +1,6 @@
 # Swiss Tchoukball website - frontend
 
-Future website of Swiss Tchoukball, made with [Nuxt.js](https://nuxtjs.org).
+Website of Swiss Tchoukball, made with [Nuxt](https://nuxt.com).
 
 Production is on [tchoukball.ch](https://tchoukball.ch)
 
