@@ -350,7 +350,6 @@ const cmsService: Plugin = (context, inject) => {
         deep: {
           translations: { _filter: { languages_code: { _eq: locale } } },
           key_roles: { roles_id: { translations: { _filter: { languages_code: { _eq: locale } } } } },
-          resources: { resources_id: { translations: { _filter: { languages_code: { _eq: locale } } } } },
         },
         limit: 1,
       })
@@ -400,7 +399,7 @@ const cmsService: Plugin = (context, inject) => {
           }
 
           const resource = resourcePageRelation.resources_id;
-          const translatedFields = getTranslatedFields(resource);
+          const translatedFields = getTranslatedFields(resource, locale);
 
           if (!translatedFields?.name) {
             return resources;
