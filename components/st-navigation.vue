@@ -31,6 +31,7 @@
           @click.native="onItemClickNative(item)"
         >
           {{ item.name }}
+          <fa-icon v-if="item.children && !!item.children.length && inverted" icon="chevron-down" />
         </component>
         <ul
           v-if="item.children && item.children.length"
@@ -230,6 +231,7 @@ export default defineComponent({
 
 .c-navigation--inverted .c-navigation__item-name.nuxt-link-active,
 .c-navigation--inverted .c-navigation__item-name:has(+ .c-navigation__sub-items--active) {
+  color: white;
   background-color: var(--st-color-navigation-item-inverted-active-background);
   border-radius: var(--st-length-spacing-xxs);
 }

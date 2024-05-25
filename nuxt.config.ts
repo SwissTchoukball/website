@@ -118,6 +118,7 @@ const config: NuxtConfig = {
         'faAsterisk',
         'faAward',
         'faCalendarDays',
+        'faChevronDown',
         'faCircleDot',
         'faCirclePlay',
         'faClock',
