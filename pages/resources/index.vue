@@ -9,7 +9,6 @@
           name="q"
           type="search"
           :placeholder="`${$t('resources.form.placeholder')}`"
-          minlength="3"
           class="c-resources__search-field"
         />
         <button type="submit" class="u-unstyled-button c-resources__search-button" :disabled="isSearching">
@@ -40,7 +39,7 @@
 
     <st-loader v-if="isSearching" :main="true" />
     <p v-else-if="errorMessage">{{ errorMessage }}</p>
-    <p v-else-if="isSearchTooBroad" class="l-blank-slate-message">{{ $t('resources.search.tooBroad') }}</p>
+    <p v-else-if="!hasSearchBeenSubmittedOnce" class="l-blank-slate-message">{{ $t('resources.search.tooBroad') }}</p>
     <p v-else-if="resources.length <= 0" class="l-blank-slate-message">{{ $t('resources.search.noResults') }}</p>
     <template v-else>
       <p class="c-resources__results-info">
@@ -71,7 +70,7 @@ export default defineComponent({
       searchTerm: '',
       selectedDomain: ALL_OPTION as number | typeof ALL_OPTION,
       selectedType: ALL_OPTION as number | typeof ALL_OPTION,
-      isSearchTooBroad: true,
+      hasSearchBeenSubmittedOnce: false,
       isSearching: false,
       errorMessage: '',
       resources: [] as Resource[],
@@ -123,27 +122,19 @@ export default defineComponent({
     this.setParametersFromQueryStrings();
 
     // Directly submitting a search requests if the params are good
-    this.checkIfSearchIsTooBroad();
-    if (!this.isSearchTooBroad) {
+    if (this.searchTerm.length > 0 || this.domainIdFilter || this.typeIdFilter) {
       this.submitSearch();
     }
   },
   methods: {
-    checkIfSearchIsTooBroad() {
-      this.isSearchTooBroad = this.searchTerm.length < 3 && !this.domainIdFilter && !this.typeIdFilter;
-    },
     async submitSearch() {
       if (this.isSearching) {
         // Prevent submit if request is still ongoing
         return;
       }
+      this.hasSearchBeenSubmittedOnce = true;
 
       this.errorMessage = '';
-
-      this.checkIfSearchIsTooBroad();
-      if (this.isSearchTooBroad) {
-        return;
-      }
 
       this.isSearching = true;
       this.resources = [];
