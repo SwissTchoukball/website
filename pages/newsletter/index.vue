@@ -15,7 +15,7 @@
         name="inf[1]"
         data-inf-meta="1"
         data-inf-error="Merci de renseigner une adresse email"
-        required="required"
+        required
         placeholder="Mail"
       />
       <p class="l-paragraph">
@@ -27,10 +27,10 @@
 </template>
 
 <script lang="ts">
-import Vue, { VueConstructor } from 'vue';
+import { defineComponent } from 'vue';
 import newsletterMixin, { NewsletterSlug } from '~/mixins/newsletter.mixin';
 
-export default (Vue as VueConstructor<Vue & InstanceType<typeof newsletterMixin>>).extend({
+export default defineComponent({
   mixins: [newsletterMixin],
   data() {
     return {

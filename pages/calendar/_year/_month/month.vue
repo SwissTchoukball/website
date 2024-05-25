@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts">
-import Vue, { VueConstructor } from 'vue';
+import { defineComponent } from 'vue';
 import { addDays, getWeeksInMonth, startOfMonth, startOfWeek } from 'date-fns';
 
 import monthParamsMixin from '~/mixins/month-params.mixin';
@@ -17,7 +17,7 @@ import stCalendarNav from '~/components/events/st-calendar-nav.vue';
 import stMonthCalendar from '~/components/events/st-month-calendar.vue';
 import { CalendarEvent, CMSService } from '~/plugins/cms-service';
 
-export default (Vue as VueConstructor<Vue & InstanceType<typeof monthParamsMixin>>).extend({
+export default defineComponent({
   nuxtI18n: {
     paths: {
       fr: '/calendrier/:year/:month/mois',

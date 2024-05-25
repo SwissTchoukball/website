@@ -31,13 +31,13 @@
 </template>
 
 <script lang="ts">
-import Vue, { VueConstructor } from 'vue';
+import { defineComponent } from 'vue';
 import stEventList from '~/components/events/st-event-list.vue';
 import stCalendarNav from '~/components/events/st-calendar-nav.vue';
 import { CalendarEvent, CMSService } from '~/plugins/cms-service';
 import monthParamsMixin from '~/mixins/month-params.mixin';
 
-export default (Vue as VueConstructor<Vue & InstanceType<typeof monthParamsMixin>>).extend({
+export default defineComponent({
   nuxtI18n: {
     paths: {
       fr: '/calendrier/:year/:month/liste',
