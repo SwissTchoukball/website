@@ -235,6 +235,8 @@
   "resources": {
     "title": "Ressources",
     "description": "Documents et liens utiles",
+    "download": "Télécharger",
+    "view": "Consulter",
     "form": {
       "submit": "Rechercher",
       "placeholder": "Nom de règlement, formulaire, ...",

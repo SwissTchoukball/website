@@ -48,14 +48,14 @@ import { EventTypes, PlayerPositions } from '~/store/state';
 
 export interface ResourceType {
   id: number;
-  name: string;
+  name?: string;
 }
 
 export interface Resource {
   id: number;
   name: string;
-  file: DirectusFile<DirectusSchema>;
-  link: string;
+  file?: DirectusFile<DirectusSchema>;
+  link?: string;
   type: ResourceType;
   domain_ids: number[];
   date: string;
@@ -238,6 +238,7 @@ export interface CMSService {
   getTchoukups: (options: { limit: number; page: number }) => Promise<{ data: Tchoukup[]; meta: { total: number } }>;
   getResourceTypes: () => Promise<ResourceType[]>;
   searchResources: (searchTerm: string, domainId?: number, typeId?: number) => Promise<Resource[]>;
+  getResource: (resourceId: number) => Promise<Resource>;
 }
 
 declare module 'vue/types/vue' {
@@ -2197,6 +2198,36 @@ const cmsService: Plugin = (context, inject) => {
     return resourceTypes;
   };
 
+  const processResource = (directusResource: DirectusResource, locale: string): Resource => {
+    if (!directusResource) {
+      throw new Error('Resource is not defined');
+    }
+
+    const translatedFields = getTranslatedFields(directusResource, locale);
+
+    if (!translatedFields?.name) {
+      throw new Error('Resource is missing mandatory field');
+    }
+
+    const typeTranslatedFields = getTranslatedFields(directusResource.type, locale);
+
+    const temp: Resource = {
+      id: directusResource.id,
+      name: translatedFields.name,
+      file: translatedFields?.file,
+      link: translatedFields?.link,
+      type: {
+        id: directusResource.type.id,
+        name: typeTranslatedFields?.name,
+      },
+      domain_ids: directusResource.domains.map((domain) => domain.domains_id.id),
+      date: directusResource.date,
+      status: directusResource.status,
+    };
+
+    return temp;
+  };
+
   const searchResources: CMSService['searchResources'] = async (searchTerm, domainId, typeId) => {
     // We retrieve all the languages and show resources in fallback locale if not available in current locale
     const currentLocale = context.i18n.locale;
@@ -2245,7 +2276,7 @@ const cmsService: Plugin = (context, inject) => {
           'date',
           'type',
           {
-            domains: ['id'],
+            domains: [{ domains_id: ['id'] }],
             translations: [
               'languages_code',
               'name',
@@ -2263,28 +2294,48 @@ const cmsService: Plugin = (context, inject) => {
       throw new Error('Error when retrieving resources');
     }
 
-    return response
-      .reduce((resources, resource) => {
-        if (!resource) {
-          return resources;
-        }
-        const translatedFields = getTranslatedFields(resource, currentLocale);
+    const resources: Resource[] = [];
 
-        if (!translatedFields?.name) {
-          return resources;
-        }
+    response.forEach((directusResource) => {
+      try {
+        const resource = processResource(directusResource, currentLocale);
+        resources.push(resource);
+      } catch (error) {
+        console.error(error);
+      }
+    });
 
-        return [
-          ...resources,
+    return resources.sort((resourceA, resourceB) => resourceA.name.localeCompare(resourceB.name));
+  };
+
+  const getResource: CMSService['getResource'] = async (resourceId) => {
+    const response = await context.$directus.request<DirectusResource>(
+      readItem('resources', resourceId, {
+        fields: [
+          'id',
+          'date',
+          'status',
+          'type',
           {
-            ...resource,
-            name: translatedFields?.name,
-            file: translatedFields?.file,
-            link: translatedFields?.link,
+            domains: [{ domains_id: ['id'] }],
+            translations: [
+              'languages_code',
+              'name',
+              'link',
+              {
+                file: ['id', 'type', 'filesize', 'filename_download'],
+              },
+            ],
           },
-        ] as Resource[];
-      }, [] as Resource[])
-      .sort((resourceA, resourceB) => resourceA.name.localeCompare(resourceB.name));
+        ],
+      })
+    );
+
+    if (!response) {
+      throw new Error('No resource found for requested ID');
+    }
+
+    return processResource(response, context.i18n.locale);
   };
 
   inject('cmsService', {
@@ -2317,6 +2368,7 @@ const cmsService: Plugin = (context, inject) => {
     getTchoukups,
     getResourceTypes,
     searchResources,
+    getResource,
   });
 };
 

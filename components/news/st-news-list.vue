@@ -23,7 +23,7 @@
           <fa-icon icon="newspaper" class="c-news-list__placeholder-icon" />
         </div>
       </nuxt-link>
-      <st-domain-labels :domains="getDomains(newsEntry)" class="c-news-list__domains" />
+      <st-domain-labels :domains="getDomains(newsEntry)" target-page-name="news" class="c-news-list__domains" />
       <h3 class="c-news-list__title t-headline-2">
         <nuxt-link :to="getNewsLink(newsEntry)"> {{ newsEntry.title }} </nuxt-link>
       </h3>

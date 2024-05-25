@@ -5,7 +5,7 @@
       :key="resource ? resource.id : `unknown-${index}`"
       class="c-resource-list__item"
     >
-      <st-resource :resource="resource" />
+      <st-resource-list-item :resource="resource" />
     </li>
   </ul>
 </template>
@@ -13,10 +13,10 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
 import { Resource } from '~/plugins/cms-service';
-import stResource from '~/components/resources/st-resource.vue';
+import stResourceListItem from '~/components/resources/st-resource-list-item.vue';
 
 export default defineComponent({
-  components: { stResource },
+  components: { stResourceListItem },
   props: {
     resources: {
       type: Array as PropType<Resource[]>,

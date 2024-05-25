@@ -263,8 +263,6 @@ export default defineComponent({
   .c-resources__filters {
     flex-direction: row;
     justify-content: center;
-
-    /* align-items: flex-end; */
   }
 
   .c-resources__filter {

@@ -1,7 +1,7 @@
 <template>
   <article class="c-news-entry">
     <st-breadcrumb :items="breadcrumb" />
-    <st-domain-labels :domains="domains" class="c-news-entry__domain-labels" />
+    <st-domain-labels :domains="domains" target-page-name="news" class="c-news-entry__domain-labels" />
     <h2 class="c-news-entry__title t-headline-1">{{ newsEntry.title }}</h2>
     <img
       v-if="newsEntry.main_image"

@@ -1,7 +1,7 @@
 <template>
   <ul class="u-unstyled-list">
-    <li v-for="domain of domains" :key="`domain-${domain.id}`" class="c-news-domain-labels__domain">
-      <nuxt-link :to="getNewsDomainLink(domain)" class="c-news-domain-labels__domain-link">
+    <li v-for="domain of domains" :key="`domain-${domain.id}`" class="c-domain-labels__domain">
+      <nuxt-link :to="getNewsDomainLink(domain)" class="c-domain-labels__domain-link">
         {{ domain.name }}
       </nuxt-link>
     </li>
@@ -18,24 +18,32 @@ export default defineComponent({
       type: Array as PropType<Domain[]>,
       required: true,
     },
+    targetPageName: {
+      type: String,
+      required: true,
+    },
+    targetPageQueryKey: {
+      type: String,
+      default: 'domain',
+    },
   },
   methods: {
     getNewsDomainLink(domain: Domain) {
-      return this.localePath({ name: 'news', query: { domain: domain.id.toString() } });
+      return this.localePath({ name: this.targetPageName, query: { [this.targetPageQueryKey]: domain.id.toString() } });
     },
   },
 });
 </script>
 
 <style scoped>
-.c-news-domain-labels__domain {
+.c-domain-labels__domain {
   display: inline-block;
   margin-right: 0.3em;
 }
 
-.c-news-domain-labels__domain-link {
-  color: var(--st-color-news-domain-foreground);
-  background-color: var(--st-color-news-domain-background);
+.c-domain-labels__domain-link {
+  color: var(--st-color-domain-foreground);
+  background-color: var(--st-color-domain-background);
   text-transform: uppercase;
   text-decoration: none;
   font-weight: 900;

@@ -92,9 +92,11 @@
   --st-color-person-detail-icon: var(--st-color-red-swiss-tchoukball);
   --st-color-person-avatar-background: var(--st-color-grey-very-light);
 
+  /* Domains */
+  --st-color-domain-background: var(--st-color-red-swiss-tchoukball);
+  --st-color-domain-foreground: white;
+
   /* News */
-  --st-color-news-domain-background: var(--st-color-red-swiss-tchoukball);
-  --st-color-news-domain-foreground: white;
   --st-color-news-image-background: var(--st-color-grey-very-light);
   --st-color-news-image-foreground: var(--st-color-grey);
   --st-color-news-date-foreground: var(--st-color-grey-dark);

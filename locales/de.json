@@ -235,6 +235,8 @@
   "resources": {
     "title": "Ressourcen",
     "description": "Nützliche Dokumente und Links",
+    "download": "Download",
+    "view": "Ansehen",
     "form": {
       "submit": "Suchen",
       "placeholder": "Name des Reglements, Formulars, ...",

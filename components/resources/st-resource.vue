@@ -1,133 +1,66 @@
 <template>
   <div class="c-resource">
-    <fa-icon :icon="iconName" class="c-resource__icon" />
-    <div class="c-resource__name-details">
-      <a class="c-resource__name" :href="href" :download="download">{{ fileName }}</a>
-      <div class="c-resource__details">
-        <span v-if="fileType" class="c-resource__file_type">{{ fileType }}</span>
-        <span v-if="formattedFileSize" class="c-resource__file-size">{{ formattedFileSize }}</span>
-        <span v-if="date" class="c-resource__date">{{ date }}</span>
-      </div>
-    </div>
+    <st-domain-labels
+      :domains="domains"
+      target-page-name="resources"
+      target-page-query-key="d"
+      class="c-resource__domain-labels"
+    />
+    <h2 class="t-headline-1 c-resource__title">
+      {{ resource.name }}
+    </h2>
+    <st-resource-details :resource="resource" />
+
+    <st-button v-if="resource.file" class="c-resource__download-button" primary :href="href" :download="download">
+      {{ $t('resources.download') }}
+    </st-button>
+
+    <st-button v-if="resource.link" class="c-resource__link-button" primary :href="href">
+      {{ $t('resources.view') }}
+    </st-button>
+
+    <object
+      v-if="resource.file && resource.file.type === 'application/pdf'"
+      :type="resource.file.type"
+      :data="href"
+      class="c-resource__embed"
+    ></object>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue';
-import { TranslateResult } from 'vue-i18n';
-import { Resource } from '~/plugins/cms-service';
-import { humanFileSize } from '~/utils/utils';
+import { defineComponent } from 'vue';
+import stResourceDetails from '~/components/resources/st-resource-details.vue';
+import resourceMixin from '~/mixins/resource.mixin';
 
 export default defineComponent({
-  props: {
-    resource: {
-      type: Object as PropType<Resource>,
-      default: undefined,
-    },
-  },
-  computed: {
-    href(): string | undefined {
-      if (this.resource?.file) {
-        return `${this.$config.cmsURL}/assets/${this.resource.file.id}?download`;
-      } else if (this.resource?.link) {
-        return this.resource.link;
-      } else {
-        return '#';
-      }
-    },
-    download(): string | null {
-      if (!this.resource?.file) {
-        return null;
-      }
-      return this.resource.file.filename_download;
-    },
-    date(): string | undefined {
-      if (this.resource?.date) {
-        return this.$formatDate(new Date(this.resource.date), 'dd.MM.yyyy');
-      }
-      return undefined;
-    },
-    formattedFileSize(): string | undefined {
-      if (!this.resource?.file) {
-        return;
-      }
-      // @ts-ignore TODO: Check the actual type
-      return humanFileSize(this.resource.file.filesize, 2, this.$i18n.locale);
-    },
-    fileName(): string {
-      if (this.resource?.name) {
-        return this.resource.name;
-      }
-      return this.$t('resources.missing').toString();
-    },
-    iconName(): string {
-      if (this.resource?.file) {
-        switch (this.resource.file.type) {
-          case 'application/pdf':
-            return 'file-pdf';
-          case 'application/zip':
-            return 'file-zipper';
-          default:
-            return 'file';
-        }
-      } else if (this.resource?.link) {
-        return 'link';
-      }
-      return 'question';
-    },
-    fileType(): TranslateResult {
-      if (this.resource?.file) {
-        switch (this.resource.file.type) {
-          case 'application/pdf':
-            return this.$t('resources.fileType.pdf');
-          case 'application/zip':
-            return this.$t('resources.fileType.zip');
-          default:
-            return this.$t('resources.fileType.other');
-        }
-      } else if (this.resource?.link) {
-        return this.$t('resources.link');
-      }
-      return this.$t('resources.missing');
-    },
-  },
+  components: { stResourceDetails },
+  mixins: [resourceMixin],
 });
 </script>
 
 <style scoped>
 .c-resource {
   display: flex;
-  align-items: center;
+  flex-direction: column;
 }
 
-.c-resource__icon {
-  width: 2.5rem;
-  height: 2.5rem;
-  padding: 0.2rem;
-  margin-right: var(--st-length-spacing-xxs);
-  color: var(--st-color-resource-icon);
-  flex-shrink: 0;
+.c-resource__domain-labels {
+  margin-top: var(--st-length-spacing-s);
 }
 
-.c-resource__name {
-  color: var(--st-color-link);
-  display: inline-block;
+.c-resource__title {
+  padding-top: var(--st-length-spacing-xs);
 }
 
-.c-resource__details {
-  display: flex;
-  margin-top: var(--st-length-spacing-xxs);
-  color: var(--st-color-resource-details);
-  font-size: 0.8em;
+a.c-resource__download-button,
+a.c-resource__link-button {
+  align-self: center;
+  margin-top: var(--st-length-spacing-s);
 }
 
-.c-resource__details > *::after {
-  content: '\2022';
-  display: inline-block;
-  padding: 0 var(--st-length-spacing-xxs);
-}
-
-.c-resource__details > *:last-child::after {
-  display: none;
+.c-resource__embed {
+  height: 80vh;
+  margin-top: var(--st-length-spacing-s);
 }
 </style>
