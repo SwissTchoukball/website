@@ -11,7 +11,13 @@
     </h2>
     <st-resource-details :resource="resource" />
 
-    <st-button v-if="resource.file" class="c-resource__download-button" primary :href="href" :download="download">
+    <st-button
+      v-if="resource.file"
+      class="c-resource__download-button"
+      primary
+      :href="`${href}?download`"
+      :download="download"
+    >
       {{ $t('resources.download') }}
     </st-button>
 
@@ -62,5 +68,14 @@ a.c-resource__link-button {
 .c-resource__embed {
   height: 80vh;
   margin-top: var(--st-length-spacing-s);
+  border: 1px solid black;
+}
+
+/* Hack to target iOS devices only */
+@supports (-webkit-touch-callout: none) {
+  /* We hide the PDF embed on iOS because it shows only the first page */
+  .c-resource__embed {
+    display: none;
+  }
 }
 </style>

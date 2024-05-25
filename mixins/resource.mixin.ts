@@ -13,7 +13,7 @@ export default defineComponent({
   computed: {
     href(): string | undefined {
       if (this.resource.file) {
-        return `${this.$config.cmsURL}/assets/${this.resource.file.id}?download`;
+        return `${this.$config.cmsURL}/assets/${this.resource.file.id}`;
       } else if (this.resource?.link) {
         return this.resource.link;
       } else {
