@@ -20,7 +20,8 @@ export default class Competition {
       return null;
     }
 
-    // FIXME: This is a naive selection of the last edition. It might not work, i.e. when adding older editions.
-    return this.editions[this.editions.length - 1];
+    return this.editions.reduce((lastEdition, edition) => {
+      return edition.season.date_start > lastEdition.season.date_start ? edition : lastEdition;
+    });
   }
 }

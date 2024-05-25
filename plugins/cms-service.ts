@@ -1934,7 +1934,7 @@ const cmsService: Plugin = (context, inject) => {
             editions: [
               'leverade_id',
               {
-                season: ['id', 'name', 'slug', 'leverade_id'],
+                season: ['id', 'name', 'slug', 'leverade_id', 'date_start'],
               },
             ],
           },
