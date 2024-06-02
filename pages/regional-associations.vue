@@ -11,7 +11,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import stClubList from '~/components/st-club-list.vue';
-import { DirectusClub } from '~/plugins/directus';
+import { DirectusClub } from '~/plugins/06.directus';
 
 export default defineComponent({
   components: { stClubList },

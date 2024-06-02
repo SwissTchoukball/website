@@ -18,7 +18,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
-import { DirectusClub, getAssetURL } from '~/plugins/directus';
+import { DirectusClub, getAssetURL } from '~/plugins/06.directus';
 
 export default defineComponent({
   props: {

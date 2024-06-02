@@ -23,7 +23,7 @@ import { MetaInfo } from 'vue-meta';
 import { PressRelease } from '~/components/press-releases/press-releases';
 import { BreadcrumbItem } from '~/components/st-breadcrumb.vue';
 import stRole from '~/components/people/st-role.vue';
-import { RoleWithPartialGroupAndHolders } from '~/plugins/cms-service';
+import { RoleWithPartialGroupAndHolders } from '~/plugins/08.cms-service';
 
 const MEDIA_COORDINATOR_ROLE = 62;
 

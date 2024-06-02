@@ -1,5 +1,5 @@
-<template functional>
-  <span class="c-live-indicator" :class="[data.class, data.staticClass]">
+<template>
+  <span class="c-live-indicator">
     <span class="c-live-indicator__dot"></span>
     <span class="c-live-indicator__outer-glow"></span>
   </span>

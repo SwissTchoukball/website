@@ -31,7 +31,7 @@
 import { defineComponent, PropType } from 'vue';
 import { differenceInDays } from 'date-fns';
 import linkifyString from 'linkify-string';
-import { getAssetSrcSet, getAssetURL } from '~/plugins/directus';
+import { getAssetSrcSet, getAssetURL } from '~/plugins/06.directus';
 import { NationalTeamCompetitionUpdate } from '~/components/national-teams/st-national-teams.prop';
 
 export default defineComponent({

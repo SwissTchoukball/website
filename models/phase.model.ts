@@ -1,6 +1,6 @@
-import { LeveradeGroup, LeveradeGroupType } from '~/plugins/leverade';
-import Round from '~/models/round.model';
-import Match from '~/models/match.model';
+import type { LeveradeGroup, LeveradeGroupType } from '~/plugins/07.leverade';
+import type Round from '~/models/round.model';
+import type Match from '~/models/match.model';
 
 export default class Phase {
   static entity = 'phases';

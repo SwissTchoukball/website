@@ -9,7 +9,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
 import stEvent from '~/components/events/st-event.vue';
-import { CalendarEvent } from '~/plugins/cms-service';
+import { CalendarEvent } from '~/plugins/08.cms-service';
 
 export default defineComponent({
   components: {

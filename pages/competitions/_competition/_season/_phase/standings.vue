@@ -46,7 +46,7 @@ import Season from '~/models/season.model';
 import Phase from '~/models/phase.model';
 import Team from '~/models/team.model';
 import CompetitionEdition from '~/models/competition-edition.model';
-import { LeveradeGroupType, LeveradeStandings, LeveradeTeam } from '~/plugins/leverade';
+import { LeveradeGroupType, LeveradeStandings, LeveradeTeam } from '~/plugins/07.leverade';
 
 interface StandingRow<T> {
   position: number;

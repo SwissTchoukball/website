@@ -29,7 +29,7 @@ import { BreadcrumbItem } from '~/components/st-breadcrumb.vue';
 import CompetitionEdition from '~/models/competition-edition.model';
 import Phase from '~/models/phase.model';
 import Season from '~/models/season.model';
-import { NationalCompetitionEdition } from '~/plugins/cms-service';
+import { NationalCompetitionEdition } from '~/plugins/08.cms-service';
 import {
   Leverade,
   LeveradeFaceoff,
@@ -39,7 +39,7 @@ import {
   LeveradeResult,
   LeveradeRound,
   LeveradeTeam,
-} from '~/plugins/leverade';
+} from '~/plugins/07.leverade';
 import { Await } from '~/types/types.utils';
 
 export default defineComponent({
@@ -240,7 +240,7 @@ export default defineComponent({
               displayName: this.season.name,
               pageName: 'seasons-season',
             },
-          ]
+          ],
         );
       }
 

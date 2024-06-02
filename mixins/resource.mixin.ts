@@ -1,6 +1,6 @@
-import { defineComponent, PropType } from 'vue';
-import { TranslateResult } from 'vue-i18n';
-import { Domain, Resource } from '~/plugins/cms-service';
+import { defineComponent, type PropType } from 'vue';
+import type { TranslateResult } from 'vue-i18n';
+import type { Domain, Resource } from '~/plugins/08.cms-service';
 import { humanFileSize } from '~/utils/utils';
 
 export default defineComponent({

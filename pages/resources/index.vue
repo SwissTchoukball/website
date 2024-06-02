@@ -53,7 +53,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import stResourceList from '~/components/resources/st-resource-list.vue';
-import { Domain, Resource, ResourceType } from '~/plugins/cms-service';
+import { Domain, Resource, ResourceType } from '~/plugins/08.cms-service';
 
 const ALL_OPTION = 'all';
 
@@ -99,7 +99,7 @@ export default defineComponent({
   computed: {
     domains() {
       return [...this.$store.state.domains].sort((a, b) =>
-        (a as Domain).name.localeCompare((b as Domain).name, this.$i18n.locale)
+        (a as Domain).name.localeCompare((b as Domain).name, this.$i18n.locale),
       );
     },
     types(): ResourceType[] {
@@ -146,7 +146,7 @@ export default defineComponent({
         this.resources = await this.$cmsService.searchResources(
           this.searchTerm,
           this.domainIdFilter,
-          this.typeIdFilter
+          this.typeIdFilter,
         );
       } catch (error) {
         this.errorMessage = this.$t('resources.search.error').toString() + error;

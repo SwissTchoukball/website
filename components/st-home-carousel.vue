@@ -25,7 +25,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
-import { getAssetSrcSet, getAssetURL } from '~/plugins/directus';
+import { getAssetSrcSet, getAssetURL } from '~/plugins/06.directus';
 
 export interface CarouselItem {
   image: {

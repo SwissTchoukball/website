@@ -19,8 +19,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue';
-import { Resource, Role } from '~/plugins/cms-service';
+import { PropType } from 'vue';
+import { Resource, Role } from '~/plugins/08.cms-service';
 import stRole from '~/components/people/st-role.vue';
 import StResourceList from '~/components/resources/st-resource-list.vue';
 

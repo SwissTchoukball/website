@@ -22,7 +22,7 @@
 <script lang="ts">
 import { isPast, subMinutes } from 'date-fns';
 import { defineComponent, PropType } from 'vue';
-import { LiveStream } from '~/plugins/cms-service';
+import { LiveStream } from '~/plugins/08.cms-service';
 
 export default defineComponent({
   props: {

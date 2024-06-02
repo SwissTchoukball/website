@@ -46,12 +46,12 @@ import Match from '~/models/match.model';
 import stMatchEventSmall from '~/components/competitions/st-match-event-small.vue';
 import Phase from '~/models/phase.model';
 import Season from '~/models/season.model';
-import { Leverade, LeveradeFacility } from '~/plugins/leverade';
+import { Leverade, LeveradeFacility } from '~/plugins/07.leverade';
 import { Await } from '~/types/types.utils';
 import Team from '~/models/team.model';
 import Round from '~/models/round.model';
 import CompetitionEdition from '~/models/competition-edition.model';
-import { NationalCompetitionEdition } from '~/plugins/cms-service';
+import { NationalCompetitionEdition } from '~/plugins/08.cms-service';
 
 export default defineComponent({
   components: { stMatchEventSmall },
@@ -105,7 +105,7 @@ export default defineComponent({
             break;
           case 'tournament': {
             const competitionEdition = competitionEditions.find(
-              (edition) => edition.leverade_id && edition.leverade_id === entity.id
+              (edition) => edition.leverade_id && edition.leverade_id === entity.id,
             );
             competitionEdition?.addLeveradeData({ tournament: entity });
             break;
@@ -125,7 +125,7 @@ export default defineComponent({
         const round = rounds.find((round) => round.id === match.round_id);
         const phase = phases.find((phase) => !!round && phase.id === round.phase_id);
         const edition = competitionEditions.find(
-          (competitionEdition) => !!phase && competitionEdition.leverade_id === phase.competition_edition_id
+          (competitionEdition) => !!phase && competitionEdition.leverade_id === phase.competition_edition_id,
         );
         return { match, edition };
       });

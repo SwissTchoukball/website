@@ -15,7 +15,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { Group } from '~/plugins/cms-service';
+import { Group } from '~/plugins/08.cms-service';
 import { MenuItem } from '~/store/state';
 
 export default defineComponent({

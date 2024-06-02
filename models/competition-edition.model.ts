@@ -1,8 +1,8 @@
 import Phase from '~/models/phase.model';
 import Competition from '~/models/competition.model';
 import Team from '~/models/team.model';
-import { NationalCompetitionEdition } from '~/plugins/cms-service';
-import {
+import type { NationalCompetitionEdition } from '~/plugins/08.cms-service';
+import type {
   LeveradeFaceoff,
   LeveradeFacility,
   LeveradeGroup,
@@ -11,11 +11,11 @@ import {
   LeveradeRound,
   LeveradeTeam,
   LeveradeTournament,
-} from '~/plugins/leverade';
+} from '~/plugins/07.leverade';
 import Round from '~/models/round.model';
 import Faceoff from '~/models/faceoff.model';
 import Match from '~/models/match.model';
-import Season from '~/models/season.model';
+import type Season from '~/models/season.model';
 
 export default class CompetitionEdition {
   leverade_id?: string;

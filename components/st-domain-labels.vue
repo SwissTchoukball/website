@@ -10,7 +10,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
-import { Domain } from '~/plugins/cms-service';
+import { Domain } from '~/plugins/08.cms-service';
 
 export default defineComponent({
   props: {

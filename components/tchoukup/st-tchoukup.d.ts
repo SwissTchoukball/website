@@ -1,4 +1,4 @@
-import { DirectusFile, DirectusImage } from '~/plugins/directus';
+import type { DirectusFile, DirectusImage } from '~/plugins/06.directus';
 
 export interface Tchoukup {
   id: number;

@@ -11,7 +11,7 @@ export default defineNuxtConfig({
     '~/assets/css/typography.css',
     '~/assets/css/main.css',
     '~/assets/css/forms.css',
-    '@fortawesome/fontawesome-svg-core/styles.css'
+    '@fortawesome/fontawesome-svg-core/styles.css',
   ],
   postcss: {
     plugins: {
@@ -19,28 +19,22 @@ export default defineNuxtConfig({
     },
   },
 
-  // TODO: Update plugins and remove their declaration here as it is not needed any more
-  //       If order is important, we should prefix their filename with numbers.
-  plugins: [
-    { src: '~/plugins/v-click-outside.js', mode: 'client' },
-    '~/plugins/directus.ts',
-    '~/plugins/i18n.ts',
-    '~/plugins/format-date.ts',
-    '~/plugins/vue-slick-carousel.ts',
-    '~/plugins/vue-tooltip.ts',
-    '~/plugins/cms-service.ts',
-    '~/plugins/leverade.ts',
-    '~/plugins/flickr.ts',
-  ],
-
   components: [
     {
       path: '~/components',
-      pathPrefix: false
-    }
+      pathPrefix: false,
+    },
   ],
 
-  modules: ['@pinia/nuxt', '@nuxtjs/i18n', '@nuxt/eslint', '@nuxtjs/stylelint-module', 'nuxt-mail', '@nuxt/scripts'],
+  modules: [
+    '@pinia/nuxt',
+    '@nuxtjs/i18n',
+    '@vueuse/nuxt',
+    '@nuxt/eslint',
+    '@nuxtjs/stylelint-module',
+    'nuxt-mail',
+    '@nuxt/scripts',
+  ],
 
   i18n: {
     locales: [
@@ -93,8 +87,23 @@ export default defineNuxtConfig({
       matomoAnalytics: {
         siteId: process.env.MATOMO_SITE_ID,
         matomoUrl: 'https://analytics.tchoukball.ch/',
+
         cookies: false,
         debug: process.env.MATOMO_DEBUG,
+      },
+    },
+  },
+  runtimeConfig: {
+    public: {
+      cmsURL: process.env.CMS_URL || 'http://localhost:8055',
+      websiteBaseUrl: process.env.ST_WEBSITE_BASE_URL,
+      leveradeURL: 'https://api.leverade.com',
+      hCaptchaSiteKey: process.env.HCAPTCHA_SITE_KEY,
+      flickr: {
+        userId: '128998613@N07',
+        // It's okay to use the API key from the browser
+        // https://github.com/flickr/flickr-sdk#browser-usage
+        apiKey: process.env.FLICKR_API_KEY,
       },
     },
   },

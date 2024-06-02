@@ -1,4 +1,4 @@
-import { DirectusSeason } from '~/plugins/directus';
+import type { DirectusSeason } from '~/plugins/06.directus';
 
 export default class Season {
   static entity = 'seasons';

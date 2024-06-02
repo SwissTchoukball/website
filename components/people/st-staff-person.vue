@@ -23,7 +23,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
 import stPerson, { PersonDetail } from '~/components/people/st-person.vue';
-import { Gender, Person, Role } from '~/plugins/cms-service';
+import { Gender, Person, Role } from '~/plugins/08.cms-service';
 
 export default defineComponent({
   components: { stPerson },

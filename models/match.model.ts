@@ -1,14 +1,14 @@
-import Faceoff from '~/models/faceoff.model';
-import Team from '~/models/team.model';
+import type Faceoff from '~/models/faceoff.model';
+import type Team from '~/models/team.model';
 import { parseLeveradeDate } from '~/utils/utils';
-import {
+import type {
   LeveradeFacility,
   LeveradeMatch,
   LeveradePeriod,
   LeveradeProfile,
   LeveradeResult,
   LeveradeTeam,
-} from '~/plugins/leverade';
+} from '~/plugins/07.leverade';
 
 export interface Facility {
   id: string;
@@ -106,7 +106,7 @@ export default class Match {
       (result) =>
         result.relationships?.match?.data?.id === this.id &&
         result.relationships?.team?.data?.id === this.away_team_id &&
-        result.relationships?.parent?.data?.type === 'match'
+        result.relationships?.parent?.data?.type === 'match',
     );
 
     if (homeResult && awayResult) {
@@ -126,13 +126,13 @@ export default class Match {
             results?.find(
               (result) =>
                 result.relationships?.period?.data?.id === period.id &&
-                result.relationships?.team?.data?.id === this.home_team_id
+                result.relationships?.team?.data?.id === this.home_team_id,
             )?.attributes.value || undefined,
           away_team_score:
             results?.find(
               (result) =>
                 result.relationships?.period?.data?.id === period.id &&
-                result.relationships?.team?.data?.id === this.away_team_id
+                result.relationships?.team?.data?.id === this.away_team_id,
             )?.attributes.value || undefined,
         };
       })

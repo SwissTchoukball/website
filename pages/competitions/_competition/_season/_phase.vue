@@ -17,7 +17,7 @@ import Season from '~/models/season.model';
 import Phase from '~/models/phase.model';
 import Round from '~/models/round.model';
 import CompetitionEdition from '~/models/competition-edition.model';
-import { LeveradeGroupType } from '~/plugins/leverade';
+import { LeveradeGroupType } from '~/plugins/07.leverade';
 import { MenuItem } from '~/store/state';
 
 export default defineComponent({

@@ -1,6 +1,6 @@
-import Team from '~/models/team.model';
-import Match from '~/models/match.model';
-import { LeveradeFaceoff, LeveradeTeam } from '~/plugins/leverade';
+import type Team from '~/models/team.model';
+import type Match from '~/models/match.model';
+import type { LeveradeFaceoff, LeveradeTeam } from '~/plugins/07.leverade';
 
 export default class Faceoff {
   static entity = 'faceoffs';

@@ -15,7 +15,7 @@
 import { defineComponent } from 'vue';
 import stEventList from '~/components/events/st-event-list.vue';
 import { BreadcrumbItem } from '~/components/st-breadcrumb.vue';
-import { CalendarEvent } from '~/plugins/cms-service';
+import { CalendarEvent } from '~/plugins/08.cms-service';
 
 export default defineComponent({
   components: { stEventList },

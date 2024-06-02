@@ -74,10 +74,10 @@
 import { defineComponent } from 'vue';
 import { MetaInfo } from 'vue-meta';
 import { CarouselItem } from '~/components/st-home-carousel.vue';
-import { CalendarEvent } from '~/plugins/cms-service';
+import { CalendarEvent } from '~/plugins/08.cms-service';
 import stEventSmall from '~/components/events/st-event-small.vue';
 import stUpcomingMatches from '~/components/competitions/st-upcoming-matches.vue';
-import { FlickrPhotoset } from '~/plugins/flickr';
+import { FlickrPhotoset } from '~/plugins/05.flickr';
 
 export default defineComponent({
   components: {

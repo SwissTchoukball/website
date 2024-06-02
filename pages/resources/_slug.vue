@@ -12,7 +12,7 @@ import { defineComponent } from 'vue';
 import { MetaInfo } from 'vue-meta';
 import stResource from '~/components/resources/st-resource.vue';
 import { BreadcrumbItem } from '~/components/st-breadcrumb.vue';
-import { Resource } from '~/plugins/cms-service';
+import { Resource } from '~/plugins/08.cms-service';
 
 export default defineComponent({
   nuxtI18n: {

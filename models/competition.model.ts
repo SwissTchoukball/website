@@ -1,4 +1,4 @@
-import { NationalCompetition, NationalCompetitionEdition } from '~/plugins/cms-service';
+import type { NationalCompetition, NationalCompetitionEdition } from '~/plugins/08.cms-service';
 
 export default class Competition {
   static entity = 'competitions';

@@ -74,9 +74,9 @@
 import { defineComponent, PropType } from 'vue';
 // import { Location } from 'vue-router';
 import { Store } from 'vuex';
-import { CalendarEvent } from '~/plugins/cms-service';
+import { CalendarEvent } from '~/plugins/08.cms-service';
 import { EventType, EventTypes, RootState } from '~/store/state';
-import { getAssetSrcSet, getAssetURL } from '~/plugins/directus';
+import { getAssetSrcSet, getAssetURL } from '~/plugins/06.directus';
 import stEventDate from '~/components/events/st-event-date.vue';
 
 export default defineComponent({
@@ -245,7 +245,7 @@ export default defineComponent({
   font-weight: 500;
 }
 
-.c-event__description >>> p {
+.c-event__description:deep(p) {
   margin-left: 0;
 }
 

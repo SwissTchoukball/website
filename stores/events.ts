@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import type { DirectusFile } from '@directus/sdk';
-import type { DirectusSchema } from '~/plugins/directus';
+import type { DirectusSchema } from '~/plugins/06.directus';
 
 export interface EventType {
   id: number;
@@ -14,10 +14,12 @@ export interface EventTypes {
 }
 
 export const useEventsStore = defineStore('events', () => {
+  const nuxtApp = useNuxtApp();
+
   const eventTypes = ref<EventTypes>();
 
   const loadEventTypes = async () => {
-    eventTypes.value = await this.$cmsService.getEventTypes();
+    eventTypes.value = await nuxtApp.$cmsService.getEventTypes();
   };
 
   return {

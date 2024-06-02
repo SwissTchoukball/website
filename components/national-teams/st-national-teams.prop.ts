@@ -1,6 +1,6 @@
 import { type DirectusFile } from '@directus/sdk';
-import { Gender, Role } from '~/plugins/cms-service';
-import { DirectusPerson, DirectusSchema } from '~/plugins/directus';
+import type { Gender, Role } from '~/plugins/08.cms-service';
+import type { DirectusPerson, DirectusSchema } from '~/plugins/06.directus';
 
 export interface Player {
   id: number;

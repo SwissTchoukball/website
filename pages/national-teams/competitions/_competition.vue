@@ -24,7 +24,7 @@
 import { defineComponent } from 'vue';
 import { MetaInfo } from 'vue-meta';
 import { NationalTeamCompetition } from '~/components/national-teams/st-national-teams.prop';
-import { getAssetURL } from '~/plugins/directus';
+import { getAssetURL } from '~/plugins/06.directus';
 import { MenuItem } from '~/store/state';
 
 export default defineComponent({

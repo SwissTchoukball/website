@@ -1,40 +1,39 @@
-import { Plugin } from '@nuxt/types';
 import { set } from 'date-fns';
 import { aggregate, readItem, readItems, type DirectusFile, type Query } from '@directus/sdk';
-import { Await } from '~/types/types.utils';
+import type { Await } from '~/types/types.utils';
 import {
-  DirectusClub,
-  DirectusDomain,
-  DirectusEvent,
-  DirectusEventType,
-  DirectusGroup,
-  DirectusLiveStream,
-  DirectusMatchAdditionalData,
-  DirectusMenuItem,
-  DirectusNationalCompetition,
-  DirectusNationalCompetitionEdition,
-  DirectusNationalTeamCompetition,
-  DirectusNationalTeamCompetitionUpdate,
-  DirectusNationalTeamCompetitionsTeam,
-  DirectusNews,
-  DirectusPage,
-  DirectusPerson,
-  DirectusPlayerPosition,
-  DirectusPressRelease,
-  DirectusResource,
+  type DirectusClub,
+  type DirectusDomain,
+  type DirectusEvent,
+  type DirectusEventType,
+  type DirectusGroup,
+  type DirectusLiveStream,
+  type DirectusMatchAdditionalData,
+  type DirectusMenuItem,
+  type DirectusNationalCompetition,
+  type DirectusNationalCompetitionEdition,
+  type DirectusNationalTeamCompetition,
+  type DirectusNationalTeamCompetitionUpdate,
+  type DirectusNationalTeamCompetitionsTeam,
+  type DirectusNews,
+  type DirectusPage,
+  type DirectusPerson,
+  type DirectusPlayerPosition,
+  type DirectusPressRelease,
+  type DirectusResource,
   DirectusResourceStatus,
-  DirectusResourceType,
-  DirectusRole,
-  DirectusSchema,
-  DirectusSeason,
-  DirectusTchoukup,
-  DirectusTeam,
-  DirectusText,
+  type DirectusResourceType,
+  type DirectusRole,
+  type DirectusSchema,
+  type DirectusSeason,
+  type DirectusTchoukup,
+  type DirectusTeam,
+  type DirectusText,
   getTranslatedFields,
-} from '~/plugins/directus';
-import { NewsEntry } from '~/components/news/st-news';
-import { Tchoukup } from '~/components/tchoukup/st-tchoukup';
-import {
+} from '~/plugins/06.directus';
+import type { NewsEntry } from '~/components/news/st-news';
+import type { Tchoukup } from '~/components/tchoukup/st-tchoukup';
+import type {
   NationalTeam,
   NationalTeamCompetition,
   NationalTeamCompetitionUpdate,
@@ -42,9 +41,8 @@ import {
   NationalTeamResult,
 } from '~/components/national-teams/st-national-teams.prop';
 import { processRawCoaches, processRawPlayers } from '~/plugins/cms-service/national-teams';
-import { PressRelease } from '~/components/press-releases/press-releases';
+import type { PressRelease } from '~/components/press-releases/press-releases';
 import { toISOLocal } from '~/utils/utils';
-import { EventTypes, PlayerPositions } from '~/store/state';
 
 export interface ResourceType {
   id: number;
@@ -85,7 +83,6 @@ export interface Person {
   portrait_square_head?: string;
   gender: Gender;
   email?: string;
-  // eslint-disable-next-line no-use-before-define
   roles: Role[];
 }
 
@@ -94,7 +91,6 @@ export interface Role {
   name: string;
   name_feminine?: string;
   name_masculine?: string;
-  // eslint-disable-next-line no-use-before-define
   group?: Group;
   holders?: Person[];
   pivot?: {
@@ -103,7 +99,6 @@ export interface Role {
 }
 
 export type RoleWithPartialGroupAndHolders = Omit<Role, 'group' | 'holders'> & {
-  // eslint-disable-next-line no-use-before-define
   group?: Partial<Group>;
   holders?: Partial<Person>[];
 };
@@ -154,7 +149,6 @@ export interface CalendarEvent {
 export interface NationalCompetitionEdition {
   directus_id: number;
   season: DirectusSeason;
-  // eslint-disable-next-line no-use-before-define
   competition: NationalCompetition;
   leverade_id?: number;
 }
@@ -217,10 +211,10 @@ export interface CMSService {
   getNationalTeamCompetition: ({ id, slug }: { id?: number; slug?: string }) => Promise<NationalTeamCompetition>;
   getNationalTeamCompetitionUpdates: (
     nationalTeamCompetitionId: number,
-    options: { limit: number; page: number; keyOnly?: boolean; withImage?: boolean; teamId?: number }
+    options: { limit: number; page: number; keyOnly?: boolean; withImage?: boolean; teamId?: number },
   ) => Promise<{ data: NationalTeamCompetitionUpdate[]; meta: { total: number } }>;
   getNationalTeamsForCompetition: (
-    nationalTeamCompetitionId: number
+    nationalTeamCompetitionId: number,
   ) => Promise<Omit<NationalTeamForCompetition, 'competition'>[]>;
   getSeasons: () => Promise<DirectusSeason[]>;
   getLiveStreams: () => Promise<LiveStream[]>;
@@ -241,33 +235,10 @@ export interface CMSService {
   getResource: (resourceId: number) => Promise<Resource>;
 }
 
-declare module 'vue/types/vue' {
-  // this.$cmsService inside Vue components
-  interface Vue {
-    $cmsService: CMSService;
-  }
-}
+export default defineNuxtPlugin(() => {
+  const nuxtApp = useNuxtApp();
+  const { locale: currentLocale, defaultLocale } = useI18n();
 
-declare module '@nuxt/types' {
-  // nuxtContext.app.$cmsService inside asyncData, fetch, plugins, middleware, nuxtServerInit
-  interface NuxtAppOptions {
-    $cmsService: CMSService;
-  }
-  // nuxtContext.$cmsService
-  interface Context {
-    $cmsService: CMSService;
-  }
-}
-
-declare module 'vuex/types/index' {
-  // this.$cmsService inside Vuex stores
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  interface Store<S> {
-    $cmsService: CMSService;
-  }
-}
-
-const cmsService: Plugin = (context, inject) => {
   const processRoles = (directusRoles: (DirectusRole | undefined)[]) => {
     return directusRoles.reduce((roles, role) => {
       if (!role || !role.id) {
@@ -305,7 +276,7 @@ const cmsService: Plugin = (context, inject) => {
    * Fetches the data of a simple page for a specific locale
    */
   const fetchPage = async (pagePath: string, locale: string) => {
-    const pages = await context.$directus.request<DirectusPage[]>(
+    const pages = await nuxtApp.$directus.request<DirectusPage[]>(
       readItems('pages', {
         filter: { translations: { path: { _eq: pagePath } } },
         fields: [
@@ -353,7 +324,7 @@ const cmsService: Plugin = (context, inject) => {
           key_roles: { roles_id: { translations: { _filter: { languages_code: { _eq: locale } } } } },
         },
         limit: 1,
-      })
+      }),
     );
 
     if (!pages?.length) {
@@ -415,7 +386,7 @@ const cmsService: Plugin = (context, inject) => {
               link: translatedFields?.link,
             },
           ] as Resource[];
-        }, [] as Resource[])
+        }, [] as Resource[]),
       );
     }
 
@@ -423,14 +394,13 @@ const cmsService: Plugin = (context, inject) => {
   };
 
   const getMainNavigation: CMSService['getMainNavigation'] = async () => {
-    const currentLocale = context.i18n.locale;
-    return await context.$directus.request<DirectusMenuItem[]>(
+    return await nuxtApp.$directus.request<DirectusMenuItem[]>(
       readItems('menus', {
         filter: { parent: { _eq: 1 } },
         sort: ['sort'],
         deep: {
-          translations: { _filter: { languages_code: { _eq: currentLocale } } },
-          children: { translations: { _filter: { languages_code: { _eq: currentLocale } } } },
+          translations: { _filter: { languages_code: { _eq: currentLocale.value } } },
+          children: { translations: { _filter: { languages_code: { _eq: currentLocale.value } } } },
         },
         fields: [
           {
@@ -443,24 +413,22 @@ const cmsService: Plugin = (context, inject) => {
             ],
           },
         ],
-      })
+      }),
     );
   };
 
   const getText: CMSService['getText'] = async (textId) => {
-    // We retrieve all the languages and show text in fallback locale if not available in current locale
-    const currentLocale = context.i18n.locale;
-    const directusTextEntry = await context.$directus.request<DirectusText>(
+    const directusTextEntry = await nuxtApp.$directus.request<DirectusText>(
       readItem('texts', textId, {
         fields: ['id', { translations: ['languages_code', 'body'] }],
-      })
+      }),
     );
 
     if (!directusTextEntry) {
       throw new Error('Error when retrieving text entry');
     }
 
-    const translatedFields = getTranslatedFields(directusTextEntry, currentLocale);
+    const translatedFields = getTranslatedFields(directusTextEntry, currentLocale.value);
 
     if (!directusTextEntry.id || !translatedFields?.body) {
       throw new Error(`Text entry is missing requested fields`);
@@ -475,12 +443,11 @@ const cmsService: Plugin = (context, inject) => {
   };
 
   const getDomains: CMSService['getDomains'] = async () => {
-    const currentLocale = context.i18n.locale;
-    const domainsResponse = await context.$directus.request<DirectusDomain[]>(
+    const domainsResponse = await nuxtApp.$directus.request<DirectusDomain[]>(
       readItems('domains', {
         fields: ['id', { translations: ['name'] }],
-        deep: { translations: { _filter: { languages_code: { _eq: currentLocale } } } },
-      })
+        deep: { translations: { _filter: { languages_code: { _eq: currentLocale.value } } } },
+      }),
     );
 
     if (!domainsResponse) {
@@ -515,11 +482,11 @@ const cmsService: Plugin = (context, inject) => {
     let pageData: Await<ReturnType<typeof fetchPage>>;
 
     try {
-      pageData = await fetchPage(pagePath, context.i18n.locale);
+      pageData = await fetchPage(pagePath, currentLocale.value);
     } catch (err: any) {
       if (err.message === 'noData') {
         console.info('No data in the requested locale. Falling back to default locale.');
-        pageData = await fetchPage(pagePath, context.i18n.defaultLocale);
+        pageData = await fetchPage(pagePath, defaultLocale);
       } else {
         throw err;
       }
@@ -529,9 +496,6 @@ const cmsService: Plugin = (context, inject) => {
   };
 
   const getNews: CMSService['getNews'] = async ({ limit, page, domainId, withImageOnly, forHomepage }) => {
-    // We retrieve all the languages and show news in fallback locale if not available in current locale
-    const currentLocale = context.i18n.locale;
-
     const sort: Query<DirectusSchema, DirectusNews>['sort'] = [];
 
     if (forHomepage) {
@@ -549,7 +513,7 @@ const cmsService: Plugin = (context, inject) => {
       ],
     };
 
-    const newsResponse = await context.$directus.request<DirectusNews[]>(
+    const newsResponse = await nuxtApp.$directus.request<DirectusNews[]>(
       readItems('news', {
         limit,
         page,
@@ -565,7 +529,7 @@ const cmsService: Plugin = (context, inject) => {
           },
         ],
         sort,
-      })
+      }),
     );
 
     let newsList: NewsEntry[] = [];
@@ -578,7 +542,7 @@ const cmsService: Plugin = (context, inject) => {
         return news;
       }
 
-      const translatedFields = getTranslatedFields(directusNewsEntry, currentLocale);
+      const translatedFields = getTranslatedFields(directusNewsEntry, currentLocale.value);
 
       if (!directusNewsEntry.id || !directusNewsEntry.date_created || !translatedFields?.title) {
         console.warn(`News entry with ID ${directusNewsEntry.id} is missing requested fields`);
@@ -620,11 +584,11 @@ const cmsService: Plugin = (context, inject) => {
     }
 
     // TODO: Move this out of the function to call it only once
-    const aggregationOutput = await context.$directus.request(
+    const aggregationOutput = await nuxtApp.$directus.request(
       aggregate('news', {
         aggregate: { count: '*' },
         query: { filter },
-      })
+      }),
     );
 
     return {
@@ -638,9 +602,7 @@ const cmsService: Plugin = (context, inject) => {
 
   // FIXME: `getOneNews` is almost identical to `getNews`. Make it more DRY.
   const getOneNews: CMSService['getOneNews'] = async (newsId) => {
-    // We retrieve all the languages and show news in fallback locale if not available in current locale
-    const currentLocale = context.i18n.locale;
-    const directusNewsEntry = await context.$directus.request<DirectusNews>(
+    const directusNewsEntry = await nuxtApp.$directus.request<DirectusNews>(
       readItem('news', newsId, {
         fields: [
           'id',
@@ -653,16 +615,16 @@ const cmsService: Plugin = (context, inject) => {
           },
         ],
         deep: {
-          domains: { domains_id: { translations: { _filter: { languages_code: { _eq: currentLocale } } } } },
+          domains: { domains_id: { translations: { _filter: { languages_code: { _eq: currentLocale.value } } } } },
         },
-      })
+      }),
     );
 
     if (!directusNewsEntry) {
       throw new Error('Error when retrieving news');
     }
 
-    const translatedFields = getTranslatedFields(directusNewsEntry, currentLocale);
+    const translatedFields = getTranslatedFields(directusNewsEntry, currentLocale.value);
 
     if (
       !directusNewsEntry.id ||
@@ -704,10 +666,7 @@ const cmsService: Plugin = (context, inject) => {
   };
 
   const processPressRelease = (directusPressRelease: DirectusPressRelease): PressRelease => {
-    // We retrieve all the languages and show news in fallback locale if not available in current locale
-    const currentLocale = context.i18n.locale;
-
-    const translatedFields = getTranslatedFields(directusPressRelease, currentLocale);
+    const translatedFields = getTranslatedFields(directusPressRelease, currentLocale.value);
 
     if (!directusPressRelease.id || !directusPressRelease.date_created || !translatedFields?.title) {
       throw new Error(`Press release is missing requested fields`);
@@ -744,12 +703,11 @@ const cmsService: Plugin = (context, inject) => {
   };
 
   const getGroups: CMSService['getGroups'] = async () => {
-    const currentLocale = context.i18n.locale;
-    const groupsResponse = await context.$directus.request<DirectusGroup[]>(
+    const groupsResponse = await nuxtApp.$directus.request<DirectusGroup[]>(
       readItems('groups', {
         fields: ['id', { translations: ['name', 'description', 'slug'] }],
-        deep: { translations: { _filter: { languages_code: { _eq: currentLocale } } } },
-      })
+        deep: { translations: { _filter: { languages_code: { _eq: currentLocale.value } } } },
+      }),
     );
 
     if (!groupsResponse) {
@@ -779,16 +737,16 @@ const cmsService: Plugin = (context, inject) => {
         translations: ['name', 'description', 'slug'],
       },
     ];
-    const deep = { translations: { _filter: { languages_code: { _eq: context.i18n.locale } } } };
+    const deep = { translations: { _filter: { languages_code: { _eq: currentLocale.value } } } };
     if (id) {
-      directusGroup = await context.$directus.request<DirectusGroup>(
+      directusGroup = await nuxtApp.$directus.request<DirectusGroup>(
         readItem('groups', id, {
           fields,
           deep,
-        })
+        }),
       );
     } else {
-      const groups = await context.$directus.request<DirectusGroup[]>(
+      const groups = await nuxtApp.$directus.request<DirectusGroup[]>(
         readItems('groups', {
           limit: 1,
           filter: {
@@ -798,7 +756,7 @@ const cmsService: Plugin = (context, inject) => {
           },
           fields,
           deep,
-        })
+        }),
       );
 
       directusGroup = groups?.[0];
@@ -812,7 +770,7 @@ const cmsService: Plugin = (context, inject) => {
   };
 
   const getRole: CMSService['getRole'] = async (roleId: number) => {
-    const rawRole = await context.$directus.request<DirectusRole>(
+    const rawRole = await nuxtApp.$directus.request<DirectusRole>(
       readItem('roles', roleId, {
         fields: [
           'id',
@@ -831,17 +789,14 @@ const cmsService: Plugin = (context, inject) => {
             ],
           },
         ],
-      })
+      }),
     );
 
     if (!rawRole) {
       throw new Error('Error when retrieving role');
     }
 
-    // We retrieve all the languages and show news in fallback locale if not available in current locale
-    const currentLocale = context.i18n.locale;
-
-    const translatedFields = getTranslatedFields(rawRole, currentLocale);
+    const translatedFields = getTranslatedFields(rawRole, currentLocale.value);
 
     if (!rawRole.id || !translatedFields?.name) {
       throw new Error(`Role is missing requested fields`);
@@ -849,7 +804,7 @@ const cmsService: Plugin = (context, inject) => {
 
     let group: Partial<Group> | undefined;
     if (rawRole.group) {
-      const groupTranslatedFields = getTranslatedFields(rawRole.group, currentLocale);
+      const groupTranslatedFields = getTranslatedFields(rawRole.group, currentLocale.value);
       if (rawRole.group.id && groupTranslatedFields?.name && groupTranslatedFields?.slug) {
         group = {
           id: rawRole.group.id,
@@ -899,7 +854,7 @@ const cmsService: Plugin = (context, inject) => {
       filter = { roles: { _null: false } };
     }
 
-    const peopleResponse = await context.$directus.request<DirectusPerson[]>(
+    const peopleResponse = await nuxtApp.$directus.request<DirectusPerson[]>(
       readItems('people', {
         fields: [
           'id',
@@ -932,13 +887,13 @@ const cmsService: Plugin = (context, inject) => {
         deep: {
           roles: {
             roles_id: {
-              translations: { _filter: { languages_code: { _eq: context.i18n.locale } } },
-              group: { translations: { _filter: { languages_code: { _eq: context.i18n.locale } } } },
+              translations: { _filter: { languages_code: { _eq: currentLocale.value } } },
+              group: { translations: { _filter: { languages_code: { _eq: currentLocale.value } } } },
             },
           },
         },
         sort: ['last_name'],
-      })
+      }),
     );
 
     if (!peopleResponse) {
@@ -1006,23 +961,26 @@ const cmsService: Plugin = (context, inject) => {
   };
 
   const getClubs: CMSService['getClubs'] = async ({ statuses }) => {
-    const statusFilter = statuses.reduce((filter, status) => {
-      return [
-        ...filter,
-        {
-          status: { _eq: status },
-        },
-      ];
-    }, [] as { status: { _eq: string } }[]);
+    const statusFilter = statuses.reduce(
+      (filter, status) => {
+        return [
+          ...filter,
+          {
+            status: { _eq: status },
+          },
+        ];
+      },
+      [] as { status: { _eq: string } }[],
+    );
 
-    const clubsResponse = await context.$directus.request<DirectusClub[]>(
+    const clubsResponse = await nuxtApp.$directus.request<DirectusClub[]>(
       readItems('clubs', {
         fields: ['id', 'name', 'name_full', 'name_sort', 'status', 'website', 'logo'],
         filter: {
           _or: statusFilter,
         },
         sort: ['name_sort'],
-      })
+      }),
     );
 
     if (!clubsResponse) {
@@ -1042,7 +1000,7 @@ const cmsService: Plugin = (context, inject) => {
 
     const filter = { _and: [publishedFilter] };
 
-    const pressReleaseResponse = await context.$directus.request<DirectusPressRelease[]>(
+    const pressReleaseResponse = await nuxtApp.$directus.request<DirectusPressRelease[]>(
       readItems('press_releases', {
         limit,
         page,
@@ -1057,15 +1015,15 @@ const cmsService: Plugin = (context, inject) => {
           },
         ],
         sort: ['-date_created'],
-      })
+      }),
     );
 
     // TODO: Move this out of the function to call it only once
-    const aggregationOutput = await context.$directus.request(
+    const aggregationOutput = await nuxtApp.$directus.request(
       aggregate('press_releases', {
         aggregate: { count: '*' },
         query: { filter },
-      })
+      }),
     );
 
     let pressReleaseList = [];
@@ -1089,7 +1047,7 @@ const cmsService: Plugin = (context, inject) => {
   };
 
   const getPressRelease: CMSService['getPressRelease'] = async (pressReleaseId) => {
-    const directusPressRelease = await context.$directus.request<DirectusPressRelease>(
+    const directusPressRelease = await nuxtApp.$directus.request<DirectusPressRelease>(
       readItem('press_releases', pressReleaseId, {
         fields: [
           'id',
@@ -1098,7 +1056,7 @@ const cmsService: Plugin = (context, inject) => {
           'status',
           { translations: ['languages_code', 'slug', 'title', 'context', 'body'] },
         ],
-      })
+      }),
     );
 
     if (!directusPressRelease) {
@@ -1109,10 +1067,10 @@ const cmsService: Plugin = (context, inject) => {
   };
 
   const getEventTypes: CMSService['getEventTypes'] = async () => {
-    const eventTypes = await context.$directus.request<DirectusEventType[]>(
+    const eventTypes = await nuxtApp.$directus.request<DirectusEventType[]>(
       readItems('event_types', {
         deep: {
-          translations: { _filter: { languages_code: { _eq: context.i18n.locale } } },
+          translations: { _filter: { languages_code: { _eq: currentLocale.value } } },
         },
         fields: [
           'id',
@@ -1121,7 +1079,7 @@ const cmsService: Plugin = (context, inject) => {
             image: ['id', 'description'],
           },
         ],
-      })
+      }),
     );
 
     return eventTypes.reduce((types, type) => {
@@ -1198,7 +1156,7 @@ const cmsService: Plugin = (context, inject) => {
   };
 
   const getEvent: CMSService['getEvent'] = async (eventId) => {
-    const response = await context.$directus.request<DirectusEvent>(
+    const response = await nuxtApp.$directus.request<DirectusEvent>(
       readItem('events', eventId, {
         fields: [
           'id',
@@ -1216,14 +1174,14 @@ const cmsService: Plugin = (context, inject) => {
             image: ['id', 'description'],
           },
         ],
-      })
+      }),
     );
 
     if (!response) {
       throw new Error('No event found for requested ID');
     }
 
-    return processEvent(response, context.i18n.locale);
+    return processEvent(response, currentLocale.value);
   };
 
   const getEvents: CMSService['getEvents'] = async ({
@@ -1238,8 +1196,6 @@ const cmsService: Plugin = (context, inject) => {
     upcoming,
     excludeCancelled,
   }) => {
-    const currentLocale = context.i18n.locale;
-
     const filter = {
       _and: [
         {
@@ -1258,7 +1214,7 @@ const cmsService: Plugin = (context, inject) => {
       ],
     };
 
-    const response = await context.$directus.request<DirectusEvent[]>(
+    const response = await nuxtApp.$directus.request<DirectusEvent[]>(
       readItems('events', {
         limit,
         page: page || 1,
@@ -1279,15 +1235,15 @@ const cmsService: Plugin = (context, inject) => {
             image: ['id', 'description'],
           },
         ],
-      })
+      }),
     );
 
     // TODO: Move this out of the function to call it only once
-    const aggregationOutput = await context.$directus.request(
+    const aggregationOutput = await nuxtApp.$directus.request(
       aggregate('events', {
         aggregate: { count: '*' },
         query: { filter },
-      })
+      }),
     );
 
     let events = [];
@@ -1298,7 +1254,7 @@ const cmsService: Plugin = (context, inject) => {
     events = response.reduce((events, directusEvent) => {
       let event: CalendarEvent;
       try {
-        event = processEvent(directusEvent, currentLocale);
+        event = processEvent(directusEvent, currentLocale.value);
       } catch (error) {
         console.warn(`Could not process event with ID ${directusEvent.id}`);
         console.error(error);
@@ -1317,10 +1273,10 @@ const cmsService: Plugin = (context, inject) => {
   };
 
   const getPlayerPositions: CMSService['getPlayerPositions'] = async () => {
-    const playerPositions = await context.$directus.request<DirectusPlayerPosition[]>(
+    const playerPositions = await nuxtApp.$directus.request<DirectusPlayerPosition[]>(
       readItems('player_positions', {
         deep: {
-          translations: { _filter: { languages_code: { _eq: context.i18n.locale } } },
+          translations: { _filter: { languages_code: { _eq: currentLocale.value } } },
         },
         fields: [
           'id',
@@ -1328,7 +1284,7 @@ const cmsService: Plugin = (context, inject) => {
             translations: ['languages_code', 'name', 'name_feminine', 'name_masculine'],
           },
         ],
-      })
+      }),
     );
 
     return playerPositions.reduce((positions, position) => {
@@ -1351,9 +1307,7 @@ const cmsService: Plugin = (context, inject) => {
   };
 
   const getTeam: CMSService['getTeam'] = async (teamSlug) => {
-    // We retrieve all the languages and show news in fallback locale if not available in current locale
-    const currentLocale = context.i18n.locale;
-    const teamResponse = await context.$directus.request<DirectusTeam[]>(
+    const teamResponse = await nuxtApp.$directus.request<DirectusTeam[]>(
       readItems('national_teams', {
         limit: 1,
         filter: {
@@ -1416,16 +1370,16 @@ const cmsService: Plugin = (context, inject) => {
           },
         ],
         deep: {
-          translations: { _filter: { languages_code: { _eq: currentLocale } } },
-          staff: { roles_id: { translations: { _filter: { languages_code: { _eq: currentLocale } } } } },
+          translations: { _filter: { languages_code: { _eq: currentLocale.value } } },
+          staff: { roles_id: { translations: { _filter: { languages_code: { _eq: currentLocale.value } } } } },
           // TODO: uncomment the filter below once the filter on date fields is fixed https://github.com/directus/directus/issues/6494
           // players: {
           //   _filter: {
-          //     _or: [{ date_end: { _gte: context.$formatDate(new Date(), 'yyyy-MM-dd') } }, { date_end: { _null: true } }],
+          //     _or: [{ date_end: { _gte: nuxtApp.$formatDate(new Date(), 'yyyy-MM-dd') } }, { date_end: { _null: true } }],
           //   },
           // },
         },
-      })
+      }),
     );
 
     if (!teamResponse) {
@@ -1448,7 +1402,7 @@ const cmsService: Plugin = (context, inject) => {
           return result;
         }
 
-        const competitionTranslations = getTranslatedFields(result.competition_id, currentLocale);
+        const competitionTranslations = getTranslatedFields(result.competition_id, currentLocale.value);
 
         if (!competitionTranslations?.name) {
           console.warn('Competition has no name', result.competition_id);
@@ -1495,16 +1449,13 @@ const cmsService: Plugin = (context, inject) => {
 
     // Manually filtering players until the API filter on date fields is fixed https://github.com/directus/directus/issues/6494
     team.players = team.players.filter(
-      (player: any) => player && (!player.date_end || player.date_end >= context.$formatDate(today, 'yyyy-MM-dd'))
+      (player: any) => player && (!player.date_end || player.date_end >= nuxtApp.$formatDate(today, 'yyyy-MM-dd')),
     );
 
     return team;
   };
 
   const getNationalTeamCompetition: CMSService['getNationalTeamCompetition'] = async ({ id, slug }) => {
-    // We retrieve all the languages and display texts in fallback locale if not available in current locale
-    const currentLocale = context.i18n.locale;
-
     let filter: any = {};
 
     if (id) {
@@ -1513,7 +1464,7 @@ const cmsService: Plugin = (context, inject) => {
       filter = { slug };
     }
 
-    const competitionResponse = await context.$directus.request<DirectusNationalTeamCompetition[]>(
+    const competitionResponse = await nuxtApp.$directus.request<DirectusNationalTeamCompetition[]>(
       readItems('national_team_competitions', {
         limit: 1,
         filter,
@@ -1539,7 +1490,7 @@ const cmsService: Plugin = (context, inject) => {
             translations: ['languages_code', 'name', 'city', 'country', 'live', 'about', 'schedule', 'medias'],
           },
         ],
-      })
+      }),
     );
 
     if (!competitionResponse) {
@@ -1552,7 +1503,7 @@ const cmsService: Plugin = (context, inject) => {
       throw new Error('No national team competition found');
     }
 
-    const translations = getTranslatedFields(rawNationalTeamCompetition, currentLocale);
+    const translations = getTranslatedFields(rawNationalTeamCompetition, currentLocale.value);
 
     if (
       !rawNationalTeamCompetition?.id ||
@@ -1566,18 +1517,21 @@ const cmsService: Plugin = (context, inject) => {
 
     let teams: { id: number; name: string }[] = [];
     if (rawNationalTeamCompetition.teams?.length) {
-      teams = rawNationalTeamCompetition.teams.reduce((teams, team) => {
-        let teamTranslations;
+      teams = rawNationalTeamCompetition.teams.reduce(
+        (teams, team) => {
+          let teamTranslations;
 
-        if (team?.team?.id) {
-          teamTranslations = getTranslatedFields(team.team, currentLocale);
-          if (teamTranslations?.name) {
-            return [...teams, { id: team.team.id, name: teamTranslations.name as string }];
+          if (team?.team?.id) {
+            teamTranslations = getTranslatedFields(team.team, currentLocale.value);
+            if (teamTranslations?.name) {
+              return [...teams, { id: team.team.id, name: teamTranslations.name as string }];
+            }
           }
-        }
 
-        return teams;
-      }, [] as { id: number; name: string }[]);
+          return teams;
+        },
+        [] as { id: number; name: string }[],
+      );
     }
 
     return {
@@ -1601,11 +1555,8 @@ const cmsService: Plugin = (context, inject) => {
 
   const getNationalTeamCompetitionUpdates: CMSService['getNationalTeamCompetitionUpdates'] = async (
     nationalTeamCompetitionId,
-    { limit, page, keyOnly, withImage, teamId }
+    { limit, page, keyOnly, withImage, teamId },
   ) => {
-    // We retrieve all the languages and show news in fallback locale if not available in current locale
-    const currentLocale = context.i18n.locale;
-
     const filter: any = {
       competition: {
         id: nationalTeamCompetitionId,
@@ -1625,7 +1576,7 @@ const cmsService: Plugin = (context, inject) => {
       filter.teams = { team_id: { team: { id: { _eq: teamId } } } };
     }
 
-    const updatesResponse = await context.$directus.request<DirectusNationalTeamCompetitionUpdate[]>(
+    const updatesResponse = await nuxtApp.$directus.request<DirectusNationalTeamCompetitionUpdate[]>(
       readItems('national_teams_competitions_updates', {
         limit,
         page,
@@ -1655,22 +1606,22 @@ const cmsService: Plugin = (context, inject) => {
           },
         ],
         sort: ['-date_created'],
-      })
+      }),
     );
 
     // TODO: Move this out of the function to call it only once
-    const aggregationOutput = await context.$directus.request(
+    const aggregationOutput = await nuxtApp.$directus.request(
       aggregate('national_teams_competitions_updates', {
         aggregate: { count: '*' },
         query: { filter },
-      })
+      }),
     );
     if (!updatesResponse) {
       throw new Error('Error when retrieving updates for national team competitions');
     }
 
     const updateList = updatesResponse.reduce((updates, rawUpdate) => {
-      const updateTranslations = getTranslatedFields(rawUpdate, currentLocale);
+      const updateTranslations = getTranslatedFields(rawUpdate, currentLocale.value);
       if (!rawUpdate.id || !rawUpdate.date_created || !updateTranslations?.body) {
         console.warn(`Update for national team competition with ID ${rawUpdate.id} is missing requested fields`);
         return updates;
@@ -1678,18 +1629,21 @@ const cmsService: Plugin = (context, inject) => {
 
       let teams: { id: number; name: string }[] = [];
       if (rawUpdate.teams?.length) {
-        teams = rawUpdate.teams.reduce((teams, team) => {
-          let teamTranslations;
+        teams = rawUpdate.teams.reduce(
+          (teams, team) => {
+            let teamTranslations;
 
-          if (team?.team_id?.team?.id) {
-            teamTranslations = getTranslatedFields(team.team_id.team, currentLocale);
-            if (teamTranslations?.name) {
-              return [...teams, { id: team.team_id.team.id, name: teamTranslations.name as string }];
+            if (team?.team_id?.team?.id) {
+              teamTranslations = getTranslatedFields(team.team_id.team, currentLocale.value);
+              if (teamTranslations?.name) {
+                return [...teams, { id: team.team_id.team.id, name: teamTranslations.name as string }];
+              }
             }
-          }
 
-          return teams;
-        }, [] as { id: number; name: string }[]);
+            return teams;
+          },
+          [] as { id: number; name: string }[],
+        );
       }
 
       return [
@@ -1715,11 +1669,9 @@ const cmsService: Plugin = (context, inject) => {
   };
 
   const getNationalTeamsForCompetition: CMSService['getNationalTeamsForCompetition'] = async (
-    nationalTeamCompetitionId
+    nationalTeamCompetitionId,
   ) => {
-    // We retrieve all the languages and show news in fallback locale if not available in current locale
-    const currentLocale = context.i18n.locale;
-    const teamResponse = await context.$directus.request<DirectusNationalTeamCompetitionsTeam[]>(
+    const teamResponse = await nuxtApp.$directus.request<DirectusNationalTeamCompetitionsTeam[]>(
       readItems('national_team_competitions_teams', {
         filter: {
           competition: {
@@ -1763,9 +1715,9 @@ const cmsService: Plugin = (context, inject) => {
           },
         ],
         deep: {
-          team: { translation: { _filter: { language_code: { _eq: currentLocale } } } },
+          team: { translation: { _filter: { language_code: { _eq: currentLocale.value } } } },
         },
-      })
+      }),
     );
 
     if (!teamResponse) {
@@ -1795,11 +1747,11 @@ const cmsService: Plugin = (context, inject) => {
   };
 
   const getSeasons: CMSService['getSeasons'] = async () => {
-    const seasonsResponse = await context.$directus.request<DirectusSeason[]>(
+    const seasonsResponse = await nuxtApp.$directus.request<DirectusSeason[]>(
       readItems('seasons', {
         fields: ['id', 'name', 'slug', 'date_start', 'date_end', 'leverade_id'],
         sort: ['-slug'],
-      })
+      }),
     );
 
     if (!seasonsResponse) {
@@ -1831,7 +1783,7 @@ const cmsService: Plugin = (context, inject) => {
   const getLiveStreams: CMSService['getLiveStreams'] = async () => {
     const now = new Date();
 
-    const liveStreamsResponse = await context.$directus.request<DirectusLiveStream[]>(
+    const liveStreamsResponse = await nuxtApp.$directus.request<DirectusLiveStream[]>(
       readItems('live_streams', {
         fields: [
           'id',
@@ -1858,18 +1810,15 @@ const cmsService: Plugin = (context, inject) => {
             },
           ],
         },
-      })
+      }),
     );
 
     if (!liveStreamsResponse) {
       throw new Error('Error when retrieving seasons');
     }
 
-    // We retrieve all the languages and show text in fallback locale if not available in current locale
-    const currentLocale = context.i18n.locale;
-
     const liveStreams = liveStreamsResponse.reduce((liveStreams, liveStream) => {
-      const translatedFields = getTranslatedFields(liveStream, currentLocale);
+      const translatedFields = getTranslatedFields(liveStream, currentLocale.value);
 
       // We discard live streams that don't have mandatory data.
       if (
@@ -1917,9 +1866,7 @@ const cmsService: Plugin = (context, inject) => {
   };
 
   const getNationalCompetition: CMSService['getNationalCompetition'] = async (competitionSlug) => {
-    // We retrieve all the languages and show data in fallback locale if not available in current locale
-    const currentLocale = context.i18n.locale;
-    const response = await context.$directus.request<DirectusNationalCompetition[]>(
+    const response = await nuxtApp.$directus.request<DirectusNationalCompetition[]>(
       readItems('national_competitions', {
         limit: 1,
         filter: {
@@ -1940,9 +1887,9 @@ const cmsService: Plugin = (context, inject) => {
           },
         ],
         deep: {
-          translations: { _filter: { languages_code: { _eq: currentLocale } } },
+          translations: { _filter: { languages_code: { _eq: currentLocale.value } } },
         },
-      })
+      }),
     );
 
     if (!response) {
@@ -1963,9 +1910,6 @@ const cmsService: Plugin = (context, inject) => {
     seasonSlug,
     leveradeIds,
   }) => {
-    // We retrieve all the languages and show data in fallback locale if not available in current locale
-    const currentLocale = context.i18n.locale;
-
     let filter: Query<DirectusSchema, DirectusNationalCompetitionEdition>['filter'] = {};
 
     if (leveradeIds) {
@@ -1996,7 +1940,7 @@ const cmsService: Plugin = (context, inject) => {
       }
     }
 
-    const response = await context.$directus.request<DirectusNationalCompetitionEdition[]>(
+    const response = await nuxtApp.$directus.request<DirectusNationalCompetitionEdition[]>(
       readItems('national_competition_editions', {
         filter,
         fields: [
@@ -2008,9 +1952,9 @@ const cmsService: Plugin = (context, inject) => {
           },
         ],
         deep: {
-          competition: { translations: { _filter: { languages_code: { _eq: currentLocale } } } },
+          competition: { translations: { _filter: { languages_code: { _eq: currentLocale.value } } } },
         },
-      })
+      }),
     );
 
     if (!response) {
@@ -2065,7 +2009,7 @@ const cmsService: Plugin = (context, inject) => {
   };
 
   const getMatchAdditionalData: CMSService['getMatchAdditionalData'] = async (leveradeId) => {
-    const response = await context.$directus.request<DirectusMatchAdditionalData[]>(
+    const response = await nuxtApp.$directus.request<DirectusMatchAdditionalData[]>(
       readItems('match_additional_data', {
         limit: 1,
         filter: {
@@ -2074,7 +2018,7 @@ const cmsService: Plugin = (context, inject) => {
           },
         },
         fields: ['id', 'leverade_id', 'flickr_photoset_id'],
-      })
+      }),
     );
 
     if (!response) {
@@ -2100,7 +2044,7 @@ const cmsService: Plugin = (context, inject) => {
   };
 
   const getTchoukups: CMSService['getTchoukups'] = async ({ limit, page }) => {
-    const tchoukupResponse = await context.$directus.request<DirectusTchoukup[]>(
+    const tchoukupResponse = await nuxtApp.$directus.request<DirectusTchoukup[]>(
       readItems('tchoukup', {
         limit,
         page,
@@ -2114,14 +2058,14 @@ const cmsService: Plugin = (context, inject) => {
           },
         ],
         sort: ['-releaseDate'],
-      })
+      }),
     );
 
     // TODO: Move this out of the function to call it only once
-    const aggregationOutput = await context.$directus.request(
+    const aggregationOutput = await nuxtApp.$directus.request(
       aggregate('tchoukup', {
         aggregate: { count: '*' },
-      })
+      }),
     );
 
     let tchoukupList = [];
@@ -2165,35 +2109,37 @@ const cmsService: Plugin = (context, inject) => {
   };
 
   const getResourceTypes: CMSService['getResourceTypes'] = async () => {
-    const currentLocale = context.i18n.locale;
-    const response = await context.$directus.request<DirectusResourceType[]>(
+    const response = await nuxtApp.$directus.request<DirectusResourceType[]>(
       readItems('resource_types', {
         fields: ['id', { translations: ['name'] }],
-        deep: { translations: { _filter: { languages_code: { _eq: currentLocale } } } },
-      })
+        deep: { translations: { _filter: { languages_code: { _eq: currentLocale.value } } } },
+      }),
     );
 
     if (!response) {
       throw new Error('Error when retrieving resource types');
     }
 
-    const resourceTypes = response.reduce((resourceTypes, resourceType) => {
-      const translatedFields = getTranslatedFields(resourceType);
+    const resourceTypes = response.reduce(
+      (resourceTypes, resourceType) => {
+        const translatedFields = getTranslatedFields(resourceType);
 
-      // We discard entries that don't have mandatory data.
-      if (!resourceType?.id || !translatedFields?.name) {
-        console.warn('Resource type missing mandatory data', { resourceType });
-        return resourceTypes;
-      }
+        // We discard entries that don't have mandatory data.
+        if (!resourceType?.id || !translatedFields?.name) {
+          console.warn('Resource type missing mandatory data', { resourceType });
+          return resourceTypes;
+        }
 
-      return [
-        ...resourceTypes,
-        {
-          id: resourceType.id,
-          name: translatedFields.name,
-        },
-      ];
-    }, [] as { id: number; name: string }[]);
+        return [
+          ...resourceTypes,
+          {
+            id: resourceType.id,
+            name: translatedFields.name,
+          },
+        ];
+      },
+      [] as { id: number; name: string }[],
+    );
 
     return resourceTypes;
   };
@@ -2229,9 +2175,6 @@ const cmsService: Plugin = (context, inject) => {
   };
 
   const searchResources: CMSService['searchResources'] = async (searchTerm, domainId, typeId) => {
-    // We retrieve all the languages and show resources in fallback locale if not available in current locale
-    const currentLocale = context.i18n.locale;
-
     const filter: Query<DirectusSchema, DirectusResource>['filter'] = {
       _and: [
         {
@@ -2268,7 +2211,7 @@ const cmsService: Plugin = (context, inject) => {
       });
     }
 
-    const response = await context.$directus.request<DirectusResource[]>(
+    const response = await nuxtApp.$directus.request<DirectusResource[]>(
       readItems('resources', {
         filter,
         fields: [
@@ -2287,7 +2230,7 @@ const cmsService: Plugin = (context, inject) => {
             ],
           },
         ],
-      })
+      }),
     );
 
     if (!response) {
@@ -2298,7 +2241,7 @@ const cmsService: Plugin = (context, inject) => {
 
     response.forEach((directusResource) => {
       try {
-        const resource = processResource(directusResource, currentLocale);
+        const resource = processResource(directusResource, currentLocale.value);
         resources.push(resource);
       } catch (error) {
         console.error(error);
@@ -2309,7 +2252,7 @@ const cmsService: Plugin = (context, inject) => {
   };
 
   const getResource: CMSService['getResource'] = async (resourceId) => {
-    const response = await context.$directus.request<DirectusResource>(
+    const response = await nuxtApp.$directus.request<DirectusResource>(
       readItem('resources', resourceId, {
         fields: [
           'id',
@@ -2328,48 +2271,50 @@ const cmsService: Plugin = (context, inject) => {
             ],
           },
         ],
-      })
+      }),
     );
 
     if (!response) {
       throw new Error('No resource found for requested ID');
     }
 
-    return processResource(response, context.i18n.locale);
+    return processResource(response, currentLocale.value);
   };
 
-  inject('cmsService', {
-    getMainNavigation,
-    getPage,
-    getText,
-    getDomains,
-    getNews,
-    getOneNews,
-    getEventTypes,
-    getEvent,
-    getGroups,
-    getGroup,
-    getRole,
-    getStaff,
-    getClubs,
-    getPressReleaseList,
-    getPressRelease,
-    getEvents,
-    getPlayerPositions,
-    getTeam,
-    getNationalTeamCompetition,
-    getNationalTeamCompetitionUpdates,
-    getNationalTeamsForCompetition,
-    getSeasons,
-    getLiveStreams,
-    getNationalCompetition,
-    getNationalCompetitionEditions,
-    getMatchAdditionalData,
-    getTchoukups,
-    getResourceTypes,
-    searchResources,
-    getResource,
-  });
-};
-
-export default cmsService;
+  return {
+    provide: {
+      cmsService: {
+        getMainNavigation,
+        getPage,
+        getText,
+        getDomains,
+        getNews,
+        getOneNews,
+        getEventTypes,
+        getEvent,
+        getGroups,
+        getGroup,
+        getRole,
+        getStaff,
+        getClubs,
+        getPressReleaseList,
+        getPressRelease,
+        getEvents,
+        getPlayerPositions,
+        getTeam,
+        getNationalTeamCompetition,
+        getNationalTeamCompetitionUpdates,
+        getNationalTeamsForCompetition,
+        getSeasons,
+        getLiveStreams,
+        getNationalCompetition,
+        getNationalCompetitionEditions,
+        getMatchAdditionalData,
+        getTchoukups,
+        getResourceTypes,
+        searchResources,
+        getResource,
+      },
+    },
+  };
+});

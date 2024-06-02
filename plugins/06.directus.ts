@@ -1,6 +1,5 @@
 /* eslint-disable no-use-before-define */
-import { Plugin } from '@nuxt/types';
-import { type DirectusClient, type RestClient, createDirectus, rest, type DirectusFile } from '@directus/sdk';
+import { createDirectus, rest, type DirectusFile } from '@directus/sdk';
 
 interface DirectusGroupTranslation {
   languages_code: string;
@@ -473,44 +472,20 @@ export type DirectusSchema = {
   directus_files: DirectusFile<object>[];
 };
 
-declare module 'vue/types/vue' {
-  // this.$directus inside Vue components
-  interface Vue {
-    $directus: DirectusClient<DirectusSchema> & RestClient<DirectusSchema>;
-  }
-}
-
-declare module '@nuxt/types' {
-  // nuxtContext.app.$directus inside asyncData, fetch, plugins, middleware, nuxtServerInit
-  interface NuxtAppOptions {
-    $directus: DirectusClient<DirectusSchema> & RestClient<DirectusSchema>;
-  }
-  // nuxtContext.$directus
-  interface Context {
-    $directus: DirectusClient<DirectusSchema> & RestClient<DirectusSchema>;
-  }
-}
-
-declare module 'vuex/types/index' {
-  // this.$directus inside Vuex stores
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  interface Store<S> {
-    $directus: DirectusClient<DirectusSchema> & RestClient<DirectusSchema>;
-  }
-}
-
-const directusPlugin: Plugin = (context, inject) => {
-  // const directus = new Directus<DirectusSchema>(context.$config.cmsURL);
+export default defineNuxtPlugin(() => {
+  const runtimeConfig = useRuntimeConfig();
 
   // We need to do this for the plugin to be able to get initialise properly in SSR.
   globalThis.URL = URL;
 
-  const directus = createDirectus<DirectusSchema>(context.$config.cmsURL, { globals: { URL } }).with(rest());
+  const directus = createDirectus<DirectusSchema>(runtimeConfig.public.cmsURL, { globals: { URL } }).with(rest());
 
-  inject('directus', directus);
-};
-
-export default directusPlugin;
+  return {
+    provide: {
+      directus,
+    },
+  };
+});
 
 export const getAssetURL = (cmsURL: string, assetId: string, params: { [key: string]: string | number }) => {
   const paramsString = Object.entries(params)
@@ -538,7 +513,7 @@ export const getAssetSrcSet = (cmsURL: string, assetId: string, { widths }: { wi
  */
 export const getTranslatedFields = (
   entity: Record<string, any> & { translations: Record<string, any>[] },
-  languageKey?: string
+  languageKey?: string,
 ) => {
   if (entity.translations) {
     if (languageKey && entity.translations.length > 1) {

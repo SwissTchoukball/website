@@ -15,7 +15,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import Season from '~/models/season.model';
-import { DirectusSeason } from '~/plugins/directus';
+import { DirectusSeason } from '~/plugins/06.directus';
 import { MenuItem } from '~/store/state';
 
 export default defineComponent({

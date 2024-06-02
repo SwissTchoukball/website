@@ -29,7 +29,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
 import { Tchoukup } from '~/components/tchoukup/st-tchoukup';
-import { getAssetSrcSet, getAssetURL } from '~/plugins/directus';
+import { getAssetSrcSet, getAssetURL } from '~/plugins/06.directus';
 
 const MAX_NEWS_PER_ROW = 4;
 

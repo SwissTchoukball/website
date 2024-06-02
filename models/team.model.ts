@@ -1,4 +1,4 @@
-import { LeveradeTeam } from '~/plugins/leverade';
+import type { LeveradeTeam } from '~/plugins/07.leverade';
 
 export default class Team {
   static entity = 'teams';

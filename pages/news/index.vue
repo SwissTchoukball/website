@@ -26,7 +26,7 @@ import stLoader from '~/components/st-loader.vue';
 import stNewsList from '~/components/news/st-news-list.vue';
 import { NewsEntry } from '~/components/news/st-news';
 import StPagination from '~/components/st-pagination.vue';
-import { DirectusDomain } from '~/plugins/directus';
+import { DirectusDomain } from '~/plugins/06.directus';
 
 export default defineComponent({
   components: { stLoader, stNewsList, StPagination },

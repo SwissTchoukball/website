@@ -1,8 +1,8 @@
 import { isPast } from 'date-fns';
-import Faceoff from '~/models/faceoff.model';
-import Match from '~/models/match.model';
-import { LeveradeRound } from '~/plugins/leverade';
-import { parseLeveradeDate } from '~/utils/utils';
+import type Faceoff from '~/models/faceoff.model';
+import type Match from '~/models/match.model';
+import type { LeveradeRound } from '~/plugins/07.leverade';
+import type { parseLeveradeDate } from '~/utils/utils';
 
 export default class Round {
   static entity = 'rounds';

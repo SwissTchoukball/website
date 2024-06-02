@@ -21,7 +21,7 @@ import CompetitionEdition from '~/models/competition-edition.model';
 import Season from '~/models/season.model';
 import { BreadcrumbItem } from '~/components/st-breadcrumb.vue';
 import { MenuItem } from '~/store/state';
-import { NationalCompetitionEdition } from '~/plugins/cms-service';
+import { NationalCompetitionEdition } from '~/plugins/08.cms-service';
 
 export default defineComponent({
   nuxtI18n: {
@@ -57,7 +57,7 @@ export default defineComponent({
     },
     competitionEditions(): CompetitionEdition[] {
       return this.rawCompetitionEditions.map(
-        (rawCompetitionEdition) => new CompetitionEdition(rawCompetitionEdition, this.season)
+        (rawCompetitionEdition) => new CompetitionEdition(rawCompetitionEdition, this.season),
       );
     },
     competitionEditionsNavigation(): MenuItem[] {

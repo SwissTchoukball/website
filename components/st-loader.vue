@@ -1,9 +1,15 @@
-<template functional>
-  <div class="c-loader" :class="{ 'c-loader--main': props.main }">
+<template>
+  <div class="c-loader" :class="{ 'c-loader--main': main }">
     <span class="c-loader__stripe c-loader__strip--vertical"></span>
     <span class="c-loader__stripe c-loader__strip--hotizontal"></span>
   </div>
 </template>
+
+<script setup lang="ts">
+defineProps({
+  main: Boolean,
+});
+</script>
 
 <style scoped>
 .c-loader {

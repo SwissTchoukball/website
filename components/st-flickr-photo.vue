@@ -6,7 +6,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
-import { FlickrPhoto } from '~/plugins/flickr';
+import { FlickrPhoto } from '~/plugins/05.flickr';
 
 export default defineComponent({
   props: {

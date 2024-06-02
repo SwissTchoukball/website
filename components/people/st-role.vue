@@ -17,7 +17,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
 import stPerson, { PersonDetail } from '~/components/people/st-person.vue';
-import { Gender, Person, Role, RoleWithPartialGroupAndHolders } from '~/plugins/cms-service';
+import { Gender, Person, Role, RoleWithPartialGroupAndHolders } from '~/plugins/08.cms-service';
 
 export default defineComponent({
   components: { stPerson },

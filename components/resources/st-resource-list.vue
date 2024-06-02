@@ -12,7 +12,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
-import { Resource } from '~/plugins/cms-service';
+import { Resource } from '~/plugins/08.cms-service';
 import stResourceListItem from '~/components/resources/st-resource-list-item.vue';
 
 export default defineComponent({

@@ -17,7 +17,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
-import { FlickrPhotoset } from '~/plugins/flickr';
+import { FlickrPhotoset } from '~/plugins/05.flickr';
 
 export default defineComponent({
   props: {

@@ -8,7 +8,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
-import { FlickrPhoto } from '~/plugins/flickr';
+import { FlickrPhoto } from '~/plugins/05.flickr';
 
 export default defineComponent({
   props: {
@@ -27,7 +27,7 @@ export default defineComponent({
   gap: var(--st-length-spacing-xxs);
 }
 
-.c-flickr-album-gallery__photo >>> img {
+.c-flickr-album-gallery__photo:deep(img) {
   display: block;
 }
 </style>

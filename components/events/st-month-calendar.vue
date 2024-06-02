@@ -57,7 +57,7 @@ import {
   startOfMonth,
   startOfWeek,
 } from 'date-fns';
-import { CalendarEvent } from '~/plugins/cms-service';
+import { CalendarEvent } from '~/plugins/08.cms-service';
 
 interface CalendarDay {
   date: Date;

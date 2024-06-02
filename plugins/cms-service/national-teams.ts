@@ -1,6 +1,6 @@
-import { DirectusPerson, DirectusPlayer } from '../directus';
-import { Gender } from '../cms-service';
-import { Player } from '~/components/national-teams/st-national-teams.prop';
+import type { DirectusPerson, DirectusPlayer } from '../06.directus';
+import type { Gender } from '../08.cms-service';
+import type { Player } from '~/components/national-teams/st-national-teams.prop';
 
 export const processRawPlayers = (rawPlayers: (DirectusPlayer | undefined)[] | undefined): Player[] => {
   if (!rawPlayers) {

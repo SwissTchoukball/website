@@ -1,7 +1,5 @@
-import { Plugin } from '@nuxt/types';
-import { AxiosResponse, AxiosRequestConfig } from 'axios';
-
-export interface LeveradeResponse<T, E = {}, M = unknown> {
+import type { NitroFetchOptions } from 'nitropack';
+export interface LeveradeResponse<T, E = unknown, M = unknown> {
   data: {
     data: T;
     included?: E[];
@@ -274,7 +272,7 @@ export interface LeveradeProfile extends LeveradeEntity {
 
 export interface Leverade {
   getFullTournament: (
-    tournamentId: number | string
+    tournamentId: number | string,
   ) => Promise<
     LeveradeResponse<
       LeveradeTournament,
@@ -283,7 +281,7 @@ export interface Leverade {
   >;
   getStandings: (groupId: number | string) => Promise<LeveradeResponse<unknown, unknown, LeveradeStandings>>;
   getUpcomingMatches: (
-    seasonLeveradeId: string
+    seasonLeveradeId: string,
   ) => Promise<
     LeveradeResponse<
       LeveradeMatch[],
@@ -291,7 +289,7 @@ export interface Leverade {
     >
   >;
   getMatch: (
-    matchId: number | string
+    matchId: number | string,
   ) => Promise<
     LeveradeResponse<
       LeveradeMatch,
@@ -317,32 +315,36 @@ const removeAuthorizationHeaders = (headers: any) => {
   delete headers.authorization;
 };
 
-const leveradePlugin: Plugin = ({ $config, $axios, $formatDate }, inject) => {
-  const leveradeApi = $axios.create({
-    baseURL: $config.leveradeURL,
-    transformRequest: (data, headers) => {
-      removeAuthorizationHeaders(headers);
-      return data;
+export default defineNuxtPlugin(() => {
+  const nuxtApp = useNuxtApp();
+  const runtimeConfig = useRuntimeConfig();
+  const { locale } = useI18n();
+
+  const leveradeApi = $fetch.create({
+    baseURL: runtimeConfig.public.leveradeURL,
+    headers: { 'Accept-Language': locale?.value || 'fr' },
+    onRequest(context): Promise<void> | void {
+      removeAuthorizationHeaders(context.options.headers);
     },
   });
 
   const cache: Record<string, any> = {};
 
-  const getCachedQuery = async <T = any>(
+  const getCachedQuery = async <T = unknown>(
     path: string,
-    config?: AxiosRequestConfig & { invalidateCache?: boolean }
-  ): Promise<AxiosResponse<T>> => {
+    config?: NitroFetchOptions<string> & { invalidateCache?: boolean },
+  ): Promise<T> => {
     if (!config?.invalidateCache && cache[path]) {
       return cache[path];
     }
-    const response = await leveradeApi.get(path, config);
+    const response = await leveradeApi<T>(path, config);
     cache[path] = response;
     return response;
   };
 
   const getFullTournament: Leverade['getFullTournament'] = (tournamentId) => {
     return getCachedQuery(
-      `/tournaments/${tournamentId}?include=groups,groups.rounds,groups.rounds.faceoffs,groups.rounds.matches,groups.rounds.matches.facility,groups.rounds.matches.results,teams`
+      `/tournaments/${tournamentId}?include=groups,groups.rounds,groups.rounds.faceoffs,groups.rounds.matches,groups.rounds.matches.facility,groups.rounds.matches.results,teams`,
     );
   };
 
@@ -351,66 +353,64 @@ const leveradePlugin: Plugin = ({ $config, $axios, $formatDate }, inject) => {
   };
 
   const getUpcomingMatches: Leverade['getUpcomingMatches'] = (seasonLeveradeId) => {
-    const today = $formatDate(new Date(), 'yyyy-MM-dd');
+    const today = nuxtApp.$formatDate(new Date(), 'yyyy-MM-dd');
     return getCachedQuery(
-      `/matches?filter=datetime>${today},round.group.tournament.season.id:${seasonLeveradeId}&sort=datetime&include=round.group.tournament,teams,facility`
+      `/matches?filter=datetime>${today},round.group.tournament.season.id:${seasonLeveradeId}&sort=datetime&include=round.group.tournament,teams,facility`,
     );
   };
 
-  const getMatch: Leverade['getMatch'] = (matchId) => {
+  const getMatch: Leverade['getMatch'] = async (matchId) => {
     // We use the endpoint to get a list of matches even though we want only one,
     // because `GET /matches/{id}` is behind authentication
-    return getCachedQuery(
+    const matchResponse = await getCachedQuery<
+      LeveradeResponse<
+        LeveradeMatch[],
+        | LeveradeFaceoff
+        | LeveradeRound
+        | LeveradeGroup
+        | LeveradeTournament
+        | LeveradeTeam
+        | LeveradeResult
+        | LeveradePeriod
+        | LeveradeMatchReferee
+        | LeveradeLicense
+        | LeveradeProfile
+        | LeveradeFacility
+      >
+    >(
       `/matches?filter=id:${matchId}&include=round,round.group,round.group.tournament,faceoff,teams,results,periods,matchreferees.license.profile,periods.results,results,facility`,
-      {
-        transformResponse: (data) => {
-          const jsonData = JSON.parse(data);
-          return {
-            ...jsonData,
-            data: jsonData.data[0],
-          };
-        },
-      }
+      // {
+      //   transformResponse: (data) => {
+      //     const jsonData = JSON.parse(data);
+      //     return {
+      //       ...jsonData,
+      //       data: jsonData.data[0],
+      //     };
+      //   },
+      // },
     );
+    return {
+      ...matchResponse,
+      data: {
+        ...matchResponse.data,
+        data: matchResponse.data.data[0],
+      },
+    };
   };
 
   const getTeams: Leverade['getTeams'] = (tournamentId) => {
     return getCachedQuery(`/teams?filter=registrable[tournament].id:${tournamentId}&page[size]=500`);
   };
 
-  inject('leverade', {
-    getFullTournament,
-    getStandings,
-    getUpcomingMatches,
-    getMatch,
-    getTeams,
-  });
-};
-
-export default leveradePlugin;
-
-declare module 'vue/types/vue' {
-  // this.$leverade inside Vue components
-  interface Vue {
-    $leverade: Leverade;
-  }
-}
-
-declare module '@nuxt/types' {
-  // nuxtContext.app.$leverade inside asyncData, fetch, plugins, middleware, nuxtServerInit
-  interface NuxtAppOptions {
-    $leverade: Leverade;
-  }
-  // nuxtContext.$leverade
-  interface Context {
-    $leverade: Leverade;
-  }
-}
-
-declare module 'vuex/types/index' {
-  // this.$leverade inside Vuex stores
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  interface Store<S> {
-    $leverade: Leverade;
-  }
-}
+  return {
+    provide: {
+      leverade: {
+        getFullTournament,
+        getStandings,
+        getUpcomingMatches,
+        getMatch,
+        getTeams,
+      },
+    },
+  };
+});

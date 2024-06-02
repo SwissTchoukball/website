@@ -31,7 +31,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
-import { getAssetURL } from '~/plugins/directus';
+import { getAssetURL } from '~/plugins/06.directus';
 
 export interface PersonDetail {
   icon: string;
@@ -124,7 +124,7 @@ export default defineComponent({
   font-size: 0.8em;
 }
 
-.c-person__detail-body >>> ul {
+.c-person__detail-body:deep(ul) {
   padding-left: 1em;
   list-style-type: disc;
 }

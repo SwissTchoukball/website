@@ -22,8 +22,8 @@
 import { defineComponent, PropType } from 'vue';
 import { NewsEntry } from '~/components/news/st-news';
 import { BreadcrumbItem } from '~/components/st-breadcrumb.vue';
-import { Domain } from '~/plugins/cms-service';
-import { getAssetURL, getAssetSrcSet } from '~/plugins/directus';
+import { Domain } from '~/plugins/08.cms-service';
+import { getAssetURL, getAssetSrcSet } from '~/plugins/06.directus';
 
 export default defineComponent({
   props: {

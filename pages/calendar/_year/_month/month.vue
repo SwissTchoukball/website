@@ -15,7 +15,7 @@ import { addDays, getWeeksInMonth, startOfMonth, startOfWeek } from 'date-fns';
 import monthParamsMixin from '~/mixins/month-params.mixin';
 import stCalendarNav from '~/components/events/st-calendar-nav.vue';
 import stMonthCalendar from '~/components/events/st-month-calendar.vue';
-import { CalendarEvent, CMSService } from '~/plugins/cms-service';
+import { CalendarEvent, CMSService } from '~/plugins/08.cms-service';
 
 export default defineComponent({
   nuxtI18n: {

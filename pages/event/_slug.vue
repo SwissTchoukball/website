@@ -13,8 +13,8 @@ import { defineComponent } from 'vue';
 import { MetaInfo } from 'vue-meta';
 import stEvent from '~/components/events/st-event.vue';
 import { BreadcrumbItem } from '~/components/st-breadcrumb.vue';
-import { CalendarEvent } from '~/plugins/cms-service';
-import { getAssetURL } from '~/plugins/directus';
+import { CalendarEvent } from '~/plugins/08.cms-service';
+import { getAssetURL } from '~/plugins/06.directus';
 
 export default defineComponent({
   nuxtI18n: {
@@ -89,7 +89,7 @@ export default defineComponent({
           hid: 'og:image:alt',
           property: 'og:image:alt',
           content: this.event.image.description || '',
-        }
+        },
       );
     }
 

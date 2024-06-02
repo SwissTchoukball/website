@@ -1,15 +1,16 @@
 import { defineStore } from 'pinia';
-import type { ResourceType } from '~/plugins/cms-service';
+import type { ResourceType } from '~/plugins/08.cms-service';
 
 export const useResourcesStore = defineStore('resources', () => {
-  const resourcesTypes = ref<ResourceType[]>([]);
+  const nuxtApp = useNuxtApp();
+  const resourceTypes = ref<ResourceType[]>([]);
 
   const loadResourceTypes = async () => {
-    resourcesTypes.value = await this.$cmsService.getResourceTypes();
+    resourceTypes.value = await nuxtApp.$cmsService.getResourceTypes();
   };
 
   return {
-    resourcesTypes,
+    resourceTypes,
     loadResourceTypes,
   };
 });

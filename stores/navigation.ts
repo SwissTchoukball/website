@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { type TranslateResult } from 'vue-i18n';
-import { type DirectusMenuItem, getTranslatedFields } from '~/plugins/directus';
+import { type DirectusMenuItem, getTranslatedFields } from '~/plugins/06.directus';
 
 export interface MenuItem {
   sort?: number;
@@ -11,13 +11,14 @@ export interface MenuItem {
 }
 
 export const useNavigationStore = defineStore('navigation', () => {
+  const nuxtApp = useNuxtApp();
   const { t } = useI18n();
 
   const mainNavigation = ref<MenuItem[]>([]);
   const secondaryNavigation = ref<MenuItem[]>([]);
 
   const loadMainMenu = async () => {
-    const rawMainNavigation = await this.$cmsService.getMainNavigation();
+    const rawMainNavigation = await nuxtApp.$cmsService.getMainNavigation();
 
     const transformForStore = (menuItem: DirectusMenuItem | undefined): MenuItem => {
       const translatedFields = menuItem ? getTranslatedFields(menuItem) : undefined;

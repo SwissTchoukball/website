@@ -108,17 +108,17 @@ import {
   LeveradePeriod,
   LeveradeProfile,
   LeveradeResult,
-} from '~/plugins/leverade';
-import { FlickrPhoto } from '~/plugins/flickr';
+} from '~/plugins/07.leverade';
+import { FlickrPhoto } from '~/plugins/05.flickr';
 import Season from '~/models/season.model';
 import { Await } from '~/types/types.utils';
-import { DirectusMatchAdditionalData } from '~/plugins/directus';
+import { DirectusMatchAdditionalData } from '~/plugins/06.directus';
 import Team from '~/models/team.model';
 import Faceoff from '~/models/faceoff.model';
 import Round from '~/models/round.model';
 import CompetitionEdition from '~/models/competition-edition.model';
 import Phase from '~/models/phase.model';
-import { NationalCompetitionEdition } from '~/plugins/cms-service';
+import { NationalCompetitionEdition } from '~/plugins/08.cms-service';
 
 export default defineComponent({
   components: {

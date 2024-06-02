@@ -12,7 +12,7 @@ import { defineComponent } from 'vue';
 import { MetaInfo } from 'vue-meta';
 import { NewsEntry } from '~/components/news/st-news';
 import stNews from '~/components/news/st-news.vue';
-import { getAssetURL } from '~/plugins/directus';
+import { getAssetURL } from '~/plugins/06.directus';
 
 export default defineComponent({
   components: { stNews },
@@ -70,7 +70,7 @@ export default defineComponent({
           hid: 'og:image:alt',
           property: 'og:image:alt',
           content: this.newsEntry.main_image.description || '',
-        }
+        },
       );
     }
 

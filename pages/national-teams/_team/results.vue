@@ -58,7 +58,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
 import { NationalTeam } from '~/components/national-teams/st-national-teams.prop';
-import { getAssetURL } from '~/plugins/directus';
+import { getAssetURL } from '~/plugins/06.directus';
 
 export default defineComponent({
   nuxtI18n: {
@@ -99,18 +99,21 @@ export default defineComponent({
     },
     nationsCupDistribution() {
       // Distribute results per ranking
-      return Object.entries(this.team.nationsCupResults).reduce((results, [year, ranking]) => {
-        let newRanking;
-        if (results[ranking]) {
-          newRanking = [...results[ranking], year];
-        } else {
-          newRanking = [year];
-        }
-        return {
-          ...results,
-          [ranking]: newRanking,
-        };
-      }, {} as { [ranking: string]: string[] });
+      return Object.entries(this.team.nationsCupResults).reduce(
+        (results, [year, ranking]) => {
+          let newRanking;
+          if (results[ranking]) {
+            newRanking = [...results[ranking], year];
+          } else {
+            newRanking = [year];
+          }
+          return {
+            ...results,
+            [ranking]: newRanking,
+          };
+        },
+        {} as { [ranking: string]: string[] },
+      );
     },
   },
   methods: {

@@ -36,7 +36,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { MenuItem } from '~/store/state';
-import { LiveStream } from '~/plugins/cms-service';
+import { LiveStream } from '~/plugins/08.cms-service';
 
 export default defineComponent({
   data() {
@@ -192,14 +192,18 @@ export default defineComponent({
   top: var(--st-length-small-header-height);
   left: 100vw;
   bottom: 0;
-  transition: left 0.25s ease-in-out, opacity 0s 0.25s;
+  transition:
+    left 0.25s ease-in-out,
+    opacity 0s 0.25s;
   z-index: 3;
 }
 
 .c-default__drawer--open {
   left: 0;
   opacity: 1;
-  transition: left 0.25s ease-in-out, opacity 0s 0s;
+  transition:
+    left 0.25s ease-in-out,
+    opacity 0s 0s;
 }
 
 .c-default__drawer-lang-switcher {

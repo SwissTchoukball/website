@@ -11,7 +11,7 @@
 import { defineComponent, PropType } from 'vue';
 import stPerson, { PersonDetail } from '~/components/people/st-person.vue';
 import { Player } from '~/components/national-teams/st-national-teams.prop';
-import { Gender } from '~/plugins/cms-service';
+import { Gender } from '~/plugins/08.cms-service';
 
 export default defineComponent({
   components: { stPerson },

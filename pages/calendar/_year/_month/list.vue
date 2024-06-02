@@ -34,7 +34,7 @@
 import { defineComponent } from 'vue';
 import stEventList from '~/components/events/st-event-list.vue';
 import stCalendarNav from '~/components/events/st-calendar-nav.vue';
-import { CalendarEvent, CMSService } from '~/plugins/cms-service';
+import { CalendarEvent, CMSService } from '~/plugins/08.cms-service';
 import monthParamsMixin from '~/mixins/month-params.mixin';
 
 export default defineComponent({

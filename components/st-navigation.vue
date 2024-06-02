@@ -10,7 +10,7 @@
     }"
   >
     <h2 class="u-visually-hidden">{{ name }}</h2>
-    <ul v-click-outside="closeAllMenuItems" class="u-unstyled-list c-navigation__list">
+    <ul v-on-click-outside="closeAllMenuItems" class="u-unstyled-list c-navigation__list">
       <li
         v-for="(item, itemIndex) in items"
         :key="itemIndex"
@@ -28,7 +28,7 @@
           :aria-expanded="openStates[itemIndex]"
           class="u-unstyled-button c-navigation__item-name"
           @click.stop="onItemClickStop(item, itemIndex)"
-          @click.native="onItemClickNative(item)"
+          @click="onItemClickNative(item)"
         >
           {{ item.name }}
           <fa-icon v-if="item.children && !!item.children.length && inverted" icon="chevron-down" />
@@ -39,16 +39,13 @@
           class="u-unstyled-list c-navigation__sub-items"
           :class="{
             'c-navigation__sub-items--active': item.children.some(
-              (subItem) => subItem.href && $route.path.startsWith(localePath(subItem.href))
+              (subItem) => subItem.href && $route.path.startsWith(localePath(subItem.href)),
             ),
             [$route.path]: true,
           }"
         >
           <li v-for="(subItem, subItemIndex) in item.children" :key="subItemIndex" class="c-navigation__sub-item">
-            <nuxt-link
-              :to="subItem.href ? localePath(subItem.href) : undefined"
-              @click.native="onItemClickNative(subItem)"
-            >
+            <nuxt-link :to="subItem.href ? localePath(subItem.href) : undefined" @click="onItemClickNative(subItem)">
               {{ subItem.name }}
             </nuxt-link>
           </li>
@@ -58,80 +55,76 @@
   </nav>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue';
-import vClickOutside from 'v-click-outside';
-import { MenuItem } from '~/store/state';
+<script setup lang="ts">
+import { type PropType } from 'vue';
+import { vOnClickOutside } from '@vueuse/components';
 
-export default defineComponent({
-  directives: {
-    clickOutside: vClickOutside.directive,
-  },
-  props: {
-    /**
-     * Name of the navigation, visible to screen readers.
-     */
-    name: {
-      type: String,
-      required: true,
-    },
-    /**
-     * Alternative layout to be used in the drawer.
-     */
-    narrow: Boolean,
-    /**
-     * Alternative layout for sub-navigation.
-     */
-    small: Boolean,
-    /**
-     * Invert colours of navigation.
-     */
-    inverted: Boolean,
-    items: {
-      type: Array as PropType<MenuItem[]>,
-      default: () => [],
-    },
-    selectedOnExactActive: Boolean,
-  },
-  data() {
-    return {
-      openStates: [] as boolean[],
-    };
-  },
-  created() {
-    this.closeAllMenuItems();
-  },
-  methods: {
-    toggleMenuItem(itemIndex: number) {
-      if (this.openStates[itemIndex]) {
-        this.$set(this.openStates, itemIndex, false);
-      } else {
-        this.openStates.forEach((_openState, index) => {
-          this.$set(this.openStates, index, index === itemIndex);
-        });
-      }
-    },
-    closeAllMenuItems() {
-      this.openStates = this.items.map(() => false);
-    },
-    onItemClickStop(item: MenuItem, index: number) {
-      if (!item.href) {
-        // No `item.href` means this is a `button`
-        this.toggleMenuItem(index);
-      }
-    },
-    onItemClickNative(item: MenuItem) {
-      if (item.href) {
-        // `item.href` set means this is a link
-        this.$emit('navigate');
+const localePath = useLocalePath();
 
-        if (!this.narrow) {
-          this.closeAllMenuItems();
-        }
-      }
-    },
+const props = defineProps({
+  /**
+   * Name of the navigation, visible to screen readers.
+   */
+  name: {
+    type: String,
+    required: true,
   },
+  /**
+   * Alternative layout to be used in the drawer.
+   */
+  narrow: Boolean,
+  /**
+   * Alternative layout for sub-navigation.
+   */
+  small: Boolean,
+  /**
+   * Invert colours of navigation.
+   */
+  inverted: Boolean,
+  items: {
+    type: Array as PropType<MenuItem[]>,
+    default: () => [],
+  },
+  selectedOnExactActive: Boolean,
 });
+
+const emit = defineEmits(['navigate']);
+
+const openStates = ref<boolean[]>([]);
+
+const toggleMenuItem = (itemIndex: number) => {
+  if (openStates.value[itemIndex]) {
+    openStates.value[itemIndex] = false;
+  } else {
+    openStates.value.forEach((_openState, index) => {
+      openStates.value[index] = index === itemIndex;
+    });
+  }
+};
+
+const closeAllMenuItems = () => {
+  openStates.value = props.items.map(() => false);
+};
+
+const onItemClickStop = (item: MenuItem, index: number) => {
+  if (!item.href) {
+    // No `item.href` means this is a `button`
+    toggleMenuItem(index);
+  }
+};
+
+const onItemClickNative = (item: MenuItem) => {
+  if (item.href) {
+    // `item.href` set means this is a link
+    emit('navigate');
+
+    if (!props.narrow) {
+      closeAllMenuItems();
+    }
+  }
+};
+
+closeAllMenuItems();
 </script>
 
 <style scoped>

@@ -85,7 +85,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { MetaInfo } from 'vue-meta';
-import VueHcaptcha from '@hcaptcha/vue-hcaptcha';
+import VueHcaptcha from '@hcaptcha/vue3-hcaptcha';
 
 export default defineComponent({
   components: {

@@ -12,10 +12,11 @@ export interface PlayerPositions {
 }
 
 export const useNationalTeamsStore = defineStore('national-teams', () => {
+  const nuxtApp = useNuxtApp();
   const playerPositions = ref<PlayerPositions>();
 
   const loadPlayerPositions = async () => {
-    playerPositions.value = await this.$cmsService.getPlayerPositions();
+    playerPositions.value = await nuxtApp.$cmsService.getPlayerPositions();
   };
 
   return {

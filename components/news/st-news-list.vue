@@ -38,8 +38,8 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
 import { NewsEntry } from '~/components/news/st-news';
-import { Domain } from '~/plugins/cms-service';
-import { getAssetSrcSet, getAssetURL } from '~/plugins/directus';
+import { Domain } from '~/plugins/08.cms-service';
+import { getAssetSrcSet, getAssetURL } from '~/plugins/06.directus';
 
 const MAX_NEWS_PER_ROW = 4;
 

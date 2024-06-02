@@ -62,7 +62,7 @@ import Phase from '~/models/phase.model';
 import Match from '~/models/match.model';
 import CompetitionEdition from '~/models/competition-edition.model';
 import StEventDate from '~/components/events/st-event-date.vue';
-import { LeveradeGroupType } from '~/plugins/leverade';
+import { LeveradeGroupType } from '~/plugins/07.leverade';
 import Round from '~/models/round.model';
 
 export default defineComponent({
