@@ -9,8 +9,6 @@ dist
 # Node dependencies
 node_modules
 
-.stylelintcache
-
 # Logs
 logs
 *.log
@@ -24,9 +22,3 @@ logs
 .env
 .env.*
 !.env.example
-
-# htaccess
-.htaccess
-
-# Static files generated externally (e.g. referee list in JSON)
-static/external

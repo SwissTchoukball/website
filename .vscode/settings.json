@@ -5,5 +5,7 @@
   "i18n-ally.localesPaths": ["locales"],
   "i18n-ally.sourceLanguage": "fr",
   "i18n-ally.keystyle": "nested",
-  "cSpell.words": ["Leverade"]
+  "cSpell.words": ["Leverade"],
+  "eslint.experimental.useFlatConfig": true,
+  "stylelint.validate": ["css", "vue"]
 }

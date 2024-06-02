@@ -4,7 +4,7 @@ module.exports = {
       name: process.env.PM2_APP_NAME,
       exec_mode: 'cluster',
       instances: 'max',
-      script: './node_modules/nuxt/bin/nuxt.js',
+      script: './.output/server/index.mjs',
       args: 'start',
       merge_logs: true,
       cwd: process.env.PWD,

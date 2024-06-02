@@ -1,8 +1,12 @@
-module.exports = {
+/** @type {import('stylelint').Config} */
+export default {
   extends: ['stylelint-config-standard', 'stylelint-config-recommended-vue'],
-  // add your custom config here
-  // https://stylelint.io/user-guide/configuration
   rules: {
+    'rule-empty-line-before': [
+      'always',
+      { except: ['first-nested', 'after-single-line-comment'], ignore: ['after-comment'] },
+    ],
     'selector-class-pattern': null,
+    'value-keyword-case': 'lower',
   },
 };
