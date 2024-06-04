@@ -8,7 +8,7 @@ export interface PlayerPosition {
 }
 
 export interface PlayerPositions {
-  [id: number]: PlayerPositions;
+  [id: number]: PlayerPosition;
 }
 
 export const useNationalTeamsStore = defineStore('national-teams', () => {

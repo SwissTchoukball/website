@@ -23,7 +23,7 @@
         <nuxt-link
           v-if="eventType && eventType.name"
           :to="
-            localePath({ name: 'events-slug', params: { slug: `${eventType.id}-${$slugify(eventType.name_plural)}` } })
+            localePath({ name: 'events-slug', params: { slug: `${eventType.id}-${slugify(eventType.name_plural)}` } })
           "
           class="c-event__type"
         >
@@ -46,7 +46,7 @@
               class="c-event__venue"
               :class="{ 'c-event__venue--with-address': event.venue.address }"
             >
-              <fa-icon icon="location-dot" class="c-event__icon" />
+              <font-awesome-icon icon="location-dot" class="c-event__icon" />
               <component :is="event.venue.address ? 'details' : 'div'" class="c-event__venue-name-and-address">
                 <component :is="event.venue.address ? 'summary' : 'span'" class="u-unstyled-button c-event__venue-name">
                   {{ event.venue.name }}<template v-if="event.venue.city">, {{ event.venue.city }}</template>
@@ -57,7 +57,7 @@
               </component>
             </div>
             <time :datetime="event.date_start.toISOString()" class="c-event__time">
-              <fa-icon icon="clock" class="c-event__icon" />
+              <font-awesome-icon icon="clock" class="c-event__icon" />
               <span>{{ time }}</span>
             </time>
           </div>
@@ -70,117 +70,108 @@
   </article>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue';
-// import { Location } from 'vue-router';
-import { Store } from 'vuex';
-import { CalendarEvent } from '~/plugins/08.cms-service';
-import { EventType, EventTypes, RootState } from '~/store/state';
+<script setup lang="ts">
+import type { CalendarEvent } from '~/plugins/08.cms-service';
 import { getAssetSrcSet, getAssetURL } from '~/plugins/06.directus';
 import stEventDate from '~/components/events/st-event-date.vue';
 
-export default defineComponent({
-  components: { stEventDate },
-  props: {
-    event: {
-      type: Object as PropType<CalendarEvent>,
-      required: true,
-    },
-    showYear: Boolean,
+const runtimeConfig = useRuntimeConfig();
+const appConfig = useAppConfig();
+const localePath = useLocalePath();
+const { t } = useI18n();
+const { $formatDate } = useNuxtApp();
+const { slugify } = useSlugify();
+const eventsStore = useEventsStore();
+
+const props = defineProps({
+  event: {
+    type: Object as PropType<CalendarEvent>,
+    required: true,
   },
-  data() {
-    return {
-      areInfoVisible: true,
-      isAddressVisible: false,
-    };
-  },
-  computed: {
-    titleTo(): string {
-      return this.localePath({
-        name: 'event-slug',
-        params: { slug: `${this.event.id}-${this.$slugify(this.event.name)}` },
-      });
-    },
-    time(): string {
-      if (this.event.isFullDay) {
-        return this.$t('events.fullDay').toString();
-      }
-      let time = this.$formatDate(this.event.date_start, 'HH:mm');
-      if (this.event.showEndTime) {
-        time += ` - ${this.$formatDate(this.event.date_end, 'HH:mm')}`;
-      }
-      return time;
-    },
-    isCancelled(): boolean {
-      return this.event.status === 'cancelled';
-    },
-    eventTypes(): EventTypes | undefined {
-      return (this.$store as Store<RootState>).state.eventTypes;
-    },
-    eventType(): EventType | null {
-      if (this.eventTypes && this.event.type) {
-        return this.eventTypes[this.event.type];
-      } else {
-        return null;
-      }
-    },
-    hasImage(): boolean {
-      return !!(this.event.image || this.eventType?.image);
-    },
-    mainImageFallbackSrc(): string {
-      if (this.event.image) {
-        return getAssetURL(this.$config.cmsURL, this.event.image.id, {
-          width: this.$config.keyVisualSizes[0],
-        });
-      } else if (this.eventType?.image) {
-        return getAssetURL(this.$config.cmsURL, this.eventType.image.id, {
-          width: this.$config.keyVisualSizes[0],
-        });
-      }
-      return '';
-    },
-    mainImageSrcSet(): string {
-      if (this.event.image) {
-        return getAssetSrcSet(this.$config.cmsURL, this.event.image.id, {
-          widths: this.$config.keyVisualSizes,
-        });
-      } else if (this.eventType?.image) {
-        return getAssetSrcSet(this.$config.cmsURL, this.eventType.image.id, {
-          widths: this.$config.keyVisualSizes,
-        });
-      }
-      return '';
-    },
-    mainImageDescription(): string {
-      return this.event?.image?.description || this.eventType?.image?.description || '';
-    },
-    mapsUrl(): string | undefined {
-      if (!this.event.venue) {
-        return undefined;
-      }
-      // This link will fallback to Google Maps if Apple Maps is not available
-      return `//maps.apple.com/?q=${this.event.venue.address?.replace('\n', ', ')}`;
-    },
-  },
-  created() {
-    if (this.isCancelled) {
-      this.areInfoVisible = false;
-    }
-  },
-  methods: {
-    showInfo() {
-      this.areInfoVisible = true;
-    },
-    toggleAddressVisibility() {
-      if (this.event.venue?.address) {
-        this.isAddressVisible = !this.isAddressVisible;
-      }
-    },
-  },
+  showYear: Boolean,
 });
+
+const areInfoVisible = ref(true);
+
+const titleTo = computed<string>(() => {
+  return localePath({
+    name: 'event-slug',
+    params: { slug: `${props.event.id}-${slugify(props.event.name)}` },
+  });
+});
+const time = computed<string>(() => {
+  if (props.event.isFullDay) {
+    return t('events.fullDay').toString();
+  }
+  let time = $formatDate(props.event.date_start, 'HH:mm');
+  if (props.event.showEndTime) {
+    time += ` - ${$formatDate(props.event.date_end, 'HH:mm')}`;
+  }
+  return time;
+});
+const isCancelled = computed<boolean>(() => {
+  return props.event.status === 'cancelled';
+});
+const eventTypes = computed<EventTypes | undefined>(() => {
+  return eventsStore.eventTypes;
+});
+const eventType = computed<EventType | null>(() => {
+  if (eventTypes.value && props.event.type) {
+    return eventTypes.value[props.event.type];
+  } else {
+    return null;
+  }
+});
+const hasImage = computed<boolean>(() => {
+  return !!(props.event.image || eventType.value?.image);
+});
+const mainImageFallbackSrc = computed<string>(() => {
+  if (props.event.image) {
+    return getAssetURL(runtimeConfig.public.cmsURL, props.event.image.id, {
+      width: appConfig.keyVisualSizes[0],
+    });
+  } else if (eventType.value?.image) {
+    return getAssetURL(runtimeConfig.public.cmsURL, eventType.value.image.id, {
+      width: appConfig.keyVisualSizes[0],
+    });
+  }
+  return '';
+});
+const mainImageSrcSet = computed<string>(() => {
+  if (props.event.image) {
+    return getAssetSrcSet(runtimeConfig.public.cmsURL, props.event.image.id, {
+      widths: appConfig.keyVisualSizes,
+    });
+  } else if (eventType.value?.image) {
+    return getAssetSrcSet(runtimeConfig.public.cmsURL, eventType.value.image.id, {
+      widths: appConfig.keyVisualSizes,
+    });
+  }
+  return '';
+});
+const mainImageDescription = computed<string>(() => {
+  return props.event?.image?.description || eventType.value?.image?.description || '';
+});
+const mapsUrl = computed<string | undefined>(() => {
+  if (!props.event.venue) {
+    return undefined;
+  }
+  // This link will fallback to Google Maps if Apple Maps is not available
+  return `//maps.apple.com/?q=${props.event.venue.address?.replace('\n', ', ')}`;
+});
+
+const showInfo = () => {
+  areInfoVisible.value = true;
+};
+
+if (isCancelled.value) {
+  areInfoVisible.value = false;
+}
 </script>
 
 <style scoped>
+@import url('~/assets/css/media.css');
+
 .c-event {
   display: flex;
   flex-direction: column;

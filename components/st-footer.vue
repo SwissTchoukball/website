@@ -3,19 +3,19 @@
     <section class="l-main-content-section c-footer__social">
       <div class="c-footer__social-icons">
         <a href="https://instagram.com/swisstchoukball" class="c-footer__social-icon c-footer__social-icon--instagram">
-          <fa-icon :icon="['fab', 'instagram']" />
+          <font-awesome-icon :icon="['fab', 'instagram']" />
         </a>
         <a href="https://facebook.com/swisstchoukball" class="c-footer__social-icon c-footer__social-icon--facebook">
-          <fa-icon :icon="['fab', 'facebook']" />
+          <font-awesome-icon :icon="['fab', 'facebook']" />
         </a>
         <a href="https://flickr.com/swisstchoukball" class="c-footer__social-icon c-footer__social-icon--flickr">
           <st-icon-flickr />
         </a>
         <a href="https://youtube.com/@swisstchoukball" class="c-footer__social-icon c-footer__social-icon--youtube">
-          <fa-icon :icon="['fab', 'youtube']" />
+          <font-awesome-icon :icon="['fab', 'youtube']" />
         </a>
         <a :href="rssFeedUrl" class="c-footer__social-icon c-footer__social-icon--rss">
-          <fa-icon icon="square-rss" />
+          <font-awesome-icon icon="square-rss" />
         </a>
       </div>
       <div class="c-footer__tchouksuisse">#tchouksuisse</div>
@@ -27,11 +27,12 @@
       <ul class="u-unstyled-list c-footer__secondary-navigation__list">
         <li v-for="item in secondaryNavigation" :key="item.name" class="c-footer__secondary-navigation__item">
           <a v-if="item.isExternal" :href="item.href" class="c-footer__secondary-navigation__link">
-            {{ item.name }}
+            {{ item.name ? item.name : item.l10nKey ? $t(item.l10nKey) : '?' }}
           </a>
-          <nuxt-link v-else :to="localePath(item.href)" class="c-footer__secondary-navigation__link">
-            {{ item.name }}
+          <nuxt-link v-else-if="item.href" :to="localePath(item.href)" class="c-footer__secondary-navigation__link">
+            {{ item.name ? item.name : item.l10nKey ? $t(item.l10nKey) : '?' }}
           </nuxt-link>
+          <span v-else>{{ item.name ? item.name : item.l10nKey ? $t(item.l10nKey) : '?' }}</span>
         </li>
       </ul>
     </nav>
@@ -69,55 +70,52 @@
   </footer>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+const localePath = useLocalePath();
+const { locale } = useI18n();
+const navigationStore = useNavigationStore();
 
-export default defineComponent({
-  data() {
-    return {
-      partners: [
-        {
-          name: 'Tchoukball Promotion',
-          slug: 'tchoukball-promotion',
-          href: 'http://www.tchouk.com',
-        },
-        {
-          name: 'Axanova',
-          slug: 'axanova',
-          href: 'https://axanova.ch',
-        },
-      ],
-      affiliations: [
-        {
-          name: 'Swiss Olympic Member',
-          slug: 'swiss-olympic-member',
-          href: 'https://swissolympic.ch',
-        },
-        {
-          name: 'European Tchoukball Federation',
-          slug: 'etbf',
-          href: 'http://tchoukball.eu',
-        },
-        {
-          name: 'International Tchoukball Federation',
-          slug: 'fitb',
-          href: 'http://tchoukball.org',
-        },
-      ],
-    };
+const partners = ref([
+  {
+    name: 'Tchoukball Promotion',
+    slug: 'tchoukball-promotion',
+    href: 'http://www.tchouk.com',
   },
-  computed: {
-    rssFeedUrl() {
-      return `https://feeds.tchoukball.ch/news-${this.$i18n.locale}.xml`;
-    },
-    secondaryNavigation() {
-      return this.$store.state.secondaryNavigation;
-    },
+  {
+    name: 'Axanova',
+    slug: 'axanova',
+    href: 'https://axanova.ch',
   },
+]);
+const affiliations = ref([
+  {
+    name: 'Swiss Olympic Member',
+    slug: 'swiss-olympic-member',
+    href: 'https://swissolympic.ch',
+  },
+  {
+    name: 'European Tchoukball Federation',
+    slug: 'etbf',
+    href: 'http://tchoukball.eu',
+  },
+  {
+    name: 'International Tchoukball Federation',
+    slug: 'fitb',
+    href: 'http://tchoukball.org',
+  },
+]);
+const rssFeedUrl = computed(() => {
+  return `https://feeds.tchoukball.ch/news-${locale.value}.xml`;
+});
+
+const secondaryNavigation = computed(() => {
+  return navigationStore.secondaryNavigation;
 });
 </script>
 
 <style scoped>
+@import url('~/assets/css/media.css');
+
 .c-footer {
   margin-top: var(--st-length-spacing-m);
   padding-bottom: var(--st-length-spacing-s);

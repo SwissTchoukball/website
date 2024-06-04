@@ -1,34 +1,34 @@
 import { defineStore } from 'pinia';
 import Season from '~/models/season.model';
+import type { DirectusSeason } from '~/plugins/06.directus';
 
 export const useSeasonsStore = defineStore('seasons', () => {
   const nuxtApp = useNuxtApp();
-  const seasons = ref<Season[]>([]);
+  const seasons = ref<DirectusSeason[]>([]);
 
   const loadSeasons = async () => {
-    const directusSeasons = await nuxtApp.$cmsService.getSeasons();
-    seasons.value = directusSeasons.map((season) => new Season(season));
+    seasons.value = await nuxtApp.$cmsService.getSeasons();
   };
 
-  const findSeason = (predicate: (value: Season) => unknown): Season | undefined => {
+  const findSeason = (predicate: (value: DirectusSeason) => unknown): Season | undefined => {
     const season = seasons.value.find(predicate);
     if (!season) {
       return;
     }
-    return season;
+    return new Season(season);
   };
 
   const currentSeason = computed<Season | undefined>(() => {
     const today = new Date().toISOString().substring(0, 10);
-    return findSeason((season: Season) => season.date_start <= today && season.date_end >= today);
+    return findSeason((season: DirectusSeason) => season.date_start <= today && season.date_end >= today);
   });
 
   const getSeasonBySlug = (slug: string): Season | undefined => {
-    return findSeason((season: Season) => season.slug === slug);
+    return findSeason((season: DirectusSeason) => season.slug === slug);
   };
 
   const getSeasonByLeveradeId = (leveradeId: string): Season | undefined => {
-    return findSeason((season: Season) => season.leverade_id && season.leverade_id.toString() === leveradeId);
+    return findSeason((season: DirectusSeason) => season.leverade_id && season.leverade_id.toString() === leveradeId);
   };
 
   return {

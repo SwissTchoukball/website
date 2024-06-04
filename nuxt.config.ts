@@ -87,7 +87,6 @@ export default defineNuxtConfig({
       matomoAnalytics: {
         siteId: process.env.MATOMO_SITE_ID,
         matomoUrl: 'https://analytics.tchoukball.ch/',
-
         cookies: false,
         debug: process.env.MATOMO_DEBUG,
       },

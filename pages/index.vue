@@ -22,7 +22,7 @@
             :to="
               localePath({
                 name: 'event-slug',
-                params: { slug: `${event.id}-${$slugify(event.name)}` },
+                params: { slug: `${event.id}-${slugify(event.name)}` },
               })
             "
           />
@@ -47,7 +47,7 @@
       <nav>
         <ul class="c-index__tchoukball-nav u-unstyled-list">
           <li v-for="item of tchoukballNavigation" :key="item.name" class="c-index__tchoukball-nav-item">
-            <nuxt-link :to="item.path[currentLocale]">{{ $t(`tchoukball.nav.${item.name}`) }}</nuxt-link>
+            <nuxt-link :to="item.path[locale as 'fr' | 'de']">{{ $t(`tchoukball.nav.${item.name}`) }}</nuxt-link>
           </li>
         </ul>
       </nav>
@@ -70,128 +70,124 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-import { MetaInfo } from 'vue-meta';
-import { CarouselItem } from '~/components/st-home-carousel.vue';
-import { CalendarEvent } from '~/plugins/08.cms-service';
+<script setup lang="ts">
+import type { CarouselItem } from '~/components/st-home-carousel.vue';
+import type { CalendarEvent } from '~/plugins/08.cms-service';
 import stEventSmall from '~/components/events/st-event-small.vue';
 import stUpcomingMatches from '~/components/competitions/st-upcoming-matches.vue';
-import { FlickrPhotoset } from '~/plugins/05.flickr';
+import type { FlickrPhotoset } from '~/plugins/05.flickr';
 
-export default defineComponent({
-  components: {
-    stEventSmall,
-    stUpcomingMatches,
-  },
-  data() {
-    return {
-      amountNewsInCarousel: 5,
-      carouselItems: [] as CarouselItem[],
-      amountUpcomingEvents: 9,
-      events: [] as CalendarEvent[],
-      tchoukballDescription: '',
-      latestAlbums: [] as FlickrPhotoset[],
-      // TODO: low prio: Move the navigation data to the CMS.
-      tchoukballNavigation: [
-        {
-          name: 'presentation',
-          path: {
-            fr: '/fr/presentation',
-            de: '/de/vorstellung',
-          },
-        },
-        {
-          name: 'rules',
-          path: {
-            fr: '/fr/regles',
-            de: '/de/regeln',
-          },
-        },
-        {
-          name: 'charter',
-          path: {
-            fr: '/fr/charte',
-            de: '/de/charta',
-          },
-        },
-        {
-          name: 'history',
-          path: {
-            fr: '/fr/historique',
-            de: '/de/geschichte',
-          },
-        },
-        {
-          name: 'material',
-          path: {
-            fr: '/fr/materiel',
-            de: '/de/ausruestung',
-          },
-        },
-      ],
-    };
-  },
-  async fetch() {
-    // TODO: Create dedicated components for each section and move the fetch hooks to the respective components
+const runtimeConfig = useRuntimeConfig();
+const localePath = useLocalePath();
+const { locale, t } = useI18n();
+const { slugify } = useSlugify();
+const { $cmsService, $flickr } = useNuxtApp();
 
-    // News for carousel
-    const newsResult = await this.$cmsService.getNews({
-      limit: this.amountNewsInCarousel,
-      page: 1,
-      withImageOnly: true,
-      forHomepage: true,
-    });
-
-    // TODO: Consider having other entities than news entries in carousel.
-    this.carouselItems = newsResult.data
-      .filter((newsEntry) => newsEntry.main_image)
-      .map((newsEntry) => {
-        return {
-          image: {
-            directusAssetId: newsEntry.main_image!.id,
-            alt: newsEntry.main_image!.description,
-          },
-          caption: newsEntry.title,
-          href: this.localePath(`/news/${newsEntry.id}-${newsEntry.slug}`),
-        };
-      });
-
-    // Upcoming events
-    const eventsResult = await this.$cmsService.getEvents({
-      limit: this.amountUpcomingEvents,
-      page: 1,
-      upcoming: true,
-      excludeCancelled: true,
-    });
-
-    this.events = eventsResult.data;
-
-    this.tchoukballDescription = (await this.$cmsService.getText(1))?.body;
-
-    // Latest Flickr photos
-    // Doc: https://www.flickr.com/services/api/flickr.photosets.getList.html
-    const flickrResponse = await this.$flickr.photosets.getList({
-      user_id: this.$config.flickr.userId,
-      per_page: 6,
-      primary_photo_extras: 'url_q,url_m',
-    });
-    this.latestAlbums = flickrResponse.body.photosets.photoset;
-  },
-  head(): MetaInfo {
-    return {
-      meta: [{ property: 'og:title', content: this.$t('title').toString() }],
-    };
-  },
-  computed: {
-    currentLocale() {
-      return this.$i18n.locale as 'fr' | 'de';
+const amountNewsInCarousel = ref(5);
+const carouselItems = ref<CarouselItem[]>([]);
+const amountUpcomingEvents = ref(9);
+const events = ref<CalendarEvent[]>([]);
+const tchoukballDescription = ref('');
+const latestAlbums = ref<FlickrPhotoset[]>([]);
+// TODO: low prio: Move the navigation data to the CMS.
+const tchoukballNavigation = ref([
+  {
+    name: 'presentation',
+    path: {
+      fr: '/fr/presentation',
+      de: '/de/vorstellung',
     },
   },
+  {
+    name: 'rules',
+    path: {
+      fr: '/fr/regles',
+      de: '/de/regeln',
+    },
+  },
+  {
+    name: 'charter',
+    path: {
+      fr: '/fr/charte',
+      de: '/de/charta',
+    },
+  },
+  {
+    name: 'history',
+    path: {
+      fr: '/fr/historique',
+      de: '/de/geschichte',
+    },
+  },
+  {
+    name: 'material',
+    path: {
+      fr: '/fr/materiel',
+      de: '/de/ausruestung',
+    },
+  },
+]);
+
+const fetchData = async () => {
+  // TODO: Create dedicated components for each section and move the fetch hooks to the respective components
+
+  // News for carousel
+  const newsResult = await $cmsService.getNews({
+    limit: amountNewsInCarousel.value,
+    page: 1,
+    withImageOnly: true,
+    forHomepage: true,
+  });
+
+  // TODO: Consider having other entities than news entries in carousel.
+  carouselItems.value = newsResult.data
+    .filter((newsEntry) => newsEntry.main_image)
+    .map((newsEntry) => {
+      return {
+        image: {
+          directusAssetId: newsEntry.main_image!.id,
+          alt: newsEntry.main_image!.description,
+        },
+        caption: newsEntry.title,
+        href: localePath(`/news/${newsEntry.id}-${newsEntry.slug}`),
+      };
+    });
+
+  // Upcoming events
+  const eventsResult = await $cmsService.getEvents({
+    limit: amountUpcomingEvents.value,
+    page: 1,
+    upcoming: true,
+    excludeCancelled: true,
+  });
+
+  events.value = eventsResult.data;
+
+  tchoukballDescription.value = (await $cmsService.getText(1))?.body;
+
+  // Latest Flickr photos
+  // Doc: https://www.flickr.com/services/api/flickr.photosets.getList.html
+  const flickrResponse = await $flickr.photosets.getList({
+    user_id: runtimeConfig.public.flickr.userId,
+    per_page: 6,
+    primary_photo_extras: 'url_q,url_m',
+  });
+  latestAlbums.value = flickrResponse.body.photosets.photoset;
+};
+
+useHead(() => {
+  return {
+    meta: [{ property: 'og:title', content: t('title').toString() }],
+  };
 });
+
+// TODO: split each request into their own useAsyncData and show skeleton loading
+useAsyncData('homePageData', fetchData);
 </script>
 
 <style scoped>
+@import url('~/assets/css/media.css');
+
 .c-index_carousel {
   margin-top: var(--st-length-spacing-xs);
 }

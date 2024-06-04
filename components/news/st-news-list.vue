@@ -20,7 +20,7 @@
           "
         />
         <div v-else class="c-news-list__image c-news-list__image--placeholder">
-          <fa-icon icon="newspaper" class="c-news-list__placeholder-icon" />
+          <font-awesome-icon icon="newspaper" class="c-news-list__placeholder-icon" />
         </div>
       </nuxt-link>
       <st-domain-labels :domains="getDomains(newsEntry)" target-page-name="news" class="c-news-list__domains" />
@@ -35,67 +35,75 @@
   </ul>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue';
-import { NewsEntry } from '~/components/news/st-news';
-import { Domain } from '~/plugins/08.cms-service';
+<script setup lang="ts">
+import type { NewsEntry } from '~/components/news/st-news';
+import type { Domain } from '~/plugins/08.cms-service';
 import { getAssetSrcSet, getAssetURL } from '~/plugins/06.directus';
+import { useDomains } from '~/composables/useDomains';
 
 const MAX_NEWS_PER_ROW = 4;
 
-export default defineComponent({
-  props: {
-    news: {
-      type: Array as PropType<NewsEntry[]>,
-      required: true,
-    },
-  },
-  computed: {
-    /**
-     * The amount of spacer products to insert in the grid to ensure a good looking result with few elements.
-     *
-     * See comment in the CSS class `c-product-list` for details.
-     */
-    amountSpacerProducts(): number {
-      if (this.news.length >= MAX_NEWS_PER_ROW) {
-        return 0;
-      } else {
-        return MAX_NEWS_PER_ROW - this.news.length;
-      }
-    },
-  },
-  methods: {
-    getNewsLink(newsEntry: NewsEntry) {
-      let newsLink = `/news/${newsEntry.id}`;
-      if (newsEntry.slug) {
-        newsLink += `-${newsEntry.slug}`;
-      }
-      return this.localePath(newsLink);
-    },
-    getNewsCreationDate(newsEntry: NewsEntry): string {
-      return this.$formatDate(new Date(newsEntry.date_created), 'PPP');
-    },
-    getNewsCreationDateISO(newsEntry: NewsEntry): string {
-      return this.$formatDate(new Date(newsEntry.date_created), 'yyyy-MM-dd');
-    },
-    mainImageFallbackSrc(assetId: string): string {
-      return getAssetURL(this.$config.cmsURL, assetId, {
-        width: this.$config.keyVisualSizes[0],
-      });
-    },
-    mainImageSrcSet(assetId: string): string {
-      return getAssetSrcSet(this.$config.cmsURL, assetId, {
-        widths: this.$config.keyVisualSizes,
-      });
-    },
-    getDomains(newsEntry: NewsEntry): Domain[] {
-      return newsEntry.domain_ids.map((domainId) => this.$store.getters.getDomainById(domainId));
-    },
+const runtimeConfig = useRuntimeConfig();
+const appConfig = useAppConfig();
+const { getDomainsFromList } = useDomains();
+const localePath = useLocalePath();
+const { $formatDate } = useNuxtApp();
+
+const props = defineProps({
+  news: {
+    type: Array as PropType<NewsEntry[]>,
+    required: true,
   },
 });
+/**
+ * The amount of spacer products to insert in the grid to ensure a good looking result with few elements.
+ *
+ * See comment in the CSS class `c-product-list` for details.
+ */
+const amountSpacerProducts = computed<number>(() => {
+  if (props.news.length >= MAX_NEWS_PER_ROW) {
+    return 0;
+  } else {
+    return MAX_NEWS_PER_ROW - props.news.length;
+  }
+});
+
+const getNewsLink = (newsEntry: NewsEntry) => {
+  let newsLink = `/news/${newsEntry.id}`;
+  if (newsEntry.slug) {
+    newsLink += `-${newsEntry.slug}`;
+  }
+  return localePath(newsLink);
+};
+
+const getNewsCreationDate = (newsEntry: NewsEntry): string => {
+  return $formatDate(new Date(newsEntry.date_created), 'PPP');
+};
+
+const getNewsCreationDateISO = (newsEntry: NewsEntry): string => {
+  return $formatDate(new Date(newsEntry.date_created), 'yyyy-MM-dd');
+};
+
+const mainImageFallbackSrc = (assetId: string): string => {
+  return getAssetURL(runtimeConfig.public.cmsURL, assetId, {
+    width: appConfig.keyVisualSizes[0],
+  });
+};
+
+const mainImageSrcSet = (assetId: string): string => {
+  return getAssetSrcSet(runtimeConfig.public.cmsURL, assetId, {
+    widths: appConfig.keyVisualSizes,
+  });
+};
+
+const getDomains = (newsEntry: NewsEntry): Domain[] => {
+  return getDomainsFromList(newsEntry.domain_ids);
+};
 </script>
 
 <style scoped>
+@import url('~/assets/css/media.css');
+
 .c-news-list {
   display: block;
 }

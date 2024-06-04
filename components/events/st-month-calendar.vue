@@ -19,7 +19,7 @@
           v-if="event.numberDaysVisible"
           :key="event.id"
           v-tooltip.bottom="event.name"
-          :to="localePath({ name: 'event-slug', params: { slug: `${event.id}-${$slugify(event.name)}` } })"
+          :to="localePath({ name: 'event-slug', params: { slug: `${event.id}-${slugify(event.name)}` } })"
           class="c-month-calendar__event"
           :class="{ 'c-month-calendar__event--full-or-multi-day': isFullOrMultiDay(event) }"
           :style="{
@@ -40,8 +40,7 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue';
+<script setup lang="ts">
 import {
   addDays,
   differenceInCalendarDays,
@@ -57,7 +56,7 @@ import {
   startOfMonth,
   startOfWeek,
 } from 'date-fns';
-import { CalendarEvent } from '~/plugins/08.cms-service';
+import type { CalendarEvent } from '~/plugins/08.cms-service';
 
 interface CalendarDay {
   date: Date;
@@ -68,136 +67,135 @@ interface CalendarDays {
   [key: string]: CalendarDay;
 }
 
-export default defineComponent({
-  props: {
-    month: {
-      type: Number,
-      required: true,
-    },
-    year: {
-      type: Number,
-      required: true,
-    },
-    events: {
-      type: Array as PropType<CalendarEvent[]>,
-      default: () => [],
-    },
+const localePath = useLocalePath();
+const { $formatDate } = useNuxtApp();
+const { slugify } = useSlugify();
+
+const props = defineProps({
+  month: {
+    type: Number,
+    required: true,
   },
-  data() {
-    return {
-      weekDaysInWords: ((): string[] => {
-        const now = new Date();
-        const arr = eachDayOfInterval({
-          start: startOfWeek(now, { weekStartsOn: 1 }),
-          end: endOfWeek(now, { weekStartsOn: 1 }),
-        });
-        return arr.reduce((a, d) => {
-          a.push(this.$formatDate(d, 'EEEE'));
-          return a;
-        }, [] as string[]);
-      })(),
-    };
+  year: {
+    type: Number,
+    required: true,
   },
-  computed: {
-    startOfMonth(): Date {
-      return startOfMonth(new Date(this.year, this.month - 1));
-    },
-    firstDay(): Date {
-      return startOfWeek(this.startOfMonth, { weekStartsOn: 1 });
-    },
-    weeksInMonth(): number {
-      return getWeeksInMonth(this.startOfMonth, { weekStartsOn: 1 });
-    },
-    days(): CalendarDays {
-      const days: CalendarDays = {};
-      let date = this.firstDay;
-      const numberDaysInCalendar = this.weeksInMonth * 7;
-      // Defining the days that we show in the calendar for the given month
-      for (let d = 0; d < numberDaysInCalendar; d++) {
-        days[format(date, 'yyyy-MM-dd')] = {
-          date,
-          events: [],
-        };
-        date = addDays(date, 1);
-      }
-
-      // Adding the events to the calendar
-      this.events.forEach((event) => {
-        let eventDate = event.date_start;
-        let day: CalendarDay | undefined;
-        let position = 0;
-
-        // We add an event to each day of the calendar, but we only make it visible on the first day of the event in a week.
-        // And we make the event block expand until the last day, or the end of the week.
-        // We still add the event to the other days just to know that it is there to help with positioning the other events.
-        do {
-          day = days[format(eventDate, 'yyyy-MM-dd')];
-          let numberDaysVisible = 0;
-          const isStartOfWeek = isSameDay(eventDate, startOfWeek(eventDate, { weekStartsOn: 1 }));
-
-          // When starting a new week, we reset the position as we don't need the continuity with the previous week
-          if (isStartOfWeek) {
-            position = 0;
-          }
-
-          if (eventDate === event.date_start || isStartOfWeek) {
-            // First day of the event, or continuation of it on a new week
-            if (isSameWeek(eventDate, event.date_end, { weekStartsOn: 1 })) {
-              // Ends this week
-              numberDaysVisible = differenceInCalendarDays(event.date_end, eventDate) + 1;
-            } else {
-              // Ends later than this week
-              numberDaysVisible =
-                differenceInCalendarDays(lastDayOfWeek(eventDate, { weekStartsOn: 1 }), eventDate) + 1;
-            }
-          }
-
-          // If `numberDaysVisible` is set (other than 0), it means that the event will be rendered.
-          // We have to seek for an available position
-          if (numberDaysVisible) {
-            let positionSeeking = 0;
-            let firstAvailablePosition: number | undefined;
-            do {
-              if (!day?.events.some((event) => event.position === positionSeeking)) {
-                firstAvailablePosition = positionSeeking;
-              } else {
-                positionSeeking++;
-              }
-            } while (typeof firstAvailablePosition === 'undefined');
-
-            if (firstAvailablePosition) {
-              // We add this condition to make TypeScript happy, even though it is certain at this point that `firstAvailablePosition` is defined.
-              position = firstAvailablePosition;
-            }
-          }
-
-          day?.events.push({
-            ...event,
-            numberDaysVisible,
-            position,
-          });
-          eventDate = addDays(eventDate, 1);
-        } while (eventDate <= event.date_end);
-      });
-      return days;
-    },
-  },
-  created() {},
-  methods: {
-    isToday(date: Date) {
-      return isToday(date);
-    },
-    isInOtherMonth(date: Date) {
-      return !isSameMonth(date, this.startOfMonth);
-    },
-    isFullOrMultiDay(event: CalendarEvent) {
-      return event.isFullDay || !isSameDay(event.date_start, event.date_end);
-    },
+  events: {
+    type: Array as PropType<CalendarEvent[]>,
+    default: () => [],
   },
 });
+
+const weekDaysInWords = ref(
+  ((): string[] => {
+    const now = new Date();
+    const arr = eachDayOfInterval({
+      start: startOfWeek(now, { weekStartsOn: 1 }),
+      end: endOfWeek(now, { weekStartsOn: 1 }),
+    });
+    return arr.reduce((a, d) => {
+      a.push($formatDate(d, 'EEEE'));
+      return a;
+    }, [] as string[]);
+  })(),
+);
+
+const startOfGivenMonth = computed<Date>(() => {
+  return startOfMonth(new Date(props.year, props.month - 1));
+});
+
+const firstDay = computed<Date>(() => {
+  return startOfWeek(startOfGivenMonth.value, { weekStartsOn: 1 });
+});
+
+const weeksInMonth = computed<number>(() => {
+  return getWeeksInMonth(startOfGivenMonth.value, { weekStartsOn: 1 });
+});
+
+const days = computed<CalendarDays>(() => {
+  const days: CalendarDays = {};
+  let date = firstDay.value;
+  const numberDaysInCalendar = weeksInMonth.value * 7;
+  // Defining the days that we show in the calendar for the given month
+  for (let d = 0; d < numberDaysInCalendar; d++) {
+    days[format(date, 'yyyy-MM-dd')] = {
+      date,
+      events: [],
+    };
+    date = addDays(date, 1);
+  }
+
+  // Adding the events to the calendar
+  props.events.forEach((event) => {
+    let eventDate = event.date_start;
+    let day: CalendarDay | undefined;
+    let position = 0;
+
+    // We add an event to each day of the calendar, but we only make it visible on the first day of the event in a week.
+    // And we make the event block expand until the last day, or the end of the week.
+    // We still add the event to the other days just to know that it is there to help with positioning the other events.
+    do {
+      day = days[format(eventDate, 'yyyy-MM-dd')];
+      let numberDaysVisible = 0;
+      const isStartOfWeek = isSameDay(eventDate, startOfWeek(eventDate, { weekStartsOn: 1 }));
+
+      // When starting a new week, we reset the position as we don't need the continuity with the previous week
+      if (isStartOfWeek) {
+        position = 0;
+      }
+
+      if (eventDate === event.date_start || isStartOfWeek) {
+        // First day of the event, or continuation of it on a new week
+        if (isSameWeek(eventDate, event.date_end, { weekStartsOn: 1 })) {
+          // Ends this week
+          numberDaysVisible = differenceInCalendarDays(event.date_end, eventDate) + 1;
+        } else {
+          // Ends later than this week
+          numberDaysVisible = differenceInCalendarDays(lastDayOfWeek(eventDate, { weekStartsOn: 1 }), eventDate) + 1;
+        }
+      }
+
+      // If `numberDaysVisible` is set (other than 0), it means that the event will be rendered.
+      // We have to seek for an available position
+      if (numberDaysVisible) {
+        let positionSeeking = 0;
+        let firstAvailablePosition: number | undefined;
+        do {
+          if (!day?.events.some((event) => event.position === positionSeeking)) {
+            firstAvailablePosition = positionSeeking;
+          } else {
+            positionSeeking++;
+          }
+        } while (typeof firstAvailablePosition === 'undefined');
+
+        if (firstAvailablePosition) {
+          // We add this condition to make TypeScript happy, even though it is certain at this point that `firstAvailablePosition` is defined.
+          position = firstAvailablePosition;
+        }
+      }
+
+      day?.events.push({
+        ...event,
+        numberDaysVisible,
+        position,
+      });
+      eventDate = addDays(eventDate, 1);
+    } while (eventDate <= event.date_end);
+  });
+  return days;
+});
+
+const isInOtherMonth = (date: Date) => {
+  return !isSameMonth(date, startOfGivenMonth.value);
+};
+const isFullOrMultiDay = (event: CalendarEvent) => {
+  return event.isFullDay || !isSameDay(event.date_start, event.date_end);
+};
 </script>
 
 <style scoped>
+@import url('~/assets/css/media.css');
+
 .c-month-calendar {
   display: grid;
   grid-template-columns: repeat(7, 1fr);

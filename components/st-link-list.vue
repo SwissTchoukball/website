@@ -11,23 +11,18 @@
   </nav>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue';
-import { MenuItem } from '~/store/state';
-
-export default defineComponent({
-  props: {
-    /**
-     * Name of the navigation, visible to screen readers.
-     */
-    name: {
-      type: String,
-      required: true,
-    },
-    items: {
-      type: Array as PropType<MenuItem[]>,
-      default: () => [],
-    },
+<script setup lang="ts">
+defineProps({
+  /**
+   * Name of the navigation, visible to screen readers.
+   */
+  name: {
+    type: String,
+    required: true,
+  },
+  items: {
+    type: Array as PropType<MenuItem[]>,
+    default: () => [],
   },
 });
 </script>

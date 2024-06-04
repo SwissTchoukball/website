@@ -237,7 +237,8 @@ export interface CMSService {
 
 export default defineNuxtPlugin(() => {
   const nuxtApp = useNuxtApp();
-  const { locale: currentLocale, defaultLocale } = useI18n();
+  const currentLocale = nuxtApp.$i18n.locale;
+  const defaultLocale = nuxtApp.$i18n.defaultLocale;
 
   const processRoles = (directusRoles: (DirectusRole | undefined)[]) => {
     return directusRoles.reduce((roles, role) => {

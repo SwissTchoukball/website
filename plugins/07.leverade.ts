@@ -1,10 +1,8 @@
 import type { NitroFetchOptions } from 'nitropack';
 export interface LeveradeResponse<T, E = unknown, M = unknown> {
-  data: {
-    data: T;
-    included?: E[];
-    meta: M;
-  };
+  data: T;
+  included?: E[];
+  meta: M;
 }
 
 export interface LeveradeBaseEntity {
@@ -311,18 +309,17 @@ export interface Leverade {
 
 const removeAuthorizationHeaders = (headers: any) => {
   // Removing authorization headers that are somehow added by the production server when this run server-side.
-  delete headers.common.authorization;
+  delete headers.common?.authorization;
   delete headers.authorization;
 };
 
 export default defineNuxtPlugin(() => {
   const nuxtApp = useNuxtApp();
   const runtimeConfig = useRuntimeConfig();
-  const { locale } = useI18n();
 
   const leveradeApi = $fetch.create({
     baseURL: runtimeConfig.public.leveradeURL,
-    headers: { 'Accept-Language': locale?.value || 'fr' },
+    headers: { 'Accept-Language': nuxtApp.$i18n.locale.value },
     onRequest(context): Promise<void> | void {
       removeAuthorizationHeaders(context.options.headers);
     },
@@ -391,10 +388,7 @@ export default defineNuxtPlugin(() => {
     );
     return {
       ...matchResponse,
-      data: {
-        ...matchResponse.data,
-        data: matchResponse.data.data[0],
-      },
+      data: matchResponse.data[0],
     };
   };
 

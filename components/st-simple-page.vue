@@ -5,7 +5,7 @@
     <!-- eslint-disable-next-line vue/no-v-html -->
     <div class="directus-formatted-content" v-html="body"></div>
 
-    <slot name="after-body"></slot>
+    <slot name="after-body" />
 
     <template v-if="resources.length">
       <h3 class="t-headline-2">{{ $t('resources.title') }}</h3>
@@ -18,31 +18,25 @@
   </section>
 </template>
 
-<script lang="ts">
-import { PropType } from 'vue';
-import { Resource, Role } from '~/plugins/08.cms-service';
-import stRole from '~/components/people/st-role.vue';
-import StResourceList from '~/components/resources/st-resource-list.vue';
+<script setup lang="ts">
+import type { Resource, Role } from '~/plugins/08.cms-service';
 
-export default defineComponent({
-  components: { stRole, StResourceList },
-  props: {
-    title: {
-      type: String,
-      required: true,
-    },
-    body: {
-      type: String,
-      default: '',
-    },
-    keyRoles: {
-      type: Array as PropType<Role[]>,
-      default: () => [],
-    },
-    resources: {
-      type: Array as PropType<Resource[]>,
-      default: () => [],
-    },
+defineProps({
+  title: {
+    type: String,
+    required: true,
+  },
+  body: {
+    type: String,
+    default: '',
+  },
+  keyRoles: {
+    type: Array as PropType<Role[]>,
+    default: () => [],
+  },
+  resources: {
+    type: Array as PropType<Resource[]>,
+    default: () => [],
   },
 });
 </script>

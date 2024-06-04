@@ -1,7 +1,7 @@
 <template>
   <div>
     <a v-for="liveStream of liveStreams" :key="liveStream.id" :href="liveStream.url" class="c-live-stream">
-      <fa-icon icon="circle-play" />
+      <font-awesome-icon icon="circle-play" />
       <span>
         {{ $t('liveBanner.live') }}
         <template v-if="!hasBegun(liveStream)">
@@ -19,28 +19,25 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { isPast, subMinutes } from 'date-fns';
-import { defineComponent, PropType } from 'vue';
-import { LiveStream } from '~/plugins/08.cms-service';
+import type { LiveStream } from '~/plugins/08.cms-service';
 
-export default defineComponent({
-  props: {
-    liveStreams: {
-      type: Array as PropType<LiveStream[]>,
-      required: true,
-    },
-  },
-  methods: {
-    hasBegun: (liveStream: LiveStream): boolean => {
-      return isPast(new Date(liveStream.stream_start));
-    },
-    beginsInMoreThan44Minutes: (liveStream: LiveStream): boolean => {
-      const streamStartMinus44Minutes = subMinutes(new Date(liveStream.stream_start), 44);
-      return !isPast(streamStartMinus44Minutes);
-    },
+defineProps({
+  liveStreams: {
+    type: Array as PropType<LiveStream[]>,
+    required: true,
   },
 });
+
+const hasBegun = (liveStream: LiveStream): boolean => {
+  return isPast(new Date(liveStream.stream_start));
+};
+
+const beginsInMoreThan44Minutes = (liveStream: LiveStream): boolean => {
+  const streamStartMinus44Minutes = subMinutes(new Date(liveStream.stream_start), 44);
+  return !isPast(streamStartMinus44Minutes);
+};
 </script>
 
 <style scoped>

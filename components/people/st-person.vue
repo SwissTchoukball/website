@@ -8,7 +8,7 @@
       class="c-person__avatar"
     />
     <div v-else class="c-person__avatar">
-      <fa-icon icon="user" class="c-person__avatar-placeholder" />
+      <font-awesome-icon icon="user" class="c-person__avatar-placeholder" />
     </div>
     <div class="st-person__description">
       <h4 class="t-headline-3 c-person__name">{{ name }}</h4>
@@ -20,7 +20,7 @@
       </p>
       <ul class="c-person__details u-unstyled-list">
         <li v-for="(detail, index) of details" :key="`detail-${index}`" class="c-person__detail">
-          <fa-icon :icon="detail.icon" class="c-person__detail-icon" />
+          <font-awesome-icon :icon="detail.icon" class="c-person__detail-icon" />
           <component :is="detail.href ? 'a' : 'span'" :href="detail.href">{{ detail.text }}</component>
           <div v-if="detail.body" class="directus-formatted-content c-person__detail-body" v-html="detail.body"></div>
         </li>
@@ -29,9 +29,11 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue';
+<script setup lang="ts">
 import { getAssetURL } from '~/plugins/06.directus';
+
+const runtimeConfig = useRuntimeConfig();
+const appConfig = useAppConfig();
 
 export interface PersonDetail {
   icon: string;
@@ -40,37 +42,37 @@ export interface PersonDetail {
   href?: string;
 }
 
-export default defineComponent({
-  props: {
-    avatarAssetId: {
-      type: String,
-      default: null,
-    },
-    name: {
-      type: String,
-      required: true,
-    },
-    subName: {
-      type: String,
-      default: null,
-    },
-    details: {
-      type: Array as PropType<PersonDetail[]>,
-      default: () => [],
-    },
+const props = defineProps({
+  avatarAssetId: {
+    type: String,
+    default: null,
   },
-  computed: {
-    avatarSrc(): string {
-      return getAssetURL(this.$config.cmsURL, this.avatarAssetId, { width: this.$config.avatarAssetsSize[0] });
-    },
-    avatarSrcSet(): string {
-      return `${getAssetURL(this.$config.cmsURL, this.avatarAssetId, { width: this.$config.avatarAssetsSize[1] })} 2x`;
-    },
+  name: {
+    type: String,
+    required: true,
   },
+  subName: {
+    type: String,
+    default: null,
+  },
+  details: {
+    type: Array as PropType<PersonDetail[]>,
+    default: () => [],
+  },
+});
+
+const avatarSrc = computed<string>(() => {
+  return getAssetURL(runtimeConfig.public.cmsURL, props.avatarAssetId, { width: appConfig.avatarAssetsSize[0] });
+});
+
+const avatarSrcSet = computed<string>(() => {
+  return `${getAssetURL(runtimeConfig.public.cmsURL, props.avatarAssetId, { width: appConfig.avatarAssetsSize[1] })} 2x`;
 });
 </script>
 
 <style scoped>
+@import url('~/assets/css/media.css');
+
 .c-person {
   display: flex;
   flex-direction: column;

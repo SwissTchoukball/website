@@ -6,16 +6,13 @@
   </ul>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue';
-import { FlickrPhoto } from '~/plugins/05.flickr';
+<script setup lang="ts">
+import type { FlickrPhoto } from '~/plugins/05.flickr';
 
-export default defineComponent({
-  props: {
-    photos: {
-      type: Array as PropType<FlickrPhoto[]>,
-      required: true,
-    },
+defineProps({
+  photos: {
+    type: Array as PropType<FlickrPhoto[]>,
+    required: true,
   },
 });
 </script>

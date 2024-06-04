@@ -4,29 +4,25 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-export default defineComponent({
-  props: {
-    rank: {
-      type: Number,
-      default: null,
-    },
+<script setup lang="ts">
+const props = defineProps({
+  rank: {
+    type: Number,
+    default: null,
   },
-  computed: {
-    medalVariantClass() {
-      switch (+this.rank) {
-        case 1:
-          return `c-medal--gold`;
-        case 2:
-          return `c-medal--silver`;
-        case 3:
-          return `c-medal--bronze`;
-        default:
-          return '';
-      }
-    },
-  },
+});
+
+const medalVariantClass = computed(() => {
+  switch (props.rank) {
+    case 1:
+      return `c-medal--gold`;
+    case 2:
+      return `c-medal--silver`;
+    case 3:
+      return `c-medal--bronze`;
+    default:
+      return '';
+  }
 });
 </script>
 
@@ -50,16 +46,22 @@ export default defineComponent({
 
 .c-medal--gold {
   background: var(--st-color-medal-gold);
-  box-shadow: 0 0.09em 0 0 #846900, 0 0 0.5em 0.05em var(--st-color-medal-gold-simple);
+  box-shadow:
+    0 0.09em 0 0 #846900,
+    0 0 0.5em 0.05em var(--st-color-medal-gold-simple);
 }
 
 .c-medal--silver {
   background: var(--st-color-medal-silver);
-  box-shadow: 0 0.09em 0 0 #808080, 0 0 0.5em 0.05em var(--st-color-medal-silver-simple);
+  box-shadow:
+    0 0.09em 0 0 #808080,
+    0 0 0.5em 0.05em var(--st-color-medal-silver-simple);
 }
 
 .c-medal--bronze {
   background: var(--st-color-medal-bronze);
-  box-shadow: 0 0.09em 0 0 #6d2821, 0 0 0.5em 0.05vmin var(--st-color-medal-bronze-simple);
+  box-shadow:
+    0 0.09em 0 0 #6d2821,
+    0 0 0.5em 0.05vmin var(--st-color-medal-bronze-simple);
 }
 </style>

@@ -1,31 +1,34 @@
 <template>
   <div class="st-home-carousel">
-    <vue-slick-carousel v-if="items.length > 0" v-bind="settings">
-      <nuxt-link
-        v-for="(item, index) in items"
-        :key="`carousel-item-${index}`"
-        :to="item.href"
-        class="st-home-carousel__item"
-      >
-        <img
-          class="st-home-carousel__image"
-          :alt="item.image.alt"
-          :src="imageFallbackSrc(item.image.directusAssetId)"
-          :srcset="imageSrcSet(item.image.directusAssetId)"
-          :sizes="imgTagSizes"
-        />
-        <div class="st-home-carousel__title-fade"></div>
-        <h3 class="st-home-carousel__title">
-          {{ item.caption }}
-        </h3>
-      </nuxt-link>
-    </vue-slick-carousel>
+    <!-- TODO: USE NEW CAROUSEL -->
+    <!-- <vue-slick-carousel v-if="items.length > 0" v-bind="settings"> -->
+    <nuxt-link
+      v-for="(item, index) in items"
+      :key="`carousel-item-${index}`"
+      :to="item.href"
+      class="st-home-carousel__item"
+    >
+      <img
+        class="st-home-carousel__image"
+        :alt="item.image.alt"
+        :src="imageFallbackSrc(item.image.directusAssetId)"
+        :srcset="imageSrcSet(item.image.directusAssetId)"
+        :sizes="imgTagSizes"
+      />
+      <div class="st-home-carousel__title-fade"></div>
+      <h3 class="st-home-carousel__title">
+        {{ item.caption }}
+      </h3>
+    </nuxt-link>
+    <!-- </vue-slick-carousel> -->
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue';
+<script setup lang="ts">
 import { getAssetSrcSet, getAssetURL } from '~/plugins/06.directus';
+
+const runtimeConfig = useRuntimeConfig();
+const appConfig = useAppConfig();
 
 export interface CarouselItem {
   image: {
@@ -38,46 +41,43 @@ export interface CarouselItem {
 
 // TODO: Switch to Swiper when we'll be using Vue 3.
 //       https://swiperjs.com/vue
-export default defineComponent({
-  props: {
-    items: {
-      type: Array as PropType<CarouselItem[]>,
-      required: true,
-    },
-  },
-  data() {
-    return {
-      settings: {
-        autoplay: true,
-        autoplaySpeed: 5000,
-        slidesToShow: 1,
-        dots: true,
-        arrows: false,
-      },
-      imgTagSizes: '',
-    };
-  },
-  mounted() {
-    const bodyStyles = window.getComputedStyle(document.body);
-    const lXlBreakpoint = bodyStyles.getPropertyValue('--st-breakpoint-l-xl');
-    this.imgTagSizes = `(min-width: ${lXlBreakpoint}) ${lXlBreakpoint}, 100vw`;
-  },
-  methods: {
-    imageFallbackSrc(assetId: string): string {
-      return getAssetURL(this.$config.cmsURL, assetId, {
-        width: this.$config.keyVisualSizes[0],
-      });
-    },
-    imageSrcSet(assetId: string): string {
-      return getAssetSrcSet(this.$config.cmsURL, assetId, {
-        widths: this.$config.keyVisualSizes,
-      });
-    },
+defineProps({
+  items: {
+    type: Array as PropType<CarouselItem[]>,
+    required: true,
   },
 });
+// const settings = ref({
+//   autoplay: true,
+//   autoplaySpeed: 5000,
+//   slidesToShow: 1,
+//   dots: true,
+//   arrows: false,
+// });
+const imgTagSizes = ref<string>('');
+
+onMounted(() => {
+  const bodyStyles = window.getComputedStyle(document.body);
+  const lXlBreakpoint = bodyStyles.getPropertyValue('--st-breakpoint-l-xl');
+  imgTagSizes.value = `(min-width: ${lXlBreakpoint}) ${lXlBreakpoint}, 100vw`;
+});
+
+const imageFallbackSrc = (assetId: string): string => {
+  return getAssetURL(runtimeConfig.public.cmsURL, assetId, {
+    width: appConfig.keyVisualSizes[0],
+  });
+};
+
+const imageSrcSet = (assetId: string): string => {
+  return getAssetSrcSet(runtimeConfig.public.cmsURL, assetId, {
+    widths: appConfig.keyVisualSizes,
+  });
+};
 </script>
 
 <style scoped>
+@import url('~/assets/css/media.css');
+
 .st-home-carousel {
   width: 100vw;
   margin-left: calc(-1 * var(--st-length-main-content-side-padding));

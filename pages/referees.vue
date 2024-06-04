@@ -32,39 +32,39 @@
   </section>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+defineI18nRoute({
+  paths: {
+    fr: '/arbitres',
+    de: '/schiedsrichter',
+  },
+});
 
-export default defineComponent({
-  nuxtI18n: {
-    paths: {
-      fr: '/arbitres',
-      de: '/schiedsrichter',
-    },
-  },
-  data() {
-    return {
-      referees: [],
-    };
-  },
-  async fetch() {
-    const response = await this.$axios('/external/referees_public.json');
-    this.referees = response.data;
-  },
-  computed: {
-    level0Referees(): any[] {
-      return this.referees.filter((referee: any) => referee.levelId === '305');
-    },
-    level1Referees(): any[] {
-      return this.referees.filter((referee: any) => referee.levelId === '304');
-    },
-    level2Referees(): any[] {
-      return this.referees.filter((referee: any) => referee.levelId === '303');
-    },
-    level3Referees(): any[] {
-      return this.referees.filter((referee: any) => referee.levelId === '302');
-    },
-  },
+interface PublicReferee {
+  id: string;
+  firstName: string;
+  lastName: string;
+  levelId: string;
+}
+
+const referees = ref<PublicReferee[]>([]);
+
+const level0Referees = computed<PublicReferee[]>(() => {
+  return referees.value.filter((referee: PublicReferee) => referee.levelId === '305');
+});
+const level1Referees = computed<PublicReferee[]>(() => {
+  return referees.value.filter((referee: PublicReferee) => referee.levelId === '304');
+});
+const level2Referees = computed<PublicReferee[]>(() => {
+  return referees.value.filter((referee: PublicReferee) => referee.levelId === '303');
+});
+const level3Referees = computed<PublicReferee[]>(() => {
+  return referees.value.filter((referee: PublicReferee) => referee.levelId === '302');
+});
+
+useAsyncData('referees', async () => {
+  const data = await $fetch<PublicReferee[]>('/external/referees_public.json');
+  referees.value = data;
 });
 </script>
 

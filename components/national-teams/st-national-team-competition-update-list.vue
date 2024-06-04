@@ -1,5 +1,5 @@
 <template>
-  <div v-if="$fetchState.pending || $fetchState.error || (updates && (updates.length || !isPast))">
+  <div v-if="fetchPending || fetchError || (updates && (updates.length || !isPast))">
     <div class="c-national-team-competition-update-list__header">
       <st-live-indicator v-if="liveRefresh" v-tooltip.top="$t('internationalCompetition.live.updates.autoRefresh')" />
       <h3 class="t-headline-2 c-national-team-competition-update-list__title">
@@ -10,7 +10,7 @@
         :class="{ 'c-national-team-competition-update-list__settings--open': areFiltersVisible }"
         @click="toggleFilters"
       >
-        <fa-icon icon="sliders" />
+        <font-awesome-icon icon="sliders" />
       </button>
       <div
         v-if="amountActiveFilters && !areFiltersVisible"
@@ -29,9 +29,9 @@
         {{ $t('internationalCompetition.live.updates.subscribe') }}
       </st-button>
     </div>
-    <st-loader v-if="$fetchState.pending" :main="true" />
-    <p v-else-if="$fetchState.error">
-      {{ $t('internationalCompetition.live.updates.loadingError') }} : {{ $fetchState.error.message }}
+    <st-loader v-if="fetchPending" :main="true" />
+    <p v-else-if="fetchError">
+      {{ $t('internationalCompetition.live.updates.loadingError') }} : {{ fetchError.message }}
     </p>
     <template v-else>
       <ul v-if="areFiltersVisible" class="c-national-team-competition-update-list__filters u-unstyled-list">
@@ -84,131 +84,127 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue';
-import { NationalTeamCompetitionUpdate } from './st-national-teams.prop';
-import StNationalTeamCompetitionUpdate from '~/components/national-teams/st-national-team-competition-update.vue';
+<script setup lang="ts">
+import type { NationalTeamCompetitionUpdate } from './st-national-teams.prop';
+
+const route = useRoute();
+const { $cmsService } = useNuxtApp();
 
 const UPDATES_PER_PAGE = 10;
 const REFRESH_INTERVAL = 30; // In seconds
 
-export default defineComponent({
-  components: {
-    StNationalTeamCompetitionUpdate,
+const props = defineProps({
+  competitionId: {
+    type: Number,
+    required: true,
   },
-  props: {
-    competitionId: {
-      type: Number,
-      required: true,
-    },
-    teams: {
-      type: Array as PropType<{ id: number; name: string }[]>,
-      default: () => [],
-    },
-    telegramChannelName: {
-      type: String,
-      default: undefined,
-    },
-    liveRefresh: Boolean,
-    isPast: Boolean,
+  teams: {
+    type: Array as PropType<{ id: number; name: string }[]>,
+    default: () => [],
   },
-  data() {
-    return {
-      updates: undefined as NationalTeamCompetitionUpdate[] | undefined,
-      totalUpdates: undefined as number | undefined,
-      areFiltersVisible: false,
-      filters: {
-        is_key: false,
-        with_image: false,
-        selectedTeamId: undefined as string | undefined,
-      },
-      refreshInterval: undefined as number | undefined,
-      hasRefreshError: false,
-    };
+  telegramChannelName: {
+    type: String,
+    default: undefined,
   },
-  async fetch() {
-    await this.fetchUpdates();
-  },
-  computed: {
-    totalPages(): number | undefined {
-      if (!this.totalUpdates) {
-        return;
-      }
-      return Math.ceil(this.totalUpdates / UPDATES_PER_PAGE);
-    },
-    currentPage(): number {
-      if (this.$route.query.page && typeof this.$route.query.page === 'string') {
-        return parseInt(this.$route.query.page);
-      }
-
-      return 1;
-    },
-    amountActiveFilters(): number {
-      let amount = 0;
-
-      if (this.filters.is_key) {
-        amount++;
-      }
-
-      if (this.filters.with_image) {
-        amount++;
-      }
-
-      if (this.filters.selectedTeamId) {
-        amount++;
-      }
-
-      return amount;
-    },
-  },
-  watch: {
-    '$route.query': '$fetch',
-    filters: {
-      handler: async function () {
-        await this.fetchUpdates();
-      },
-      deep: true,
-    },
-  },
-  mounted() {
-    this.refreshInterval = window.setInterval(async () => {
-      if (!this.liveRefresh) {
-        return;
-      }
-      try {
-        await this.fetchUpdates();
-        this.hasRefreshError = false;
-      } catch (error) {
-        console.error(error);
-        this.hasRefreshError = true;
-      }
-    }, REFRESH_INTERVAL * 1000);
-  },
-  destroyed() {
-    window.clearInterval(this.refreshInterval);
-  },
-  methods: {
-    async fetchUpdates() {
-      if (!this.competitionId) {
-        throw new Error('Undefined national team competition ID');
-      }
-
-      const updateResults = await this.$cmsService.getNationalTeamCompetitionUpdates(this.competitionId, {
-        limit: UPDATES_PER_PAGE,
-        page: this.currentPage,
-        keyOnly: this.filters.is_key,
-        withImage: this.filters.with_image,
-        teamId: this.filters.selectedTeamId ? +this.filters.selectedTeamId : undefined,
-      });
-
-      this.updates = updateResults.data;
-      this.totalUpdates = updateResults.meta.total;
-    },
-    toggleFilters() {
-      this.areFiltersVisible = !this.areFiltersVisible;
-    },
-  },
+  liveRefresh: Boolean,
+  isPast: Boolean,
 });
+
+const updates = ref<NationalTeamCompetitionUpdate[]>();
+const totalUpdates = ref<number>();
+const areFiltersVisible = ref(false);
+const filters = ref({
+  is_key: false,
+  with_image: false,
+  selectedTeamId: undefined as string | undefined,
+});
+const refreshInterval = ref<number>();
+const hasRefreshError = ref(false);
+
+const totalPages = computed<number | undefined>(() => {
+  if (!totalUpdates.value) {
+    return;
+  }
+  return Math.ceil(totalUpdates.value / UPDATES_PER_PAGE);
+});
+const currentPage = computed<number>(() => {
+  if (route.query.page && typeof route.query.page === 'string') {
+    return parseInt(route.query.page);
+  }
+
+  return 1;
+});
+const amountActiveFilters = computed<number>(() => {
+  let amount = 0;
+
+  if (filters.value.is_key) {
+    amount++;
+  }
+
+  if (filters.value.with_image) {
+    amount++;
+  }
+
+  if (filters.value.selectedTeamId) {
+    amount++;
+  }
+
+  return amount;
+});
+
+watch(route.query, async () => {
+  await fetchUpdates();
+});
+
+watch(
+  filters,
+  async () => {
+    await fetchUpdates();
+  },
+  { deep: true },
+);
+
+onMounted(() => {
+  refreshInterval.value = window.setInterval(async () => {
+    if (!props.liveRefresh) {
+      return;
+    }
+    try {
+      await fetchUpdates();
+      hasRefreshError.value = false;
+    } catch (error) {
+      console.error(error);
+      hasRefreshError.value = true;
+    }
+  }, REFRESH_INTERVAL * 1000);
+});
+
+onBeforeUnmount(() => {
+  window.clearInterval(refreshInterval.value);
+});
+
+const fetchUpdates = async () => {
+  if (!props.competitionId) {
+    throw new Error('Undefined national team competition ID');
+  }
+
+  const updateResults = await $cmsService.getNationalTeamCompetitionUpdates(props.competitionId, {
+    limit: UPDATES_PER_PAGE,
+    page: currentPage.value,
+    keyOnly: filters.value.is_key,
+    withImage: filters.value.with_image,
+    teamId: filters.value.selectedTeamId ? +filters.value.selectedTeamId : undefined,
+  });
+
+  updates.value = updateResults.data;
+  totalUpdates.value = updateResults.meta.total;
+};
+
+const toggleFilters = () => {
+  areFiltersVisible.value = !areFiltersVisible.value;
+};
+
+const { pending: fetchPending, error: fetchError } = useAsyncData('updates', fetchUpdates);
 </script>
 
 <style scoped>

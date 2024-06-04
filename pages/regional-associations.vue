@@ -8,40 +8,37 @@
   </section>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-import stClubList from '~/components/st-club-list.vue';
-import { DirectusClub } from '~/plugins/06.directus';
+<script setup lang="ts">
+import type { DirectusClub } from '~/plugins/06.directus';
 
-export default defineComponent({
-  components: { stClubList },
-  data() {
-    return {
-      associations: [] as DirectusClub[],
-    };
+const { $cmsService } = useNuxtApp();
+const { t } = useI18n();
+
+const associations = ref<DirectusClub[]>([]);
+
+defineI18nRoute({
+  paths: {
+    fr: '/associations-regionales',
+    de: '/regionalverbaende',
   },
-  nuxtI18n: {
-    paths: {
-      fr: '/associations-regionales',
-      de: '/regionalverbaende',
-    },
-  },
-  async fetch() {
-    this.associations = await this.$cmsService.getClubs({ statuses: ['regional_association'] });
-  },
-  head() {
-    return {
-      title: this.$t('regionalAssociations.title').toString(),
-      meta: [
-        { property: 'og:title', content: this.$t('regionalAssociations.title').toString() },
-        {
-          hid: 'og:description',
-          property: 'og:description',
-          content: this.$t('regionalAssociations.description').toString(),
-        },
-      ],
-    };
-  },
+});
+
+useHead(() => {
+  return {
+    title: t('regionalAssociations.title').toString(),
+    meta: [
+      { property: 'og:title', content: t('regionalAssociations.title').toString() },
+      {
+        hid: 'og:description',
+        property: 'og:description',
+        content: t('regionalAssociations.description').toString(),
+      },
+    ],
+  };
+});
+
+useAsyncData('regionalAssociations', async () => {
+  associations.value = await $cmsService.getClubs({ statuses: ['regional_association'] });
 });
 </script>
 

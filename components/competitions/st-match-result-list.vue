@@ -12,25 +12,21 @@
   </ul>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue';
+<script setup lang="ts">
 import stMatchResult from '~/components/competitions/st-match-result.vue';
-import Match from '~/models/match.model';
+import type Match from '~/models/match.model';
 
-export default defineComponent({
-  components: {
-    stMatchResult,
-  },
-  props: {
-    matches: {
-      type: Array as PropType<Match[]>,
-      required: true,
-    },
+defineProps({
+  matches: {
+    type: Array as PropType<Match[]>,
+    required: true,
   },
 });
 </script>
 
 <style scoped>
+@import url('~/assets/css/media.css');
+
 .c-match-result-list__match {
   border-bottom: 1px solid var(--st-color-match-results-separator);
 }

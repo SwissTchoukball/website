@@ -15,21 +15,13 @@
   </a>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue';
-import { FlickrPhotoset } from '~/plugins/05.flickr';
+<script setup lang="ts">
+import type { FlickrPhotoset } from '~/plugins/05.flickr';
 
-export default defineComponent({
-  props: {
-    album: {
-      type: Object as PropType<FlickrPhotoset>,
-      required: true,
-    },
-  },
-  computed: {
-    primaryPhotoSrc(): string {
-      return this.album?.primary_photo_extras?.url_q;
-    },
+defineProps({
+  album: {
+    type: Object as PropType<FlickrPhotoset>,
+    required: true,
   },
 });
 </script>

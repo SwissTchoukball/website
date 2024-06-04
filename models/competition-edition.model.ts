@@ -45,7 +45,7 @@ export default class CompetitionEdition {
     this.competition = new Competition(edition.competition);
   }
 
-  get hasLeveradeData(): Boolean {
+  get hasLeveradeData(): boolean {
     return this._hasLeveradeData;
   }
 

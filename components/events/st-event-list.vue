@@ -6,22 +6,16 @@
   </ul>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue';
+<script setup lang="ts">
 import stEvent from '~/components/events/st-event.vue';
-import { CalendarEvent } from '~/plugins/08.cms-service';
+import type { CalendarEvent } from '~/plugins/08.cms-service';
 
-export default defineComponent({
-  components: {
-    stEvent,
+defineProps({
+  events: {
+    type: Array as PropType<CalendarEvent[]>,
+    required: true,
   },
-  props: {
-    events: {
-      type: Array as PropType<CalendarEvent[]>,
-      required: true,
-    },
-    showYear: Boolean,
-  },
+  showYear: Boolean,
 });
 </script>
 

@@ -7,17 +7,17 @@ const locales: { [key: string]: Locale } = { fr, de };
  * Plugin providing a single function to format a date according to the locale set in context
  */
 export default defineNuxtPlugin(() => {
-  const { locale } = useI18n();
+  const nuxtApp = useNuxtApp();
 
   const formatDate = (date: number | Date, formatStr = 'PP') => {
     return format(date, formatStr, {
-      locale: locales[locale.value],
+      locale: locales[nuxtApp.$i18n.locale.value],
     });
   };
 
   const formatDateDistanceToNow = (date: number | Date) => {
     return formatDistanceToNow(date, {
-      locale: locales[locale.value],
+      locale: locales[nuxtApp.$i18n.locale.value],
       addSuffix: true,
     });
   };

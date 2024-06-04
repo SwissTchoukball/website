@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia';
-import { type TranslateResult } from 'vue-i18n';
 import { type DirectusMenuItem, getTranslatedFields } from '~/plugins/06.directus';
 
 export interface MenuItem {
   sort?: number;
-  name: string | TranslateResult;
+  name?: string;
+  l10nKey?: string;
   href?: string;
   isExternal?: boolean;
   children?: MenuItem[];
@@ -12,7 +12,6 @@ export interface MenuItem {
 
 export const useNavigationStore = defineStore('navigation', () => {
   const nuxtApp = useNuxtApp();
-  const { t } = useI18n();
 
   const mainNavigation = ref<MenuItem[]>([]);
   const secondaryNavigation = ref<MenuItem[]>([]);
@@ -43,40 +42,40 @@ export const useNavigationStore = defineStore('navigation', () => {
   };
 
   const loadSecondaryMenu = () => {
-    const getSecondaryNavigationName = (key: string): string => {
-      return t(`footer.secondaryNavigation.${key}`).toString();
+    const getSecondaryNavigationl10nKey = (key: string): string => {
+      return `footer.secondaryNavigation.${key}`;
     };
 
     secondaryNavigation.value = [
       {
-        name: getSecondaryNavigationName('news'),
+        l10nKey: getSecondaryNavigationl10nKey('news'),
         href: 'news',
       },
       {
-        name: getSecondaryNavigationName('photos'),
+        l10nKey: getSecondaryNavigationl10nKey('photos'),
         href: 'https://flickr.com/swisstchoukball',
         isExternal: true,
       },
       {
-        name: getSecondaryNavigationName('videos'),
+        l10nKey: getSecondaryNavigationl10nKey('videos'),
         href: 'https://youtube.com/tchoukballch',
         isExternal: true,
       },
       {
-        name: getSecondaryNavigationName('shop'),
+        l10nKey: getSecondaryNavigationl10nKey('shop'),
         href: 'https://shop.tchoukball.ch',
         isExternal: true,
       },
       {
-        name: getSecondaryNavigationName('contact'),
+        l10nKey: getSecondaryNavigationl10nKey('contact'),
         href: 'contact',
       },
       {
-        name: getSecondaryNavigationName('resources'),
+        l10nKey: getSecondaryNavigationl10nKey('resources'),
         href: 'resources',
       },
       {
-        name: getSecondaryNavigationName('medias'),
+        l10nKey: getSecondaryNavigationl10nKey('medias'),
         href: 'medias',
       },
     ];

@@ -1,12 +1,12 @@
 <template>
   <div class="c-resource-list-item">
-    <fa-icon :icon="iconName" class="c-resource-list-item__icon" />
+    <font-awesome-icon :icon="iconName" class="c-resource-list-item__icon" />
     <div class="c-resource-list-item__name-details">
       <a v-if="resource.link" :href="href">{{ fileName }}</a>
       <nuxt-link
         v-else
         class="c-resource-list-item__name"
-        :to="localePath({ name: 'resources-slug', params: { slug: `${resource.id}-${$slugify(resource.name)}` } })"
+        :to="localePath({ name: 'resources-slug', params: { slug: `${resource.id}-${slugify(resource.name)}` } })"
       >
         {{ fileName }}
       </nuxt-link>
@@ -15,17 +15,21 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-import resourceMixin from '~/mixins/resource.mixin';
-import stResourceDetails from '~/components/resources/st-resource-details.vue';
+<script setup lang="ts">
+import { useResource } from '~/composables/useResource';
+import type { Resource } from '~/plugins/08.cms-service';
 
-export default defineComponent({
-  components: {
-    stResourceDetails,
+const localePath = useLocalePath();
+const { slugify } = useSlugify();
+
+const props = defineProps({
+  resource: {
+    type: Object as PropType<Resource>,
+    required: true,
   },
-  mixins: [resourceMixin],
 });
+
+const { href, fileName, iconName } = useResource(props.resource);
 </script>
 
 <style scoped>

@@ -1,6 +1,6 @@
 <template>
   <section class="l-main-content-section">
-    <h2 class="t-headline-1 c-press-releases__title">{{ $tc('pressReleases.name', 2) }}</h2>
+    <h2 class="t-headline-1 c-press-releases__title">{{ $t('pressReleases.name', 2) }}</h2>
 
     <ul class="u-unstyled-list c-press-releases__list">
       <li v-for="pressRelease in pressReleaseList" :key="pressRelease.id" class="c-press-releases__list-item">
@@ -41,62 +41,47 @@
   </section>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-import { MenuItem } from '~/store/state';
-import { PressRelease } from '~/components/press-releases/press-releases';
+<script setup lang="ts">
+import type { PressRelease } from '~/components/press-releases/press-releases';
 
-export default defineComponent({
-  nuxtI18n: {
-    paths: {
-      fr: '/communiques-de-presse',
-      de: '/medienmitteilungen',
-    },
-  },
-  data() {
-    return {
-      pressReleaseList: [] as PressRelease[],
-      pressReleasesPerPage: 25,
-      totalPressReleases: undefined as number | undefined,
-    };
-  },
-  async fetch() {
-    const pressReleasesResult = await this.$cmsService.getPressReleaseList({
-      limit: this.pressReleasesPerPage,
-      page: this.currentPage,
-    });
+const localePath = useLocalePath();
+const route = useRoute();
+const { $cmsService, $formatDate } = useNuxtApp();
 
-    this.pressReleaseList = pressReleasesResult.data;
-    this.totalPressReleases = pressReleasesResult.meta.total;
+defineI18nRoute({
+  paths: {
+    fr: '/communiques-de-presse',
+    de: '/medienmitteilungen',
   },
-  computed: {
-    totalPages(): number | undefined {
-      if (!this.totalPressReleases) {
-        return;
-      }
-      return Math.ceil(this.totalPressReleases / this.pressReleasesPerPage);
-    },
-    currentPage(): number {
-      if (this.$route.query.page && typeof this.$route.query.page === 'string') {
-        return parseInt(this.$route.query.page);
-      }
+});
 
-      return 1;
-    },
-    pressReleaseNavigation(): MenuItem[] {
-      return this.pressReleaseList.map((pressRelease) => {
-        return {
-          name: `${this.$formatDate(new Date(pressRelease.date_created), 'dd.MM.yyyy')} – ${pressRelease.context} – ${
-            pressRelease.title
-          }`,
-          href: this.localePath({
-            name: 'press-releases-slug',
-            params: { slug: `${pressRelease.id}-${pressRelease.slug}` },
-          }),
-        };
-      });
-    },
-  },
+const pressReleaseList = ref<PressRelease[]>([]);
+const pressReleasesPerPage = ref(25);
+const totalPressReleases = ref<number>();
+
+useAsyncData('press-releases', async () => {
+  const pressReleasesResult = await $cmsService.getPressReleaseList({
+    limit: pressReleasesPerPage.value,
+    page: currentPage.value,
+  });
+
+  pressReleaseList.value = pressReleasesResult.data;
+  totalPressReleases.value = pressReleasesResult.meta.total;
+});
+
+const totalPages = computed<number | undefined>(() => {
+  if (!totalPressReleases.value) {
+    return;
+  }
+  return Math.ceil(totalPressReleases.value / pressReleasesPerPage.value);
+});
+
+const currentPage = computed<number>(() => {
+  if (route.query.page && typeof route.query.page === 'string') {
+    return parseInt(route.query.page);
+  }
+
+  return 1;
 });
 </script>
 

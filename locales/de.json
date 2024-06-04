@@ -95,7 +95,8 @@
   },
   "season": {
     "name": "Saison | Saison | Saisonen",
-    "previousSeasonsExplanation": "Die Daten der vorangegangenen Saisonen werden in Kürze importiert."
+    "previousSeasonsExplanation": "Die Daten der vorangegangenen Saisonen werden in Kürze importiert.",
+    "undefinedSeason": "Unbestimmte Saison"
   },
   "pressReleases": {
     "name": "Medienmitteilung | Medienmitteilung | Medienmitteilungen",

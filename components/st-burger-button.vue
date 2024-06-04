@@ -2,7 +2,7 @@
   <button
     class="c-burger-button__icon u-unstyled-button"
     :class="{ 'c-burger-button__icon--open': open }"
-    @click.stop="$emit('toggle', !open)"
+    @click.stop="open = !open"
   >
     <span class="c-burger-button__icon-element"></span>
     <span class="c-burger-button__icon-element"></span>
@@ -10,17 +10,8 @@
   </button>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-export default defineComponent({
-  model: {
-    prop: 'open',
-    event: 'toggle',
-  },
-  props: {
-    open: Boolean,
-  },
-});
+<script setup lang="ts">
+const open = defineModel<boolean>();
 </script>
 
 <style scoped>

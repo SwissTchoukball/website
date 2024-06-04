@@ -1,21 +1,20 @@
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+const localePath = useLocalePath();
 
-export default defineComponent({
-  nuxtI18n: {
-    paths: {
-      fr: '/calendrier',
-      de: '/kalender',
-    },
+defineI18nRoute({
+  paths: {
+    fr: '/calendrier',
+    de: '/kalender',
   },
-  asyncData({ redirect, localePath }) {
-    const now = new Date();
-    redirect(
-      localePath({
-        name: 'calendar-year-month-list',
-        params: { year: now.getFullYear().toString(), month: (now.getMonth() + 1).toString() },
-      })
-    );
-  },
+});
+
+useAsyncData('news', async () => {
+  const now = new Date();
+  navigateTo(
+    localePath({
+      name: 'calendar-year-month-list',
+      params: { year: now.getFullYear().toString(), month: (now.getMonth() + 1).toString() },
+    }),
+  );
 });
 </script>

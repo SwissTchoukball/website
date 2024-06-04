@@ -10,18 +10,13 @@
   </ul>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue';
-import { Resource } from '~/plugins/08.cms-service';
-import stResourceListItem from '~/components/resources/st-resource-list-item.vue';
+<script setup lang="ts">
+import type { Resource } from '~/plugins/08.cms-service';
 
-export default defineComponent({
-  components: { stResourceListItem },
-  props: {
-    resources: {
-      type: Array as PropType<Resource[]>,
-      required: true,
-    },
+defineProps({
+  resources: {
+    type: Array as PropType<Resource[]>,
+    required: true,
   },
 });
 </script>

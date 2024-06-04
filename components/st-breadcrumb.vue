@@ -1,6 +1,6 @@
 <template>
   <nav>
-    <h2 class="u-visually-hidden">{{ $t('breadcrumb') }}</h2>
+    <h2 class="u-visually-hidden">{{ $t('breadcrumb.title') }}</h2>
     <ol class="u-unstyled-list c-breadcrumb__list">
       <li class="c-breadcrumb__item">
         <nuxt-link :to="localePath('index')" class="c-breadcrumb__link" :title="$t('backHome')">
@@ -14,25 +14,25 @@
   </nav>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue';
+<script setup lang="ts">
+const localePath = useLocalePath();
 
 export interface BreadcrumbItem {
   pageName: string;
   displayName: string;
 }
 
-export default defineComponent({
-  props: {
-    items: {
-      type: Array as PropType<BreadcrumbItem[]>,
-      required: true,
-    },
+defineProps({
+  items: {
+    type: Array as PropType<BreadcrumbItem[]>,
+    required: true,
   },
 });
 </script>
 
 <style scoped>
+@import url('~/assets/css/media.css');
+
 .c-breadcrumb__list {
   display: flex;
   flex-wrap: wrap;
