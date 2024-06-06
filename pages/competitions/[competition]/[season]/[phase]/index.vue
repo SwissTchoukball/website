@@ -12,13 +12,12 @@ import type Round from '~/models/round.model';
 const localePath = useLocalePath();
 const route = useRoute();
 
-// Tried that. Didn't work.
-// defineI18nRoute({
-//   paths: {
-//     fr: '/competitions/[competition]/[season]/[phase]',
-//     de: '/wettbewerbe/[competition]/[season]/[phase]',
-//   },
-// });
+defineI18nRoute({
+  paths: {
+    fr: '/competitions/[competition]/[season]/[phase]',
+    de: '/wettbewerbe/[competition]/[season]/[phase]',
+  },
+});
 
 const props = defineProps({
   phase: {
@@ -30,9 +29,6 @@ const props = defineProps({
 const roundsToShow = computed<Round[]>(() => {
   return props.phase?.rounds?.filter((round) => round.isPast || round.hasFinishedMatches) || [];
 });
-
-console.log(route.params.phase);
-console.log(props.phase);
 
 // Default redirect is to the standings
 let redirectPath = localePath({

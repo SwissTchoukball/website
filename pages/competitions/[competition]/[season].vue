@@ -4,6 +4,7 @@
     <p v-else-if="fetchError">{{ $t('error.otherError') }} : {{ fetchError.message }}</p>
     <template v-else>
       <st-breadcrumb :items="breadcrumb" class="c-competition-edition__breadcrumb" />
+
       <h2 v-if="competitionEdition" class="t-headline-1 c-competition-edition__title">
         <nuxt-link :to="localePath({ name: 'competitions-competition-season' })">
           {{ competitionEdition.name }}
@@ -13,10 +14,19 @@
         v-if="showPhasesNavigation && competitionEdition && season"
         :items="phasesNavigation"
         :name="$t('otherNavigation', { name: `${competitionEdition.name}, ${season.name}` })"
-        class="c-competition-edition__phase-navigation"
+        class="c-competition-edition__phases-navigation"
         small
         inverted
       />
+
+      <h3 v-if="currentPhase?.group" class="t-headline-2">{{ currentPhase.name }}</h3>
+      <st-navigation
+        :items="phaseNavigation"
+        :name="$t('otherNavigation', { name: currentPhase?.name })"
+        class="c-competition-edition__phase-navigation"
+        small
+      />
+
       <NuxtPage
         v-if="season && competitionEdition && currentPhase"
         :season="season"
@@ -33,17 +43,19 @@ import CompetitionEdition from '~/models/competition-edition.model';
 import type Phase from '~/models/phase.model';
 import type Season from '~/models/season.model';
 import type { NationalCompetitionEdition } from '~/plugins/08.cms-service';
-import type {
-  Leverade,
-  LeveradeFaceoff,
-  LeveradeFacility,
-  LeveradeGroup,
-  LeveradeMatch,
-  LeveradeResult,
-  LeveradeRound,
-  LeveradeTeam,
+import {
+  LeveradeGroupType,
+  type Leverade,
+  type LeveradeFaceoff,
+  type LeveradeFacility,
+  type LeveradeGroup,
+  type LeveradeMatch,
+  type LeveradeResult,
+  type LeveradeRound,
+  type LeveradeTeam,
 } from '~/plugins/07.leverade';
 import type { Await } from '~/types/types.utils';
+import type Round from '~/models/round.model';
 
 const seasonsStore = useSeasonsStore();
 const route = useRoute();
@@ -174,6 +186,39 @@ const showPhasesNavigation = computed<boolean>(() => {
   );
 });
 
+const roundsToShow = computed<Round[]>(() => {
+  return currentPhase.value?.rounds?.filter((round) => round.isPast || round.hasFinishedMatches) || [];
+});
+
+const phaseNavigation = computed<MenuItem[]>(() => {
+  const params = { phase: route.params.phase };
+  const phaseNavigation = [];
+
+  // We show the standings only for the league mode (i.e. not in play-off mode)
+  if (currentPhase.value?.type === LeveradeGroupType.LEAGUE) {
+    phaseNavigation.push({
+      name: t('competitions.phaseNavigation.standings').toString(),
+      href: localePath({ name: 'competitions-competition-season-phase-standings', params }),
+    });
+  }
+
+  if (roundsToShow.value.length > 0) {
+    phaseNavigation.push({
+      name: t('competitions.phaseNavigation.results').toString(),
+      href: localePath({ name: 'competitions-competition-season-phase-results', params }),
+    });
+  }
+
+  if (currentPhase.value && currentPhase.value.futureMatches.length > 0) {
+    phaseNavigation.push({
+      name: t('competitions.phaseNavigation.planning').toString(),
+      href: localePath({ name: 'competitions-competition-season-phase-planning', params }),
+    });
+  }
+
+  return phaseNavigation;
+});
+
 const breadcrumb = computed<BreadcrumbItem[]>(() => {
   const breadcrumb = [
     {
@@ -245,7 +290,6 @@ const fetchCompetitionEdition = async () => {
 
   // If no phase or match is set, redirect to the last phase
   if (lastPhasePath.value && !route.params.matchId && (!route.params.phase || route.params.phase === 'last')) {
-    console.log(lastPhasePath.value);
     navigateTo(lastPhasePath.value);
   }
 };
@@ -270,7 +314,11 @@ watch(route, async (newRoute, oldRoute) => {
   color: initial;
 }
 
-.c-competition-edition__phase-navigation {
+.c-competition-edition__phases-navigation {
   margin-top: var(--st-length-spacing-xs);
+}
+
+.c-competition-edition__phase-navigation {
+  margin-top: var(--st-length-spacing-s);
 }
 </style>
