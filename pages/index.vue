@@ -63,7 +63,7 @@
           class="c-index__flickr-photo"
         />
       </div>
-      <st-link-action href="https://flickr.com/swisstchoukball" class="c-index__see-more-photos" with-arrow>
+      <st-link-action to="https://flickr.com/swisstchoukball" class="c-index__see-more-photos" with-arrow>
         {{ $t('photos.seeMore') }}
       </st-link-action>
     </section>

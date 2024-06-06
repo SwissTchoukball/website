@@ -1,12 +1,5 @@
 <template>
-  <component
-    :is="elementType"
-    :type="buttonType"
-    :to="to"
-    :href="href || to"
-    v-bind="$attrs"
-    class="u-unstyled-button c-link-action"
-  >
+  <component :is="elementType" :type="buttonType" :to="to" v-bind="$attrs" class="u-unstyled-button c-link-action">
     <template v-if="withCross"><font-awesome-icon icon="xmark" /></template>
     <slot></slot>
     <template v-if="withArrow">&rarr;</template>
@@ -27,11 +20,6 @@ const props = defineProps({
     required: false,
     default: null,
   },
-  href: {
-    type: String,
-    required: false,
-    default: null,
-  },
   withArrow: Boolean,
   withArrowDown: Boolean,
   withCross: Boolean,
@@ -39,15 +27,13 @@ const props = defineProps({
 const elementType = computed(() => {
   if (props.to) {
     return NuxtLink;
-  } else if (props.href) {
-    return 'a';
   }
 
   return 'button';
 });
 
 const buttonType = computed(() => {
-  if (!props.to && !props.href) {
+  if (!props.to) {
     return props.type;
   }
 

@@ -3,7 +3,6 @@
     :is="elementType"
     :type="buttonType"
     :to="to"
-    :href="href || to"
     :disabled="disabled"
     v-bind="$attrs"
     class="u-unstyled-button c-button"
@@ -26,11 +25,6 @@ const props = defineProps({
     required: false,
     default: null,
   },
-  href: {
-    type: String,
-    required: false,
-    default: null,
-  },
   disabled: {
     type: Boolean,
     default: false,
@@ -48,15 +42,13 @@ const props = defineProps({
 const elementType = computed(() => {
   if (props.to) {
     return NuxtLink;
-  } else if (props.href) {
-    return 'a';
   }
 
   return 'button';
 });
 
 const buttonType = computed(() => {
-  if (!props.to && !props.href) {
+  if (!props.to) {
     return props.type;
   }
 

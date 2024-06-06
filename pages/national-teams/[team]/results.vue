@@ -1,12 +1,7 @@
 <template>
   <div class="c-results">
     <template v-if="team.results.length">
-      <st-link-action
-        v-if="hasNationsCupResults"
-        href="#nations-cup"
-        with-arrow-down
-        class="c-results__nations-cup-link"
-      >
+      <st-link-action v-if="hasNationsCupResults" to="#nations-cup" with-arrow-down class="c-results__nations-cup-link">
         {{ $t('nationalTeams.results.nationsCup') }}
       </st-link-action>
       <ul class="u-unstyled-list c-results__list">
