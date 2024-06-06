@@ -7,7 +7,7 @@
       </st-link-action>
     </section>
 
-    <section v-if="events.length" class="l-main-content-section c-index__events">
+    <section v-if="events?.length" class="l-main-content-section c-index__events">
       <h2 class="t-headline-1">
         <nuxt-link :to="localePath('calendar')" class="c-index__section-title">{{ $t('events.title') }}</nuxt-link>
       </h2>
@@ -84,11 +84,7 @@ const { slugify } = useSlugify();
 const { $cmsService, $flickr } = useNuxtApp();
 
 const amountNewsInCarousel = ref(5);
-const carouselItems = ref<CarouselItem[]>([]);
 const amountUpcomingEvents = ref(9);
-const events = ref<CalendarEvent[]>([]);
-const tchoukballDescription = ref('');
-const latestAlbums = ref<FlickrPhotoset[]>([]);
 // TODO: low prio: Move the navigation data to the CMS.
 const tchoukballNavigation = ref([
   {
@@ -128,10 +124,7 @@ const tchoukballNavigation = ref([
   },
 ]);
 
-const fetchData = async () => {
-  // TODO: Create dedicated components for each section and move the fetch hooks to the respective components
-
-  // News for carousel
+const { data: carouselItems } = useAsyncData<CarouselItem[]>('carouselItems', async () => {
   const newsResult = await $cmsService.getNews({
     limit: amountNewsInCarousel.value,
     page: 1,
@@ -140,7 +133,7 @@ const fetchData = async () => {
   });
 
   // TODO: Consider having other entities than news entries in carousel.
-  carouselItems.value = newsResult.data
+  return newsResult.data
     .filter((newsEntry) => newsEntry.main_image)
     .map((newsEntry) => {
       return {
@@ -152,8 +145,9 @@ const fetchData = async () => {
         href: localePath(`/news/${newsEntry.id}-${newsEntry.slug}`),
       };
     });
+});
 
-  // Upcoming events
+const { data: events } = useAsyncData<CalendarEvent[]>('events', async () => {
   const eventsResult = await $cmsService.getEvents({
     limit: amountUpcomingEvents.value,
     page: 1,
@@ -161,28 +155,28 @@ const fetchData = async () => {
     excludeCancelled: true,
   });
 
-  events.value = eventsResult.data;
+  return eventsResult.data;
+});
 
-  tchoukballDescription.value = (await $cmsService.getText(1))?.body;
+const { data: tchoukballDescription } = useAsyncData<string>('tchoukballDescription', async () => {
+  return (await $cmsService.getText(1))?.body;
+});
 
-  // Latest Flickr photos
+const { data: latestAlbums } = useAsyncData<FlickrPhotoset[]>('flickrAlbums', async () => {
   // Doc: https://www.flickr.com/services/api/flickr.photosets.getList.html
   const flickrResponse = await $flickr.photosets.getList({
     user_id: runtimeConfig.public.flickr.userId,
     per_page: 6,
     primary_photo_extras: 'url_q,url_m',
   });
-  latestAlbums.value = flickrResponse.body.photosets.photoset;
-};
+  return flickrResponse.body.photosets.photoset;
+});
 
 useHead(() => {
   return {
     meta: [{ property: 'og:title', content: t('title').toString() }],
   };
 });
-
-// TODO: split each request into their own useAsyncData and show skeleton loading
-useAsyncData('homePageData', fetchData);
 </script>
 
 <style scoped>
