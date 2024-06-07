@@ -71,22 +71,93 @@ defineI18nRoute({
   },
 });
 
-const season = ref<Season | undefined>();
-const rawCompetitionEdition = ref<NationalCompetitionEdition | undefined>();
-const leveradeTournamentData = ref<Await<ReturnType<Leverade['getFullTournament']>> | undefined>();
-const lastPhasePath = ref<string | undefined>();
+const season = ref<Season | undefined>(seasonsStore.getSeasonBySlug(route.params.season as string));
 
-useAsyncData('season', async () => {
-  season.value = seasonsStore.getSeasonBySlug(route.params.season as string);
+const {
+  data: fetchedData,
+  pending: fetchPending,
+  error: fetchError,
+  refresh,
+} = useAsyncData<{
+  rawCompetitionEdition: NationalCompetitionEdition;
+  leveradeTournamentData: Await<ReturnType<Leverade['getFullTournament']>>;
+}>('competitionEdition', async () => {
+  const rawCompetitionEditions = await $cmsService.getNationalCompetitionEditions({
+    seasonSlug: route.params.season as string,
+    competitionSlug: route.params.competition as string,
+  });
+  if (!rawCompetitionEditions || rawCompetitionEditions.length < 1) {
+    throw new Error('No competition edition found');
+  }
+  // There should be only one edition matching the request parameters.
+  if (rawCompetitionEditions.length > 1) {
+    console.warn('Multiple competition editions matching the request. Taking the first one.');
+  }
+
+  if (!rawCompetitionEditions[0].leverade_id) {
+    throw new Error('This competition edition has no Leverade ID');
+  }
+  const rawCompetitionEdition = rawCompetitionEditions[0];
+
+  const leveradeTournamentData = await $leverade.getFullTournament(rawCompetitionEdition.leverade_id!);
+
+  if (!leveradeTournamentData.included) {
+    throw new Error('Related data is missing');
+  }
+
+  const phases = leveradeTournamentData.included.filter((entity) => entity.type === 'group') as LeveradeGroup[];
+  phases.sort((phaseA, phaseB) => phaseA.attributes.order - phaseB.attributes.order);
+  const lastPhase = phases[phases.length - 1];
+
+  let lastPhasePath: string | undefined;
+  try {
+    if (!season.value?.leverade_id) {
+      throw new Error('Season has no Leverade ID');
+    }
+
+    if (!lastPhase) {
+      throw new Error('Competition edition does not have any phases');
+    }
+
+    let lastPhasePathName = 'competitions-competition-season-phase';
+    const currentRouteName = getRouteBaseName(route);
+    if (currentRouteName?.startsWith(lastPhasePathName)) {
+      lastPhasePathName = currentRouteName;
+    }
+
+    lastPhasePath = localePath({
+      name: lastPhasePathName,
+      params: {
+        competition: route.params.competition,
+        season: route.params.season,
+        phase: lastPhase.id,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+  }
+
+  // If no phase or match is set, redirect to the last phase
+  if (lastPhasePath && !route.params.matchId && (!route.params.phase || route.params.phase === 'last')) {
+    navigateTo(lastPhasePath);
+  }
+
+  return {
+    rawCompetitionEdition,
+    leveradeTournamentData,
+  };
 });
 
 const competitionEdition = computed<CompetitionEdition | undefined>(() => {
-  if (!rawCompetitionEdition.value || !leveradeTournamentData.value?.included) {
+  if (!fetchedData.value?.rawCompetitionEdition || !fetchedData.value?.leveradeTournamentData?.included) {
     return;
   }
-  const competitionEdition = new CompetitionEdition(rawCompetitionEdition.value, season.value);
+  const competitionEdition = new CompetitionEdition(
+    fetchedData.value?.rawCompetitionEdition,
+    season.value || undefined,
+  );
 
-  const tournament = leveradeTournamentData.value.data;
+  const tournament = fetchedData.value?.leveradeTournamentData.data;
   const teams: LeveradeTeam[] = [];
   const groups: LeveradeGroup[] = [];
   const rounds: LeveradeRound[] = [];
@@ -94,7 +165,7 @@ const competitionEdition = computed<CompetitionEdition | undefined>(() => {
   const matches: LeveradeMatch[] = [];
   const facilities: LeveradeFacility[] = [];
   const results: LeveradeResult[] = [];
-  leveradeTournamentData.value.included.forEach((entity) => {
+  fetchedData.value?.leveradeTournamentData.included.forEach((entity) => {
     switch (entity.type) {
       case 'team':
         teams.push(entity);
@@ -241,66 +312,12 @@ const breadcrumb = computed<BreadcrumbItem[]>(() => {
   return breadcrumb;
 });
 
-const fetchCompetitionEdition = async () => {
-  const rawCompetitionEditions = await $cmsService.getNationalCompetitionEditions({
-    seasonSlug: route.params.season as string,
-    competitionSlug: route.params.competition as string,
-  });
-  if (!rawCompetitionEditions || rawCompetitionEditions.length < 1) {
-    throw new Error('No competition edition found');
-  }
-  // There should be only one edition matching the request parameters.
-  if (rawCompetitionEditions.length > 1) {
-    console.warn('Multiple competition editions matching the request. Taking the first one.');
-  }
-
-  if (!rawCompetitionEditions[0].leverade_id) {
-    throw new Error('This competition edition has no Leverade ID');
-  }
-  rawCompetitionEdition.value = rawCompetitionEditions[0];
-
-  leveradeTournamentData.value = await $leverade.getFullTournament(rawCompetitionEdition.value.leverade_id!);
-
-  try {
-    if (!season.value?.leverade_id) {
-      throw new Error('Season has no Leverade ID');
-    }
-
-    if (!competitionEdition.value?.lastPhase) {
-      throw new Error('Competition edition does not have any phases');
-    }
-
-    let lastPhasePathName = 'competitions-competition-season-phase';
-    const currentRouteName = getRouteBaseName(route);
-    if (currentRouteName?.startsWith(lastPhasePathName)) {
-      lastPhasePathName = currentRouteName;
-    }
-
-    lastPhasePath.value = localePath({
-      name: lastPhasePathName,
-      params: {
-        competition: route.params.competition,
-        season: route.params.season,
-        phase: competitionEdition.value?.lastPhase.id,
-      },
-    });
-  } catch (error) {
-    console.error(error);
-  }
-
-  // If no phase or match is set, redirect to the last phase
-  if (lastPhasePath.value && !route.params.matchId && (!route.params.phase || route.params.phase === 'last')) {
-    navigateTo(lastPhasePath.value);
-  }
-};
-
-const { pending: fetchPending, error: fetchError } = useAsyncData('competitionEdition', fetchCompetitionEdition);
 watch(route, async (newRoute, oldRoute) => {
   if (
     newRoute.params.competition !== oldRoute.params.competition ||
     newRoute.params.season !== oldRoute.params.season
   ) {
-    await fetchCompetitionEdition();
+    await refresh();
   }
 });
 </script>
