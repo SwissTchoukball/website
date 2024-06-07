@@ -53,7 +53,7 @@
 
       <vue-hcaptcha
         class="c-contact-form__captcha"
-        :sitekey="$config.hCaptchaSiteKey"
+        :sitekey="runtimeConfig.public.hCaptchaSiteKey"
         :language="$i18n.locale"
         @verify="onCaptchaVerify"
         @expired="resetCaptcha"
@@ -85,8 +85,10 @@
 <script setup lang="ts">
 import VueHcaptcha from '@hcaptcha/vue3-hcaptcha';
 
+const runtimeConfig = useRuntimeConfig();
 const { t } = useI18n();
 const localePath = useLocalePath();
+const mail = useMail();
 
 // Form fields elements
 const senderNameElement = ref<HTMLInputElement | null>(null);
@@ -138,7 +140,7 @@ const sendMessage = async () => {
   }
 
   try {
-    await (this as any).$mail.send({
+    await mail.send({
       subject: `Message de ${senderName.value} depuis tchoukball.ch`,
       replyTo: senderEmail.value,
       text:
