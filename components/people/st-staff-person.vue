@@ -9,11 +9,13 @@
         <li
           v-for="role of roles"
           :key="role.id"
-          v-tooltip.bottom="getTooltipForRole(role)"
           class="c-staff-person__role"
           :class="{ 'c-staff-person__role--main': (role.pivot && role.pivot.main) || roles.length === 1 }"
         >
-          {{ getRoleNameForPerson(role, person) }}
+          <st-tooltip position="bottom">
+            <template #trigger>{{ getRoleNameForPerson(role, person) }}</template>
+            <template #content>{{ getTooltipForRole(role) }}</template>
+          </st-tooltip>
         </li>
       </ul>
     </template>
@@ -85,9 +87,7 @@ const getTooltipForRole = (role: Role) => {
   if (!role.group) {
     return;
   }
-  return {
-    content: role.group.name,
-  };
+  return role.group.name;
 };
 </script>
 

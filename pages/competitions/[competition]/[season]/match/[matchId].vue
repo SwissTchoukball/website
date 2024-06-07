@@ -37,13 +37,11 @@
     </div>
     <ul v-if="match.periods" class="c-match__detailed-score u-unstyled-list">
       <template v-for="period in match.periods">
-        <li
-          v-if="period.home_team_score || period.away_team_score"
-          :key="period.order"
-          v-tooltip.bottom="period.name"
-          class="c-match__period"
-        >
-          {{ period.home_team_score || 0 }} - {{ period.away_team_score || 0 }}
+        <li v-if="period.home_team_score || period.away_team_score" :key="period.order" class="c-match__period">
+          <st-tooltip position="bottom">
+            <template #trigger>{{ period.home_team_score || 0 }} - {{ period.away_team_score || 0 }}</template>
+            <template #content>{{ period.name }}</template>
+          </st-tooltip>
         </li>
       </template>
     </ul>

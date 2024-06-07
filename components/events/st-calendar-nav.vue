@@ -18,16 +18,26 @@
     <div class="c-calendar-nav__spacer"></div>
 
     <div class="c-calendar-nav__actions">
-      <a v-tooltip.bottom="$t('events.subscribe')" :href="icsUrl" class="c-calendar-nav__action">
-        <font-awesome-icon icon="rss" />
-      </a>
-      <nuxt-link
-        v-tooltip.bottom="$t(`events.switch.${alternateView}`)"
-        :to="alternativeViewPath"
-        class="c-calendar-nav__action"
-      >
-        <font-awesome-icon :icon="alternativeViewIcon" />
-      </nuxt-link>
+      <st-tooltip position="bottom">
+        <template #trigger>
+          <a :href="icsUrl" class="c-calendar-nav__action">
+            <font-awesome-icon icon="rss" />
+          </a>
+        </template>
+        <template #content>
+          {{ $t('events.subscribe') }}
+        </template>
+      </st-tooltip>
+      <st-tooltip position="bottom">
+        <template #trigger>
+          <nuxt-link :to="alternativeViewPath" class="c-calendar-nav__action">
+            <font-awesome-icon :icon="alternativeViewIcon" />
+          </nuxt-link>
+        </template>
+        <template #content>
+          {{ $t(`events.switch.${alternateView}`) }}
+        </template>
+      </st-tooltip>
     </div>
   </nav>
 </template>
@@ -149,7 +159,6 @@ const icsUrl = computed<string>(() => {
 
 .c-calendar-nav__actions {
   align-self: flex-end;
-  font-size: 1.5em;
   display: flex;
   gap: var(--st-length-spacing-xs);
 }
@@ -157,6 +166,7 @@ const icsUrl = computed<string>(() => {
 .c-calendar-nav__action {
   /* We set the color explicitly to prevent the visited color to be applied */
   color: var(--st-color-link);
+  font-size: 1.5em;
 }
 
 @media (--sm-and-up) {

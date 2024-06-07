@@ -14,27 +14,36 @@
       :style="{ 'min-height': `calc(1.6rem + ${1.1 * day.events.length}rem)` }"
     >
       <div class="c-month-calendar__date">{{ day.date.getDate() }}</div>
-      <template v-for="event in day.events">
-        <nuxt-link
+      <template v-for="event in day.events" :key="event.id">
+        <div
           v-if="event.numberDaysVisible"
-          :key="event.id"
-          v-tooltip.bottom="event.name"
-          :to="localePath({ name: 'event-slug', params: { slug: `${event.id}-${slugify(event.name)}` } })"
           class="c-month-calendar__event"
-          :class="{ 'c-month-calendar__event--full-or-multi-day': isFullOrMultiDay(event) }"
           :style="{
             width: `calc(${event.numberDaysVisible * 100}% + ${event.numberDaysVisible - 1}px - 0.2rem)`,
             top: `calc(1.6rem + ${1.1 * event.position}rem)`,
           }"
         >
-          <span
-            v-if="!isFullOrMultiDay(event) && event.time_start"
-            class="c-month-calendar__event-single-day-start-time"
-          >
-            {{ event.time_start.substr(0, 5) }}
-          </span>
-          <span>{{ event.name }}</span>
-        </nuxt-link>
+          <st-tooltip position="bottom" full-width-trigger>
+            <template #trigger>
+              <nuxt-link
+                :to="localePath({ name: 'event-slug', params: { slug: `${event.id}-${slugify(event.name)}` } })"
+                class="c-month-calendar__event-link"
+                :class="{ 'c-month-calendar__event-link--full-or-multi-day': isFullOrMultiDay(event) }"
+              >
+                <span
+                  v-if="!isFullOrMultiDay(event) && event.time_start"
+                  class="c-month-calendar__event-single-day-start-time"
+                >
+                  {{ event.time_start.substring(0, 5) + ' ' }}
+                </span>
+                <span>{{ event.name }}</span>
+              </nuxt-link>
+            </template>
+            <template #content>
+              {{ event.name }}
+            </template>
+          </st-tooltip>
+        </div>
       </template>
     </div>
   </div>
@@ -256,6 +265,13 @@ const isFullOrMultiDay = (event: CalendarEvent) => {
   left: 0.1rem;
   font-size: 0.7em;
   font-weight: 500;
+  line-height: 1;
+}
+
+.c-month-calendar__event-link {
+  position: relative;
+  display: block;
+  width: 100%;
   color: inherit;
   padding: 0.1em;
   border-radius: 0.2rem;
@@ -266,7 +282,7 @@ const isFullOrMultiDay = (event: CalendarEvent) => {
   z-index: 1;
 }
 
-.c-month-calendar__event--full-or-multi-day {
+.c-month-calendar__event-link--full-or-multi-day {
   background-color: var(--st-color-calendar-event-background);
 }
 

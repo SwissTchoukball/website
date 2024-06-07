@@ -1,7 +1,12 @@
 <template>
   <div v-if="fetchPending || fetchError || (updates && (updates.length || !isPast))">
     <div class="c-national-team-competition-update-list__header">
-      <st-live-indicator v-if="liveRefresh" v-tooltip.top="$t('internationalCompetition.live.updates.autoRefresh')" />
+      <st-tooltip>
+        <template #trigger>
+          <st-live-indicator v-if="liveRefresh || true" />
+        </template>
+        <template #content>{{ $t('internationalCompetition.live.updates.autoRefresh') }}</template>
+      </st-tooltip>
       <h3 class="t-headline-2 c-national-team-competition-update-list__title">
         {{ $t('internationalCompetition.live.updates.title') }}
       </h3>

@@ -185,6 +185,7 @@ a:visited {
   font-family: inherit;
   font-size: inherit;
   font-weight: inherit;
+  text-align: unset;
   appearance: none;
   border: none;
   background-color: transparent;
