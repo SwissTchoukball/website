@@ -33,6 +33,7 @@
         :competition-edition="competitionEdition"
         :phase="currentPhase"
       />
+      <NuxtPage v-else-if="season" :season="season" />
     </template>
   </section>
 </template>
