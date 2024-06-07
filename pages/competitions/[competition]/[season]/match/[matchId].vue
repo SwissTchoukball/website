@@ -88,9 +88,9 @@
         ></iframe>
       </client-only>
     </div>
-    <template v-if="photos.length">
+    <template v-if="data?.photos.length">
       <h3 class="t-headline-2 c-match__photos-title">{{ $t('match.photos') }}</h3>
-      <st-flickr-album-gallery :photos="photos" class="c-match__photos-gallery" />
+      <st-flickr-album-gallery :photos="data.photos" class="c-match__photos-gallery" />
     </template>
   </div>
 </template>
@@ -135,22 +135,23 @@ const props = defineProps({
 });
 
 const venueDetailsVisible = ref(false);
-const photos = ref<FlickrPhoto[]>([]);
-const leveradeMatchData = ref<Await<ReturnType<Leverade['getMatch']>> | undefined>(undefined);
-const matchAdditionalData = ref<DirectusMatchAdditionalData | null>(null);
-const directusCompetitionEdition = ref<NationalCompetitionEdition | undefined>(undefined);
 
-useAsyncData('match', async () => {
-  const matchResponse = await $leverade.getMatch(route.params.matchId as string);
-  leveradeMatchData.value = matchResponse;
-  matchAdditionalData.value = await $cmsService.getMatchAdditionalData(+route.params.matchId);
+const { data } = useAsyncData<{
+  leveradeMatchData: Await<ReturnType<Leverade['getMatch']>>;
+  directusCompetitionEdition: NationalCompetitionEdition | undefined;
+  matchAdditionalData: DirectusMatchAdditionalData | null;
+  photos: FlickrPhoto[];
+}>('match', async () => {
+  const leveradeMatchData = await $leverade.getMatch(route.params.matchId as string);
+  const matchAdditionalData = await $cmsService.getMatchAdditionalData(+route.params.matchId);
 
-  if (!leveradeMatchData.value?.included) {
+  if (!leveradeMatchData.included) {
     throw new Error('Missing related match data');
   }
 
   // Loading Directus-only data
-  const tournament = leveradeMatchData.value.included.find((data) => data.type === 'tournament');
+  const tournament = leveradeMatchData.included.find((data) => data.type === 'tournament');
+  let directusCompetitionEdition: NationalCompetitionEdition | undefined;
   if (tournament) {
     const competitionEditions = await $cmsService.getNationalCompetitionEditions({
       leveradeIds: [tournament.id],
@@ -159,48 +160,25 @@ useAsyncData('match', async () => {
     if (competitionEditions.length > 1) {
       console.warn('Multiple competition editions matching the request. Taking the first one.');
     }
-    directusCompetitionEdition.value = competitionEditions[0];
+    directusCompetitionEdition = competitionEditions[0];
   }
 
-  if (matchAdditionalData.value?.flickr_photoset_id) {
+  let photos: FlickrPhoto[] = [];
+  if (matchAdditionalData?.flickr_photoset_id) {
     // Doc: https://www.flickr.com/services/api/flickr.photosets.getPhotos.html
     const flickrResponse = await $flickr.photosets.getPhotos({
       user_id: runtimeConfig.public.flickr.userId,
-      photoset_id: matchAdditionalData.value.flickr_photoset_id,
+      photoset_id: matchAdditionalData.flickr_photoset_id,
       extras: 'url_q,url_m',
     });
-    photos.value = flickrResponse.body.photoset.photo;
-  }
-});
-
-useHead(() => {
-  // const match: Match = match.value;
-  // const round: Round = round.value;
-  // const phase: Phase = phase.value;
-  // const competitionEdition: CompetitionEdition = competitionEdition.value;
-
-  let title = '';
-  if (match.value?.home_team && match.value?.away_team) {
-    title += `${match.value.home_team.name} - ${match.value.away_team.name} · `;
-  }
-  if (phase.value && round.value) {
-    title += `${round.value.name} · ${phase.value.name} · `;
-    if (competitionEdition.value && phase.value.name !== competitionEdition.value.name) {
-      title += `${competitionEdition.value.name} · `;
-    }
-    title += props.season.name;
+    photos = flickrResponse.body.photoset.photo;
   }
 
   return {
-    title,
-    meta: [
-      { property: 'og:title', content: title },
-      {
-        hid: 'og:description',
-        property: 'og:description',
-        content: t('competitions.description.match').toString(),
-      },
-    ],
+    leveradeMatchData,
+    directusCompetitionEdition,
+    matchAdditionalData,
+    photos,
   };
 });
 
@@ -213,11 +191,11 @@ const distributedMatchData = computed<
     }
   | undefined
 >(() => {
-  if (!leveradeMatchData.value?.included) {
+  if (!data.value?.leveradeMatchData.included) {
     return;
   }
 
-  const match = new Match(leveradeMatchData.value.data);
+  const match = new Match(data.value.leveradeMatchData.data);
   const teams: Team[] = [];
   let faceoff: Faceoff | undefined;
   let round: Round | undefined;
@@ -228,11 +206,11 @@ const distributedMatchData = computed<
   const periods: LeveradePeriod[] = [];
   const referees: LeveradeProfile[] = [];
 
-  if (directusCompetitionEdition.value) {
-    edition = new CompetitionEdition(directusCompetitionEdition.value);
+  if (data.value.directusCompetitionEdition) {
+    edition = new CompetitionEdition(data.value.directusCompetitionEdition);
   }
 
-  leveradeMatchData.value.included.forEach((entity) => {
+  data.value.leveradeMatchData.included.forEach((entity) => {
     switch (entity.type) {
       case 'team':
         teams.push(new Team(entity));
@@ -266,7 +244,7 @@ const distributedMatchData = computed<
       default:
     }
   });
-  match.flickr_photoset_id = matchAdditionalData.value?.flickr_photoset_id;
+  match.flickr_photoset_id = data.value.matchAdditionalData?.flickr_photoset_id;
   match.faceoff = faceoff;
   match.setTeams(teams);
   match.setResults(results);
@@ -328,6 +306,32 @@ const showVenueDetails = (): void => {
   venueDetailsVisible.value = true;
   router.push('#match-details');
 };
+
+useHead(() => {
+  let title = '';
+  if (match.value?.home_team && match.value?.away_team) {
+    title += `${match.value.home_team.name} - ${match.value.away_team.name} · `;
+  }
+  if (phase.value && round.value) {
+    title += `${round.value.name} · ${phase.value.name} · `;
+    if (competitionEdition.value && phase.value.name !== competitionEdition.value.name) {
+      title += `${competitionEdition.value.name} · `;
+    }
+    title += props.season.name;
+  }
+
+  return {
+    title,
+    meta: [
+      { property: 'og:title', content: title },
+      {
+        hid: 'og:description',
+        property: 'og:description',
+        content: t('competitions.description.match').toString(),
+      },
+    ],
+  };
+});
 </script>
 
 <style scoped>

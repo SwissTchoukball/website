@@ -37,47 +37,37 @@ defineI18nRoute({
   },
 });
 
-const competition = ref<NationalTeamCompetition>();
-const navigation = ref<MenuItem[]>([]);
-
-const { pending: fetchPending, error: fetchError } = useAsyncData('competition', async () => {
+const {
+  data: competition,
+  pending: fetchPending,
+  error: fetchError,
+} = useAsyncData<NationalTeamCompetition>('competition', async () => {
   const competitionSlug = route.params.competition as string;
-  competition.value = await $cmsService.getNationalTeamCompetition({ slug: competitionSlug });
+  return await $cmsService.getNationalTeamCompetition({ slug: competitionSlug });
+});
 
-  // Building navigation
+const navigation = computed<MenuItem[]>(() => {
   const possibleTexts = ['live', 'about', 'schedule', 'medias'] as const;
-  for (const possibleTextKey of possibleTexts) {
-    if (competition.value[possibleTextKey]) {
-      navigation.value.push({
-        name: t(`internationalCompetition.navigation.${possibleTextKey}`),
-        href: localePath(`national-teams-competitions-competition-${possibleTextKey}`),
+  const nav = [];
+  if (competition.value) {
+    for (const possibleTextKey of possibleTexts) {
+      if (competition.value[possibleTextKey]) {
+        nav.push({
+          name: t(`internationalCompetition.navigation.${possibleTextKey}`),
+          href: localePath(`national-teams-competitions-competition-${possibleTextKey}`),
+        });
+      }
+    }
+
+    if (competition.value.teams.length) {
+      nav.push({
+        name: t('internationalCompetition.navigation.teams'),
+        href: localePath('national-teams-competitions-competition-teams'),
       });
     }
   }
-  if (competition.value.teams.length) {
-    navigation.value.push({
-      name: t('internationalCompetition.navigation.teams'),
-      href: localePath('national-teams-competitions-competition-teams'),
-    });
-  }
-});
 
-useHead(() => {
-  const title = fullName.value;
-  const description = t('internationalCompetition.shortDescription', { name: fullName.value }).toString();
-
-  // TODO: Add a specific Open graph image to the national team competition model
-  return {
-    title,
-    meta: [
-      { property: 'og:title', content: title },
-      {
-        hid: 'og:description',
-        property: 'og:description',
-        content: description,
-      },
-    ],
-  };
+  return nav;
 });
 
 const fullName = computed<string>(() => {
@@ -101,6 +91,24 @@ const logoSrcSet = computed<string>(() => {
   return `${getAssetURL(runtimeConfig.public.cmsURL, competition.value.logo, {
     width: 360,
   })} 2x`;
+});
+
+useHead(() => {
+  const title = fullName.value;
+  const description = t('internationalCompetition.shortDescription', { name: fullName.value }).toString();
+
+  // TODO: Add a specific Open graph image to the national team competition model
+  return {
+    title,
+    meta: [
+      { property: 'og:title', content: title },
+      {
+        hid: 'og:description',
+        property: 'og:description',
+        content: description,
+      },
+    ],
+  };
 });
 </script>
 

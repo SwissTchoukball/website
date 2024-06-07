@@ -2,8 +2,9 @@
   <section class="l-main-content-section">
     <st-breadcrumb :items="breadcrumb" class="c-group__breadcrumb" />
 
-    <st-loader v-if="fetchPending" :main="true" />
-    <p v-else-if="fetchError">{{ $t('error.otherError') }} : {{ fetchError.message }}</p>
+    <st-loader v-if="fetchPeoplePending" :main="true" />
+    <p v-else-if="fetchGroupError">{{ $t('error.otherError') }} : {{ fetchGroupError.message }}</p>
+    <p v-else-if="fetchPeopleError">{{ $t('error.otherError') }} : {{ fetchPeopleError.message }}</p>
     <template v-else>
       <h2 class="t-headline-1">{{ groupName }}</h2>
 
@@ -34,14 +35,43 @@ defineI18nRoute({
 });
 
 const groupSlug = ref<string>();
-const group = ref<Group>();
-const people = ref<Person[]>([]);
 const breadcrumb = ref<BreadcrumbItem[]>([
   {
     pageName: 'structure',
     displayName: t('structure.title').toString(),
   },
 ]);
+
+// If we ask for the staff, we want everyone, and don't set the groupSlug
+if (route.params?.group !== t('structure.staff.slug') && !Array.isArray(route.params?.group)) {
+  groupSlug.value = route.params?.group;
+}
+
+const { data: group, error: fetchGroupError } = useAsyncData<Group | undefined>('group', async () => {
+  if (groupSlug.value) {
+    return await $cmsService.getGroup({ slug: groupSlug.value });
+  }
+  return undefined;
+});
+
+const {
+  data: people,
+  pending: fetchPeoplePending,
+  error: fetchPeopleError,
+} = useAsyncData<Person[]>(
+  'staff',
+  async () => {
+    return await $cmsService.getStaff({ groupSlug: groupSlug.value });
+  },
+  { default: () => [] },
+);
+
+const groupName = computed<string>(() => {
+  return group.value ? group.value.name : t('structure.staff.title').toString();
+});
+const groupDescription = computed<string>(() => {
+  return group.value ? group.value.description || '' : t('structure.staff.description').toString();
+});
 
 useHead(() => {
   return {
@@ -55,26 +85,6 @@ useHead(() => {
       },
     ],
   };
-});
-
-const groupName = computed<string>(() => {
-  return group.value ? group.value.name : t('structure.staff.title').toString();
-});
-const groupDescription = computed<string>(() => {
-  return group.value ? group.value.description || '' : t('structure.staff.description').toString();
-});
-
-const { pending: fetchPending, error: fetchError } = useAsyncData('group', async () => {
-  // If we ask for the staff, we want everyone, and don't set the groupSlug
-  if (route.params?.group !== t('structure.staff.slug') && !Array.isArray(route.params?.group)) {
-    groupSlug.value = route.params?.group;
-  }
-
-  if (groupSlug.value) {
-    group.value = await $cmsService.getGroup({ slug: groupSlug.value });
-  }
-
-  people.value = await $cmsService.getStaff({ groupSlug: groupSlug.value });
 });
 </script>
 

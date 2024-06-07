@@ -31,15 +31,13 @@ const props = defineProps({
   },
 });
 
-useAsyncData('playerPositions', async () => {
-  if (!props.team.players.length) {
-    router.replace(localePath({ name: 'national-teams-team-staff', params: { team: props.team.slug } }));
-  }
-  // We load the positions only if we don't have them already
-  if (!nationalTeamsStore.playerPositions) {
-    await nationalTeamsStore.loadPlayerPositions();
-  }
-});
+if (!props.team.players.length) {
+  router.replace(localePath({ name: 'national-teams-team-staff', params: { team: props.team.slug } }));
+}
+// We load the positions only if we don't have them already
+if (!nationalTeamsStore.playerPositions) {
+  await nationalTeamsStore.loadPlayerPositions();
+}
 
 useHead(() => {
   const title = t(`nationalTeams.headTitle.players.${props.team.gender}`, {

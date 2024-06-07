@@ -43,18 +43,23 @@ defineI18nRoute({
   },
 });
 
-const team = ref<NationalTeam>();
 const imgTagSizes = ref('');
 
-const { pending: fetchPending, error: fetchError } = useAsyncData('team', async () => {
-  team.value = await $cmsService.getTeam(route.params.team as string);
-  if (team.value.slug !== route.params.team) {
+const {
+  data: team,
+  pending: fetchPending,
+  error: fetchError,
+} = useAsyncData<NationalTeam>('team', async () => {
+  const teamData = await $cmsService.getTeam(route.params.team as string);
+  if (teamData.slug !== route.params.team) {
     // We are likely in a situation where the page was requested in a specific language,
     // but with the path in another language.
     // This can notably happen when using the language switcher.
     // We just redirect to fix the path.
-    router.replace(localePath({ name: 'national-teams-team', params: { team: team.value.slug } }));
+    router.replace(localePath({ name: 'national-teams-team', params: { team: teamData.slug } }));
   }
+
+  return teamData;
 });
 
 useHead(() => {

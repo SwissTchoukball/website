@@ -27,13 +27,19 @@ defineI18nRoute({
   },
 });
 
-const groups = ref<Group[]>([]);
-
 useHead(() => {
   return {
     title: t('structure.title').toString(),
     meta: [{ property: 'og:title', content: t('structure.title').toString() }],
   };
+});
+
+const {
+  data: groups,
+  pending: fetchPending,
+  error: fetchError,
+} = useAsyncData<Group[]>('groups', async () => {
+  return await $cmsService.getGroups();
 });
 
 const groupsNavigation = computed<MenuItem[]>(() => {
@@ -59,10 +65,6 @@ const groupsNavigation = computed<MenuItem[]>(() => {
       }),
     },
   ];
-});
-
-const { pending: fetchPending, error: fetchError } = useAsyncData('groups', async () => {
-  groups.value = await $cmsService.getGroups();
 });
 </script>
 

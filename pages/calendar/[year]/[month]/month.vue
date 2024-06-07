@@ -13,7 +13,7 @@ import { addDays, getWeeksInMonth, startOfMonth, startOfWeek } from 'date-fns';
 
 import stCalendarNav from '~/components/events/st-calendar-nav.vue';
 import stMonthCalendar from '~/components/events/st-month-calendar.vue';
-import type { CalendarEvent, CMSService } from '~/plugins/08.cms-service';
+import type { CalendarEvent } from '~/plugins/08.cms-service';
 
 const eventsStore = useEventsStore();
 const { $cmsService } = useNuxtApp();
@@ -27,22 +27,32 @@ defineI18nRoute({
   },
 });
 
-const events = ref<CalendarEvent[]>([]);
+// We load the event types only if we don't have them already
+if (!eventsStore.eventTypes) {
+  await eventsStore.loadEventTypes();
+}
 
-useAsyncData('events', async () => {
-  const eventsResult = await getEvents();
+const { data: events } = useAsyncData<CalendarEvent[]>(
+  'events',
+  async () => {
+    const firstDayOfMonth = startOfMonth(new Date(year.value, month.value, -1));
+    const calendarFirstDay = startOfWeek(firstDayOfMonth, { weekStartsOn: 1 });
+    const calendarLastDay = addDays(calendarFirstDay, getWeeksInMonth(firstDayOfMonth, { weekStartsOn: 1 }) * 7);
 
-  if (!eventsResult) {
-    throw new Error('Error when retrieving events');
-  }
+    const eventsResult = await $cmsService.getEvents({
+      limit: 1000,
+      endDateAfter: calendarFirstDay,
+      startDateBefore: calendarLastDay,
+    });
 
-  events.value = eventsResult.data;
+    if (!eventsResult) {
+      throw new Error('Error when retrieving events');
+    }
 
-  // We load the event types only if we don't have them already
-  if (!eventsStore.eventTypes) {
-    await eventsStore.loadEventTypes();
-  }
-});
+    return eventsResult.data;
+  },
+  { default: () => [] },
+);
 
 useHead(() => {
   return {
@@ -57,17 +67,6 @@ useHead(() => {
     ],
   };
 });
-
-const getEvents = async (): ReturnType<CMSService['getEvents']> => {
-  const firstDayOfMonth = startOfMonth(new Date(year.value, month.value, -1));
-  const calendarFirstDay = startOfWeek(firstDayOfMonth, { weekStartsOn: 1 });
-  const calendarLastDay = addDays(calendarFirstDay, getWeeksInMonth(firstDayOfMonth, { weekStartsOn: 1 }) * 7);
-  return await $cmsService.getEvents({
-    limit: 1000,
-    endDateAfter: calendarFirstDay,
-    startDateBefore: calendarLastDay,
-  });
-};
 </script>
 
 <style scoped>
