@@ -77,13 +77,11 @@ const isSearching = ref(false);
 const errorMessage = ref('');
 const resources = ref<Resource[]>([]);
 
-useAsyncData('resourceTypes', async () => {
-  // We load the resource types only if we don't have them already
-  if (!resourcesStore.resourceTypes?.length) {
-    await resourcesStore.loadResourceTypes();
-  }
-  // We don't need to load the domains because they are loaded in nuxtServerInit (as they are needed in multiple places)
-});
+// We load the resource types only if we don't have them already
+if (!resourcesStore.resourceTypes?.length) {
+  await resourcesStore.loadResourceTypes();
+}
+// We don't need to load the domains because they are loaded in init.server.ts (as they are needed in multiple places)
 
 useHead(() => {
   return {

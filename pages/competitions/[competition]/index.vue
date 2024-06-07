@@ -12,7 +12,7 @@ defineI18nRoute({
   },
 });
 
-useAsyncData('competition', async () => {
+const loadCompetition = async () => {
   const competition = await $cmsService.getNationalCompetition(route.params.competition as string);
   const nationalCompetition = new Competition(competition);
 
@@ -37,5 +37,7 @@ useAsyncData('competition', async () => {
       },
     }),
   );
-});
+};
+
+loadCompetition();
 </script>

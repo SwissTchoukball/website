@@ -1,9 +1,9 @@
 <template>
-  <div v-if="fetchPending || fetchError || (updates && (updates.length || !isPast))">
+  <div v-if="fetchPending || fetchError || (data.updates && (data.updates.length || !isPast))">
     <div class="c-national-team-competition-update-list__header">
       <st-tooltip>
         <template #trigger>
-          <st-live-indicator v-if="liveRefresh || true" />
+          <st-live-indicator v-if="liveRefresh" />
         </template>
         <template #content>{{ $t('internationalCompetition.live.updates.autoRefresh') }}</template>
       </st-tooltip>
@@ -56,9 +56,9 @@
       </ul>
 
       <p v-if="hasRefreshError">{{ $t('internationalCompetition.live.updates.loadingError') }}</p>
-      <ul v-if="updates && updates.length > 0" class="u-unstyled-list">
+      <ul v-if="data.updates && data.updates.length > 0" class="u-unstyled-list">
         <li
-          v-for="update in updates"
+          v-for="update in data.updates"
           :key="update.id"
           class="c-national-team-competition-update-list__item"
           :class="{ 'c-national-team-competition-update-list__item--with-image': update.image }"
@@ -110,8 +110,6 @@ const props = defineProps({
   isPast: Boolean,
 });
 
-const updates = ref<NationalTeamCompetitionUpdate[]>();
-const totalUpdates = ref<number>();
 const areFiltersVisible = ref(false);
 const filters = ref({
   is_key: false,
@@ -121,12 +119,6 @@ const filters = ref({
 const refreshInterval = ref<number>();
 const hasRefreshError = ref(false);
 
-const totalPages = computed<number | undefined>(() => {
-  if (!totalUpdates.value) {
-    return;
-  }
-  return Math.ceil(totalUpdates.value / UPDATES_PER_PAGE);
-});
 const currentPage = computed<number>(() => {
   if (route.query.page && typeof route.query.page === 'string') {
     return parseInt(route.query.page);
@@ -134,6 +126,42 @@ const currentPage = computed<number>(() => {
 
   return 1;
 });
+
+const {
+  data,
+  pending: fetchPending,
+  error: fetchError,
+  refresh,
+} = useAsyncData<{ updates: NationalTeamCompetitionUpdate[]; totalUpdates: number }>(
+  'updates',
+  async () => {
+    if (!props.competitionId) {
+      throw new Error('Undefined national team competition ID');
+    }
+
+    const updateResults = await $cmsService.getNationalTeamCompetitionUpdates(props.competitionId, {
+      limit: UPDATES_PER_PAGE,
+      page: currentPage.value,
+      keyOnly: filters.value.is_key,
+      withImage: filters.value.with_image,
+      teamId: filters.value.selectedTeamId ? +filters.value.selectedTeamId : undefined,
+    });
+
+    return {
+      updates: updateResults.data,
+      totalUpdates: updateResults.meta.total,
+    };
+  },
+  { default: () => ({ updates: [], totalUpdates: 0 }) },
+);
+
+const totalPages = computed<number | undefined>(() => {
+  if (!data.value?.totalUpdates) {
+    return;
+  }
+  return Math.ceil(data.value.totalUpdates / UPDATES_PER_PAGE);
+});
+
 const amountActiveFilters = computed<number>(() => {
   let amount = 0;
 
@@ -152,14 +180,16 @@ const amountActiveFilters = computed<number>(() => {
   return amount;
 });
 
-watch(route.query, async () => {
-  await fetchUpdates();
+watch(route, async (newRoute, oldRoute) => {
+  if (newRoute.query !== oldRoute.query) {
+    await refresh();
+  }
 });
 
 watch(
   filters,
   async () => {
-    await fetchUpdates();
+    await refresh();
   },
   { deep: true },
 );
@@ -170,7 +200,7 @@ onMounted(() => {
       return;
     }
     try {
-      await fetchUpdates();
+      await refresh();
       hasRefreshError.value = false;
     } catch (error) {
       console.error(error);
@@ -183,28 +213,9 @@ onBeforeUnmount(() => {
   window.clearInterval(refreshInterval.value);
 });
 
-const fetchUpdates = async () => {
-  if (!props.competitionId) {
-    throw new Error('Undefined national team competition ID');
-  }
-
-  const updateResults = await $cmsService.getNationalTeamCompetitionUpdates(props.competitionId, {
-    limit: UPDATES_PER_PAGE,
-    page: currentPage.value,
-    keyOnly: filters.value.is_key,
-    withImage: filters.value.with_image,
-    teamId: filters.value.selectedTeamId ? +filters.value.selectedTeamId : undefined,
-  });
-
-  updates.value = updateResults.data;
-  totalUpdates.value = updateResults.meta.total;
-};
-
 const toggleFilters = () => {
   areFiltersVisible.value = !areFiltersVisible.value;
 };
-
-const { pending: fetchPending, error: fetchError } = useAsyncData('updates', fetchUpdates);
 </script>
 
 <style scoped>

@@ -3,7 +3,7 @@
     <template #after-body>
       <st-loader v-if="fetchPending" :main="true" />
       <p v-else-if="fetchError">{{ $t('error.otherError') }} : {{ fetchError.message }}</p>
-      <st-tchoukup-list v-else :issues="tchoukupIssues" class="c-tchoukup__list" />
+      <st-tchoukup-list v-else :issues="data.tchoukupIssues" class="c-tchoukup__list" />
       <st-pagination
         v-if="totalPages"
         :current-page="currentPage"
@@ -23,9 +23,7 @@ const { $cmsService } = useNuxtApp();
 
 const { fetchPage, title, body, keyRoles, resources } = useCatchAll();
 
-const tchoukupIssues = ref<Tchoukup[]>([]);
-const issuesPerPage = ref(12);
-const totalIssues = ref<number | undefined>();
+const issuesPerPage = 12;
 
 useHead(() => {
   return {
@@ -41,23 +39,6 @@ useHead(() => {
   };
 });
 
-const fetchTchoukups = async () => {
-  const tchoukupResult = await $cmsService.getTchoukups({
-    limit: issuesPerPage.value,
-    page: currentPage.value,
-  });
-
-  tchoukupIssues.value = tchoukupResult.data;
-  totalIssues.value = tchoukupResult.meta.total;
-};
-
-const totalPages = computed<number | undefined>(() => {
-  if (!totalIssues.value) {
-    return;
-  }
-  return Math.ceil(totalIssues.value / issuesPerPage.value);
-});
-
 const currentPage = computed<number>(() => {
   if (route.query.page && typeof route.query.page === 'string') {
     return parseInt(route.query.page);
@@ -66,11 +47,41 @@ const currentPage = computed<number>(() => {
   return 1;
 });
 
-watch(route.query, fetchTchoukups);
+const {
+  data,
+  pending: fetchPending,
+  error: fetchError,
+  refresh,
+} = useAsyncData<{ tchoukupIssues: Tchoukup[]; totalIssues: number }>(
+  'tchoukups',
+  async () => {
+    const tchoukupResult = await $cmsService.getTchoukups({
+      limit: issuesPerPage,
+      page: currentPage.value,
+    });
+
+    return {
+      tchoukupIssues: tchoukupResult.data,
+      totalIssues: tchoukupResult.meta.total,
+    };
+  },
+  { default: () => ({ tchoukupIssues: [], totalIssues: 0 }) },
+);
+
+const totalPages = computed<number | undefined>(() => {
+  if (!data.value?.totalIssues) {
+    return;
+  }
+  return Math.ceil(data.value.totalIssues / issuesPerPage);
+});
+
+watch(route, async (newRoute, oldRoute) => {
+  if (newRoute.query !== oldRoute.query) {
+    await refresh();
+  }
+});
 
 fetchPage();
-
-const { pending: fetchPending, error: fetchError } = useAsyncData('tchoukups', fetchTchoukups);
 </script>
 
 <style scoped>

@@ -12,13 +12,12 @@ defineI18nRoute({
   },
 });
 
-useAsyncData('news', async () => {
-  const now = new Date();
-  navigateTo(
-    localePath({
-      name: 'calendar-year-month-list',
-      params: { year: now.getFullYear().toString(), month: (now.getMonth() + 1).toString() },
-    }),
-  );
-});
+const now = new Date();
+
+navigateTo(
+  localePath({
+    name: 'calendar-year-month-list',
+    params: { year: now.getFullYear().toString(), month: (now.getMonth() + 1).toString() },
+  }),
+);
 </script>

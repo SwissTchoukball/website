@@ -16,8 +16,6 @@ import type { DirectusClub } from '~/plugins/06.directus';
 const { $cmsService } = useNuxtApp();
 const { t } = useI18n();
 
-const clubs = ref<DirectusClub[]>([]);
-
 defineI18nRoute({
   paths: {
     fr: '/clubs',
@@ -39,9 +37,17 @@ useHead(() => {
   };
 });
 
-const { pending: fetchPending, error: fetchError } = useAsyncData('clubs', async () => {
-  clubs.value = await $cmsService.getClubs({ statuses: ['active', 'passive'] });
-});
+const {
+  data: clubs,
+  pending: fetchPending,
+  error: fetchError,
+} = useAsyncData<DirectusClub[]>(
+  'clubs',
+  async () => {
+    return await $cmsService.getClubs({ statuses: ['active', 'passive'] });
+  },
+  { default: () => [] },
+);
 </script>
 
 <style scoped>

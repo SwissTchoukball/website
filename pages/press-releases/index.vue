@@ -2,8 +2,10 @@
   <section class="l-main-content-section">
     <h2 class="t-headline-1 c-press-releases__title">{{ $t('pressReleases.name', 2) }}</h2>
 
+    <StLoader v-if="fetchPending" main />
+    <p v-else-if="fetchError">{{ $t('error.otherError') }} : {{ fetchError.message }}</p>
     <ul class="u-unstyled-list c-press-releases__list">
-      <li v-for="pressRelease in pressReleaseList" :key="pressRelease.id" class="c-press-releases__list-item">
+      <li v-for="pressRelease in data.pressReleaseList" :key="pressRelease.id" class="c-press-releases__list-item">
         <nuxt-link
           :to="
             localePath({
@@ -46,6 +48,7 @@ import type { PressRelease } from '~/components/press-releases/press-releases';
 
 const localePath = useLocalePath();
 const route = useRoute();
+const { t } = useI18n();
 const { $cmsService, $formatDate } = useNuxtApp();
 
 defineI18nRoute({
@@ -55,26 +58,14 @@ defineI18nRoute({
   },
 });
 
-const pressReleaseList = ref<PressRelease[]>([]);
-const pressReleasesPerPage = ref(25);
-const totalPressReleases = ref<number>();
-
-useAsyncData('press-releases', async () => {
-  const pressReleasesResult = await $cmsService.getPressReleaseList({
-    limit: pressReleasesPerPage.value,
-    page: currentPage.value,
-  });
-
-  pressReleaseList.value = pressReleasesResult.data;
-  totalPressReleases.value = pressReleasesResult.meta.total;
+useHead(() => {
+  return {
+    title: t('pressReleases.name', 2),
+    meta: [{ property: 'og:title', content: t('pressReleases.name', 2) }],
+  };
 });
 
-const totalPages = computed<number | undefined>(() => {
-  if (!totalPressReleases.value) {
-    return;
-  }
-  return Math.ceil(totalPressReleases.value / pressReleasesPerPage.value);
-});
+const pressReleasesPerPage = 25;
 
 const currentPage = computed<number>(() => {
   if (route.query.page && typeof route.query.page === 'string') {
@@ -82,6 +73,33 @@ const currentPage = computed<number>(() => {
   }
 
   return 1;
+});
+
+const {
+  data,
+  pending: fetchPending,
+  error: fetchError,
+} = useAsyncData<{ pressReleaseList: PressRelease[]; totalPressReleases: number }>(
+  'press-releases',
+  async () => {
+    const pressReleasesResult = await $cmsService.getPressReleaseList({
+      limit: pressReleasesPerPage,
+      page: currentPage.value,
+    });
+
+    return {
+      pressReleaseList: pressReleasesResult.data,
+      totalPressReleases: pressReleasesResult.meta.total,
+    };
+  },
+  { default: () => ({ pressReleaseList: [], totalPressReleases: 0 }) },
+);
+
+const totalPages = computed<number | undefined>(() => {
+  if (!data.value.totalPressReleases) {
+    return;
+  }
+  return Math.ceil(data.value.totalPressReleases / pressReleasesPerPage);
 });
 </script>
 

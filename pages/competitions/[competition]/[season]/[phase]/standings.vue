@@ -79,25 +79,32 @@ const props = defineProps({
   },
 });
 
-const rawStandings = ref<StandingRow<LeveradeTeam>[]>([]);
+const {
+  data: rawStandings,
+  pending: fetchPending,
+  error: fetchError,
+  refresh,
+} = useAsyncData<StandingRow<LeveradeTeam>[]>(
+  'standings',
+  async () => {
+    // If we're not in a league phase (e.g. play-off phase), we redirect to the results
+    if (props.phase.type !== LeveradeGroupType.LEAGUE) {
+      const resultsPath = localePath({
+        name: 'competitions-competition-season-phase-results',
+      });
+      navigateTo(resultsPath);
+    }
 
-const fetchStandings = async () => {
-  // If we're not in a league phase (e.g. play-off phase), we redirect to the results
-  if (props.phase.type !== LeveradeGroupType.LEAGUE) {
-    const resultsPath = localePath({
-      name: 'competitions-competition-season-phase-results',
-    });
-    navigateTo(resultsPath);
-  }
-
-  const teamsResponse = await $leverade.getTeams(props.phase.competition_edition_id);
-  const standingsResponse = await $leverade.getStandings(props.phase.id);
-  rawStandings.value = standingsResponse.meta.standingsrows.map((row) => ({
-    position: row.position,
-    team: teamsResponse.data.find((team) => +team.id === row.id),
-    stats: row.standingsstats,
-  }));
-};
+    const teamsResponse = await $leverade.getTeams(props.phase.competition_edition_id);
+    const standingsResponse = await $leverade.getStandings(props.phase.id);
+    return standingsResponse.meta.standingsrows.map((row) => ({
+      position: row.position,
+      team: teamsResponse.data.find((team) => +team.id === row.id),
+      stats: row.standingsstats,
+    }));
+  },
+  { default: () => [] },
+);
 
 useHead(() => {
   const title = t('competitions.headTitle.standings', {
@@ -158,15 +165,13 @@ const getStatValueForKey = (standing: StandingRow<Team>, statKey: string): numbe
   return standing.stats.find((stat) => stat.type === statKey)?.value || 0;
 };
 
-const { pending: fetchPending, error: fetchError } = useAsyncData('standings', fetchStandings);
-
 watch(route, async (newRoute, oldRoute) => {
   if (
     newRoute.params.phase !== oldRoute.params.phase ||
     newRoute.params.season !== oldRoute.params.season ||
     newRoute.params.competition !== oldRoute.params.competition
   ) {
-    await fetchStandings();
+    await refresh();
   }
 });
 </script>

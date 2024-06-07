@@ -23,7 +23,6 @@ const route = useRoute();
 const resourcesStore = useResourcesStore();
 const { $cmsService } = useNuxtApp();
 
-const resource = ref<Resource>();
 const breadcrumb = ref<BreadcrumbItem[]>([
   {
     pageName: 'resources',
@@ -31,7 +30,16 @@ const breadcrumb = ref<BreadcrumbItem[]>([
   },
 ]);
 
-const { pending: fetchPending, error: fetchError } = useAsyncData('resources', async () => {
+// We load the event types only if we don't have them already
+if (!resourcesStore.resourceTypes) {
+  await resourcesStore.loadResourceTypes();
+}
+
+const {
+  data: resource,
+  pending: fetchPending,
+  error: fetchError,
+} = useAsyncData<Resource>('resources', async () => {
   const slug = route.params.slug as string;
   let id: number;
   if (slug.includes('-')) {
@@ -44,12 +52,7 @@ const { pending: fetchPending, error: fetchError } = useAsyncData('resources', a
     throw new Error('Invalid resource ID');
   }
 
-  resource.value = await $cmsService.getResource(id);
-
-  // We load the event types only if we don't have them already
-  if (!resourcesStore.resourceTypes) {
-    await resourcesStore.loadResourceTypes();
-  }
+  return await $cmsService.getResource(id);
 });
 
 useHead(() => {

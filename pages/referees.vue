@@ -2,6 +2,9 @@
   <section class="l-main-content-section">
     <h2 class="t-headline-1">{{ $t('referees.title') }}</h2>
 
+    <StLoader v-if="fetchPending" main />
+    <p v-else-if="fetchError">{{ $t('error.otherError') }} : {{ fetchError.message }}</p>
+
     <template v-if="level3Referees.length > 0">
       <h2 class="t-headline-2">{{ $t('referees.level.iii') }}</h2>
       <ul class="u-unstyled-list c-referees__list">
@@ -47,24 +50,25 @@ interface PublicReferee {
   levelId: string;
 }
 
-const referees = ref<PublicReferee[]>([]);
+const {
+  data: referees,
+  pending: fetchPending,
+  error: fetchError,
+} = useFetch<PublicReferee[]>('/external/referees_public.json', {
+  server: false,
+});
 
 const level0Referees = computed<PublicReferee[]>(() => {
-  return referees.value.filter((referee: PublicReferee) => referee.levelId === '305');
+  return referees.value?.filter((referee: PublicReferee) => referee.levelId === '305') || [];
 });
 const level1Referees = computed<PublicReferee[]>(() => {
-  return referees.value.filter((referee: PublicReferee) => referee.levelId === '304');
+  return referees.value?.filter((referee: PublicReferee) => referee.levelId === '304') || [];
 });
 const level2Referees = computed<PublicReferee[]>(() => {
-  return referees.value.filter((referee: PublicReferee) => referee.levelId === '303');
+  return referees.value?.filter((referee: PublicReferee) => referee.levelId === '303') || [];
 });
 const level3Referees = computed<PublicReferee[]>(() => {
-  return referees.value.filter((referee: PublicReferee) => referee.levelId === '302');
-});
-
-useAsyncData('referees', async () => {
-  const data = await $fetch<PublicReferee[]>('/external/referees_public.json');
-  referees.value = data;
+  return referees.value?.filter((referee: PublicReferee) => referee.levelId === '302') || [];
 });
 </script>
 

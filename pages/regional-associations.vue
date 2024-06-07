@@ -4,7 +4,9 @@
     <p class="c-regional-associations__amount">
       {{ $t('regionalAssociations.amount', { amount: associations.length }) }}
     </p>
-    <st-club-list :clubs="associations" />
+    <st-loader v-if="fetchPending" :main="true" />
+    <p v-else-if="fetchError">{{ $t('error.otherError') }} : {{ fetchError.message }}</p>
+    <st-club-list v-else :clubs="associations" />
   </section>
 </template>
 
@@ -14,14 +16,22 @@ import type { DirectusClub } from '~/plugins/06.directus';
 const { $cmsService } = useNuxtApp();
 const { t } = useI18n();
 
-const associations = ref<DirectusClub[]>([]);
-
 defineI18nRoute({
   paths: {
     fr: '/associations-regionales',
     de: '/regionalverbaende',
   },
 });
+
+const {
+  data: associations,
+  pending: fetchPending,
+  error: fetchError,
+} = useAsyncData<DirectusClub[]>(
+  'regionalAssociations',
+  async () => $cmsService.getClubs({ statuses: ['regional_association'] }),
+  { default: () => [] },
+);
 
 useHead(() => {
   return {
@@ -35,10 +45,6 @@ useHead(() => {
       },
     ],
   };
-});
-
-useAsyncData('regionalAssociations', async () => {
-  associations.value = await $cmsService.getClubs({ statuses: ['regional_association'] });
 });
 </script>
 

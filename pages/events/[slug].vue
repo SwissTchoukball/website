@@ -2,7 +2,9 @@
   <section class="l-main-content-section c-event-type-page">
     <st-breadcrumb :items="breadcrumb" />
     <h3 class="t-headline-1">{{ $t('events.eventTypeUpcoming.title', { name: eventTypeName }) }}</h3>
-    <template v-if="events.length">
+    <StLoader v-if="fetchPending" main />
+    <p v-else-if="fetchError">{{ $t('error.otherError') }} : {{ fetchError.message }}</p>
+    <template v-else-if="events.length">
       <st-event-list :events="events" class="c-event-type-page__events" :show-year="true" />
     </template>
     <p v-else class="c-event-type-page__blank-slate">
@@ -28,7 +30,6 @@ defineI18nRoute({
 });
 
 const eventTypeId = ref<number>();
-const events = ref<CalendarEvent[]>([]);
 const breadcrumb = ref<BreadcrumbItem[]>([
   {
     pageName: 'calendar',
@@ -36,35 +37,43 @@ const breadcrumb = ref<BreadcrumbItem[]>([
   },
 ]);
 
-useAsyncData('events', async () => {
-  const slug = route.params.slug as string;
-  if (slug.includes('-')) {
-    eventTypeId.value = parseInt(slug.substring(0, slug.indexOf('-')));
-  } else {
-    eventTypeId.value = parseInt(slug);
-  }
+// We load the event types only if we don't have them already
+if (!eventsStore.eventTypes) {
+  await eventsStore.loadEventTypes();
+}
 
-  if (!eventTypeId.value) {
-    throw new Error('Invalid event type ID');
-  }
+const {
+  data: events,
+  pending: fetchPending,
+  error: fetchError,
+} = useAsyncData<CalendarEvent[]>(
+  'events',
+  async () => {
+    const slug = route.params.slug as string;
+    if (slug.includes('-')) {
+      eventTypeId.value = parseInt(slug.substring(0, slug.indexOf('-')));
+    } else {
+      eventTypeId.value = parseInt(slug);
+    }
 
-  const eventsResult = await $cmsService.getEvents({
-    limit: 50,
-    typeId: eventTypeId.value,
-    upcoming: true,
-  });
+    if (!eventTypeId.value) {
+      throw new Error('Invalid event type ID');
+    }
 
-  if (!eventsResult) {
-    throw new Error('Error when retrieving events');
-  }
+    const eventsResult = await $cmsService.getEvents({
+      limit: 50,
+      typeId: eventTypeId.value,
+      upcoming: true,
+    });
 
-  events.value = eventsResult.data;
+    if (!eventsResult) {
+      throw new Error('Error when retrieving events');
+    }
 
-  // We load the event types only if we don't have them already
-  if (!eventsStore.eventTypes) {
-    await eventsStore.loadEventTypes();
-  }
-});
+    return eventsResult.data;
+  },
+  { default: () => [] },
+);
 
 const eventTypeName = computed<string>(() => {
   return eventTypeId.value && eventsStore.eventTypes ? eventsStore.eventTypes[eventTypeId.value].name_plural : '';

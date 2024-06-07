@@ -29,13 +29,18 @@ const props = defineProps({
   },
 });
 
-const teams = ref<Omit<NationalTeamForCompetition, 'competition'>[]>();
+// We load the positions only if we don't have them already
+if (!nationalTeamsStore.playerPositions) {
+  nationalTeamsStore.loadPlayerPositions();
+}
 
-const { pending: fetchPending, error: fetchError } = useAsyncData('teams', async () => {
-  teams.value = await $cmsService.getNationalTeamsForCompetition(props.competition.id);
-  // We load the positions only if we don't have them already
-  if (!nationalTeamsStore.playerPositions) {
-    await nationalTeamsStore.loadPlayerPositions();
-  }
-});
+const {
+  data: teams,
+  pending: fetchPending,
+  error: fetchError,
+} = useAsyncData<Omit<NationalTeamForCompetition, 'competition'>[]>(
+  'teams',
+  () => $cmsService.getNationalTeamsForCompetition(props.competition.id),
+  { default: () => [] },
+);
 </script>

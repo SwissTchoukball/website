@@ -5,15 +5,15 @@
     <p v-else-if="fetchError">{{ $t('error.otherError') }} : {{ fetchError.message }}</p>
     <template v-else>
       <p v-if="filteredDomainName" class="c-news__domain-filter-info">
-        <i18n path="news.domainFilterInfo">
+        <i18n-t keypath="news.domainFilterInfo" scope="global">
           <template #domainName>
             <strong>{{ filteredDomainName }}</strong>
           </template>
-        </i18n>
+        </i18n-t>
         <span class="c-news__domain-filter-info-separator">—</span>
         <nuxt-link :to="''">{{ $t('news.showAll') }}</nuxt-link>
       </p>
-      <st-news-list class="c-news__list" :news="newsList" />
+      <st-news-list v-if="data" class="c-news__list" :news="data.newsList" />
     </template>
     <st-pagination v-if="totalPages" :current-page="currentPage" :total-pages="totalPages" />
   </section>
@@ -27,10 +27,7 @@ const { t } = useI18n();
 const { $cmsService } = useNuxtApp();
 const domainsStore = useDomainsStore();
 
-const newsList = ref<NewsEntry[]>([]);
-const newsEntriesPerPage = ref(12);
-const totalNewsEntries = ref<number>();
-const filteredDomainId = ref<number>();
+const newsEntriesPerPage = 12;
 
 useHead(() => {
   return {
@@ -47,10 +44,10 @@ useHead(() => {
 });
 
 const totalPages = computed<number | undefined>(() => {
-  if (!totalNewsEntries.value) {
+  if (!data.value?.totalNewsEntries) {
     return;
   }
-  return Math.ceil(totalNewsEntries.value / newsEntriesPerPage.value);
+  return Math.ceil(data.value.totalNewsEntries / newsEntriesPerPage);
 });
 
 const currentPage = computed<number>(() => {
@@ -62,32 +59,45 @@ const currentPage = computed<number>(() => {
 });
 
 const filteredDomainName = computed<string | undefined>(() => {
-  if (!filteredDomainId.value) {
+  if (!data.value?.filteredDomainId) {
     return;
   }
-  const domain = domainsStore.getDomainById(filteredDomainId.value);
+  const domain = domainsStore.getDomainById(data.value.filteredDomainId);
 
   return domain?.name;
 });
 
-const fetchNews = async () => {
-  let queryDomainId: number | undefined;
-  if (typeof route.query.domain === 'string') {
-    queryDomainId = parseInt(route.query.domain);
+const {
+  data,
+  pending: fetchPending,
+  error: fetchError,
+  refresh,
+} = useAsyncData<{ newsList: NewsEntry[]; totalNewsEntries: number; filteredDomainId: number | undefined }>(
+  'news',
+  async () => {
+    let queryDomainId: number | undefined;
+    if (typeof route.query.domain === 'string') {
+      queryDomainId = parseInt(route.query.domain);
+    }
+    const newsResult = await $cmsService.getNews({
+      limit: newsEntriesPerPage,
+      page: currentPage.value,
+      domainId: queryDomainId,
+    });
+
+    return {
+      newsList: newsResult.data,
+      totalNewsEntries: newsResult.meta.total,
+      filteredDomainId: newsResult.meta.filteredDomainId,
+    };
+  },
+);
+
+watch(route, async (newRoute, oldRoute) => {
+  if (newRoute.query !== oldRoute.query) {
+    await refresh();
   }
-  const newsResult = await $cmsService.getNews({
-    limit: newsEntriesPerPage.value,
-    page: currentPage.value,
-    domainId: queryDomainId,
-  });
-
-  newsList.value = newsResult.data;
-  totalNewsEntries.value = newsResult.meta.total;
-  filteredDomainId.value = newsResult.meta.filteredDomainId;
-};
-
-watch(route.query, fetchNews);
-const { pending: fetchPending, error: fetchError } = useAsyncData('news', fetchNews);
+});
 </script>
 
 <style>

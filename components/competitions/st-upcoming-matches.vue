@@ -1,11 +1,20 @@
 <template>
   <section
-    v-if="fetchPending || fetchError || upcomingMatchesData.length > 0"
+    v-if="
+      fetchUpcomingMatchesPending ||
+      fetchUpcomingMatchesError ||
+      fetchCompetitionEditionPending ||
+      fetchCompetitionEditionError ||
+      upcomingMatchesData.length > 0
+    "
     class="l-main-content-section c-upcoming-matches"
   >
     <h2 class="t-headline-1">{{ $t('competitions.upcomingMatches') }}</h2>
-    <st-loader v-if="fetchPending" :main="true" />
-    <p v-else-if="fetchError">{{ $t('error.otherError') }} : {{ fetchError.message }}</p>
+    <st-loader v-if="fetchUpcomingMatchesPending || fetchCompetitionEditionPending" :main="true" />
+    <p v-else-if="fetchUpcomingMatchesError">{{ $t('error.otherError') }} : {{ fetchUpcomingMatchesError.message }}</p>
+    <p v-else-if="fetchCompetitionEditionError">
+      {{ $t('error.otherError') }} : {{ fetchCompetitionEditionError.message }}
+    </p>
     <template v-else-if="upcomingMatchesData.length > 0">
       <ul class="u-unstyled-list c-upcoming-matches__list">
         <template v-for="matchData of upcomingMatchesData">
@@ -55,11 +64,13 @@ const localePath = useLocalePath();
 const { $leverade, $cmsService } = useNuxtApp();
 const seasonsStore = useSeasonsStore();
 
-const leveradeUpcomingMatchData = ref<Await<ReturnType<Leverade['getUpcomingMatches']>>>();
-const directusCompetitionEditions = ref<NationalCompetitionEdition[]>();
+const currentSeason: Season | undefined = seasonsStore.currentSeason;
 
-const { pending: fetchPending, error: fetchError } = useAsyncData('upcomingMatches', async () => {
-  const currentSeason: Season | undefined = seasonsStore.currentSeason;
+const {
+  data: leveradeUpcomingMatchData,
+  pending: fetchUpcomingMatchesPending,
+  error: fetchUpcomingMatchesError,
+} = useAsyncData<Await<ReturnType<Leverade['getUpcomingMatches']>>>('upcomingMatches', async () => {
   if (!currentSeason) {
     throw new Error('Current season undefined');
   }
@@ -67,13 +78,26 @@ const { pending: fetchPending, error: fetchError } = useAsyncData('upcomingMatch
     throw new Error('Current season has no Leverade ID');
   }
 
-  const matchesResponse = await $leverade.getUpcomingMatches(currentSeason.leverade_id);
-  leveradeUpcomingMatchData.value = matchesResponse;
-
-  directusCompetitionEditions.value = await $cmsService.getNationalCompetitionEditions({
-    seasonSlug: currentSeason.slug,
-  });
+  return await $leverade.getUpcomingMatches(currentSeason.leverade_id);
 });
+
+const {
+  data: directusCompetitionEditions,
+  pending: fetchCompetitionEditionPending,
+  error: fetchCompetitionEditionError,
+} = useAsyncData<NationalCompetitionEdition[]>(
+  'competitionEditions',
+  async () => {
+    if (!currentSeason?.leverade_id) {
+      // An error is already thrown from the other useAsyncData
+      return [];
+    }
+    return await $cmsService.getNationalCompetitionEditions({
+      seasonSlug: currentSeason.slug,
+    });
+  },
+  { default: () => [] },
+);
 
 const upcomingMatchesData = computed<{ match: Match; edition?: CompetitionEdition }[]>(() => {
   if (!leveradeUpcomingMatchData.value?.included || !directusCompetitionEditions.value) {

@@ -40,18 +40,25 @@ const breadcrumb = ref<BreadcrumbItem[]>([
     displayName: t('season.name', 2),
   },
 ]);
-const rawCompetitionEditions = ref<NationalCompetitionEdition[]>([]);
 
-const { pending: fetchPending, error: fetchError } = useAsyncData('nationalCompetitionEditions', async () => {
-  try {
-    rawCompetitionEditions.value = await $cmsService.getNationalCompetitionEditions({
-      seasonSlug: route.params.season as string,
-    });
-  } catch (error) {
-    console.error(error);
-    throw new Error('Could not load the competitions for this season');
-  }
-});
+const {
+  data: rawCompetitionEditions,
+  pending: fetchPending,
+  error: fetchError,
+} = useAsyncData<NationalCompetitionEdition[]>(
+  'nationalCompetitionEditions',
+  async () => {
+    try {
+      return await $cmsService.getNationalCompetitionEditions({
+        seasonSlug: route.params.season as string,
+      });
+    } catch (error) {
+      console.error(error);
+      throw new Error('Could not load the competitions for this season');
+    }
+  },
+  { default: () => [] },
+);
 
 const season = computed<Season | undefined>(() => {
   return seasonsStore.getSeasonBySlug(route.params.season as string);

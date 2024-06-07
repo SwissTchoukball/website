@@ -35,8 +35,6 @@ defineI18nRoute({
   },
 });
 
-const pressRelease = ref<PressRelease>();
-const headOfCommunicationRole = ref<RoleWithPartialGroupAndHolders>();
 const breadcrumb = ref<BreadcrumbItem[]>([
   {
     pageName: 'press-releases',
@@ -44,7 +42,11 @@ const breadcrumb = ref<BreadcrumbItem[]>([
   },
 ]);
 
-const { pending: fetchPending, error: fetchError } = useAsyncData('press-release', async () => {
+const {
+  data: pressRelease,
+  pending: fetchPending,
+  error: fetchError,
+} = useAsyncData<PressRelease>('press-release', async () => {
   const slug = route.params.slug as string;
   let id: number;
   if (slug.includes('-')) {
@@ -57,10 +59,15 @@ const { pending: fetchPending, error: fetchError } = useAsyncData('press-release
     throw new Error('Invalid press release ID');
   }
 
-  pressRelease.value = await $cmsService.getPressRelease(id);
-
-  headOfCommunicationRole.value = await $cmsService.getRole(MEDIA_COORDINATOR_ROLE);
+  return await $cmsService.getPressRelease(id);
 });
+
+const { data: headOfCommunicationRole } = useAsyncData<RoleWithPartialGroupAndHolders>(
+  'head-of-communication-role',
+  async () => {
+    return await $cmsService.getRole(MEDIA_COORDINATOR_ROLE);
+  },
+);
 
 useHead(() => {
   const title = pressRelease.value?.title || 'Press release';

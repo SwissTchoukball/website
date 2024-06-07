@@ -27,7 +27,6 @@ defineI18nRoute({
   },
 });
 
-const event = ref<CalendarEvent>();
 const breadcrumb = ref<BreadcrumbItem[]>([
   {
     pageName: 'calendar',
@@ -35,7 +34,16 @@ const breadcrumb = ref<BreadcrumbItem[]>([
   },
 ]);
 
-const { pending: fetchPending, error: fetchError } = useAsyncData('event', async () => {
+// We load the event types only if we don't have them already
+if (!eventsStore.eventTypes) {
+  await eventsStore.loadEventTypes();
+}
+
+const {
+  data: event,
+  pending: fetchPending,
+  error: fetchError,
+} = useAsyncData<CalendarEvent>('event', async () => {
   const slug = route.params.slug as string;
   let id: number;
   if (slug.includes('-')) {
@@ -48,12 +56,7 @@ const { pending: fetchPending, error: fetchError } = useAsyncData('event', async
     throw new Error('Invalid event ID');
   }
 
-  event.value = await $cmsService.getEvent(id);
-
-  // We load the event types only if we don't have them already
-  if (!eventsStore.eventTypes) {
-    await eventsStore.loadEventTypes();
-  }
+  return await $cmsService.getEvent(id);
 });
 
 useHead(() => {

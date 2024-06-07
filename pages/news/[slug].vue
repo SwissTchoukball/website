@@ -16,9 +16,11 @@ const appConfig = useAppConfig();
 const route = useRoute();
 const { $cmsService } = useNuxtApp();
 
-const newsEntry = ref<NewsEntry>();
-
-const { pending: fetchPending, error: fetchError } = useAsyncData('news', async () => {
+const {
+  data: newsEntry,
+  pending: fetchPending,
+  error: fetchError,
+} = useAsyncData<NewsEntry>('news', async () => {
   const slug = route.params.slug as string;
   let id: number;
   if (slug.includes('-')) {
@@ -31,7 +33,7 @@ const { pending: fetchPending, error: fetchError } = useAsyncData('news', async 
     throw new Error('Invalid news ID');
   }
 
-  newsEntry.value = await $cmsService.getOneNews(id);
+  return await $cmsService.getOneNews(id);
 });
 
 useHead(() => {
