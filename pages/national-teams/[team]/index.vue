@@ -1,3 +1,7 @@
+<template>
+  <div></div>
+</template>
+
 <script setup lang="ts">
 const localePath = useLocalePath();
 const route = useRoute();
