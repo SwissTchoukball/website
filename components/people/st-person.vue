@@ -15,9 +15,9 @@
       <p v-if="subName" class="c-person__sub-name">
         {{ subName }}
       </p>
-      <p v-else-if="$slots.subName" class="c-person__sub-name">
+      <div v-else-if="$slots.subName" class="c-person__sub-name">
         <slot name="subName"></slot>
-      </p>
+      </div>
       <ul class="c-person__details u-unstyled-list">
         <li v-for="(detail, index) of details" :key="`detail-${index}`" class="c-person__detail">
           <font-awesome-icon :icon="detail.icon" class="c-person__detail-icon" />
