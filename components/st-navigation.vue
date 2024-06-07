@@ -20,6 +20,8 @@
         <a v-if="item.isExternal" :href="item.href" class="u-unstyled-button c-navigation__item-name">
           {{ item.name ? item.name : item.l10nKey ? $t(item.l10nKey) : '?' }}
         </a>
+        <!-- The `router-link-active` class does not seem to be applied automatically,
+             possibly because of the dynamic nested routes. Therefore we apply it manually -->
         <component
           :is="item.href ? NuxtLink : 'button'"
           v-else
@@ -27,6 +29,7 @@
           :aria-haspopup="item.children && !!item.children.length"
           :aria-expanded="openStates[itemIndex]"
           class="u-unstyled-button c-navigation__item-name"
+          :class="{ 'router-link-active': item.href && $route.path.includes(localePath(item.href)) }"
           @click="onItemClickNative(item, itemIndex)"
         >
           {{ item.name ? item.name : item.l10nKey ? $t(item.l10nKey) : '?' }}
@@ -46,6 +49,7 @@
           <li v-for="(subItem, subItemIndex) in item.children" :key="subItemIndex" class="c-navigation__sub-item">
             <nuxt-link
               :to="subItem.href ? localePath(subItem.href) : undefined"
+              :class="{ 'router-link-active': subItem.href && $route.path.includes(localePath(subItem.href)) }"
               @click="onItemClickNative(subItem, subItemIndex)"
             >
               {{ subItem.name ? subItem.name : subItem.l10nKey ? $t(subItem.l10nKey) : '?' }}
