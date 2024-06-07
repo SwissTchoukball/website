@@ -1,3 +1,7 @@
+<template>
+  <div>&nbsp;</div>
+</template>
+
 <script setup lang="ts">
 const localePath = useLocalePath();
 

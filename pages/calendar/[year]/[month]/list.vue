@@ -33,7 +33,7 @@
 <script setup lang="ts">
 import stEventList from '~/components/events/st-event-list.vue';
 import stCalendarNav from '~/components/events/st-calendar-nav.vue';
-import type { CalendarEvent, CMSService } from '~/plugins/08.cms-service';
+import type { CalendarEvent } from '~/plugins/08.cms-service';
 
 const { t } = useI18n();
 const eventsStore = useEventsStore();
@@ -48,7 +48,6 @@ defineI18nRoute({
 });
 
 const events = ref<CalendarEvent[]>([]);
-const upcomingEvents = ref<CalendarEvent[]>([]);
 const filteredTypeId = ref<number | undefined>(undefined);
 const showUpcomingEventsOnly = ref(false);
 
@@ -66,47 +65,53 @@ useHead(() => {
   };
 });
 
+// We load the event types only if we don't have them already
+if (!eventsStore.eventTypes) {
+  await eventsStore.loadEventTypes();
+}
+
+const {
+  data: upcomingEvents,
+  pending: fetchPending,
+  error: fetchError,
+} = useAsyncData<CalendarEvent[]>(
+  'events',
+  async () => {
+    // TODO: Add pagination as currently only the 50 first events in a month are visible
+    const eventsResult = await $cmsService.getEvents({
+      limit: 50,
+      typeId: filteredTypeId.value,
+      month: yearMonthString.value,
+    });
+
+    if (!eventsResult) {
+      throw new Error('Error when retrieving events');
+    }
+
+    events.value = eventsResult.data;
+    const filteredEvents = events.value.filter((event) => event.date_end >= new Date());
+
+    const now = new Date();
+    if (
+      arePastEventsThisMonth.value &&
+      filteredEvents.length > 0 &&
+      now.getFullYear() === year.value &&
+      now.getMonth() + 1 === month.value
+    ) {
+      showUpcomingEventsOnly.value = true;
+    }
+
+    return filteredEvents;
+  },
+  { default: () => [] },
+);
+
 const arePastEventsThisMonth = computed<boolean>(() => {
   return events.value.length !== upcomingEvents.value.length;
 });
 
 const visibleEvents = computed<CalendarEvent[]>(() => {
   return showUpcomingEventsOnly.value ? upcomingEvents.value : events.value;
-});
-
-const getEvents = async (): ReturnType<CMSService['getEvents']> => {
-  // TODO: Add pagination as currently only the 50 first events in a month are visible
-  return await $cmsService.getEvents({
-    limit: 50,
-    typeId: filteredTypeId.value,
-    month: yearMonthString.value,
-  });
-};
-
-const { pending: fetchPending, error: fetchError } = useAsyncData('competition', async () => {
-  const eventsResult = await getEvents();
-
-  if (!eventsResult) {
-    throw new Error('Error when retrieving events');
-  }
-
-  events.value = eventsResult.data;
-  upcomingEvents.value = events.value.filter((event) => event.date_end >= new Date());
-
-  const now = new Date();
-  if (
-    arePastEventsThisMonth.value &&
-    upcomingEvents.value.length > 0 &&
-    now.getFullYear() === year.value &&
-    now.getMonth() + 1 === month.value
-  ) {
-    showUpcomingEventsOnly.value = true;
-  }
-
-  // We load the event types only if we don't have them already
-  if (!eventsStore.eventTypes) {
-    await eventsStore.loadEventTypes();
-  }
 });
 </script>
 
