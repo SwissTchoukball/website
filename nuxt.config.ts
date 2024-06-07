@@ -73,6 +73,12 @@ export default defineNuxtConfig({
     transpile: ['@fortawesome/vue-fontawesome'],
   },
 
+  vue: {
+    compilerOptions: {
+      isCustomElement: (tag) => tag.startsWith('swiper-'),
+    },
+  },
+
   routeRules: {
     '/championnat': { redirect: '/competitions/ligue-a' },
     '/coupesuisse': { redirect: '/competitions/coupe-suisse' },

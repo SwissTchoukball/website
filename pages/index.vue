@@ -71,7 +71,7 @@
 </template>
 
 <script setup lang="ts">
-import type { CarouselItem } from '~/components/st-home-carousel.vue';
+import type { CarouselItem } from '~/components/st-home-carousel-item.vue';
 import type { CalendarEvent } from '~/plugins/08.cms-service';
 import stEventSmall from '~/components/events/st-event-small.vue';
 import stUpcomingMatches from '~/components/competitions/st-upcoming-matches.vue';
