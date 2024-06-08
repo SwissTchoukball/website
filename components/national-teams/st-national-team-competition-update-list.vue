@@ -1,9 +1,9 @@
 <template>
   <div v-if="fetchPending || fetchError || (data.updates && (data.updates.length || !isPast))">
     <div class="c-national-team-competition-update-list__header">
-      <st-tooltip>
+      <st-tooltip v-if="liveRefresh">
         <template #trigger>
-          <st-live-indicator v-if="liveRefresh" />
+          <st-live-indicator />
         </template>
         <template #content>{{ $t('internationalCompetition.live.updates.autoRefresh') }}</template>
       </st-tooltip>
@@ -29,32 +29,31 @@
         {{ $t('internationalCompetition.live.updates.subscribe') }}
       </st-button>
     </div>
+    <ul v-if="areFiltersVisible" class="c-national-team-competition-update-list__filters u-unstyled-list">
+      <li>
+        <input id="key-update-toggle" v-model="filters.is_key" type="checkbox" />
+        <label for="key-update-toggle">{{ $t('internationalCompetition.live.updates.filters.keyEvents') }}</label>
+      </li>
+      <li>
+        <input id="with-image-toggle" v-model="filters.with_image" type="checkbox" />
+        <label for="with-image-toggle">{{ $t('internationalCompetition.live.updates.filters.withImage') }}</label>
+      </li>
+      <li>
+        <select
+          v-model="filters.selectedTeamId"
+          class="c-national-team-competition-update-list__team-filter"
+          :aria-label="$t('internationalCompetition.live.updates.filters.teams').toString()"
+        >
+          <option :value="undefined">{{ $t('internationalCompetition.live.updates.filters.noTeamFilter') }}</option>
+          <option v-for="team of teams" :key="team.id" :value="team.id">{{ team.name }}</option>
+        </select>
+      </li>
+    </ul>
     <st-loader v-if="fetchPending" :main="true" />
     <p v-else-if="fetchError">
       {{ $t('internationalCompetition.live.updates.loadingError') }} : {{ fetchError.message }}
     </p>
     <template v-else>
-      <ul v-if="areFiltersVisible" class="c-national-team-competition-update-list__filters u-unstyled-list">
-        <li>
-          <input id="key-update-toggle" v-model="filters.is_key" type="checkbox" />
-          <label for="key-update-toggle">{{ $t('internationalCompetition.live.updates.filters.keyEvents') }}</label>
-        </li>
-        <li>
-          <input id="with-image-toggle" v-model="filters.with_image" type="checkbox" />
-          <label for="with-image-toggle">{{ $t('internationalCompetition.live.updates.filters.withImage') }}</label>
-        </li>
-        <li>
-          <select
-            v-model="filters.selectedTeamId"
-            class="c-national-team-competition-update-list__team-filter"
-            :aria-label="$t('internationalCompetition.live.updates.filters.teams').toString()"
-          >
-            <option :value="undefined">{{ $t('internationalCompetition.live.updates.filters.noTeamFilter') }}</option>
-            <option v-for="team of teams" :key="team.id" :value="team.id">{{ team.name }}</option>
-          </select>
-        </li>
-      </ul>
-
       <p v-if="hasRefreshError">{{ $t('internationalCompetition.live.updates.loadingError') }}</p>
       <ul v-if="data.updates && data.updates.length > 0" class="u-unstyled-list">
         <li
@@ -238,6 +237,7 @@ const toggleFilters = () => {
   background-color: white;
   border-radius: 50%;
   flex-shrink: 0;
+  text-align: center;
 }
 
 .c-national-team-competition-update-list__settings--open {
@@ -279,6 +279,10 @@ const toggleFilters = () => {
   gap: var(--st-length-spacing-xxs) var(--st-length-spacing-xs);
   font-size: 0.8em;
   align-items: center;
+}
+
+.c-national-team-competition-update-list__filters input {
+  margin-right: var(--st-length-spacing-xxs);
 }
 
 .c-national-team-competition-update-list__team-filter {
