@@ -34,7 +34,6 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@nuxtjs/stylelint-module',
     'nuxt-mail',
-    '@nuxt/scripts',
   ],
 
   i18n: {
@@ -55,6 +54,7 @@ export default defineNuxtConfig({
   },
 
   // nuxt-mail module configuration: https://github.com/dword-design/nuxt-mail#usage
+  // @ts-expect-error Module is missing TypeScript support
   mail: {
     message: {
       to: process.env.ST_CONTACT_EMAIL_RECIPIENT,
@@ -89,22 +89,17 @@ export default defineNuxtConfig({
     '/etc2022': { redirect: '/equipes-nationales/competitions/etc2022' },
   },
 
-  scripts: {
-    registry: {
-      matomoAnalytics: {
-        siteId: process.env.MATOMO_SITE_ID,
-        matomoUrl: 'https://analytics.tchoukball.ch/',
-        cookies: false,
-        debug: process.env.MATOMO_DEBUG,
-      },
-    },
-  },
   runtimeConfig: {
     public: {
       cmsURL: process.env.CMS_URL || 'http://localhost:8055',
       websiteBaseUrl: process.env.ST_WEBSITE_BASE_URL,
       leveradeURL: 'https://api.leverade.com',
       hCaptchaSiteKey: process.env.HCAPTCHA_SITE_KEY,
+      matomo: {
+        siteId: process.env.MATOMO_SITE_ID,
+        url: 'https://analytics.tchoukball.ch',
+        debug: process.env.MATOMO_DEBUG,
+      },
       flickr: {
         userId: '128998613@N07',
         // It's okay to use the API key from the browser
