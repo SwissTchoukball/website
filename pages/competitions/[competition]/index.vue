@@ -1,3 +1,7 @@
+<template>
+  <div></div>
+</template>
+
 <script setup lang="ts">
 import Competition from '~/models/competition.model';
 
