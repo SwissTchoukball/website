@@ -43,21 +43,16 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+defineProps({
+  seasonStartYear: {
+    type: Number,
+    required: true,
+  },
+});
 
-export default defineComponent({
-  props: {
-    seasonStartYear: {
-      type: Number,
-      required: true,
-    },
-  },
-  computed: {
-    ages(): number[] {
-      return Array.from({ length: 17 }, (_v, k) => k + 5).reverse();
-    },
-  },
+const ages = computed<number[]>(() => {
+  return Array.from({ length: 17 }, (_v, k) => k + 5).reverse();
 });
 </script>
 

@@ -12,7 +12,7 @@
           class="c-resources__search-field"
         />
         <button type="submit" class="u-unstyled-button c-resources__search-button" :disabled="isSearching">
-          <fa-icon icon="magnifying-glass" class="c-resources__search-icon" />
+          <font-awesome-icon icon="magnifying-glass" class="c-resources__search-icon" />
         </button>
       </div>
       <fieldset class="c-resources__filters">
@@ -43,148 +43,146 @@
     <p v-else-if="resources.length <= 0" class="l-blank-slate-message">{{ $t('resources.search.noResults') }}</p>
     <template v-else>
       <p class="c-resources__results-info">
-        {{ $tc('resources.search.resultsInfo', resources.length, { amountResults: resources.length }) }}
+        {{ $t('resources.search.resultsInfo', { amountResults: resources.length }, resources.length) }}
       </p>
       <st-resource-list :resources="resources" class="c-resources__list" />
     </template>
   </section>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-import stResourceList from '~/components/resources/st-resource-list.vue';
-import { Domain, Resource, ResourceType } from '~/plugins/cms-service';
+<script setup lang="ts">
+import type { Domain, Resource, ResourceType } from '~/plugins/08.cms-service';
 
 const ALL_OPTION = 'all';
 
-export default defineComponent({
-  components: { stResourceList },
-  nuxtI18n: {
-    paths: {
-      fr: '/ressources',
-      de: '/ressourcen',
-    },
-  },
-  data() {
-    return {
-      searchTerm: '',
-      selectedDomain: ALL_OPTION as number | typeof ALL_OPTION,
-      selectedType: ALL_OPTION as number | typeof ALL_OPTION,
-      hasSearchBeenSubmittedOnce: false,
-      isSearching: false,
-      errorMessage: '',
-      resources: [] as Resource[],
-    };
-  },
-  async fetch() {
-    // We load the resource types only if we don't have them already
-    if (!this.$store.state.resourceTypes?.length) {
-      await this.$store.dispatch('loadResourceTypes');
-    }
-    // We don't need to load the domains because they are loaded in nuxtServerInit (as they are needed in multiple places)
-  },
-  head() {
-    return {
-      title: this.$t('resources.title').toString(),
-      meta: [
-        { property: 'og:title', content: this.$t('resources.title').toString() },
-        {
-          hid: 'og:description',
-          property: 'og:description',
-          content: this.$t('resources.description').toString(),
-        },
-      ],
-    };
-  },
-  computed: {
-    domains() {
-      return [...this.$store.state.domains].sort((a, b) =>
-        (a as Domain).name.localeCompare((b as Domain).name, this.$i18n.locale)
-      );
-    },
-    types(): ResourceType[] {
-      return this.$store.state.resourceTypes;
-    },
-    domainIdFilter(): number | undefined {
-      if (!(typeof this.selectedDomain === 'number')) {
-        return undefined;
-      }
-      return this.selectedDomain;
-    },
-    typeIdFilter(): number | undefined {
-      if (!(typeof this.selectedType === 'number')) {
-        return undefined;
-      }
-      return this.selectedType;
-    },
-  },
-  created() {
-    this.setParametersFromQueryStrings();
-
-    // Directly submitting a search requests if the params are good
-    if (this.searchTerm.length > 0 || this.domainIdFilter || this.typeIdFilter) {
-      this.submitSearch();
-    }
-  },
-  methods: {
-    async submitSearch() {
-      if (this.isSearching) {
-        // Prevent submit if request is still ongoing
-        return;
-      }
-      this.hasSearchBeenSubmittedOnce = true;
-
-      this.errorMessage = '';
-
-      this.isSearching = true;
-      this.resources = [];
-
-      this.setQueryStrings();
-
-      // Retrieving search results
-      try {
-        this.resources = await this.$cmsService.searchResources(
-          this.searchTerm,
-          this.domainIdFilter,
-          this.typeIdFilter
-        );
-      } catch (error) {
-        this.errorMessage = this.$t('resources.search.error').toString() + error;
-      } finally {
-        this.isSearching = false;
-      }
-    },
-    setQueryStrings() {
-      this.$router.push({
-        query: {
-          q: this.searchTerm ? this.searchTerm : undefined,
-          d: this.domainIdFilter ? this.domainIdFilter.toString() : undefined,
-          t: this.typeIdFilter ? this.typeIdFilter.toString() : undefined,
-        },
-      });
-    },
-    setParametersFromQueryStrings() {
-      if (this.$route.query.q && typeof this.$route.query.q === 'string') {
-        this.searchTerm = this.$route.query.q;
-      }
-      if (this.$route.query.d && typeof this.$route.query.d === 'string') {
-        this.selectedDomain = parseInt(this.$route.query.d);
-      }
-      if (this.$route.query.t && typeof this.$route.query.t === 'string') {
-        this.selectedType = parseInt(this.$route.query.t);
-      }
-    },
-    resetSearchParameters() {
-      this.searchTerm = '';
-      this.selectedDomain = ALL_OPTION;
-      this.selectedType = ALL_OPTION;
-      this.setQueryStrings();
-    },
+defineI18nRoute({
+  paths: {
+    fr: '/ressources',
+    de: '/ressourcen',
   },
 });
+
+const route = useRoute();
+const router = useRouter();
+const { t, locale } = useI18n();
+const { $cmsService } = useNuxtApp();
+const resourcesStore = useResourcesStore();
+const domainsStore = useDomainsStore();
+
+const searchTerm = ref('');
+const selectedDomain = ref<number | typeof ALL_OPTION>(ALL_OPTION);
+const selectedType = ref<number | typeof ALL_OPTION>(ALL_OPTION);
+const hasSearchBeenSubmittedOnce = ref(false);
+const isSearching = ref(false);
+const errorMessage = ref('');
+const resources = ref<Resource[]>([]);
+
+// We load the resource types only if we don't have them already
+if (!resourcesStore.resourceTypes?.length) {
+  await resourcesStore.loadResourceTypes();
+}
+// We don't need to load the domains because they are loaded in init.server.ts (as they are needed in multiple places)
+
+useHead(() => {
+  return {
+    title: t('resources.title').toString(),
+    meta: [
+      { property: 'og:title', content: t('resources.title').toString() },
+      {
+        hid: 'og:description',
+        property: 'og:description',
+        content: t('resources.description').toString(),
+      },
+    ],
+  };
+});
+
+const domains = computed<Domain[]>(() => {
+  return [...domainsStore.domains].sort((a, b) => (a as Domain).name.localeCompare((b as Domain).name, locale.value));
+});
+
+const types = computed<ResourceType[]>(() => {
+  return resourcesStore.resourceTypes;
+});
+
+const domainIdFilter = computed<number | undefined>(() => {
+  if (!(typeof selectedDomain.value === 'number')) {
+    return undefined;
+  }
+  return selectedDomain.value;
+});
+
+const typeIdFilter = computed<number | undefined>(() => {
+  if (!(typeof selectedType.value === 'number')) {
+    return undefined;
+  }
+  return selectedType.value;
+});
+
+const submitSearch = async () => {
+  if (isSearching.value) {
+    // Prevent submit if request is still ongoing
+    return;
+  }
+  hasSearchBeenSubmittedOnce.value = true;
+
+  errorMessage.value = '';
+
+  isSearching.value = true;
+  resources.value = [];
+
+  setQueryStrings();
+
+  // Retrieving search results
+  try {
+    resources.value = await $cmsService.searchResources(searchTerm.value, domainIdFilter.value, typeIdFilter.value);
+  } catch (error) {
+    errorMessage.value = t('resources.search.error').toString() + error;
+  } finally {
+    isSearching.value = false;
+  }
+};
+
+const setQueryStrings = () => {
+  router.push({
+    query: {
+      q: searchTerm.value ? searchTerm.value : undefined,
+      d: domainIdFilter.value ? domainIdFilter.value.toString() : undefined,
+      t: typeIdFilter.value ? typeIdFilter.value.toString() : undefined,
+    },
+  });
+};
+
+const setParametersFromQueryStrings = () => {
+  if (route.query.q && typeof route.query.q === 'string') {
+    searchTerm.value = route.query.q;
+  }
+  if (route.query.d && typeof route.query.d === 'string') {
+    selectedDomain.value = parseInt(route.query.d);
+  }
+  if (route.query.t && typeof route.query.t === 'string') {
+    selectedType.value = parseInt(route.query.t);
+  }
+};
+
+const resetSearchParameters = () => {
+  searchTerm.value = '';
+  selectedDomain.value = ALL_OPTION;
+  selectedType.value = ALL_OPTION;
+  setQueryStrings();
+};
+
+setParametersFromQueryStrings();
+
+// Directly submitting a search requests if the params are good
+if (searchTerm.value.length > 0 || domainIdFilter.value || typeIdFilter.value) {
+  submitSearch();
+}
 </script>
 
 <style scoped>
+@import url('~/assets/css/media.css');
+
 .c-resources__form {
   margin-top: var(--st-length-spacing-m);
   text-align: center;

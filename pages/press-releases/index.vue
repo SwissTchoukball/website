@@ -1,9 +1,11 @@
 <template>
   <section class="l-main-content-section">
-    <h2 class="t-headline-1 c-press-releases__title">{{ $tc('pressReleases.name', 2) }}</h2>
+    <h2 class="t-headline-1 c-press-releases__title">{{ $t('pressReleases.name', 2) }}</h2>
 
+    <StLoader v-if="fetchPending" main />
+    <p v-else-if="fetchError">{{ $t('error.otherError') }} : {{ fetchError.message }}</p>
     <ul class="u-unstyled-list c-press-releases__list">
-      <li v-for="pressRelease in pressReleaseList" :key="pressRelease.id" class="c-press-releases__list-item">
+      <li v-for="pressRelease in data.pressReleaseList" :key="pressRelease.id" class="c-press-releases__list-item">
         <nuxt-link
           :to="
             localePath({
@@ -41,62 +43,63 @@
   </section>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-import { MenuItem } from '~/store/state';
-import { PressRelease } from '~/components/press-releases/press-releases';
+<script setup lang="ts">
+import type { PressRelease } from '~/components/press-releases/press-releases';
 
-export default defineComponent({
-  nuxtI18n: {
-    paths: {
-      fr: '/communiques-de-presse',
-      de: '/medienmitteilungen',
-    },
+const localePath = useLocalePath();
+const route = useRoute();
+const { t } = useI18n();
+const { $cmsService, $formatDate } = useNuxtApp();
+
+defineI18nRoute({
+  paths: {
+    fr: '/communiques-de-presse',
+    de: '/medienmitteilungen',
   },
-  data() {
-    return {
-      pressReleaseList: [] as PressRelease[],
-      pressReleasesPerPage: 25,
-      totalPressReleases: undefined as number | undefined,
-    };
-  },
-  async fetch() {
-    const pressReleasesResult = await this.$cmsService.getPressReleaseList({
-      limit: this.pressReleasesPerPage,
-      page: this.currentPage,
+});
+
+useHead(() => {
+  return {
+    title: t('pressReleases.name', 2),
+    meta: [{ property: 'og:title', content: t('pressReleases.name', 2) }],
+  };
+});
+
+const pressReleasesPerPage = 25;
+
+const currentPage = computed<number>(() => {
+  if (route.query.page && typeof route.query.page === 'string') {
+    return parseInt(route.query.page);
+  }
+
+  return 1;
+});
+
+const {
+  data,
+  pending: fetchPending,
+  error: fetchError,
+} = useAsyncData<{ pressReleaseList: PressRelease[]; totalPressReleases: number }>(
+  'press-releases',
+  async () => {
+    const pressReleasesResult = await $cmsService.getPressReleaseList({
+      limit: pressReleasesPerPage,
+      page: currentPage.value,
     });
 
-    this.pressReleaseList = pressReleasesResult.data;
-    this.totalPressReleases = pressReleasesResult.meta.total;
+    return {
+      pressReleaseList: pressReleasesResult.data,
+      totalPressReleases: pressReleasesResult.meta.total,
+    };
   },
-  computed: {
-    totalPages(): number | undefined {
-      if (!this.totalPressReleases) {
-        return;
-      }
-      return Math.ceil(this.totalPressReleases / this.pressReleasesPerPage);
-    },
-    currentPage(): number {
-      if (this.$route.query.page && typeof this.$route.query.page === 'string') {
-        return parseInt(this.$route.query.page);
-      }
+  { default: () => ({ pressReleaseList: [], totalPressReleases: 0 }) },
+);
 
-      return 1;
-    },
-    pressReleaseNavigation(): MenuItem[] {
-      return this.pressReleaseList.map((pressRelease) => {
-        return {
-          name: `${this.$formatDate(new Date(pressRelease.date_created), 'dd.MM.yyyy')} – ${pressRelease.context} – ${
-            pressRelease.title
-          }`,
-          href: this.localePath({
-            name: 'press-releases-slug',
-            params: { slug: `${pressRelease.id}-${pressRelease.slug}` },
-          }),
-        };
-      });
-    },
-  },
+const totalPages = computed<number | undefined>(() => {
+  if (!data.value.totalPressReleases) {
+    return;
+  }
+  return Math.ceil(data.value.totalPressReleases / pressReleasesPerPage);
 });
 </script>
 

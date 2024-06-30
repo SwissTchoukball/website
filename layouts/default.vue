@@ -20,148 +20,56 @@
       />
     </div>
     <header class="c-default__header">
-      <nuxt-link class="c-default__logo" :to="localePath('index')" @click.native="closeDrawer()"></nuxt-link>
+      <nuxt-link class="c-default__logo" :to="localePath('index')" @click="closeDrawer()" />
       <st-language-switcher class="c-default__header-lang-switcher" />
       <st-burger-button v-model="isDrawerOpen" class="c-default__burger-button" />
       <st-navigation :items="mainNavigation" :name="$t('mainNavigation')" class="c-default__header-navigation" />
     </header>
     <st-live-stream-banner :live-streams="liveStreams" />
     <main>
-      <Nuxt />
+      <slot />
     </main>
     <st-footer />
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-import { MenuItem } from '~/store/state';
-import { LiveStream } from '~/plugins/cms-service';
+<script setup lang="ts">
+import type { LiveStream } from '~/plugins/08.cms-service';
 
-export default defineComponent({
-  data() {
-    return {
-      isDrawerOpen: false,
-    };
-  },
-  // We define `head()` here instead of in nuxt.config.ts because when we do it there, nuxt-matomo does not work
-  // See https://github.com/nuxt-community/i18n-module/issues/1266#issuecomment-982527874
-  head() {
-    const i18nHead = this.$nuxtI18nHead({ addSeoAttributes: true });
-    return {
-      titleTemplate: (titleChunk) => {
-        // If undefined or blank then we don't need the hyphen
-        return titleChunk ? `${titleChunk} - ${this.$t('title')}` : this.$t('title').toString();
-      },
-      htmlAttrs: {
-        ...i18nHead.htmlAttrs,
-      },
-      meta: [
-        { charset: 'utf-8' },
-        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { name: 'format-detection', content: 'telephone=no' },
-        {
-          hid: 'description',
-          name: 'description',
-          content: this.$t('defaultDescription').toString(),
-        },
-        {
-          hid: 'keywords',
-          name: 'keywords',
-          content:
-            'tchoukball, tchouk, tchouk-ball, sport, sport pour tous, fair-play, accessible, intense, tactique, prix thulin, Swiss Tchoukball, fédération, verband, federazione, federation, switzerland, suisse, schweiz, svizerra',
-        },
-        { property: 'og:site_name', content: this.$t('title').toString() },
-        {
-          hid: 'og:description',
-          property: 'og:description',
-          content: this.$t('defaultDescription').toString(),
-          template: (chunk) => {
-            return chunk || this.$t('defaultDescription').toString();
-          },
-        },
-        {
-          hid: 'og:type',
-          property: 'og:type',
-          content: `website`,
-        },
-        {
-          hid: 'og:url',
-          property: 'og:url',
-          content: `${this.$config.websiteBaseUrl}${this.$route.path}`,
-        },
-        {
-          hid: 'og:image',
-          property: 'og:image',
-          content: `${this.$config.websiteBaseUrl}/images/og-swiss-tchoukball.jpg`,
-        },
-        {
-          hid: 'og:image:alt',
-          property: 'og:image:alt',
-          content: 'Logo of Swiss Tchoukball over a background featuring the net of a tchoukball frame.',
-        },
-        {
-          name: 'twitter:card',
-          content: 'summary',
-        },
-        {
-          name: 'twitter:site',
-          content: '@SwissTchoukball',
-        },
-        ...i18nHead.meta,
-      ],
-      link: [
-        { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
-        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-        { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32x32.png' },
-        { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/favicon-16x16.png' },
-        { rel: 'manifest', href: '/site.webmanifest' },
-        { rel: 'mask-icon', href: '/safari-pinned-tab.svg', color: '#ff0000' },
-        {
-          rel: 'alternate',
-          type: 'application/rss+xml',
-          hreflang: 'fr',
-          href: 'https://feeds.tchoukball.ch/news-fr.xml',
-          title: 'News Swiss Tchoukball en français',
-        },
-        {
-          rel: 'alternate',
-          type: 'application/rss+xml',
-          hreflang: 'de',
-          href: 'https://feeds.tchoukball.ch/news-de.xml',
-          title: 'Swiss Tchoukball News auf Deutsch',
-        },
-        ...i18nHead.link,
-      ],
-    };
-  },
-  computed: {
-    mainNavigation(): MenuItem[] {
-      return this.$store.state.mainNavigation;
-    },
-    secondaryNavigation(): MenuItem[] {
-      return this.$store.state.secondaryNavigation;
-    },
-    liveStreams(): LiveStream[] {
-      return this.$store.state.liveStreams;
-    },
-  },
-  mounted() {
-    // Adding a specific class if the OS is Windows.
-    // Enables using a custom font for Flag emojis so that they're better than the default flag emojis on Windows, which are just letters
-    if (/windows/i.test(navigator.userAgent)) {
-      document.body.classList.add('u-is-windows');
-    }
-  },
-  methods: {
-    closeDrawer() {
-      this.isDrawerOpen = false;
-    },
-  },
+const localePath = useLocalePath();
+const navigationStore = useNavigationStore();
+const liveStreamsStore = useLiveStreamsStore();
+
+const isDrawerOpen = ref(false);
+
+const mainNavigation = computed<MenuItem[]>(() => {
+  return navigationStore.mainNavigation;
 });
+
+const secondaryNavigation = computed<MenuItem[]>(() => {
+  return navigationStore.secondaryNavigation;
+});
+
+const liveStreams = computed<LiveStream[]>(() => {
+  return liveStreamsStore.liveStreams;
+});
+
+onMounted(() => {
+  // Adding a specific class if the OS is Windows.
+  // Enables using a custom font for Flag emojis so that they're better than the default flag emojis on Windows, which are just letters
+  if (/windows/i.test(navigator.userAgent)) {
+    document.body.classList.add('u-is-windows');
+  }
+});
+
+const closeDrawer = () => {
+  isDrawerOpen.value = false;
+};
 </script>
 
 <style scoped>
+@import url('~/assets/css/media.css');
+
 .c-default__header {
   height: var(--st-length-small-header-height);
   display: flex;
@@ -192,14 +100,18 @@ export default defineComponent({
   top: var(--st-length-small-header-height);
   left: 100vw;
   bottom: 0;
-  transition: left 0.25s ease-in-out, opacity 0s 0.25s;
+  transition:
+    left 0.25s ease-in-out,
+    opacity 0s 0.25s;
   z-index: 3;
 }
 
 .c-default__drawer--open {
   left: 0;
   opacity: 1;
-  transition: left 0.25s ease-in-out, opacity 0s 0s;
+  transition:
+    left 0.25s ease-in-out,
+    opacity 0s 0s;
 }
 
 .c-default__drawer-lang-switcher {

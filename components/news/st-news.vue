@@ -18,79 +18,88 @@
   </article>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue';
-import { NewsEntry } from '~/components/news/st-news';
-import { BreadcrumbItem } from '~/components/st-breadcrumb.vue';
-import { Domain } from '~/plugins/cms-service';
-import { getAssetURL, getAssetSrcSet } from '~/plugins/directus';
+<script setup lang="ts">
+import type { NewsEntry } from '~/components/news/st-news';
+import type { BreadcrumbItem } from '~/components/st-breadcrumb.vue';
+import type { Domain } from '~/plugins/08.cms-service';
+import { getAssetURL, getAssetSrcSet } from '~/plugins/06.directus';
+import { useDomains } from '~/composables/useDomains';
 
-export default defineComponent({
-  props: {
-    newsEntry: {
-      type: Object as PropType<NewsEntry>,
-      required: true,
-    },
-  },
-  data() {
-    return {
-      imgTagSizes: '',
-      breadcrumb: [
-        {
-          pageName: 'news',
-          displayName: 'News',
-        },
-      ] as BreadcrumbItem[],
-    };
-  },
-  computed: {
-    mainImageFallbackSrc(): string {
-      if (!this.newsEntry.main_image) {
-        return '';
-      }
-      return getAssetURL(this.$config.cmsURL, this.newsEntry.main_image.id, {
-        width: this.$config.keyVisualSizes[0],
-      });
-    },
-    mainImageSrcSet(): string {
-      if (!this.newsEntry.main_image) {
-        return '';
-      }
-      return getAssetSrcSet(this.$config.cmsURL, this.newsEntry.main_image.id, {
-        widths: this.$config.keyVisualSizes,
-      });
-    },
-    creationDate(): string {
-      return this.$formatDate(new Date(this.newsEntry.date_created), 'PPP');
-    },
-    updateDate(): string | undefined {
-      if (this.newsEntry.date_updated) {
-        return this.$formatDate(new Date(this.newsEntry.date_updated), 'PPP');
-      }
-      return undefined;
-    },
-    dates(): string {
-      let dates = `${this.$t('news.publishedOn')} ${this.creationDate}`;
+const runtimeConfig = useRuntimeConfig();
+const appConfig = useAppConfig();
+const { $formatDate } = useNuxtApp();
+const { t } = useI18n();
+const { getDomainsFromList } = useDomains();
 
-      if (this.updateDate && this.creationDate !== this.updateDate) {
-        dates += `, ${this.$t('news.updatedOn')} ${this.updateDate}`;
-      }
+const props = defineProps({
+  newsEntry: {
+    type: Object as PropType<NewsEntry>,
+    required: true,
+  },
+});
 
-      return dates;
-    },
-    domains(): Domain[] {
-      return this.newsEntry.domain_ids.map((domainId) => this.$store.getters.getDomainById(domainId));
-    },
+const imgTagSizes = ref('');
+
+const breadcrumb = ref<BreadcrumbItem[]>([
+  {
+    pageName: 'news',
+    displayName: 'News',
   },
-  mounted() {
-    const bodyStyles = window.getComputedStyle(document.body);
-    const lXlBreakpoint = bodyStyles.getPropertyValue('--st-breakpoint-l-xl');
-    this.imgTagSizes = `(min-width: ${lXlBreakpoint}) ${lXlBreakpoint}, 100vw`;
-  },
+]);
+
+const mainImageFallbackSrc = computed<string>(() => {
+  if (!props.newsEntry.main_image) {
+    return '';
+  }
+  return getAssetURL(runtimeConfig.public.cmsURL, props.newsEntry.main_image.id, {
+    width: appConfig.keyVisualSizes[0],
+  });
+});
+
+const mainImageSrcSet = computed<string>(() => {
+  if (!props.newsEntry.main_image) {
+    return '';
+  }
+  return getAssetSrcSet(runtimeConfig.public.cmsURL, props.newsEntry.main_image.id, {
+    widths: appConfig.keyVisualSizes,
+  });
+});
+
+const creationDate = computed<string>(() => {
+  return $formatDate(new Date(props.newsEntry.date_created), 'PPP');
+});
+
+const updateDate = computed<string | undefined>(() => {
+  if (props.newsEntry.date_updated) {
+    return $formatDate(new Date(props.newsEntry.date_updated), 'PPP');
+  }
+  return undefined;
+});
+
+const dates = computed<string>(() => {
+  let dates = `${t('news.publishedOn')} ${creationDate.value}`;
+
+  if (updateDate.value && creationDate.value !== updateDate.value) {
+    dates += `, ${t('news.updatedOn')} ${updateDate.value}`;
+  }
+
+  return dates;
+});
+
+const domains = computed<Domain[]>(() => {
+  return getDomainsFromList(props.newsEntry.domain_ids);
+});
+
+onMounted(() => {
+  const bodyStyles = window.getComputedStyle(document.body);
+  const lXlBreakpoint = bodyStyles.getPropertyValue('--st-breakpoint-l-xl');
+  imgTagSizes.value = `(min-width: ${lXlBreakpoint}) ${lXlBreakpoint}, 100vw`;
 });
 </script>
 
 <style scoped>
+@import url('~/assets/css/media.css');
+
 .c-news-entry {
   margin-top: var(--st-length-spacing-xs);
 }

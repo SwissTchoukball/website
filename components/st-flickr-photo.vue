@@ -4,16 +4,13 @@
   </a>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue';
-import { FlickrPhoto } from '~/plugins/flickr';
+<script setup lang="ts">
+import type { FlickrPhoto } from '~/plugins/05.flickr';
 
-export default defineComponent({
-  props: {
-    photo: {
-      type: Object as PropType<FlickrPhoto>,
-      required: true,
-    },
+defineProps({
+  photo: {
+    type: Object as PropType<FlickrPhoto>,
+    required: true,
   },
 });
 </script>

@@ -9,50 +9,43 @@
       :avatar-asset-id="holder.portrait_square_head"
       :details="getHolderDetails(holder)"
       class="c-role__person"
-    >
-    </st-person>
+    />
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue';
-import stPerson, { PersonDetail } from '~/components/people/st-person.vue';
-import { Gender, Person, Role, RoleWithPartialGroupAndHolders } from '~/plugins/cms-service';
+<script setup lang="ts">
+import stPerson, { type PersonDetail } from '~/components/people/st-person.vue';
+import { Gender, type Person, type Role, type RoleWithPartialGroupAndHolders } from '~/plugins/08.cms-service';
 
-export default defineComponent({
-  components: { stPerson },
-  props: {
-    role: {
-      type: Object as PropType<Role | RoleWithPartialGroupAndHolders>,
-      required: true,
-    },
-    roleAsSubname: Boolean,
+const props = defineProps({
+  role: {
+    type: Object as PropType<Role | RoleWithPartialGroupAndHolders>,
+    required: true,
   },
-  computed: {
-    nameForHolders(): string {
-      if (this.role.name_feminine && this.role.holders?.every((holder) => holder.gender === Gender.Female)) {
-        return this.role.name_feminine;
-      }
-      if (this.role.name_masculine && this.role.holders?.every((holder) => holder.gender === Gender.Male)) {
-        return this.role.name_masculine;
-      }
-      return this.role.name;
-    },
-  },
-  methods: {
-    getHolderDetails(holder: Person | Partial<Person> | undefined): PersonDetail[] {
-      const details = [];
-      if (holder?.email) {
-        details.push({
-          icon: 'envelope',
-          text: holder.email,
-          href: `mailto:${holder.email}`,
-        });
-      }
-      return details;
-    },
-  },
+  roleAsSubname: Boolean,
 });
+
+const nameForHolders = computed<string>(() => {
+  if (props.role.name_feminine && props.role.holders?.every((holder) => holder.gender === Gender.Female)) {
+    return props.role.name_feminine;
+  }
+  if (props.role.name_masculine && props.role.holders?.every((holder) => holder.gender === Gender.Male)) {
+    return props.role.name_masculine;
+  }
+  return props.role.name;
+});
+
+const getHolderDetails = (holder: Person | Partial<Person> | undefined): PersonDetail[] => {
+  const details = [];
+  if (holder?.email) {
+    details.push({
+      icon: 'envelope',
+      text: holder.email,
+      href: `mailto:${holder.email}`,
+    });
+  }
+  return details;
+};
 </script>
 
 <style scoped>

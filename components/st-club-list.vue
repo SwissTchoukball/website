@@ -16,39 +16,39 @@
   </ul>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue';
-import { DirectusClub, getAssetURL } from '~/plugins/directus';
+<script setup lang="ts">
+import { type DirectusClub, getAssetURL } from '~/plugins/06.directus';
 
-export default defineComponent({
-  props: {
-    clubs: {
-      type: Array as PropType<DirectusClub[]>,
-      required: true,
-    },
-  },
-  methods: {
-    logoSrc(assetId: string): string {
-      return getAssetURL(this.$config.cmsURL, assetId, { width: 200 });
-    },
-    logoSrcSet(assetId: string): string {
-      return `${getAssetURL(this.$config.cmsURL, assetId, { width: 400 })} 2x`;
-    },
-    getWebsiteDisplay(website: string): string | null {
-      if (!website) {
-        return null;
-      }
-      const result = website.match(/http(?:s?):\/\/(?:www\.)?(.*)/);
-      if (result && result.length >= 2) {
-        return result[1];
-      }
-      return website;
-    },
+const runtimeConfig = useRuntimeConfig();
+
+defineProps({
+  clubs: {
+    type: Array as PropType<DirectusClub[]>,
+    required: true,
   },
 });
+const logoSrc = (assetId: string): string => {
+  return getAssetURL(runtimeConfig.public.cmsURL, assetId, { width: 200 });
+};
+
+const logoSrcSet = (assetId: string): string => {
+  return `${getAssetURL(runtimeConfig.public.cmsURL, assetId, { width: 400 })} 2x`;
+};
+const getWebsiteDisplay = (website: string): string | null => {
+  if (!website) {
+    return null;
+  }
+  const result = website.match(/http(?:s?):\/\/(?:www\.)?(.*)/);
+  if (result && result.length >= 2) {
+    return result[1];
+  }
+  return website;
+};
 </script>
 
 <style scoped>
+@import url('~/assets/css/media.css');
+
 .c-club-list {
   display: flex;
   flex-wrap: wrap;

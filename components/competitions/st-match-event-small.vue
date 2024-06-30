@@ -8,41 +8,40 @@
   />
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue';
-import Match from '~/models/match.model';
+<script setup lang="ts">
+import type Match from '~/models/match.model';
 import stEventSmall from '~/components/events/st-event-small.vue';
-import CompetitionEdition from '~/models/competition-edition.model';
+import type CompetitionEdition from '~/models/competition-edition.model';
 
-export default defineComponent({
-  components: { stEventSmall },
-  props: {
-    match: {
-      type: Object as PropType<Match>,
-      required: true,
-    },
-    competitionEdition: {
-      type: Object as PropType<CompetitionEdition>,
-      default: undefined,
-    },
+const localePath = useLocalePath();
+
+const props = defineProps({
+  match: {
+    type: Object as PropType<Match>,
+    required: true,
   },
-  computed: {
-    details(): string {
-      return this.match.facility ? `${this.match.facility.name}, ${this.match.facility.city}` : '';
-    },
-    to(): string {
-      return this.localePath({
-        name: 'competitions-competition-season-match-matchId',
-        params: {
-          competition: this.competitionEdition?.competition.slug || '',
-          season: this.competitionEdition?.season?.slug || '',
-          matchId: this.match.id,
-        },
-      });
-    },
-    matchName(): string {
-      return `${this.match.home_team?.name} - ${this.match.away_team?.name}`;
-    },
+  competitionEdition: {
+    type: Object as PropType<CompetitionEdition>,
+    default: undefined,
   },
+});
+
+const details = computed<string>(() => {
+  return props.match.facility ? `${props.match.facility.name}, ${props.match.facility.city}` : '';
+});
+
+const to = computed<string>(() => {
+  return localePath({
+    name: 'competitions-competition-season-match-matchId',
+    params: {
+      competition: props.competitionEdition?.competition.slug || '',
+      season: props.competitionEdition?.season?.slug || '',
+      matchId: props.match.id,
+    },
+  });
+});
+
+const matchName = computed<string>(() => {
+  return `${props.match.home_team?.name} - ${props.match.away_team?.name}`;
 });
 </script>

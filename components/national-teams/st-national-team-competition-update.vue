@@ -27,57 +27,55 @@
   </article>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue';
+<script setup lang="ts">
 import { differenceInDays } from 'date-fns';
 import linkifyString from 'linkify-string';
-import { getAssetSrcSet, getAssetURL } from '~/plugins/directus';
-import { NationalTeamCompetitionUpdate } from '~/components/national-teams/st-national-teams.prop';
+import { getAssetSrcSet, getAssetURL } from '~/plugins/06.directus';
+import type { NationalTeamCompetitionUpdate } from '~/components/national-teams/st-national-teams.prop';
 
-export default defineComponent({
-  props: {
-    update: {
-      type: Object as PropType<NationalTeamCompetitionUpdate>,
-      required: true,
-    },
+const { $formatDateDistanceToNow, $formatDate } = useNuxtApp();
+const runtimeConfig = useRuntimeConfig();
+
+const props = defineProps({
+  update: {
+    type: Object as PropType<NationalTeamCompetitionUpdate>,
+    required: true,
   },
-  data() {
-    return {
-      imgTagSizes: '',
-    };
-  },
-  computed: {
-    createdDate(): Date {
-      return new Date(this.update.date_created);
-    },
-    formattedDate(): string {
-      if (differenceInDays(new Date(), this.createdDate) < 1) {
-        return this.$formatDateDistanceToNow(new Date(this.update.date_created));
-      } else {
-        return this.$formatDate(new Date(this.update.date_created), 'PPP');
-      }
-    },
-    formattedBody(): string {
-      return linkifyString(this.update.body);
-    },
-    imageFallbackSrc(): string {
-      if (!this.update.image) {
-        return '';
-      }
-      return getAssetURL(this.$config.cmsURL, this.update.image.id, {
-        width: 1600,
-        withoutEnlargement: 'true',
-      });
-    },
-    imageSrcSet(): string {
-      if (!this.update.image) {
-        return '';
-      }
-      return getAssetSrcSet(this.$config.cmsURL, this.update.image.id, {
-        widths: [400, 800, 1600],
-      });
-    },
-  },
+});
+
+const createdDate = computed<Date>(() => {
+  return new Date(props.update.date_created);
+});
+
+const formattedDate = computed<string>(() => {
+  if (differenceInDays(new Date(), createdDate.value) < 1) {
+    return $formatDateDistanceToNow(new Date(props.update.date_created));
+  } else {
+    return $formatDate(new Date(props.update.date_created), 'PPP');
+  }
+});
+
+const formattedBody = computed<string>(() => {
+  return linkifyString(props.update.body);
+});
+
+const imageFallbackSrc = computed<string>(() => {
+  if (!props.update.image) {
+    return '';
+  }
+  return getAssetURL(runtimeConfig.public.cmsURL, props.update.image.id, {
+    width: 1600,
+    withoutEnlargement: 'true',
+  });
+});
+
+const imageSrcSet = computed<string>(() => {
+  if (!props.update.image) {
+    return '';
+  }
+  return getAssetSrcSet(runtimeConfig.public.cmsURL, props.update.image.id, {
+    widths: [400, 800, 1600],
+  });
 });
 </script>
 

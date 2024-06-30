@@ -3,67 +3,56 @@
     :is="elementType"
     :type="buttonType"
     :to="to"
-    :href="href || to"
     :disabled="disabled"
     v-bind="$attrs"
     class="u-unstyled-button c-button"
     :class="{ 'c-button--narrow': narrow, 'c-button--primary': primary }"
-    v-on="$listeners"
   >
     <slot></slot>
   </component>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+const NuxtLink = resolveComponent('NuxtLink');
 
-export default defineComponent({
-  props: {
-    type: {
-      type: String,
-      default: 'button',
-    },
-    to: {
-      type: String,
-      required: false,
-      default: null,
-    },
-    href: {
-      type: String,
-      required: false,
-      default: null,
-    },
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
-    primary: {
-      type: Boolean,
-      default: false,
-    },
-    narrow: {
-      type: Boolean,
-      default: false,
-    },
+const props = defineProps({
+  type: {
+    type: String,
+    default: 'button',
   },
-  computed: {
-    elementType() {
-      if (this.to) {
-        return 'nuxt-link';
-      } else if (this.href) {
-        return 'a';
-      }
-
-      return 'button';
-    },
-    buttonType() {
-      if (!this.to && !this.href) {
-        return this.type;
-      }
-
-      return null;
-    },
+  to: {
+    type: String,
+    required: false,
+    default: null,
   },
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
+  primary: {
+    type: Boolean,
+    default: false,
+  },
+  narrow: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+const elementType = computed(() => {
+  if (props.to) {
+    return NuxtLink;
+  }
+
+  return 'button';
+});
+
+const buttonType = computed(() => {
+  if (!props.to) {
+    return props.type;
+  }
+
+  return null;
 });
 </script>
 

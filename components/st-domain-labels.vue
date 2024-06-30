@@ -8,31 +8,29 @@
   </ul>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue';
-import { Domain } from '~/plugins/cms-service';
+<script setup lang="ts">
+import type { Domain } from '~/plugins/08.cms-service';
 
-export default defineComponent({
-  props: {
-    domains: {
-      type: Array as PropType<Domain[]>,
-      required: true,
-    },
-    targetPageName: {
-      type: String,
-      required: true,
-    },
-    targetPageQueryKey: {
-      type: String,
-      default: 'domain',
-    },
+const localePath = useLocalePath();
+
+const props = defineProps({
+  domains: {
+    type: Array as PropType<Domain[]>,
+    required: true,
   },
-  methods: {
-    getNewsDomainLink(domain: Domain) {
-      return this.localePath({ name: this.targetPageName, query: { [this.targetPageQueryKey]: domain.id.toString() } });
-    },
+  targetPageName: {
+    type: String,
+    required: true,
+  },
+  targetPageQueryKey: {
+    type: String,
+    default: 'domain',
   },
 });
+
+const getNewsDomainLink = (domain: Domain) => {
+  return localePath({ name: props.targetPageName, query: { [props.targetPageQueryKey]: domain.id.toString() } });
+};
 </script>
 
 <style scoped>

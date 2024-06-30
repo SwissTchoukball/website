@@ -33,4 +33,4 @@ After having cloned the repository:
 ### Run in production mode
 
 - `npm run build`
-- `npm run start`
+- `npm run preview`

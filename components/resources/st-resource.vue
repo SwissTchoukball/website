@@ -15,13 +15,13 @@
       v-if="resource.file"
       class="c-resource__download-button"
       primary
-      :href="`${href}?download`"
+      :to="`${href}?download`"
       :download="download"
     >
       {{ $t('resources.download') }}
     </st-button>
 
-    <st-button v-if="resource.link" class="c-resource__link-button" primary :href="href">
+    <st-button v-if="resource.link" class="c-resource__link-button" primary :to="href">
       {{ $t('resources.view') }}
     </st-button>
 
@@ -34,15 +34,19 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
 import stResourceDetails from '~/components/resources/st-resource-details.vue';
-import resourceMixin from '~/mixins/resource.mixin';
+import { useResource } from '~/composables/useResource';
+import type { Resource } from '~/plugins/08.cms-service';
 
-export default defineComponent({
-  components: { stResourceDetails },
-  mixins: [resourceMixin],
+const props = defineProps({
+  resource: {
+    type: Object as PropType<Resource>,
+    required: true,
+  },
 });
+
+const { href, download, domains } = useResource(props.resource);
 </script>
 
 <style scoped>

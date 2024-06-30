@@ -6,7 +6,7 @@
       <label for="senderName" class="l-form__label">{{ $t('contactForm.name') }}</label>
       <input
         id="senderName"
-        ref="senderName"
+        ref="senderNameElement"
         v-model="senderName"
         type="text"
         name="senderName"
@@ -23,7 +23,7 @@
       <label for="senderEmail" class="l-form__label">{{ $t('contactForm.email') }}</label>
       <input
         id="senderEmail"
-        ref="senderEmail"
+        ref="senderEmailElement"
         v-model="senderEmail"
         type="email"
         name="senderEmail"
@@ -39,7 +39,7 @@
       <label for="messageBody" class="l-form__label">{{ $t('contactForm.message') }}</label>
       <textarea
         id="messageBody"
-        ref="messageBody"
+        ref="messageBodyElement"
         v-model="messageBody"
         name="messageBody"
         class="l-form__field l-form__field--message"
@@ -53,11 +53,11 @@
 
       <vue-hcaptcha
         class="c-contact-form__captcha"
-        :sitekey="$config.hCaptchaSiteKey"
+        :sitekey="runtimeConfig.public.hCaptchaSiteKey"
         :language="$i18n.locale"
         @verify="onCaptchaVerify"
         @expired="resetCaptcha"
-        @challengeExpired="resetCaptcha"
+        @challenge-expired="resetCaptcha"
         @error="onCaptchaError"
       />
       <p class="l-form__field-error">
@@ -82,152 +82,165 @@
   </section>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-import { MetaInfo } from 'vue-meta';
-import VueHcaptcha from '@hcaptcha/vue-hcaptcha';
+<script setup lang="ts">
+import VueHcaptcha from '@hcaptcha/vue3-hcaptcha';
 
-export default defineComponent({
-  components: {
-    VueHcaptcha,
-  },
-  data() {
-    return {
-      // Form fields
-      senderName: '',
-      senderEmail: '',
-      messageBody: '',
-      // Form status
-      isSending: false,
-      isSent: false,
-      // Form errors
-      senderNameError: null as string | null,
-      senderEmailError: null as string | null,
-      messageBodyError: null as string | null,
-      submissionError: null as string | null,
-      // Captcha
-      captchaVerified: false,
-      captchaExpired: false,
-      captchaToken: null as string | null,
-      captchaEKey: null as string | null,
-      captchaError: null as string | null,
-    };
-  },
-  head(): MetaInfo {
-    return {
-      title: this.$t('contactForm.headTitle').toString(),
-      meta: [
-        { property: 'og:title', content: this.$t('contactForm.headTitle').toString() },
-        {
-          hid: 'og:description',
-          property: 'og:description',
-          content: this.$t('contactForm.description').toString(),
-        },
-      ],
-    };
-  },
-  methods: {
-    async sendMessage() {
-      this.isSending = true;
-      this.resetErrors();
-      if (!this.validate()) {
-        this.isSending = false;
-        return;
-      }
+const runtimeConfig = useRuntimeConfig();
+const { t } = useI18n();
+const localePath = useLocalePath();
+const mail = useMail();
 
-      try {
-        await (this as any).$mail.send({
-          subject: `Message de ${this.senderName} depuis tchoukball.ch`,
-          replyTo: this.senderEmail,
-          text:
-            `*${this.senderName} <${this.senderEmail}> a envoyé un message à Swiss Tchoukball via le formulaire de contact sur tchoukball.ch:*\n\n` +
-            this.messageBody,
-          html:
-            `<em>${this.senderName} (<a href="mailto:${this.senderEmail}">${this.senderEmail}</a>) a envoyé un message à Swiss Tchoukball via le formulaire de contact sur tchoukball.ch:</em><br/><br/>` +
-            this.messageBody.replace(/\n/g, '<br/>'),
-        });
-        this.isSent = true;
-        this.resetForm();
-      } catch (error: any) {
-        if (error.response?.data) {
-          this.submissionError = error.response.data;
-        } else if (error.message) {
-          this.submissionError = error.message;
-        } else {
-          this.submissionError = error;
-        }
-      } finally {
-        this.isSending = false;
-      }
-    },
-    validate(): boolean {
-      try {
-        this.validateInput(this.$refs.senderName as HTMLInputElement);
-      } catch (error: any) {
-        this.senderNameError = error;
-        return false;
-      }
+// Form fields elements
+const senderNameElement = ref<HTMLInputElement | null>(null);
+const senderEmailElement = ref<HTMLInputElement | null>(null);
+const messageBodyElement = ref<HTMLInputElement | null>(null);
 
-      try {
-        this.validateInput(this.$refs.senderEmail as HTMLInputElement);
-      } catch (error: any) {
-        this.senderEmailError = error;
-        return false;
-      }
+// Form fields values
+const senderName = ref('');
+const senderEmail = ref('');
+const messageBody = ref('');
 
-      try {
-        this.validateInput(this.$refs.messageBody as HTMLInputElement);
-      } catch (error: any) {
-        this.messageBodyError = error;
-        return false;
-      }
+// Form status
+const isSending = ref(false);
+const isSent = ref(false);
 
-      if (!this.captchaVerified) {
-        this.captchaError = this.captchaError || this.$t('contactForm.captchaUnverified').toString();
-        return false;
-      }
+// Form errors
+const senderNameError = ref<string | null>(null);
+const senderEmailError = ref<string | null>(null);
+const messageBodyError = ref<string | null>(null);
+const submissionError = ref<string | null>(null);
 
-      return true;
-    },
-    validateInput(input: HTMLInputElement): boolean {
-      if (!input.checkValidity()) {
-        throw input.validationMessage;
-      }
-      return true;
-    },
-    resetForm() {
-      this.senderName = '';
-      this.senderEmail = '';
-      this.messageBody = '';
-    },
-    resetErrors() {
-      this.senderNameError = null;
-      this.senderEmailError = null;
-      this.messageBodyError = null;
-      this.submissionError = null;
-    },
-    // Captcha methods
-    onCaptchaVerify(token: string, eKey: string) {
-      this.captchaVerified = true;
-      this.captchaToken = token;
-      this.captchaEKey = eKey;
-      this.captchaExpired = false;
-      this.captchaError = null;
-    },
-    resetCaptcha() {
-      this.captchaVerified = false;
-      this.captchaToken = null;
-      this.captchaEKey = null;
-      this.captchaExpired = true;
-      this.captchaError = null;
-    },
-    onCaptchaError(err: string) {
-      this.captchaToken = null;
-      this.captchaEKey = null;
-      this.captchaError = err;
-    },
-  },
+// Captcha
+const captchaVerified = ref(false);
+const captchaExpired = ref(false);
+const captchaToken = ref<string | null>(null);
+const captchaEKey = ref<string | null>(null);
+const captchaError = ref<string | null>(null);
+
+useHead(() => {
+  return {
+    title: t('contactForm.headTitle'),
+    meta: [
+      { property: 'og:title', content: t('contactForm.headTitle') },
+      {
+        hid: 'og:description',
+        property: 'og:description',
+        content: t('contactForm.description'),
+      },
+    ],
+  };
 });
+
+const sendMessage = async () => {
+  isSending.value = true;
+  resetErrors();
+  if (!validate()) {
+    isSending.value = false;
+    return;
+  }
+
+  try {
+    await mail.send({
+      subject: `Message de ${senderName.value} depuis tchoukball.ch`,
+      replyTo: senderEmail.value,
+      text:
+        `*${senderName.value} <${senderEmail.value}> a envoyé un message à Swiss Tchoukball via le formulaire de contact sur tchoukball.ch:*\n\n` +
+        messageBody.value,
+      html:
+        `<em>${senderName.value} (<a href="mailto:${senderEmail.value}">${senderEmail.value}</a>) a envoyé un message à Swiss Tchoukball via le formulaire de contact sur tchoukball.ch:</em><br/><br/>` +
+        messageBody.value.replace(/\n/g, '<br/>'),
+    });
+    isSent.value = true;
+    resetForm();
+  } catch (error: any) {
+    if (error.response?.data) {
+      submissionError.value = error.response.data;
+    } else if (error.message) {
+      submissionError.value = error.message;
+    } else {
+      submissionError.value = error;
+    }
+  } finally {
+    isSending.value = false;
+  }
+};
+
+const validate = (): boolean => {
+  if (!senderNameElement.value || !senderEmailElement.value || !messageBodyElement.value) {
+    return false;
+  }
+
+  try {
+    validateInput(senderNameElement.value);
+  } catch (error: any) {
+    senderNameError.value = error;
+    return false;
+  }
+
+  try {
+    validateInput(senderEmailElement.value);
+  } catch (error: any) {
+    senderEmailError.value = error;
+    return false;
+  }
+
+  try {
+    validateInput(messageBodyElement.value);
+  } catch (error: any) {
+    messageBodyError.value = error;
+    return false;
+  }
+
+  if (!captchaVerified.value) {
+    captchaError.value = captchaError.value || t('contactForm.captchaUnverified');
+    return false;
+  }
+
+  return true;
+};
+
+const validateInput = (input: HTMLInputElement): boolean => {
+  if (!input.checkValidity()) {
+    throw input.validationMessage;
+  }
+  return true;
+};
+
+const resetForm = () => {
+  senderName.value = '';
+  senderEmail.value = '';
+  messageBody.value = '';
+};
+
+const resetErrors = () => {
+  senderNameError.value = null;
+  senderEmailError.value = null;
+  messageBodyError.value = null;
+  submissionError.value = null;
+};
+
+// Captcha methods
+const onCaptchaVerify = (token: string, eKey: string) => {
+  captchaVerified.value = true;
+  captchaToken.value = token;
+  captchaEKey.value = eKey;
+  captchaExpired.value = false;
+  captchaError.value = null;
+};
+
+const resetCaptcha = () => {
+  captchaVerified.value = false;
+  captchaToken.value = null;
+  captchaEKey.value = null;
+  captchaExpired.value = true;
+  captchaError.value = null;
+};
+
+const onCaptchaError = (err: string) => {
+  captchaToken.value = null;
+  captchaEKey.value = null;
+  captchaError.value = err;
+};
 </script>
 
 <style scoped>

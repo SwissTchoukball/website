@@ -6,13 +6,18 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-import resourceMixin from '~/mixins/resource.mixin';
+<script setup lang="ts">
+import { useResource } from '~/composables/useResource';
+import type { Resource } from '~/plugins/08.cms-service';
 
-export default defineComponent({
-  mixins: [resourceMixin],
+const props = defineProps({
+  resource: {
+    type: Object as PropType<Resource>,
+    required: true,
+  },
 });
+
+const { fileType, formattedFileSize, date } = useResource(props.resource);
 </script>
 <style scoped>
 .c-resource-details {

@@ -11,78 +11,84 @@
   </time>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue';
+<script setup lang="ts">
 import { isSameDay, isSameMonth, isSameYear } from 'date-fns';
 
-export default defineComponent({
-  props: {
-    startDate: {
-      type: Date as PropType<Date>,
-      required: true,
-    },
-    endDate: {
-      type: Date as PropType<Date>,
-      default: null,
-    },
-    showYear: Boolean,
-    /**
-     * Renders the date on a single line regardless of the viewport,
-     * as opposed to the default behaviour which wraps the date on three lines
-     * starting from viewport small and up.
-     */
-    alwaysOneLine: Boolean,
-    cancelled: Boolean,
+const { $formatDate } = useNuxtApp();
+
+const props = defineProps({
+  startDate: {
+    type: Date as PropType<Date>,
+    required: true,
   },
-  computed: {
-    isSingleDay(): boolean {
-      return !this.endDate || isSameDay(this.startDate, this.endDate);
-    },
-    isWithinSingleMonth(): boolean {
-      return !this.endDate || isSameMonth(this.startDate, this.endDate);
-    },
-    isWithinSingleYear(): boolean {
-      return !this.endDate || isSameYear(this.startDate, this.endDate);
-    },
-    weekDays(): string {
-      let weekDays = this.$formatDate(this.startDate, 'EEEE');
-      if (!this.isSingleDay) {
-        weekDays = `${this.$formatDate(this.startDate, 'EEE')} - ${this.$formatDate(this.endDate, 'EEE')}`;
-        weekDays = weekDays.replace(/\./g, '');
-      }
-
-      return weekDays;
-    },
-    days(): string {
-      let days = this.$formatDate(this.startDate, 'd');
-      if (!this.isSingleDay) {
-        days += ` - ${this.$formatDate(this.endDate, 'd')}`;
-      }
-
-      return days;
-    },
-    months(): string {
-      let months = this.$formatDate(this.startDate, 'MMMM');
-      if (!this.isWithinSingleMonth) {
-        months = `${this.$formatDate(this.startDate, 'MMM')} - ${this.$formatDate(this.endDate, 'MMM')}`;
-        months = months.replace(/\./g, '');
-      }
-
-      return months;
-    },
-    year(): string {
-      let year = this.$formatDate(this.startDate, 'yyyy');
-      if (!this.isWithinSingleYear) {
-        year += ` - ${this.$formatDate(this.endDate, 'yyyy')}`;
-      }
-
-      return year;
-    },
+  endDate: {
+    type: Date as PropType<Date>,
+    default: null,
   },
+  showYear: Boolean,
+  /**
+   * Renders the date on a single line regardless of the viewport,
+   * as opposed to the default behaviour which wraps the date on three lines
+   * starting from viewport small and up.
+   */
+  alwaysOneLine: Boolean,
+  cancelled: Boolean,
+});
+
+const isSingleDay = computed<boolean>(() => {
+  return !props.endDate || isSameDay(props.startDate, props.endDate);
+});
+
+const isWithinSingleMonth = computed<boolean>(() => {
+  return !props.endDate || isSameMonth(props.startDate, props.endDate);
+});
+
+const isWithinSingleYear = computed<boolean>(() => {
+  return !props.endDate || isSameYear(props.startDate, props.endDate);
+});
+
+const weekDays = computed<string>(() => {
+  let weekDays = $formatDate(props.startDate, 'EEEE');
+  if (!isSingleDay.value) {
+    weekDays = `${$formatDate(props.startDate, 'EEE')} - ${$formatDate(props.endDate, 'EEE')}`;
+    weekDays = weekDays.replace(/\./g, '');
+  }
+
+  return weekDays;
+});
+
+const days = computed<string>(() => {
+  let days = $formatDate(props.startDate, 'd');
+  if (!isSingleDay.value) {
+    days += ` - ${$formatDate(props.endDate, 'd')}`;
+  }
+
+  return days;
+});
+
+const months = computed<string>(() => {
+  let months = $formatDate(props.startDate, 'MMMM');
+  if (!isWithinSingleMonth.value) {
+    months = `${$formatDate(props.startDate, 'MMM')} - ${$formatDate(props.endDate, 'MMM')}`;
+    months = months.replace(/\./g, '');
+  }
+
+  return months;
+});
+
+const year = computed<string>(() => {
+  let year = $formatDate(props.startDate, 'yyyy');
+  if (!isWithinSingleYear.value) {
+    year += ` - ${$formatDate(props.endDate, 'yyyy')}`;
+  }
+
+  return year;
 });
 </script>
 
 <style scoped>
+@import url('~/assets/css/media.css');
+
 .c-event-date {
   display: flex;
   justify-content: flex-start;

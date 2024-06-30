@@ -2,8 +2,8 @@
   <section class="l-main-content-section">
     <h2 class="t-headline-1">{{ $t('structure.title') }}</h2>
 
-    <st-loader v-if="$fetchState.pending" :main="true" />
-    <p v-else-if="$fetchState.error">{{ $t('error.otherError') }} : {{ $fetchState.error.message }}</p>
+    <st-loader v-if="fetchPending" :main="true" />
+    <p v-else-if="fetchError">{{ $t('error.otherError') }} : {{ fetchError.message }}</p>
     <st-link-list
       v-else
       :items="groupsNavigation"
@@ -13,58 +13,58 @@
   </section>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-import { Group } from '~/plugins/cms-service';
-import { MenuItem } from '~/store/state';
+<script setup lang="ts">
+import type { Group } from '~/plugins/08.cms-service';
 
-export default defineComponent({
-  nuxtI18n: {
-    paths: {
-      fr: '/structure',
-      de: '/struktur',
+const localePath = useLocalePath();
+const { t } = useI18n();
+const { $cmsService } = useNuxtApp();
+
+defineI18nRoute({
+  paths: {
+    fr: '/structure',
+    de: '/struktur',
+  },
+});
+
+useHead(() => {
+  return {
+    title: t('structure.title').toString(),
+    meta: [{ property: 'og:title', content: t('structure.title').toString() }],
+  };
+});
+
+const {
+  data: groups,
+  pending: fetchPending,
+  error: fetchError,
+} = useAsyncData<Group[]>('groups', async () => {
+  return await $cmsService.getGroups();
+});
+
+const groupsNavigation = computed<MenuItem[]>(() => {
+  if (!groups.value) {
+    return [];
+  }
+
+  const groupNaviation = groups.value.map((group) => ({
+    name: group.name,
+    href: localePath({
+      name: 'structure-group',
+      params: { group: group.slug },
+    }),
+  }));
+
+  return [
+    ...groupNaviation,
+    {
+      name: t('structure.staff.title').toString(),
+      href: localePath({
+        name: 'structure-group',
+        params: { group: t('structure.staff.slug').toString() },
+      }),
     },
-  },
-  data() {
-    return {
-      groups: [] as Group[],
-    };
-  },
-  async fetch() {
-    this.groups = await this.$cmsService.getGroups();
-  },
-  head() {
-    return {
-      title: this.$t('structure.title').toString(),
-      meta: [{ property: 'og:title', content: this.$t('structure.title').toString() }],
-    };
-  },
-  computed: {
-    groupsNavigation(): MenuItem[] {
-      if (!this.groups) {
-        return [];
-      }
-
-      const groupNaviation = this.groups.map((group) => ({
-        name: group.name,
-        href: this.localePath({
-          name: 'structure-group',
-          params: { group: group.slug },
-        }),
-      }));
-
-      return [
-        ...groupNaviation,
-        {
-          name: this.$t('structure.staff.title').toString(),
-          href: this.localePath({
-            name: 'structure-group',
-            params: { group: this.$t('structure.staff.slug').toString() },
-          }),
-        },
-      ];
-    },
-  },
+  ];
 });
 </script>
 

@@ -16,7 +16,7 @@
     </button>
     <ul v-if="open" class="u-unstyled-list c-select-navigation__options">
       <li v-for="(option, index) in options" :key="index" class="c-select-navigation__option">
-        <nuxt-link :to="option.href ? localePath(option.href) : undefined" @click.native="onItemClickNative(option)">
+        <nuxt-link :to="option.href ? localePath(option.href) : undefined" @click="onItemClickNative(option)">
           {{ option.name }}
         </nuxt-link>
       </li>
@@ -24,42 +24,36 @@
   </nav>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue';
-import { MenuItem } from '~/store/state';
+<script setup lang="ts">
+const localePath = useLocalePath();
 
-export default defineComponent({
-  props: {
-    /**
-     * Name of the navigation, visible to screen readers.
-     */
-    name: {
-      type: String,
-      required: true,
-    },
-    options: {
-      type: Array as PropType<MenuItem[]>,
-      required: true,
-    },
-    initialOptionName: {
-      type: Object as PropType<MenuItem>,
-      default: null,
-    },
+defineProps({
+  /**
+   * Name of the navigation, visible to screen readers.
+   */
+  name: {
+    type: String,
+    required: true,
   },
-  data() {
-    return {
-      open: false,
-    };
+  options: {
+    type: Array as PropType<MenuItem[]>,
+    required: true,
   },
-  methods: {
-    toggleSelect() {
-      this.open = !this.open;
-    },
-    onItemClickNative(_item: MenuItem) {
-      this.open = false;
-    },
+  initialOptionName: {
+    type: Object as PropType<MenuItem>,
+    default: null,
   },
 });
+
+const open = ref(false);
+
+const toggleSelect = () => {
+  open.value = !open.value;
+};
+
+const onItemClickNative = (_item: MenuItem) => {
+  open.value = false;
+};
 </script>
 
 <style scoped>
@@ -90,12 +84,12 @@ export default defineComponent({
   border-radius: 5px;
 }
 
-.c-select-navigation__option a.nuxt-link-active {
+.c-select-navigation__option a.router-link-active {
   color: red;
   pointer-events: none;
 }
 
-.c-select-navigation__option a.nuxt-link-active:hover {
+.c-select-navigation__option a.router-link-active:hover {
   background-color: none;
   cursor: default;
 }

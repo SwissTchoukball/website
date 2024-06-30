@@ -16,44 +16,40 @@
   </svg>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-export default defineComponent({
-  props: {
-    iconName: {
-      type: String,
-      default: null,
-    },
-    width: {
-      type: [Number, String],
-      default: 24,
-    },
-    height: {
-      type: [Number, String],
-      default: 24,
-    },
-    iconColor: {
-      type: String,
-      default: null,
-    },
-    viewBoxWidth: {
-      type: [Number, String],
-      default: null,
-    },
-    viewBoxHeight: {
-      type: [Number, String],
-      default: null,
-    },
+<script setup lang="ts">
+const props = defineProps({
+  iconName: {
+    type: String,
+    default: null,
   },
-  computed: {
-    viewBox() {
-      if (this.viewBoxWidth && this.viewBoxHeight) {
-        return `0 0 ${this.viewBoxWidth} ${this.viewBoxHeight}`;
-      } else {
-        return `0 0 ${this.width} ${this.height}`;
-      }
-    },
+  width: {
+    type: [Number, String],
+    default: 24,
   },
+  height: {
+    type: [Number, String],
+    default: 24,
+  },
+  iconColor: {
+    type: String,
+    default: null,
+  },
+  viewBoxWidth: {
+    type: [Number, String],
+    default: null,
+  },
+  viewBoxHeight: {
+    type: [Number, String],
+    default: null,
+  },
+});
+
+const viewBox = computed(() => {
+  if (props.viewBoxWidth && props.viewBoxHeight) {
+    return `0 0 ${props.viewBoxWidth} ${props.viewBoxHeight}`;
+  } else {
+    return `0 0 ${props.width} ${props.height}`;
+  }
 });
 </script>
 

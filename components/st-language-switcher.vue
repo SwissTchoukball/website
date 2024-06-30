@@ -2,33 +2,22 @@
   <nav>
     <h2 class="u-visually-hidden">{{ $t('langSwitcherTitle') }}</h2>
     <ul class="u-unstyled-list c-lang-switcher__list">
-      <li v-for="locale in availableLocales" :key="locale.code" class="c-lang-switcher__lang-item">
+      <li v-for="availableLocale in locales" :key="availableLocale.code" class="c-lang-switcher__lang-item">
         <nuxt-link
-          :to="switchLocalePath(locale.code)"
+          :to="switchLocalePath(availableLocale.code)"
           class="c-lang-switcher__lang-link"
-          :class="{ 'c-lang-switcher__lang-link--active': locale.code === currentLocale }"
+          :class="{ 'c-lang-switcher__lang-link--active': availableLocale.code === currentLocale }"
         >
-          {{ locale.name }}
+          {{ availableLocale.name }}
         </nuxt-link>
       </li>
     </ul>
   </nav>
 </template>
 
-<script lang="ts">
-import { LocaleObject } from '@nuxtjs/i18n';
-import { defineComponent } from 'vue';
-
-export default defineComponent({
-  computed: {
-    currentLocale() {
-      return this.$i18n.locale;
-    },
-    availableLocales() {
-      return this.$i18n.locales as LocaleObject[];
-    },
-  },
-});
+<script setup lang="ts">
+const switchLocalePath = useSwitchLocalePath();
+const { locale: currentLocale, locales } = useI18n();
 </script>
 
 <style scoped>

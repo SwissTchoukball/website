@@ -26,63 +26,67 @@
   </ul>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue';
-import { Tchoukup } from '~/components/tchoukup/st-tchoukup';
-import { getAssetSrcSet, getAssetURL } from '~/plugins/directus';
+<script setup lang="ts">
+import type { Tchoukup } from '~/components/tchoukup/st-tchoukup';
+import { getAssetSrcSet, getAssetURL } from '~/plugins/06.directus';
+
+const runtimeConfig = useRuntimeConfig();
+const appConfig = useAppConfig();
+const { $formatDate } = useNuxtApp();
 
 const MAX_NEWS_PER_ROW = 4;
 
-export default defineComponent({
-  props: {
-    issues: {
-      type: Array as PropType<Tchoukup[]>,
-      required: true,
-    },
-  },
-  computed: {
-    /**
-     * The amount of spacer products to insert in the grid to ensure a good looking result with few elements.
-     *
-     * See comment in the CSS class `c-product-list` for details.
-     */
-    amountSpacerProducts(): number {
-      if (this.issues.length >= MAX_NEWS_PER_ROW) {
-        return 0;
-      } else {
-        return MAX_NEWS_PER_ROW - this.issues.length;
-      }
-    },
-  },
-  methods: {
-    getIssueDownloadLink(issue: Tchoukup): string | undefined {
-      if (issue.file) {
-        return `${this.$config.cmsURL}/assets/${issue.file.id}?download`;
-      } else {
-        return '#';
-      }
-    },
-    getReleaseMonth(issue: Tchoukup): string {
-      if (!issue.releaseDate) {
-        return '';
-      }
-      return this.$formatDate(new Date(issue.releaseDate), 'MMMM yyyy');
-    },
-    coverFallbackSrc(assetId: string): string {
-      return getAssetURL(this.$config.cmsURL, assetId, {
-        width: this.$config.keyVisualSizes[0],
-      });
-    },
-    coverSrcSet(assetId: string): string {
-      return getAssetSrcSet(this.$config.cmsURL, assetId, {
-        widths: this.$config.keyVisualSizes,
-      });
-    },
+const props = defineProps({
+  issues: {
+    type: Array as PropType<Tchoukup[]>,
+    required: true,
   },
 });
+
+/**
+ * The amount of spacer products to insert in the grid to ensure a good looking result with few elements.
+ *
+ * See comment in the CSS class `c-product-list` for details.
+ */
+const amountSpacerProducts = computed<number>(() => {
+  if (props.issues.length >= MAX_NEWS_PER_ROW) {
+    return 0;
+  } else {
+    return MAX_NEWS_PER_ROW - props.issues.length;
+  }
+});
+
+const getIssueDownloadLink = (issue: Tchoukup): string | undefined => {
+  if (issue.file) {
+    return `${runtimeConfig.public.cmsURL}/assets/${issue.file.id}?download`;
+  } else {
+    return '#';
+  }
+};
+
+const getReleaseMonth = (issue: Tchoukup): string => {
+  if (!issue.releaseDate) {
+    return '';
+  }
+  return $formatDate(new Date(issue.releaseDate), 'MMMM yyyy');
+};
+
+const coverFallbackSrc = (assetId: string): string => {
+  return getAssetURL(runtimeConfig.public.cmsURL, assetId, {
+    width: appConfig.keyVisualSizes[0],
+  });
+};
+
+const coverSrcSet = (assetId: string): string => {
+  return getAssetSrcSet(runtimeConfig.public.cmsURL, assetId, {
+    widths: appConfig.keyVisualSizes,
+  });
+};
 </script>
 
 <style scoped>
+@import url('~/assets/css/media.css');
+
 .c-tchoukup-list {
   display: block;
 }

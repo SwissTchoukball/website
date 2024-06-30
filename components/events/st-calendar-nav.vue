@@ -4,10 +4,10 @@
     <div class="t-headline-1 c-calendar-nav__name" aria-hidden="true">{{ monthName }}</div>
     <div class="c-calendar-nav__month-navigation">
       <nuxt-link :to="previousMonthLink" :title="$t('events.previousMonth')" class="c-calendar-nav__switch-link">
-        <fa-icon icon="angle-left" />
+        <font-awesome-icon icon="angle-left" />
       </nuxt-link>
       <nuxt-link :to="nextMonthLink" :title="$t('events.nextMonth')" class="c-calendar-nav__switch-link">
-        <fa-icon icon="angle-right" />
+        <font-awesome-icon icon="angle-right" />
       </nuxt-link>
     </div>
 
@@ -18,89 +18,110 @@
     <div class="c-calendar-nav__spacer"></div>
 
     <div class="c-calendar-nav__actions">
-      <a v-tooltip.bottom="$t('events.subscribe')" :href="icsUrl" class="c-calendar-nav__action">
-        <fa-icon icon="rss" />
-      </a>
-      <nuxt-link
-        v-tooltip.bottom="$t(`events.switch.${alternateView}`)"
-        :to="alternativeViewPath"
-        class="c-calendar-nav__action"
-      >
-        <fa-icon :icon="alternativeViewIcon" />
-      </nuxt-link>
+      <st-tooltip position="bottom">
+        <template #trigger>
+          <a :href="icsUrl" class="c-calendar-nav__action">
+            <font-awesome-icon icon="rss" />
+          </a>
+        </template>
+        <template #content>
+          {{ $t('events.subscribe') }}
+        </template>
+      </st-tooltip>
+      <st-tooltip position="bottom">
+        <template #trigger>
+          <nuxt-link :to="alternativeViewPath" class="c-calendar-nav__action">
+            <font-awesome-icon :icon="alternativeViewIcon" />
+          </nuxt-link>
+        </template>
+        <template #content>
+          {{ $t(`events.switch.${alternateView}`) }}
+        </template>
+      </st-tooltip>
     </div>
   </nav>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+const { $formatDate } = useNuxtApp();
+const { locale } = useI18n();
+const localePath = useLocalePath();
 
-export default defineComponent({
-  props: {
-    month: {
-      type: Number,
-      required: true,
-    },
-    year: {
-      type: Number,
-      required: true,
-    },
-    currentView: {
-      type: String,
-      default: 'list',
-    },
+const props = defineProps({
+  month: {
+    type: Number,
+    required: true,
   },
-  computed: {
-    monthName(): string {
-      return this.$formatDate(new Date(this.year, this.month - 1, 1), 'MMMM yyyy');
-    },
-    nextMonthLink(): string {
-      let nextMonth = this.month + 1;
-      let nextYear = this.year;
-      if (this.month === 12) {
-        nextMonth = 1;
-        nextYear = this.year + 1;
-      }
-      return this.localePath({ params: { month: nextMonth.toString(), year: nextYear.toString() } });
-    },
-    previousMonthLink(): string {
-      let previousMonth = this.month - 1;
-      let previousYear = this.year;
-      if (this.month === 1) {
-        previousMonth = 12;
-        previousYear = this.year - 1;
-      }
-      return this.localePath({ params: { month: previousMonth.toString(), year: previousYear.toString() } });
-    },
-    currentMonth(): number {
-      return new Date().getMonth() + 1;
-    },
-    currentYear(): number {
-      return new Date().getFullYear();
-    },
-    isCurrentMonth(): boolean {
-      return this.month === this.currentMonth && this.year === this.currentYear;
-    },
-    currentMonthLink(): string {
-      return this.localePath({ params: { month: this.currentMonth.toString(), year: this.currentYear.toString() } });
-    },
-    alternateView(): string {
-      return this.currentView === 'list' ? 'month' : 'list';
-    },
-    alternativeViewPath(): string {
-      return this.localePath(`calendar-year-month-${this.alternateView}`);
-    },
-    alternativeViewIcon(): string {
-      return this.currentView === 'list' ? 'calendar-days' : 'list';
-    },
-    icsUrl(): string {
-      return `webcal://feeds.tchoukball.ch/events/all-${this.$i18n.locale}.ics`;
-    },
+  year: {
+    type: Number,
+    required: true,
   },
+  currentView: {
+    type: String,
+    default: 'list',
+  },
+});
+
+const monthName = computed<string>(() => {
+  return $formatDate(new Date(props.year, props.month - 1, 1), 'MMMM yyyy');
+});
+
+const nextMonthLink = computed<string>(() => {
+  let nextMonth = props.month + 1;
+  let nextYear = props.year;
+  if (props.month === 12) {
+    nextMonth = 1;
+    nextYear = props.year + 1;
+  }
+  return localePath({ params: { month: nextMonth.toString(), year: nextYear.toString() } });
+});
+
+const previousMonthLink = computed<string>(() => {
+  let previousMonth = props.month - 1;
+  let previousYear = props.year;
+  if (props.month === 1) {
+    previousMonth = 12;
+    previousYear = props.year - 1;
+  }
+  return localePath({ params: { month: previousMonth.toString(), year: previousYear.toString() } });
+});
+
+const currentMonth = computed<number>(() => {
+  return new Date().getMonth() + 1;
+});
+
+const currentYear = computed<number>(() => {
+  return new Date().getFullYear();
+});
+
+const isCurrentMonth = computed<boolean>(() => {
+  return props.month === currentMonth.value && props.year === currentYear.value;
+});
+
+const currentMonthLink = computed<string>(() => {
+  return localePath({ params: { month: currentMonth.value.toString(), year: currentYear.value.toString() } });
+});
+
+const alternateView = computed<string>(() => {
+  return props.currentView === 'list' ? 'month' : 'list';
+});
+
+const alternativeViewPath = computed<string>(() => {
+  return localePath(`calendar-year-month-${alternateView.value}`);
+});
+
+const alternativeViewIcon = computed<string>(() => {
+  return props.currentView === 'list' ? 'calendar-days' : 'list';
+});
+
+const icsUrl = computed<string>(() => {
+  return `webcal://feeds.tchoukball.ch/events/all-${locale.value}.ics`;
 });
 </script>
 
 <style scoped>
+@import url('~/assets/css/media.css');
+
 .c-calendar-nav {
   display: flex;
   flex-flow: row wrap;
@@ -138,7 +159,6 @@ export default defineComponent({
 
 .c-calendar-nav__actions {
   align-self: flex-end;
-  font-size: 1.5em;
   display: flex;
   gap: var(--st-length-spacing-xs);
 }
@@ -146,6 +166,7 @@ export default defineComponent({
 .c-calendar-nav__action {
   /* We set the color explicitly to prevent the visited color to be applied */
   color: var(--st-color-link);
+  font-size: 1.5em;
 }
 
 @media (--sm-and-up) {

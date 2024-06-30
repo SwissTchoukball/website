@@ -1,97 +1,102 @@
 <template>
   <section class="l-main-content-section">
     <h2 class="t-headline-1">{{ $t('news.title') }}</h2>
-    <st-loader v-if="$fetchState.pending" :main="true" />
-    <p v-else-if="$fetchState.error">{{ $t('error.otherError') }} : {{ $fetchState.error.message }}</p>
+    <st-loader v-if="fetchPending" :main="true" />
+    <p v-else-if="fetchError">{{ $t('error.otherError') }} : {{ fetchError.message }}</p>
     <template v-else>
       <p v-if="filteredDomainName" class="c-news__domain-filter-info">
-        <i18n path="news.domainFilterInfo">
+        <i18n-t keypath="news.domainFilterInfo" scope="global">
           <template #domainName>
             <strong>{{ filteredDomainName }}</strong>
           </template>
-        </i18n>
+        </i18n-t>
         <span class="c-news__domain-filter-info-separator">—</span>
         <nuxt-link :to="''">{{ $t('news.showAll') }}</nuxt-link>
       </p>
-      <st-news-list class="c-news__list" :news="newsList" />
+      <st-news-list v-if="data" class="c-news__list" :news="data.newsList" />
     </template>
     <st-pagination v-if="totalPages" :current-page="currentPage" :total-pages="totalPages" />
   </section>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-import { MetaInfo } from 'vue-meta';
-import stLoader from '~/components/st-loader.vue';
-import stNewsList from '~/components/news/st-news-list.vue';
-import { NewsEntry } from '~/components/news/st-news';
-import StPagination from '~/components/st-pagination.vue';
-import { DirectusDomain } from '~/plugins/directus';
+<script setup lang="ts">
+import type { NewsEntry } from '~/components/news/st-news';
 
-export default defineComponent({
-  components: { stLoader, stNewsList, StPagination },
-  data() {
-    return {
-      newsList: [] as NewsEntry[],
-      newsEntriesPerPage: 12,
-      totalNewsEntries: undefined as number | undefined,
-      filteredDomainId: undefined as number | undefined,
-    };
-  },
-  async fetch() {
-    let filteredDomainId: number | undefined;
-    if (typeof this.$route.query.domain === 'string') {
-      filteredDomainId = parseInt(this.$route.query.domain);
+const route = useRoute();
+const { t } = useI18n();
+const { $cmsService } = useNuxtApp();
+const domainsStore = useDomainsStore();
+
+const newsEntriesPerPage = 12;
+
+useHead(() => {
+  return {
+    title: t('news.title').toString(),
+    meta: [
+      { property: 'og:title', content: t('news.title').toString() },
+      {
+        hid: 'og:description',
+        property: 'og:description',
+        content: t('news.description').toString(),
+      },
+    ],
+  };
+});
+
+const totalPages = computed<number | undefined>(() => {
+  if (!data.value?.totalNewsEntries) {
+    return;
+  }
+  return Math.ceil(data.value.totalNewsEntries / newsEntriesPerPage);
+});
+
+const currentPage = computed<number>(() => {
+  if (route.query.page && typeof route.query.page === 'string') {
+    return parseInt(route.query.page);
+  }
+
+  return 1;
+});
+
+const filteredDomainName = computed<string | undefined>(() => {
+  if (!data.value?.filteredDomainId) {
+    return;
+  }
+  const domain = domainsStore.getDomainById(data.value.filteredDomainId);
+
+  return domain?.name;
+});
+
+const {
+  data,
+  pending: fetchPending,
+  error: fetchError,
+  refresh,
+} = useAsyncData<{ newsList: NewsEntry[]; totalNewsEntries: number; filteredDomainId: number | undefined }>(
+  'news',
+  async () => {
+    let queryDomainId: number | undefined;
+    if (typeof route.query.domain === 'string') {
+      queryDomainId = parseInt(route.query.domain);
     }
-    const newsResult = await this.$cmsService.getNews({
-      limit: this.newsEntriesPerPage,
-      page: this.currentPage,
-      domainId: filteredDomainId,
+    const newsResult = await $cmsService.getNews({
+      limit: newsEntriesPerPage,
+      page: currentPage.value,
+      domainId: queryDomainId,
     });
 
-    this.newsList = newsResult.data;
-    this.totalNewsEntries = newsResult.meta.total;
-    this.filteredDomainId = newsResult.meta.filteredDomainId;
-  },
-  head(): MetaInfo {
     return {
-      title: this.$t('news.title').toString(),
-      meta: [
-        { property: 'og:title', content: this.$t('news.title').toString() },
-        {
-          hid: 'og:description',
-          property: 'og:description',
-          content: this.$t('news.description').toString(),
-        },
-      ],
+      newsList: newsResult.data,
+      totalNewsEntries: newsResult.meta.total,
+      filteredDomainId: newsResult.meta.filteredDomainId,
     };
   },
-  computed: {
-    totalPages(): number | undefined {
-      if (!this.totalNewsEntries) {
-        return;
-      }
-      return Math.ceil(this.totalNewsEntries / this.newsEntriesPerPage);
-    },
-    currentPage(): number {
-      if (this.$route.query.page && typeof this.$route.query.page === 'string') {
-        return parseInt(this.$route.query.page);
-      }
+);
 
-      return 1;
-    },
-    filteredDomainName(): string | undefined {
-      if (!this.filteredDomainId) {
-        return;
-      }
-      const domain: DirectusDomain = this.$store.getters.getDomainById(this.filteredDomainId);
-
-      return domain.name;
-    },
-  },
-  watch: {
-    '$route.query': '$fetch',
-  },
+watch(route, async (newRoute, oldRoute) => {
+  if (newRoute.query !== oldRoute.query) {
+    await refresh();
+  }
 });
 </script>
 

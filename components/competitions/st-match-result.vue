@@ -42,21 +42,22 @@
   </nuxt-link>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue';
-import Match from '~/models/match.model';
+<script setup lang="ts">
+import type Match from '~/models/match.model';
 
-export default defineComponent({
-  props: {
-    match: {
-      type: Object as PropType<Match>,
-      required: true,
-    },
+const localePath = useLocalePath();
+
+defineProps({
+  match: {
+    type: Object as PropType<Match>,
+    required: true,
   },
 });
 </script>
 
 <style scoped>
+@import url('~/assets/css/media.css');
+
 .c-match-result {
   display: block;
   width: 100%;

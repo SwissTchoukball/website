@@ -1,10 +1,10 @@
 <template>
   <section class="l-main-content-section">
-    <h2 class="t-headline-1 c-season__title">{{ $tc('season.name', seasons.length) }}</h2>
+    <h2 class="t-headline-1 c-season__title">{{ $t('season.name', seasonsStore.seasons.length) }}</h2>
 
     <st-link-list
       :items="seasonsNavigation"
-      :name="$t('otherNavigation', { name: $tc('season.name', seasons.length) })"
+      :name="$t('otherNavigation', { name: $t('season.name', seasonsStore.seasons.length) })"
       class="c-seasons__list"
     />
 
@@ -12,32 +12,24 @@
   </section>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-import Season from '~/models/season.model';
-import { DirectusSeason } from '~/plugins/directus';
-import { MenuItem } from '~/store/state';
+<script setup lang="ts">
+const localePath = useLocalePath();
+const seasonsStore = useSeasonsStore();
 
-export default defineComponent({
-  nuxtI18n: {
-    paths: {
-      fr: '/saisons',
-      de: '/saisonen',
-    },
+defineI18nRoute({
+  paths: {
+    fr: '/saisons',
+    de: '/saisonen',
   },
-  computed: {
-    seasons(): Season[] {
-      return (this.$store.state.seasons as DirectusSeason[]).map((season) => new Season(season));
-    },
-    seasonsNavigation(): MenuItem[] {
-      return this.seasons.map((season) => {
-        return {
-          name: season.name,
-          href: this.localePath({ name: 'seasons-season', params: { season: season.slug } }),
-        };
-      });
-    },
-  },
+});
+
+const seasonsNavigation = computed<MenuItem[]>(() => {
+  return seasonsStore.seasons.map((season) => {
+    return {
+      name: season.name,
+      href: localePath({ name: 'seasons-season', params: { season: season.slug } }),
+    };
+  });
 });
 </script>
 

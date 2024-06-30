@@ -1,3 +1,5 @@
+@import url('~/assets/css/media.css');
+
 html {
   font-family: Inter, sans-serif;
   -moz-osx-font-smoothing: grayscale;
@@ -183,6 +185,7 @@ a:visited {
   font-family: inherit;
   font-size: inherit;
   font-weight: inherit;
+  text-align: unset;
   appearance: none;
   border: none;
   background-color: transparent;

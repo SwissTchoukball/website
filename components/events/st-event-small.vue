@@ -22,77 +22,80 @@
   </nuxt-link>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue';
+<script setup lang="ts">
 import { isSameDay, isSameMonth } from 'date-fns';
 
-export default defineComponent({
-  props: {
-    startDate: {
-      type: Date as PropType<Date>,
-      required: true,
-    },
-    endDate: {
-      type: Date as PropType<Date>,
-      default: null,
-    },
-    name: {
-      type: String,
-      required: true,
-    },
-    details: {
-      type: String,
-      default: '',
-    },
-    to: {
-      type: String,
-      required: true,
-    },
-    isFullDay: Boolean,
-  },
-  computed: {
-    isSingleDay(): boolean {
-      return !this.endDate || isSameDay(this.startDate, this.endDate);
-    },
-    isWithinSingleMonth(): boolean {
-      return !this.endDate || isSameMonth(this.startDate, this.endDate);
-    },
-    days(): string {
-      let days = this.$formatDate(this.startDate, 'd');
-      if (!this.isSingleDay) {
-        days += `-${this.$formatDate(this.endDate, 'd')}`;
-      }
+const { $formatDate } = useNuxtApp();
 
-      return days;
-    },
-    months(): string {
-      let months = this.$formatDate(this.startDate, 'MMM');
-      if (!this.isWithinSingleMonth) {
-        months = `${this.$formatDate(this.startDate, 'MMM')} -  ${this.$formatDate(this.endDate, 'MMM')}`;
-        months = months.replace(/\./g, '');
-      }
-
-      return months;
-    },
-    startDay(): string {
-      return this.$formatDate(this.startDate, 'd');
-    },
-    endDay(): string {
-      return this.$formatDate(this.endDate, 'd');
-    },
-    startMonth(): string {
-      return this.$formatDate(this.startDate, 'M');
-    },
-    endMonth(): string {
-      return this.$formatDate(this.endDate, 'M');
-    },
-    startYear(): string {
-      return this.$formatDate(this.startDate, 'yyyy');
-    },
-    startTime(): string | null {
-      return !this.isFullDay ? this.$formatDate(this.startDate, 'HH:mm') : null;
-    },
+const props = defineProps({
+  startDate: {
+    type: Date as PropType<Date>,
+    required: true,
   },
+  endDate: {
+    type: Date as PropType<Date>,
+    default: null,
+  },
+  name: {
+    type: String,
+    required: true,
+  },
+  details: {
+    type: String,
+    default: '',
+  },
+  to: {
+    type: String,
+    required: true,
+  },
+  isFullDay: Boolean,
+});
+
+const isSingleDay = computed<boolean>(() => {
+  return !props.endDate || isSameDay(props.startDate, props.endDate);
+});
+
+const isWithinSingleMonth = computed<boolean>(() => {
+  return !props.endDate || isSameMonth(props.startDate, props.endDate);
+});
+
+const days = computed<string>(() => {
+  let days = $formatDate(props.startDate, 'd');
+  if (!isSingleDay.value) {
+    days += `-${$formatDate(props.endDate, 'd')}`;
+  }
+
+  return days;
+});
+
+const months = computed<string>(() => {
+  let months = $formatDate(props.startDate, 'MMM');
+  if (!isWithinSingleMonth.value) {
+    months = `${$formatDate(props.startDate, 'MMM')} -  ${$formatDate(props.endDate, 'MMM')}`;
+    months = months.replace(/\./g, '');
+  }
+
+  return months;
+});
+
+const startDay = computed<string>(() => {
+  return $formatDate(props.startDate, 'd');
+});
+
+const endDay = computed<string>(() => {
+  return $formatDate(props.endDate, 'd');
+});
+
+const startMonth = computed<string>(() => {
+  return $formatDate(props.startDate, 'M');
+});
+
+const endMonth = computed<string>(() => {
+  return $formatDate(props.endDate, 'M');
+});
+
+const startTime = computed<string | null>(() => {
+  return !props.isFullDay ? $formatDate(props.startDate, 'HH:mm') : null;
 });
 </script>
 

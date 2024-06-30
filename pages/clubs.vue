@@ -1,8 +1,8 @@
 <template>
   <section class="l-main-content-section">
     <h2 class="t-headline-1">{{ $t('clubs.title') }}</h2>
-    <st-loader v-if="$fetchState.pending" :main="true" />
-    <p v-else-if="$fetchState.error">{{ $t('error.otherError') }} : {{ $fetchState.error.message }}</p>
+    <st-loader v-if="fetchPending" :main="true" />
+    <p v-else-if="fetchError">{{ $t('error.otherError') }} : {{ fetchError.message }}</p>
     <template v-else>
       <p class="c-clubs__amount">{{ $t('clubs.amountMembers', { amount: clubs.length }) }}</p>
       <st-club-list :clubs="clubs" />
@@ -10,41 +10,44 @@
   </section>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-import stClubList from '~/components/st-club-list.vue';
-import { DirectusClub } from '~/plugins/directus';
+<script setup lang="ts">
+import type { DirectusClub } from '~/plugins/06.directus';
 
-export default defineComponent({
-  components: { stClubList },
-  data() {
-    return {
-      clubs: [] as DirectusClub[],
-    };
-  },
-  nuxtI18n: {
-    paths: {
-      fr: '/clubs',
-      de: '/vereine',
-    },
-  },
-  async fetch() {
-    this.clubs = await this.$cmsService.getClubs({ statuses: ['active', 'passive'] });
-  },
-  head() {
-    return {
-      title: this.$t('clubs.title').toString(),
-      meta: [
-        { property: 'og:title', content: this.$t('clubs.title').toString() },
-        {
-          hid: 'og:description',
-          property: 'og:description',
-          content: this.$t('clubs.description').toString(),
-        },
-      ],
-    };
+const { $cmsService } = useNuxtApp();
+const { t } = useI18n();
+
+defineI18nRoute({
+  paths: {
+    fr: '/clubs',
+    de: '/vereine',
   },
 });
+
+useHead(() => {
+  return {
+    title: t('clubs.title'),
+    meta: [
+      { property: 'og:title', content: t('clubs.title') },
+      {
+        hid: 'og:description',
+        property: 'og:description',
+        content: t('clubs.description'),
+      },
+    ],
+  };
+});
+
+const {
+  data: clubs,
+  pending: fetchPending,
+  error: fetchError,
+} = useAsyncData<DirectusClub[]>(
+  'clubs',
+  async () => {
+    return await $cmsService.getClubs({ statuses: ['active', 'passive'] });
+  },
+  { default: () => [] },
+);
 </script>
 
 <style scoped>

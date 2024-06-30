@@ -4,44 +4,47 @@
     <p class="c-regional-associations__amount">
       {{ $t('regionalAssociations.amount', { amount: associations.length }) }}
     </p>
-    <st-club-list :clubs="associations" />
+    <st-loader v-if="fetchPending" :main="true" />
+    <p v-else-if="fetchError">{{ $t('error.otherError') }} : {{ fetchError.message }}</p>
+    <st-club-list v-else :clubs="associations" />
   </section>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-import stClubList from '~/components/st-club-list.vue';
-import { DirectusClub } from '~/plugins/directus';
+<script setup lang="ts">
+import type { DirectusClub } from '~/plugins/06.directus';
 
-export default defineComponent({
-  components: { stClubList },
-  data() {
-    return {
-      associations: [] as DirectusClub[],
-    };
+const { $cmsService } = useNuxtApp();
+const { t } = useI18n();
+
+defineI18nRoute({
+  paths: {
+    fr: '/associations-regionales',
+    de: '/regionalverbaende',
   },
-  nuxtI18n: {
-    paths: {
-      fr: '/associations-regionales',
-      de: '/regionalverbaende',
-    },
-  },
-  async fetch() {
-    this.associations = await this.$cmsService.getClubs({ statuses: ['regional_association'] });
-  },
-  head() {
-    return {
-      title: this.$t('regionalAssociations.title').toString(),
-      meta: [
-        { property: 'og:title', content: this.$t('regionalAssociations.title').toString() },
-        {
-          hid: 'og:description',
-          property: 'og:description',
-          content: this.$t('regionalAssociations.description').toString(),
-        },
-      ],
-    };
-  },
+});
+
+const {
+  data: associations,
+  pending: fetchPending,
+  error: fetchError,
+} = useAsyncData<DirectusClub[]>(
+  'regionalAssociations',
+  async () => $cmsService.getClubs({ statuses: ['regional_association'] }),
+  { default: () => [] },
+);
+
+useHead(() => {
+  return {
+    title: t('regionalAssociations.title').toString(),
+    meta: [
+      { property: 'og:title', content: t('regionalAssociations.title').toString() },
+      {
+        hid: 'og:description',
+        property: 'og:description',
+        content: t('regionalAssociations.description').toString(),
+      },
+    ],
+  };
 });
 </script>
 

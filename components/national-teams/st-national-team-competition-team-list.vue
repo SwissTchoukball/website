@@ -22,13 +22,13 @@
         </li>
       </ul>
       <h4 class="t-headline-3">
-        {{ $tc('internationalCompetition.teams.coach', nationalCompetitionTeam.coaches.length) }}
+        {{ $t('internationalCompetition.teams.coach', nationalCompetitionTeam.coaches.length) }}
       </h4>
       <ul v-if="nationalCompetitionTeam.coaches.length" class="u-unstyled-list l-people-list">
         <li v-for="coach of nationalCompetitionTeam.coaches" :key="coach.id" class="l-people-list__person">
           <st-person
             :name="`${coach.first_name} ${coach.last_name}`"
-            :sub-name="$tc('internationalCompetition.teams.coach', 1)"
+            :sub-name="$t('internationalCompetition.teams.coach', 1)"
             :avatar-asset-id="coach.portrait_square_head"
           />
         </li>
@@ -37,19 +37,15 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue';
-import { NationalTeamForCompetition } from './st-national-teams.prop';
+<script setup lang="ts">
+import type { NationalTeamForCompetition } from './st-national-teams.prop';
 import StPlayer from '~/components/national-teams/st-player.vue';
 import StPerson from '~/components/people/st-person.vue';
 
-export default defineComponent({
-  components: { StPerson, StPlayer },
-  props: {
-    teams: {
-      type: Array as PropType<Omit<NationalTeamForCompetition, 'competition'>[]>,
-      required: true,
-    },
+defineProps({
+  teams: {
+    type: Array as PropType<Omit<NationalTeamForCompetition, 'competition'>[]>,
+    required: true,
   },
 });
 </script>

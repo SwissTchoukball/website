@@ -5,13 +5,13 @@
     <ul class="u-unstyled-list c-pagination__pages">
       <li class="c-pagination__page" :class="{ 'c-pagination__page--hidden': isFirstPage }">
         <nuxt-link :to="pageLink(1)" :title="$t('pagination.firstPage')">
-          <fa-icon icon="angles-left" />
+          <font-awesome-icon icon="angles-left" />
         </nuxt-link>
       </li>
 
       <li class="c-pagination__page" :class="{ 'c-pagination__page--hidden': isFirstPage }">
         <nuxt-link :to="pageLink(currentPage - 1)" :title="$t('pagination.previousPage')">
-          <fa-icon icon="angle-left" />
+          <font-awesome-icon icon="angle-left" />
         </nuxt-link>
       </li>
       <li
@@ -24,74 +24,73 @@
       </li>
       <li class="c-pagination__page" :class="{ 'c-pagination__page--hidden': isLastPage }">
         <nuxt-link :to="pageLink(currentPage + 1)" :title="$t('pagination.nextPage')">
-          <fa-icon icon="angle-right" />
+          <font-awesome-icon icon="angle-right" />
         </nuxt-link>
       </li>
 
       <li class="c-pagination__page" :class="{ 'c-pagination__page--hidden': isLastPage }">
         <nuxt-link :to="pageLink(totalPages)" :title="$t('pagination.lastPage')">
-          <fa-icon icon="angles-right" />
+          <font-awesome-icon icon="angles-right" />
         </nuxt-link>
       </li>
     </ul>
   </nav>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+const localePath = useLocalePath();
+const route = useRoute();
 
-export default defineComponent({
-  props: {
-    currentPage: {
-      type: Number,
-      default: 1,
-    },
-    totalPages: {
-      type: Number,
-      default: 1,
-    },
+const props = defineProps({
+  currentPage: {
+    type: Number,
+    default: 1,
   },
-  data() {
-    return {
-      maxPagesShown: 5,
-    };
-  },
-  computed: {
-    isFirstPage() {
-      return this.currentPage === 1;
-    },
-    isLastPage() {
-      return this.currentPage === this.totalPages;
-    },
-    pagesShown(): number {
-      return this.totalPages < 5 ? this.totalPages : this.maxPagesShown;
-    },
-    /**
-     * The ideal amount of pages we want to be listed before and after the current page
-     */
-    pageListMargin(): number {
-      return Math.floor(this.pagesShown / 2);
-    },
-    firstListedPage(): number {
-      if (this.currentPage > this.totalPages - this.pageListMargin) {
-        return this.totalPages - this.pagesShown + 1;
-      }
-
-      return Math.max(1, this.currentPage - this.pageListMargin);
-    },
-    pagesRange(): number[] {
-      return Array.from({ length: this.pagesShown }, (_, i) => i + this.firstListedPage);
-    },
-  },
-  methods: {
-    pageLink(pageNumber: number) {
-      if (pageNumber < 1) {
-        return '';
-      }
-      return this.localePath({ path: this.$route.path, query: { page: pageNumber.toString() } });
-    },
+  totalPages: {
+    type: Number,
+    default: 1,
   },
 });
+
+const maxPagesShown = ref(5);
+
+const isFirstPage = computed<boolean>(() => {
+  return props.currentPage === 1;
+});
+
+const isLastPage = computed<boolean>(() => {
+  return props.currentPage === props.totalPages;
+});
+
+const pagesShown = computed<number>(() => {
+  return props.totalPages < 5 ? props.totalPages : maxPagesShown.value;
+});
+
+/**
+ * The ideal amount of pages we want to be listed before and after the current page
+ */
+const pageListMargin = computed<number>(() => {
+  return Math.floor(pagesShown.value / 2);
+});
+
+const firstListedPage = computed<number>(() => {
+  if (props.currentPage > props.totalPages - pageListMargin.value) {
+    return props.totalPages - pagesShown.value + 1;
+  }
+
+  return Math.max(1, props.currentPage - pageListMargin.value);
+});
+
+const pagesRange = computed<number[]>(() => {
+  return Array.from({ length: pagesShown.value }, (_, i) => i + firstListedPage.value);
+});
+
+const pageLink = (pageNumber: number) => {
+  if (pageNumber < 1) {
+    return '';
+  }
+  return localePath({ path: route.path, query: { page: pageNumber.toString() } });
+};
 </script>
 
 <style scoped>

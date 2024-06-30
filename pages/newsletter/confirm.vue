@@ -6,16 +6,13 @@
   </section>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-import newsletterMixin from '~/mixins/newsletter.mixin';
+<script setup lang="ts">
+const { t } = useI18n();
+const { selectedNewsletter } = useNewsletter();
 
-export default defineComponent({
-  mixins: [newsletterMixin],
-  head() {
-    return {
-      title: this.$t('newsletter.headTitle').toString(),
-    };
-  },
+useHead(() => {
+  return {
+    title: t(`newsletter.${selectedNewsletter.value}.headTitle`).toString(),
+  };
 });
 </script>

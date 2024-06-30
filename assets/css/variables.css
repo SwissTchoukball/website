@@ -1,3 +1,5 @@
+@import url('~/assets/css/media.css');
+
 :root {
   /* COLOR DEFINITIONS */
 
@@ -81,6 +83,10 @@
   --st-color-button-primary-background-hover: var(--st-color-red-swiss-tchoukball-dark);
   --st-color-button-primary-text-disabled: white;
   --st-color-button-primary-background-disabled: var(--st-color-grey);
+
+  /* Tooltips */
+  --st-color-tooltip-foreground: white;
+  --st-color-tooltip-background: var(--st-color-grey-very-dark);
 
   /* Home */
   --st-color-home-carousel-dot: var(--st-color-grey-light);

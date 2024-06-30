@@ -6,16 +6,13 @@
   </ul>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue';
-import { FlickrPhoto } from '~/plugins/flickr';
+<script setup lang="ts">
+import type { FlickrPhoto } from '~/plugins/05.flickr';
 
-export default defineComponent({
-  props: {
-    photos: {
-      type: Array as PropType<FlickrPhoto[]>,
-      required: true,
-    },
+defineProps({
+  photos: {
+    type: Array as PropType<FlickrPhoto[]>,
+    required: true,
   },
 });
 </script>
@@ -27,7 +24,7 @@ export default defineComponent({
   gap: var(--st-length-spacing-xxs);
 }
 
-.c-flickr-album-gallery__photo >>> img {
+.c-flickr-album-gallery__photo:deep(img) {
   display: block;
 }
 </style>
