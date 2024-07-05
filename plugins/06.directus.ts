@@ -351,6 +351,19 @@ export interface DirectusSeason {
   leverade_id?: number;
 }
 
+interface DirectusAnnouncementTranslation {
+  languages_code: string;
+  title: string;
+}
+
+export interface DirectusAnnouncement {
+  id: number;
+  translations: DirectusAnnouncementTranslation[];
+  url?: string;
+  date_start?: 'datetime';
+  date_end?: 'datetime';
+}
+
 interface DirectusLiveStreamTranslation {
   languages_code: string;
   title: string;
@@ -440,6 +453,8 @@ export type DirectusSchema = {
   player_positions: DirectusPlayerPosition[];
   player_position_translations: DirectusPlayerPositionTranslation[];
   seasons: DirectusSeason[];
+  announcements: DirectusAnnouncement[];
+  announcement_translations: DirectusAnnouncementTranslation[];
   live_streams: DirectusLiveStream[];
   live_stream_translations: DirectusLiveStreamTranslation[];
   national_competitions: DirectusNationalCompetition[];

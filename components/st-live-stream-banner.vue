@@ -46,6 +46,7 @@ const beginsInMoreThan44Minutes = (liveStream: LiveStream): boolean => {
   gap: var(--st-length-spacing-xs);
   align-items: center;
   padding: var(--st-length-spacing-xs) var(--st-length-main-content-side-padding);
+  margin-top: var(--st-length-spacing-xxs);
   color: var(--st-color-live-stream-foreground);
   font-weight: bold;
   background-color: var(--st-color-live-stream-background);

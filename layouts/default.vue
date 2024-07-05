@@ -25,6 +25,7 @@
       <st-burger-button v-model="isDrawerOpen" class="c-default__burger-button" />
       <st-navigation :items="mainNavigation" :name="$t('mainNavigation')" class="c-default__header-navigation" />
     </header>
+    <st-announcements :announcements="announcements" />
     <st-live-stream-banner :live-streams="liveStreams" />
     <main>
       <slot />
@@ -34,11 +35,13 @@
 </template>
 
 <script setup lang="ts">
-import type { LiveStream } from '~/plugins/08.cms-service';
+import type { Announcement, LiveStream } from '~/plugins/08.cms-service';
+import { useAnnouncementsStore } from '~/stores/announcements';
 
 const localePath = useLocalePath();
 const navigationStore = useNavigationStore();
 const liveStreamsStore = useLiveStreamsStore();
+const announcementsStore = useAnnouncementsStore();
 
 const isDrawerOpen = ref(false);
 
@@ -48,6 +51,9 @@ const mainNavigation = computed<MenuItem[]>(() => {
 
 const secondaryNavigation = computed<MenuItem[]>(() => {
   return navigationStore.secondaryNavigation;
+});
+const announcements = computed<Announcement[]>(() => {
+  return announcementsStore.announcements;
 });
 
 const liveStreams = computed<LiveStream[]>(() => {

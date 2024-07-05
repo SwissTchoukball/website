@@ -2,6 +2,7 @@ import { set } from 'date-fns';
 import { aggregate, readItem, readItems, type DirectusFile, type Query } from '@directus/sdk';
 import type { Await } from '~/types/types.utils';
 import {
+  type DirectusAnnouncement,
   type DirectusClub,
   type DirectusDomain,
   type DirectusEvent,
@@ -160,6 +161,14 @@ export interface NationalCompetition {
   editions?: NationalCompetitionEdition[];
 }
 
+export interface Announcement {
+  id: number;
+  description: string;
+  url?: string;
+  date_start?: string;
+  date_end?: string;
+}
+
 export interface LiveStream {
   id: number;
   title: string;
@@ -217,6 +226,7 @@ export interface CMSService {
     nationalTeamCompetitionId: number,
   ) => Promise<Omit<NationalTeamForCompetition, 'competition'>[]>;
   getSeasons: () => Promise<DirectusSeason[]>;
+  getAnnouncements: () => Promise<Announcement[]>;
   getLiveStreams: () => Promise<LiveStream[]>;
   getNationalCompetition: (competitionSlug: string) => Promise<NationalCompetition>;
   getNationalCompetitionEditions: ({
@@ -1781,6 +1791,64 @@ export default defineNuxtPlugin(() => {
     return seasons;
   };
 
+  const getAnnouncements: CMSService['getAnnouncements'] = async () => {
+    const now = new Date();
+
+    const announcementsResponse = await nuxtApp.$directus.request<DirectusAnnouncement[]>(
+      readItems('announcements', {
+        fields: [
+          'id',
+          'date_start',
+          'date_end',
+          {
+            translations: ['languages_code', 'description', 'url'],
+          },
+        ],
+        sort: ['date_start'],
+        filter: {
+          _and: [
+            {
+              date_start: {
+                _lte: toISOLocal(now),
+              },
+            },
+            {
+              date_end: {
+                _gte: toISOLocal(now),
+              },
+            },
+          ],
+        },
+      }),
+    );
+
+    if (!announcementsResponse) {
+      throw new Error('Error when retrieving announcmenets');
+    }
+
+    const announcements = announcementsResponse.reduce((announcements, announcement) => {
+      const translatedFields = getTranslatedFields(announcement, currentLocale.value);
+
+      // We discard live streams that don't have mandatory data.
+      if (announcement.id && translatedFields?.description) {
+        return [
+          ...announcements,
+          {
+            id: announcement.id,
+            description: translatedFields.description,
+            url: translatedFields.url,
+            date_start: announcement.date_start,
+            date_end: announcement.date_end,
+          },
+        ];
+      }
+      console.warn('Announcement missing mandatory data', { announcement });
+      return announcements;
+    }, [] as Announcement[]);
+
+    return announcements;
+  };
+
   const getLiveStreams: CMSService['getLiveStreams'] = async () => {
     const now = new Date();
 
@@ -1815,7 +1883,7 @@ export default defineNuxtPlugin(() => {
     );
 
     if (!liveStreamsResponse) {
-      throw new Error('Error when retrieving seasons');
+      throw new Error('Error when retrieving live streams');
     }
 
     const liveStreams = liveStreamsResponse.reduce((liveStreams, liveStream) => {
@@ -2307,6 +2375,7 @@ export default defineNuxtPlugin(() => {
         getNationalTeamCompetitionUpdates,
         getNationalTeamsForCompetition,
         getSeasons,
+        getAnnouncements,
         getLiveStreams,
         getNationalCompetition,
         getNationalCompetitionEditions,
