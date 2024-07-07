@@ -75,11 +75,14 @@ const totalPages = computed<number | undefined>(() => {
   return Math.ceil(data.value.totalIssues / issuesPerPage);
 });
 
-watch(route, async (newRoute, oldRoute) => {
-  if (newRoute.query !== oldRoute.query) {
-    await refresh();
-  }
-});
+watch(
+  () => route.query,
+  async (newQuery, oldQuery) => {
+    if (newQuery !== oldQuery) {
+      await refresh();
+    }
+  },
+);
 
 try {
   await fetchPage();

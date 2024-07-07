@@ -93,11 +93,14 @@ const {
   },
 );
 
-watch(route, async (newRoute, oldRoute) => {
-  if (newRoute.query !== oldRoute.query) {
-    await refresh();
-  }
-});
+watch(
+  () => route.query,
+  async (newQuery, oldQuery) => {
+    if (newQuery !== oldQuery) {
+      await refresh();
+    }
+  },
+);
 </script>
 
 <style>
