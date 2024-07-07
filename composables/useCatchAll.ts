@@ -23,37 +23,25 @@ export function useCatchAll() {
       throw createError({ statusMessage: 'The given path cannot be processed', fatal: true });
     }
 
-    try {
-      const page = await $cmsService.getPage({ pagePath });
+    const page = await $cmsService.getPage({ pagePath });
 
-      if (page.path !== pagePath) {
-        // We are likely in a situation where the page was requested in a specific language,
-        // but with the path in another language.
-        // This can notably happen when using the language switcher.
-        // We just redirect to fix the path.
-        let pathLocale = `/${locale.value}`;
-        // The current strategy doesn't put a prefix for the default language
-        if (locale.value === defaultLocale) {
-          pathLocale = '';
-        }
-        navigateTo(`${pathLocale}${page.path}`);
+    if (page.path !== pagePath) {
+      // We are likely in a situation where the page was requested in a specific language,
+      // but with the path in another language.
+      // This can notably happen when using the language switcher.
+      // We just redirect to fix the path.
+      let pathLocale = `/${locale.value}`;
+      // The current strategy doesn't put a prefix for the default language
+      if (locale.value === defaultLocale) {
+        pathLocale = '';
       }
-
-      title.value = page.title;
-      body.value = page.body;
-      keyRoles.value = page.key_roles;
-      resources.value = page.resources;
-    } catch (err: any) {
-      switch (err.message) {
-        case 'pageNotFound':
-          throw createError({ statusCode: 404, message: `Could not find page for ${pagePath}`, fatal: true });
-        case 'noData':
-          console.info('No data either in the requested locale or the fallback locale.');
-          break;
-        default:
-          throw createError({ message: `Error when retrieving simple page: ${err}`, fatal: true });
-      }
+      navigateTo(`${pathLocale}${page.path}`);
     }
+
+    title.value = page.title;
+    body.value = page.body;
+    keyRoles.value = page.key_roles;
+    resources.value = page.resources;
   };
 
   return {

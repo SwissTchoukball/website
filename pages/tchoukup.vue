@@ -81,7 +81,19 @@ watch(route, async (newRoute, oldRoute) => {
   }
 });
 
-fetchPage();
+try {
+  await fetchPage();
+} catch (err: any) {
+  switch (err.message) {
+    case 'pageNotFound':
+      throw createError({ statusCode: 404, message: `Could not find page`, fatal: true });
+    case 'noData':
+      console.info('No data either in the requested locale or the fallback locale.');
+      break;
+    default:
+      throw createError({ message: `Error when retrieving simple page: ${err}`, fatal: true });
+  }
+}
 </script>
 
 <style scoped>
