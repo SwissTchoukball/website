@@ -42,7 +42,7 @@
     "postcss-custom-media": "^10.0.8",
     "radix-vue": "^1.9.1",
     "slugify": "^1.6.6",
-    "swiper": "^11.1.4",
+    "swiper": "^11.1.5",
     "vue": "^3.4.31",
     "vue-matomo": "^4.2.0",
     "vue-router": "^4.4.0"
