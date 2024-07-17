@@ -26,7 +26,7 @@
   "dependencies": {
     "@directus/sdk": "15.1.0",
     "@fortawesome/free-brands-svg-icons": "^6.5.2",
-    "@fortawesome/free-solid-svg-icons": "^6.5.2",
+    "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "@fortawesome/vue-fontawesome": "^3.0.8",
     "@hcaptcha/vue3-hcaptcha": "^1.3.0",
     "@pinia/nuxt": "^0.5.1",
