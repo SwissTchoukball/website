@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { isWithinInterval, isPast } from 'date-fns';
+import { addDays, isWithinInterval, isPast } from 'date-fns';
 import type { NationalTeamCompetition } from '~/components/national-teams/st-national-teams.prop';
 
 defineI18nRoute({
@@ -40,7 +40,8 @@ const isRunning = computed<boolean>(() => {
     !!props.competition.date_end &&
     isWithinInterval(new Date(), {
       start: new Date(props.competition.date_start),
-      end: new Date(props.competition.date_end),
+      // We add one day to the end date, as it takes the day at midnight.
+      end: addDays(new Date(props.competition.date_end), 1),
     })
   );
 });
