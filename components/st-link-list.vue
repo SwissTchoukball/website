@@ -36,13 +36,10 @@ defineProps({
 
 .c-link-list {
   padding-left: 0.8rem;
+  list-style-type: '\2726';
 }
 
 .c-link-list-item a {
   text-decoration: none;
-}
-
-.c-link-list-item::marker {
-  content: '\2726';
 }
 </style>
