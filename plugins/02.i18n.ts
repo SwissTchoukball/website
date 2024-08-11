@@ -1,5 +1,5 @@
 export default defineNuxtPlugin((nuxtApp) => {
-  const { loadMainMenu, loadSecondaryMenu } = useNavigationStore();
+  const { loadMainMenu, loadSecondaryMenu, loadFooterLinks } = useNavigationStore();
   const { loadLiveStreams } = useLiveStreamsStore();
   const { loadAnnouncements } = useAnnouncementsStore();
   const { loadDomains } = useDomainsStore();
@@ -8,7 +8,14 @@ export default defineNuxtPlugin((nuxtApp) => {
   const { resourceTypes, loadResourceTypes } = useResourcesStore();
 
   nuxtApp.hook('i18n:localeSwitched', async () => {
-    const dataLoads = [loadMainMenu(), loadSecondaryMenu(), loadAnnouncements(), loadLiveStreams(), loadDomains()];
+    const dataLoads = [
+      loadMainMenu(),
+      loadSecondaryMenu(),
+      loadFooterLinks(),
+      loadAnnouncements(),
+      loadLiveStreams(),
+      loadDomains(),
+    ];
 
     // We load the event types only if we already have them in the old locale
     if (eventTypes) {

@@ -180,6 +180,7 @@ export interface LiveStream {
 
 export interface CMSService {
   getMainNavigation: () => Promise<DirectusMenuItem[]>;
+  getFooterLinks: () => Promise<DirectusMenuItem[]>;
   getPage: (options: { pagePath: string }) => Promise<SimplePage>;
   getText: (textId: number) => Promise<TextEntry>;
   getDomains: () => Promise<Domain[]>;
@@ -404,10 +405,10 @@ export default defineNuxtPlugin(() => {
     return pageData;
   };
 
-  const getMainNavigation: CMSService['getMainNavigation'] = async () => {
+  const getNavigationTree = async (rootItemId: number): Promise<DirectusMenuItem[]> => {
     return await nuxtApp.$directus.request<DirectusMenuItem[]>(
       readItems('menus', {
-        filter: { parent: { _eq: 1 } },
+        filter: { parent: { _eq: rootItemId } },
         sort: ['sort'],
         deep: {
           translations: { _filter: { languages_code: { _eq: currentLocale.value } } },
@@ -426,6 +427,14 @@ export default defineNuxtPlugin(() => {
         ],
       }),
     );
+  };
+
+  const getMainNavigation: CMSService['getMainNavigation'] = async () => {
+    return await getNavigationTree(1);
+  };
+
+  const getFooterLinks: CMSService['getMainNavigation'] = async () => {
+    return await getNavigationTree(39);
   };
 
   const getText: CMSService['getText'] = async (textId) => {
@@ -2354,6 +2363,7 @@ export default defineNuxtPlugin(() => {
     provide: {
       cmsService: {
         getMainNavigation,
+        getFooterLinks,
         getPage,
         getText,
         getDomains,

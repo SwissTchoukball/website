@@ -63,8 +63,13 @@
         </a>
       </div>
       <p class="c-footer__copyright">
-        &copy; {{ new Date().getFullYear() }} {{ $t('title') }}, {{ $t('footer.allRightsReserved') }} -
-        <nuxt-link :to="`/${locale}/impressum`">Impressum</nuxt-link>
+        &copy; {{ new Date().getFullYear() }} {{ $t('title') }}, {{ $t('footer.allRightsReserved') }}
+        <span v-for="link in links" :key="link.name">
+          -
+          <nuxt-link :to="link.href ? localePath(link.href) : undefined">
+            {{ link.name ? link.name : link.l10nKey ? $t(link.l10nKey) : '?' }}
+          </nuxt-link>
+        </span>
       </p>
     </section>
   </footer>
@@ -87,6 +92,7 @@ const partners = ref([
     href: 'https://axanova.ch',
   },
 ]);
+
 const affiliations = ref([
   {
     name: 'Swiss Olympic Member',
@@ -104,8 +110,13 @@ const affiliations = ref([
     href: 'http://tchoukball.org',
   },
 ]);
+
 const rssFeedUrl = computed(() => {
   return `https://feeds.tchoukball.ch/news-${locale.value}.xml`;
+});
+
+const links = computed(() => {
+  return navigationStore.footerLinks;
 });
 
 const secondaryNavigation = computed(() => {

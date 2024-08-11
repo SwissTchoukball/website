@@ -4,7 +4,7 @@ import { useNavigationStore } from '~/stores/navigation';
 import { useSeasonsStore } from '~/stores/seasons';
 
 export default defineNuxtPlugin(async () => {
-  const { loadMainMenu, loadSecondaryMenu } = useNavigationStore();
+  const { loadMainMenu, loadSecondaryMenu, loadFooterLinks } = useNavigationStore();
   const { loadLiveStreams } = useLiveStreamsStore();
   const { loadAnnouncements } = useAnnouncementsStore();
   const { loadSeasons } = useSeasonsStore();
@@ -12,6 +12,7 @@ export default defineNuxtPlugin(async () => {
 
   await loadMainMenu();
   loadSecondaryMenu();
+  loadFooterLinks();
   await loadAnnouncements();
   await loadLiveStreams();
   await loadSeasons();
