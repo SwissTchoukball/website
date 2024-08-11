@@ -85,6 +85,13 @@
 <script setup lang="ts">
 import VueHcaptcha from '@hcaptcha/vue3-hcaptcha';
 
+defineI18nRoute({
+  paths: {
+    fr: '/conatct',
+    de: '/kontakt',
+  },
+});
+
 const runtimeConfig = useRuntimeConfig();
 const { t } = useI18n();
 const localePath = useLocalePath();
