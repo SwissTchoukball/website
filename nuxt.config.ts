@@ -82,6 +82,7 @@ export default defineNuxtConfig({
 
   routeRules: {
     '/championnat': { redirect: '/competitions/ligue-a' },
+    '/championnat-feminin': { redirect: '/competitions/championnat-feminin' },
     '/coupesuisse': { redirect: '/competitions/coupe-suisse' },
     '/staff': { redirect: '/structure' },
     '/wtc2023': { redirect: '/equipes-nationales/competitions/wtc2023' },
