@@ -155,6 +155,7 @@
   "referees": {
     "title": "Arbitres",
     "level": {
+      "reviewer": "Visionneur·euse·s",
       "zero": "Arbitres 0",
       "i": "Arbitres I",
       "ii": "Arbitres II",

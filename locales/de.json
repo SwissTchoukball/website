@@ -155,10 +155,11 @@
   "referees": {
     "title": "SchiedsrichterInnen",
     "level": {
+      "reviewer": "BetrachterInnen",
+      "zero": "SchiedsrichterInnen 0",
       "i": "SchiedsrichterInnen I",
       "ii": "SchiedsrichterInnen II",
-      "iii": "SchiedsrichterInnen III",
-      "iv": "SchiedsrichterInnen IV"
+      "iii": "SchiedsrichterInnen III"
     }
   },
   "nationalTeams": {

@@ -32,6 +32,13 @@
         <li v-for="referee in level0Referees" :key="referee.id">{{ referee.firstName }} {{ referee.lastName }}</li>
       </ul>
     </template>
+
+    <template v-if="reviewerReferees.length > 0">
+      <h2 class="t-headline-2">{{ $t('referees.level.reviewer') }}</h2>
+      <ul class="u-unstyled-list c-referees__list">
+        <li v-for="referee in reviewerReferees" :key="referee.id">{{ referee.firstName }} {{ referee.lastName }}</li>
+      </ul>
+    </template>
   </section>
 </template>
 
@@ -69,6 +76,9 @@ const level2Referees = computed<PublicReferee[]>(() => {
 });
 const level3Referees = computed<PublicReferee[]>(() => {
   return referees.value?.filter((referee: PublicReferee) => referee.levelId === '302') || [];
+});
+const reviewerReferees = computed<PublicReferee[]>(() => {
+  return referees.value?.filter((referee: PublicReferee) => referee.levelId === '412') || [];
 });
 </script>
 
