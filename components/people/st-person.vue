@@ -89,7 +89,7 @@ const avatarSrcSet = computed<string>(() => {
 
 .c-person__avatar-placeholder {
   color: white;
-  width: 100%;
+  width: 80%;
   height: 100%;
   padding: 10%;
   padding-bottom: 0;
