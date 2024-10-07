@@ -104,6 +104,7 @@ export default class CompetitionEdition {
           faceoff.setTeams(this.teams);
         }
         faceoff.matches = this.matches?.filter((match) => match.faceoff_id === faceoff.id);
+        faceoff.matches?.forEach((match) => (match.faceoff = { ...faceoff, matches: undefined }));
         return faceoff;
       });
     }

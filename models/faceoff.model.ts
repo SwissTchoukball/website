@@ -47,3 +47,5 @@ export default class Faceoff {
     }
   }
 }
+
+export type FaceoffWithoutMatches = Omit<Faceoff, 'matches' | 'setTeams'>;

@@ -18,7 +18,6 @@
                   :src="match.home_team.avatarMediumUrl"
                   class="c-planning__match-team-avatar"
                 />
-                <div v-else class="c-planning__match-team-avatar c-planning__match-team-avatar--placeholder"></div>
                 {{ match.homeTeamName }}
               </div>
 
@@ -30,7 +29,6 @@
                   :src="match.away_team.avatarMediumUrl"
                   class="c-planning__match-team-avatar"
                 />
-                <div v-else class="c-planning__match-team-avatar c-planning__match-team-avatar--placeholder"></div>
                 {{ match.awayTeamName }}
               </div>
             </h4>

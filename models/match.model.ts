@@ -9,6 +9,7 @@ import type {
   LeveradeResult,
   LeveradeTeam,
 } from '~/plugins/07.leverade';
+import type { FaceoffWithoutMatches } from '~/models/faceoff.model';
 
 export interface Facility {
   id: string;
@@ -40,7 +41,7 @@ export default class Match {
   datetime: string | null;
   round_id: string;
   faceoff_id: string | null;
-  faceoff?: Faceoff;
+  faceoff?: Faceoff | FaceoffWithoutMatches;
   home_team_id: string | null;
   leverade_home_team?: LeveradeTeam;
   home_team?: Team;
