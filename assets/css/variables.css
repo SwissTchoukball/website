@@ -173,7 +173,9 @@
   --st-color-phase-select-background-hover: var(--st-color-grey-very-light);
   --st-color-match-score: var(--st-color-red-swiss-tchoukball);
   --st-color-match-results-separator: var(--st-color-grey-light);
+  --st-color-match-result-background-hover: var(--st-color-grey-very-light);
   --st-color-match-phase-round: var(--st-color-red-swiss-tchoukball);
+  --st-color-match-additional-info-background: var(--st-color-red-swiss-tchoukball-ultra-light);
 
   /* Resources */
   --st-color-resource-icon: var(--st-color-red-swiss-tchoukball);

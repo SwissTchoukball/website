@@ -29,6 +29,7 @@ defineProps({
 
 .c-match-result-list__match {
   border-bottom: 1px solid var(--st-color-match-results-separator);
+  margin: 1rem 0;
 }
 
 .c-match-result-list__match:last-of-type {

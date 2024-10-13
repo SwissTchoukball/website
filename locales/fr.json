@@ -147,7 +147,8 @@
     "noUpcomingMatches": "Il n'y a actuellement pas de matchs planifiés."
   },
   "match": {
-    "photos": "Photos du match"
+    "photos": "Photos du match",
+    "toBeConfirmed": "À confirmer"
   },
   "person": {
     "photoOf": "Photo de {name}"

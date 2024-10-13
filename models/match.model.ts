@@ -191,7 +191,7 @@ export default class Match {
     return '';
   }
 
-  get isOver(): boolean {
+  get hasScore(): boolean {
     return (!!this.home_team_score && this.home_team_score > 0) || (!!this.away_team_score && this.away_team_score > 0);
   }
 

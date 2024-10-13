@@ -25,7 +25,7 @@
       />
       <div v-else class="c-match__team-avatar"></div>
 
-      <div v-if="match.isOver" class="c-match__score">{{ match.home_team_score }} - {{ match.away_team_score }}</div>
+      <div v-if="match.hasScore" class="c-match__score">{{ match.home_team_score }} - {{ match.away_team_score }}</div>
       <div v-else class="c-match__no-score"></div>
 
       <img
@@ -34,6 +34,11 @@
         class="c-match__team-avatar"
       />
       <div v-else class="c-match__team-avatar"></div>
+    </div>
+    <div class="c-match__additional-info">
+      <st-chip v-if="match.hasScore && !match.finished">
+        {{ $t('match.toBeConfirmed') }}
+      </st-chip>
     </div>
     <ul v-if="match.periods" class="c-match__detailed-score u-unstyled-list">
       <template v-for="period in match.periods">
@@ -293,7 +298,7 @@ const isRoundNameVisible = computed<boolean>(() => {
  */
 const phaseRoundLink = computed<string>(() => {
   let pathName = 'competitions-competition-season-phase-planning';
-  if (match.value?.isOver) {
+  if (match.value?.finished) {
     pathName = 'competitions-competition-season-phase-results';
   }
   if (!phase.value) {
@@ -402,13 +407,18 @@ useHead(() => {
   width: 10vw;
 }
 
+.c-match__additional-info {
+  margin-top: var(--st-length-spacing-s);
+  text-align: center;
+}
+
 .c-match__detailed-score {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
   gap: 1rem;
   font-weight: bold;
-  margin-top: var(--st-length-spacing-s);
+  margin-top: var(--st-length-spacing-xxs);
 }
 
 .c-match__period {
