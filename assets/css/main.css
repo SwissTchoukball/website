@@ -1,7 +1,17 @@
 @import url('~/assets/css/media.css');
 
-html {
+:root {
   font-family: Inter, sans-serif;
+}
+
+@supports (font-variation-settings: normal) {
+  :root {
+    font-family: InterVariable, sans-serif;
+    font-optical-sizing: auto;
+  }
+}
+
+html {
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   color: var(--st-color-text);
