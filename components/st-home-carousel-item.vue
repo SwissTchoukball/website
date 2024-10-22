@@ -83,6 +83,7 @@ const imageSrcSet = (assetId: string): string => {
   color: var(--st-color-home-carousel-title-foreground);
   font-weight: 900;
   font-size: 2em;
+  text-wrap: balance;
 
   /* PostCSS doesn't support adding prefix for line-clamp yet: https://github.com/postcss/autoprefixer/issues/1322 */
   /* stylelint-disable-next-line value-no-vendor-prefix */
