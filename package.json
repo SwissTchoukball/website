@@ -39,7 +39,7 @@
     "nuxt": "^3.12.4",
     "nuxt-mail": "^5.0.1",
     "pinia": "^2.2.0",
-    "postcss-custom-media": "^10.0.8",
+    "postcss-custom-media": "^11.0.4",
     "radix-vue": "^1.9.2",
     "slugify": "^1.6.6",
     "swiper": "^11.1.9",
