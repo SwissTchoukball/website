@@ -27,6 +27,3 @@ logs
 
 # htaccess
 .htaccess
-
-# Static files generated externally (e.g. referee list in JSON)
-public/external

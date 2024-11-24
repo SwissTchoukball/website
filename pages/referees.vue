@@ -61,7 +61,7 @@ const {
   data: referees,
   pending: fetchPending,
   error: fetchError,
-} = useFetch<PublicReferee[]>('/external/referees_public.json', {
+} = useFetch<PublicReferee[]>('https://files.tchoukball.ch/arbitrage/liste-arbitres/referees_public.json', {
   server: false,
 });
 
