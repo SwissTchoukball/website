@@ -1,3 +1,4 @@
+import { subMinutes } from 'date-fns';
 import type { NitroFetchOptions } from 'nitropack';
 export interface LeveradeResponse<T, E = unknown, M = unknown> {
   data: T;
@@ -350,9 +351,11 @@ export default defineNuxtPlugin(() => {
   };
 
   const getUpcomingMatches: Leverade['getUpcomingMatches'] = (seasonLeveradeId) => {
-    const today = nuxtApp.$formatDate(new Date(), 'yyyy-MM-dd');
+    // We remove 90 minutes to account for timezone and to still show the match 30 minutes after it started.
+    // FIXME: This would need fine tuning to consider daylight saving time.
+    const now = nuxtApp.$formatDate(subMinutes(new Date(), 90), "yyyy-MM-dd'T'HH.mm.ss");
     return getCachedQuery(
-      `/matches?filter=datetime>${today},round.group.tournament.season.id:${seasonLeveradeId}&sort=datetime&include=round.group.tournament,teams,facility`,
+      `/matches?filter=datetime>${now},round.group.tournament.season.id:${seasonLeveradeId}&sort=datetime&include=round.group.tournament,teams,facility&page[size]=20`,
     );
   };
 
