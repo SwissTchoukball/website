@@ -4,7 +4,7 @@
 
     <st-calendar-nav class="c-calendar-list__calendar-navigation" :year="year" :month="month" current-view="list" />
 
-    <st-loader v-if="fetchPending" :main="true" />
+    <st-loader v-if="fetchStatus === 'pending'" :main="true" />
     <p v-else-if="fetchError">{{ $t('error.otherError') }} : {{ fetchError.message }}</p>
     <template v-else>
       <p v-if="!events.length" class="l-blank-slate-message">{{ $t('events.noneThisMonth', { month: monthName }) }}</p>
@@ -47,9 +47,7 @@ defineI18nRoute({
   },
 });
 
-const events = ref<CalendarEvent[]>([]);
 const filteredTypeId = ref<number | undefined>(undefined);
-const showUpcomingEventsOnly = ref(false);
 
 useHead(() => {
   return {
@@ -71,8 +69,8 @@ if (!eventsStore.eventTypes) {
 }
 
 const {
-  data: upcomingEvents,
-  pending: fetchPending,
+  data: events,
+  status: fetchStatus,
   error: fetchError,
 } = useAsyncData<CalendarEvent[]>(
   'events',
@@ -87,24 +85,24 @@ const {
     if (!eventsResult) {
       throw new Error('Error when retrieving events');
     }
-
-    events.value = eventsResult.data;
-    const filteredEvents = events.value.filter((event) => event.date_end >= new Date());
-
-    const now = new Date();
-    if (
-      arePastEventsThisMonth.value &&
-      filteredEvents.length > 0 &&
-      now.getFullYear() === year.value &&
-      now.getMonth() + 1 === month.value
-    ) {
-      showUpcomingEventsOnly.value = true;
-    }
-
-    return filteredEvents;
+    return eventsResult.data;
   },
   { default: () => [] },
 );
+
+const upcomingEvents = computed<CalendarEvent[]>(() => {
+  return events.value.filter((event) => event.date_end >= new Date());
+});
+
+const showUpcomingEventsOnly = computed<boolean>(() => {
+  const now = new Date();
+  return (
+    arePastEventsThisMonth.value &&
+    upcomingEvents.value.length > 0 &&
+    now.getFullYear() === year.value &&
+    now.getMonth() + 1 === month.value
+  );
+});
 
 const arePastEventsThisMonth = computed<boolean>(() => {
   return events.value.length !== upcomingEvents.value.length;
