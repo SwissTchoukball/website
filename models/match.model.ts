@@ -195,6 +195,21 @@ export default class Match {
     return (!!this.home_team_score && this.home_team_score > 0) || (!!this.away_team_score && this.away_team_score > 0);
   }
 
+  get hasAllPeriodsWithScore(): boolean {
+    if (!this.periods) {
+      return false;
+    }
+    return this.periods.every((period) => period.home_team_score || period.away_team_score);
+  }
+
+  get isOngoing(): boolean {
+    return this.hasScore && !this.finished && !this.hasAllPeriodsWithScore;
+  }
+
+  get toBeConfirmed(): boolean {
+    return this.hasScore && !this.finished && this.hasAllPeriodsWithScore;
+  }
+
   get hasHomeTeamWon(): boolean {
     return !!this.home_team_score && !!this.away_team_score && this.home_team_score > this.away_team_score;
   }

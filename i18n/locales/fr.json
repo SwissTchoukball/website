@@ -148,6 +148,7 @@
   },
   "match": {
     "photos": "Photos du match",
+    "ongoing": "En cours",
     "toBeConfirmed": "À confirmer"
   },
   "person": {

@@ -36,7 +36,10 @@
       <div v-else class="c-match__team-avatar"></div>
     </div>
     <div class="c-match__additional-info">
-      <st-chip v-if="match.hasScore && !match.finished">
+      <st-chip v-if="match.isOngoing">
+        {{ $t('match.ongoing') }}
+      </st-chip>
+      <st-chip v-else-if="match.toBeConfirmed">
         {{ $t('match.toBeConfirmed') }}
       </st-chip>
     </div>

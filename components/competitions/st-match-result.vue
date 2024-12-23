@@ -33,7 +33,10 @@
       </div>
       <div class="c-match-result__team-score">{{ match.away_team_score }}</div>
     </template>
-    <st-chip v-if="match.hasScore && !match.finished" class="c-match-result__additional-info">
+    <st-chip v-if="match.isOngoing" class="c-match-result__additional-info">
+      {{ $t('match.ongoing') }}
+    </st-chip>
+    <st-chip v-else-if="match.toBeConfirmed" class="c-match-result__additional-info">
       {{ $t('match.toBeConfirmed') }}
     </st-chip>
   </nuxt-link>
