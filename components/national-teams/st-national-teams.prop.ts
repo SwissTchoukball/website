@@ -1,4 +1,4 @@
-import { type DirectusFile } from '@directus/sdk';
+import type { DirectusFile } from '@directus/sdk';
 import type { Gender, Role } from '~/plugins/08.cms-service';
 import type { DirectusPerson, DirectusSchema } from '~/plugins/06.directus';
 
