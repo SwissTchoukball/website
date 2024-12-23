@@ -38,19 +38,17 @@ export default defineNuxtConfig({
 
   i18n: {
     locales: [
-      { code: 'fr', iso: 'fr', name: 'FR', file: 'fr.json' },
-      { code: 'de', iso: 'de', name: 'DE', file: 'de.json' },
+      { code: 'fr', language: 'fr', name: 'FR', file: 'fr.json' },
+      { code: 'de', language: 'de', name: 'DE', file: 'de.json' },
     ],
     baseUrl: process.env.ST_WEBSITE_BASE_URL,
     defaultLocale: 'fr',
-    langDir: 'locales/',
     // TODO: Switch to `prefix_and_default` if it works properly (e.g. when it won't add `/fr/` when it was not present before)
     strategy: 'prefix_except_default',
     lazy: true,
     detectBrowserLanguage: {
       useCookie: false,
     },
-    vueI18n: './i18n.config.ts',
   },
 
   // nuxt-mail module configuration: https://github.com/dword-design/nuxt-mail#usage
