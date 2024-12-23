@@ -214,7 +214,7 @@ const getPathToLastPhaseOfEdition = (edition: CompetitionEdition): string => {
 
 @media (--lg-and-up) {
   .c-upcoming-matches__match {
-    width: 33%;
+    width: calc(100% / 3);
   }
 }
 </style>
