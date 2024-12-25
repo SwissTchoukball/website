@@ -36,7 +36,7 @@
     "html-entities": "^2.5.2",
     "linkify-string": "^4.2.0",
     "linkifyjs": "^4.2.0",
-    "nuxt": "^3.14.1592",
+    "nuxt": "^3.15.0",
     "nuxt-mail": "^5.1.1",
     "pinia": "^2.3.0",
     "postcss-custom-media": "^11.0.5",
