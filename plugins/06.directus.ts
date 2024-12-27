@@ -389,6 +389,7 @@ export interface DirectusMatchAdditionalData {
   id: number;
   leverade_id: number;
   flickr_photoset_id?: string;
+  youtube_video_id?: string;
 }
 
 interface DirectusNationalCompetitionTranslation {

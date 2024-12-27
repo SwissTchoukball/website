@@ -2095,7 +2095,7 @@ export default defineNuxtPlugin(() => {
             _eq: leveradeId,
           },
         },
-        fields: ['id', 'leverade_id', 'flickr_photoset_id'],
+        fields: ['id', 'leverade_id', 'flickr_photoset_id', 'youtube_video_id'],
       }),
     );
 
@@ -2118,6 +2118,7 @@ export default defineNuxtPlugin(() => {
       id: rawData.id,
       leverade_id: rawData.leverade_id,
       flickr_photoset_id: rawData.flickr_photoset_id,
+      youtube_video_id: rawData.youtube_video_id,
     };
   };
 

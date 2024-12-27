@@ -96,6 +96,22 @@
         ></iframe>
       </client-only>
     </div>
+
+    <template v-if="data?.matchAdditionalData?.youtube_video_id">
+      <h3 class="t-headline-2 c-match__video-title">{{ $t('match.video') }}</h3>
+      <div class="c-match__video-wrapper">
+        <iframe
+          class="c-match__video"
+          :src="`https://www.youtube-nocookie.com/embed/${data.matchAdditionalData.youtube_video_id}`"
+          title="YouTube video player"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allowfullscreen
+        ></iframe>
+      </div>
+    </template>
+
     <template v-if="data?.photos.length">
       <h3 class="t-headline-2 c-match__photos-title">{{ $t('match.photos') }}</h3>
       <st-flickr-album-gallery :photos="data.photos" class="c-match__photos-gallery" />
@@ -498,6 +514,25 @@ useHead(() => {
   width: 100%;
   height: 50vh;
   border: 0;
+}
+
+.c-match__video-title {
+  padding-top: var(--st-length-spacing-m);
+}
+
+.c-match__video-wrapper {
+  margin-top: var(--st-length-spacing-s);
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%;
+}
+
+.c-match__video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .c-match__photos-title {

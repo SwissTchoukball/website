@@ -148,6 +148,7 @@
   },
   "match": {
     "photos": "Photos du match",
+    "video": "Vidéo du match",
     "ongoing": "En cours",
     "toBeConfirmed": "À confirmer"
   },
