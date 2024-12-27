@@ -1,6 +1,6 @@
 <template>
   <section class="l-main-content-section">
-    <st-loader v-if="fetchPending" :main="true" />
+    <st-loader v-if="fetchStatus === 'pending' || route.params.phase === 'last'" :main="true" />
     <p v-else-if="fetchError">{{ $t('error.otherError') }} : {{ fetchError.message }}</p>
     <template v-else>
       <st-breadcrumb :items="breadcrumb" class="c-competition-edition__breadcrumb" />
@@ -76,7 +76,7 @@ const season = ref<Season | undefined>(seasonsStore.getSeasonBySlug(route.params
 
 const {
   data: fetchedData,
-  pending: fetchPending,
+  status: fetchStatus,
   error: fetchError,
   refresh,
 } = useAsyncData<{
@@ -140,7 +140,7 @@ const {
 
   // If no phase or match is set, redirect to the last phase
   if (lastPhasePath && !route.params.matchId && (!route.params.phase || route.params.phase === 'last')) {
-    navigateTo(lastPhasePath);
+    await navigateTo(lastPhasePath);
   }
 
   return {
