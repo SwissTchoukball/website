@@ -60,6 +60,7 @@ export default class Match {
 
   // Non-Leverade fields:
   flickr_photoset_id?: string;
+  youtube_video_id?: string;
 
   constructor(match: LeveradeMatch) {
     this.id = match.id;

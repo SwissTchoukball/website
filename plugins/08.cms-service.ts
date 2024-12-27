@@ -239,6 +239,7 @@ export interface CMSService {
     seasonSlug?: string;
     leveradeIds?: string[];
   }) => Promise<NationalCompetitionEdition[]>;
+  getMatchesAdditionalData: (leveradeIds: number[]) => Promise<Record<string, DirectusMatchAdditionalData> | null>;
   getMatchAdditionalData: (leveradeId: number) => Promise<DirectusMatchAdditionalData | null>;
   getTchoukups: (options: { limit: number; page: number }) => Promise<{ data: Tchoukup[]; meta: { total: number } }>;
   getResourceTypes: () => Promise<ResourceType[]>;
@@ -2086,14 +2087,15 @@ export default defineNuxtPlugin(() => {
     }, [] as NationalCompetitionEdition[]);
   };
 
-  const getMatchAdditionalData: CMSService['getMatchAdditionalData'] = async (leveradeId) => {
+  const getMatchesAdditionalData: CMSService['getMatchesAdditionalData'] = async (leveradeIds) => {
     const response = await nuxtApp.$directus.request<DirectusMatchAdditionalData[]>(
       readItems('match_additional_data', {
-        limit: 1,
         filter: {
-          leverade_id: {
-            _eq: leveradeId,
-          },
+          _or: leveradeIds.map((leveradeId) => ({
+            leverade_id: {
+              _eq: leveradeId,
+            },
+          })),
         },
         fields: ['id', 'leverade_id', 'flickr_photoset_id', 'youtube_video_id'],
       }),
@@ -2108,18 +2110,27 @@ export default defineNuxtPlugin(() => {
       return null;
     }
 
-    const rawData = response[0];
+    const additionalData: Record<string, DirectusMatchAdditionalData> = {};
 
-    if (!rawData.id || !rawData.leverade_id) {
-      throw new Error('Match additional data is missing mandatory attributes');
-    }
+    response.forEach((rawData) => {
+      if (!rawData.id || !rawData.leverade_id) {
+        console.error('Match additional data is missing mandatory attributes');
+      }
 
-    return {
-      id: rawData.id,
-      leverade_id: rawData.leverade_id,
-      flickr_photoset_id: rawData.flickr_photoset_id,
-      youtube_video_id: rawData.youtube_video_id,
-    };
+      additionalData[rawData.leverade_id] = {
+        id: rawData.id,
+        leverade_id: rawData.leverade_id,
+        flickr_photoset_id: rawData.flickr_photoset_id,
+        youtube_video_id: rawData.youtube_video_id,
+      };
+    });
+
+    return additionalData;
+  };
+
+  const getMatchAdditionalData: CMSService['getMatchAdditionalData'] = async (leveradeId) => {
+    const data = await getMatchesAdditionalData([leveradeId]);
+    return data?.[leveradeId] ? data[leveradeId] : null;
   };
 
   const getTchoukups: CMSService['getTchoukups'] = async ({ limit, page }) => {
@@ -2390,6 +2401,7 @@ export default defineNuxtPlugin(() => {
         getLiveStreams,
         getNationalCompetition,
         getNationalCompetitionEditions,
+        getMatchesAdditionalData,
         getMatchAdditionalData,
         getTchoukups,
         getResourceTypes,

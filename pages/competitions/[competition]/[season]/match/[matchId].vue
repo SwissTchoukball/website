@@ -98,7 +98,7 @@
     </div>
 
     <template v-if="data?.matchAdditionalData?.youtube_video_id">
-      <h3 class="t-headline-2 c-match__video-title">{{ $t('match.video') }}</h3>
+      <h3 class="t-headline-2 c-match__video-title">{{ $t('match.videoTitle') }}</h3>
       <div class="c-match__video-wrapper">
         <iframe
           class="c-match__video"
@@ -113,7 +113,7 @@
     </template>
 
     <template v-if="data?.photos.length">
-      <h3 class="t-headline-2 c-match__photos-title">{{ $t('match.photos') }}</h3>
+      <h3 class="t-headline-2 c-match__photos-title">{{ $t('match.photosTitle') }}</h3>
       <st-flickr-album-gallery :photos="data.photos" class="c-match__photos-gallery" />
     </template>
   </div>

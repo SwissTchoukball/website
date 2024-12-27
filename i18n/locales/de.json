@@ -147,8 +147,11 @@
     "noUpcomingMatches": "Es sind aktuell keine Spiele geplant."
   },
   "match": {
-    "photos": "Fotos vom Spiel",
-    "video": "Video vom Spiel",
+    "photos": "Fotos",
+    "video": "Video",
+    "live": "Live",
+    "photosTitle": "Fotos vom Spiel",
+    "videoTitle": "Video vom Spiel",
     "ongoing": "Laufend",
     "toBeConfirmed": "Zu bestätigen"
   },

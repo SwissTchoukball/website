@@ -16,6 +16,7 @@ import Round from '~/models/round.model';
 import Faceoff from '~/models/faceoff.model';
 import Match from '~/models/match.model';
 import type Season from '~/models/season.model';
+import type { DirectusMatchAdditionalData } from '~/plugins/06.directus';
 
 export default class CompetitionEdition {
   leverade_id?: string;
@@ -131,6 +132,19 @@ export default class CompetitionEdition {
     this.results = results;
 
     this._hasLeveradeData = true;
+  }
+
+  addDirectusData(matches: Record<string, DirectusMatchAdditionalData>): void {
+    if (!this.matches) {
+      return;
+    }
+
+    this.matches.forEach((match) => {
+      if (matches[match.id]) {
+        match.flickr_photoset_id = matches[match.id].flickr_photoset_id;
+        match.youtube_video_id = matches[match.id].youtube_video_id;
+      }
+    });
   }
 
   get lastPhase(): Phase | undefined {

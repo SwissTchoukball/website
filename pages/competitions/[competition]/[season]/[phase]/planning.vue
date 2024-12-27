@@ -45,6 +45,9 @@
                 </template>
               </template>
             </div>
+            <div v-if="match.youtube_video_id" class="c-planning__match-additional-info">
+              <st-chip>{{ $t('match.live') }}</st-chip>
+            </div>
           </nuxt-link>
         </li>
       </ul>
@@ -212,6 +215,12 @@ const getRoundName = (match: Match): string => {
 
 .c-planning__match-icon:not(:first-child) {
   margin-left: var(--st-length-spacing-xs);
+}
+
+.c-planning__match-additional-info {
+  margin-top: var(--st-length-spacing-xxs);
+  display: flex;
+  gap: var(--st-length-spacing-xxs);
 }
 
 @media (--sm-and-up) {

@@ -33,12 +33,12 @@
       </div>
       <div class="c-match-result__team-score">{{ match.away_team_score }}</div>
     </template>
-    <st-chip v-if="match.isOngoing" class="c-match-result__additional-info">
-      {{ $t('match.ongoing') }}
-    </st-chip>
-    <st-chip v-else-if="match.toBeConfirmed" class="c-match-result__additional-info">
-      {{ $t('match.toBeConfirmed') }}
-    </st-chip>
+    <div class="c-match-result__additional-info">
+      <st-chip v-if="match.isOngoing">{{ $t('match.ongoing') }}</st-chip>
+      <st-chip v-else-if="match.toBeConfirmed">{{ $t('match.toBeConfirmed') }}</st-chip>
+      <st-chip v-if="match.youtube_video_id">{{ $t('match.video') }}</st-chip>
+      <st-chip v-if="match.flickr_photoset_id">{{ $t('match.photos') }}</st-chip>
+    </div>
   </nuxt-link>
 </template>
 
@@ -62,9 +62,9 @@ defineProps({
   display: grid;
   grid-template-columns: min-content auto min-content;
   grid-template-areas:
-    'additional-info additional-info additional-info'
     'home-team-avatar home-team-name home-team-score'
-    'away-team-avatar away-team-name away-team-score';
+    'away-team-avatar away-team-name away-team-score'
+    'additional-info additional-info additional-info';
   align-items: center;
   gap: var(--st-length-spacing-xxs) var(--st-length-spacing-xs);
   width: 100%;
@@ -134,6 +134,8 @@ defineProps({
 .c-match-result__additional-info {
   grid-area: additional-info;
   justify-self: center;
+  display: flex;
+  gap: var(--st-length-spacing-xxs);
 }
 
 @media (--sm-and-up) {

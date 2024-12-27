@@ -57,6 +57,7 @@ import {
 } from '~/plugins/07.leverade';
 import type { Await } from '~/types/types.utils';
 import type Round from '~/models/round.model';
+import type { DirectusMatchAdditionalData } from '~/plugins/06.directus';
 
 const seasonsStore = useSeasonsStore();
 const route = useRoute();
@@ -82,6 +83,7 @@ const {
 } = useAsyncData<{
   rawCompetitionEdition: NationalCompetitionEdition;
   leveradeTournamentData: Await<ReturnType<Leverade['getFullTournament']>>;
+  matchesAdditionalData: Record<string, DirectusMatchAdditionalData>;
 }>('competitionEdition', async () => {
   const rawCompetitionEditions = await $cmsService.getNationalCompetitionEditions({
     seasonSlug: route.params.season as string,
@@ -106,6 +108,11 @@ const {
     throw new Error('Related data is missing');
   }
 
+  // Retrieve Directus data
+  const matches = leveradeTournamentData.included.filter((entity) => entity.type === 'match') as LeveradeMatch[];
+  const matchesAdditionalData = await $cmsService.getMatchesAdditionalData(matches.map((match) => match.id));
+
+  // Sort phases and redirect to the last one if needed
   const phases = leveradeTournamentData.included.filter((entity) => entity.type === 'group') as LeveradeGroup[];
   phases.sort((phaseA, phaseB) => phaseA.attributes.order - phaseB.attributes.order);
   const lastPhase = phases[phases.length - 1];
@@ -146,6 +153,7 @@ const {
   return {
     rawCompetitionEdition,
     leveradeTournamentData,
+    matchesAdditionalData,
   };
 });
 
@@ -195,6 +203,10 @@ const competitionEdition = computed<CompetitionEdition | undefined>(() => {
   });
 
   competitionEdition.addLeveradeData({ tournament, teams, groups, rounds, faceoffs, matches, facilities, results });
+
+  if (fetchedData.value?.matchesAdditionalData) {
+    competitionEdition.addDirectusData(fetchedData.value.matchesAdditionalData);
+  }
 
   return competitionEdition;
 });
