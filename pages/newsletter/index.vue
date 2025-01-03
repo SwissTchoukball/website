@@ -21,7 +21,9 @@
       <p class="l-paragraph">
         <small>{{ $t(`newsletter.${selectedNewsletter}.gdprDisclaimer`) }}</small>
       </p>
-      <st-button type="submit" primary class="l-form__submit-button">{{ $t('newsletter.register') }}</st-button>
+      <st-button type="submit" variant="primary" class="l-form__submit-button">{{
+        $t('newsletter.register')
+      }}</st-button>
     </form>
   </section>
 </template>

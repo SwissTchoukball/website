@@ -47,7 +47,9 @@
       <nav>
         <ul class="c-index__tchoukball-nav u-unstyled-list">
           <li v-for="item of tchoukballNavigation" :key="item.name" class="c-index__tchoukball-nav-item">
-            <nuxt-link :to="item.path[locale as 'fr' | 'de']">{{ $t(`tchoukball.nav.${item.name}`) }}</nuxt-link>
+            <st-button :to="item.path[locale as 'fr' | 'de']" variant="secondary">{{
+              $t(`tchoukball.nav.${item.name}`)
+            }}</st-button>
           </li>
         </ul>
       </nav>

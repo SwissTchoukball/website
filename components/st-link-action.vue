@@ -2,8 +2,8 @@
   <component :is="elementType" :type="buttonType" :to="to" v-bind="$attrs" class="u-unstyled-button c-link-action">
     <template v-if="withCross"><font-awesome-icon icon="xmark" /></template>
     <slot></slot>
-    <template v-if="withArrow">&rarr;</template>
-    <template v-if="withArrowDown">&darr;</template>
+    <template v-if="withArrow"> &rarr;</template>
+    <template v-if="withArrowDown"> &darr;</template>
   </component>
 </template>
 

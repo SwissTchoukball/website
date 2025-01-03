@@ -6,7 +6,11 @@
     :disabled="disabled"
     v-bind="$attrs"
     class="u-unstyled-button c-button"
-    :class="{ 'c-button--narrow': narrow, 'c-button--primary': primary }"
+    :class="{
+      'c-button--narrow': narrow,
+      'c-button--primary': variant === 'primary',
+      'c-button--secondary': variant === 'secondary',
+    }"
   >
     <slot></slot>
   </component>
@@ -29,9 +33,9 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  primary: {
-    type: Boolean,
-    default: false,
+  variant: {
+    type: String as PropType<'primary' | 'secondary'>,
+    default: undefined,
   },
   narrow: {
     type: Boolean,
@@ -108,6 +112,24 @@ a.c-button {
 .c-button--primary:disabled {
   color: var(--st-color-button-primary-text-disabled);
   background-color: var(--st-color-button-primary-background-disabled);
+  border-color: transparent;
+}
+
+.c-button--secondary {
+  border-color: transparent;
+  background-color: var(--st-color-button-secondary-background);
+  color: var(--st-color-button-secondary-text);
+}
+
+.c-button--secondary:hover,
+.c-button--secondary:focus {
+  background-color: var(--st-color-button-secondary-background-hover);
+  border-color: transparent;
+}
+
+.c-button--secondary:disabled {
+  color: var(--st-color-button-secondary-text-disabled);
+  background-color: var(--st-color-button-secondary-background-disabled);
   border-color: transparent;
 }
 

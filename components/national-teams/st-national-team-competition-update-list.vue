@@ -25,7 +25,7 @@
         {{ amountActiveFilters }}
       </div>
       <div class="c-national-team-competition-update-list__header-spacer"></div>
-      <st-button v-if="telegramChannelName" :to="`https://t.me/${telegramChannelName}`" :primary="true" :narrow="true">
+      <st-button v-if="telegramChannelName" :to="`https://t.me/${telegramChannelName}`" variant="primary" narrow>
         {{ $t('internationalCompetition.live.updates.subscribe') }}
       </st-button>
     </div>

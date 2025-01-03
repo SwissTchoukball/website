@@ -61,7 +61,7 @@
               <span>{{ time }}</span>
             </time>
           </div>
-          <st-button v-if="event.url" :to="event.url" primary class="c-event__link">
+          <st-button v-if="event.url" :to="event.url" variant="primary" class="c-event__link">
             {{ $t('events.moreInfo') }}
           </st-button>
         </section>

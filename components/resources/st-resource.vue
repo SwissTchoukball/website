@@ -14,14 +14,14 @@
     <st-button
       v-if="resource.file"
       class="c-resource__download-button"
-      primary
+      variant="primary"
       :to="`${href}?download`"
       :download="download"
     >
       {{ $t('resources.download') }}
     </st-button>
 
-    <st-button v-if="resource.link" class="c-resource__link-button" primary :to="href">
+    <st-button v-if="resource.link" class="c-resource__link-button" variant="primary" :to="href">
       {{ $t('resources.view') }}
     </st-button>
 

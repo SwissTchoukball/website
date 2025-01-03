@@ -65,7 +65,7 @@
         <span v-else>&nbsp;</span>
       </p>
 
-      <st-button class="l-form__submit-button" primary :disabled="isSending" @click.prevent="sendMessage">
+      <st-button class="l-form__submit-button" variant="primary" :disabled="isSending" @click.prevent="sendMessage">
         {{ $t('contactForm.submit') }}
       </st-button>
 
