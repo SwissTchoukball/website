@@ -630,8 +630,8 @@ export default defineNuxtPlugin(() => {
           'date_created',
           'date_updated',
           {
-            main_image: ['id', 'description'],
-            translations: ['languages_code', 'slug', 'title', 'body'],
+            main_image: ['id', 'description', 'author_name'],
+            translations: ['languages_code', 'slug', 'title', 'body', 'main_image_caption'],
             domains: [{ domains_id: ['id', { translations: ['name'] }] }],
           },
         ],
@@ -661,6 +661,7 @@ export default defineNuxtPlugin(() => {
       title: translatedFields.title,
       slug: translatedFields.slug,
       body: translatedFields.body,
+      main_image_caption: translatedFields.main_image_caption,
       date_created: directusNewsEntry.date_created,
       date_updated: directusNewsEntry.date_updated,
       domain_ids: [],
@@ -670,6 +671,7 @@ export default defineNuxtPlugin(() => {
       newsEntry.main_image = {
         id: directusNewsEntry.main_image.id,
         description: directusNewsEntry.main_image.description || undefined,
+        author_name: directusNewsEntry.main_image.author_name || undefined,
       };
     }
 

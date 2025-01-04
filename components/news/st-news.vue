@@ -3,14 +3,27 @@
     <st-breadcrumb :items="breadcrumb" />
     <st-domain-labels :domains="domains" target-page-name="news" class="c-news-entry__domain-labels" />
     <h2 class="c-news-entry__title t-headline-1">{{ newsEntry.title }}</h2>
-    <img
-      v-if="newsEntry.main_image"
-      class="c-news-entry__image"
-      :alt="newsEntry.main_image.description"
-      :src="mainImageFallbackSrc"
-      :srcset="mainImageSrcSet"
-      :sizes="imgTagSizes"
-    />
+    <figure>
+      <img
+        v-if="newsEntry.main_image"
+        class="c-news-entry__image"
+        :alt="newsEntry.main_image.description"
+        :src="mainImageFallbackSrc"
+        :srcset="mainImageSrcSet"
+        :sizes="imgTagSizes"
+      />
+      <figcaption
+        v-if="newsEntry.main_image_caption || newsEntry.main_image.author_name"
+        class="c-news-entry__image-figcaption"
+      >
+        <span v-if="newsEntry.main_image_caption" class="c-news-entry__image-caption">
+          {{ newsEntry.main_image_caption }}
+        </span>
+        <i v-if="newsEntry.main_image.author_name" class="c-news-entry__image-author"
+          >{{ $t('news.photo') }} : {{ newsEntry.main_image.author_name }}</i
+        >
+      </figcaption>
+    </figure>
     <!-- We have to use v-html here as we get html content directly from Directus -->
     <!-- eslint-disable-next-line vue/no-v-html -->
     <div class="directus-formatted-content c-news-entry__body" v-html="newsEntry.body"></div>
@@ -118,6 +131,25 @@ onMounted(() => {
   margin-top: var(--st-length-spacing-s);
   height: auto;
   object-fit: cover;
+}
+
+.c-news-entry__image-figcaption {
+  display: flex;
+  flex-direction: column;
+  gap: var(--st-length-spacing-xxs);
+  padding-bottom: var(--st-length-spacing-xxs);
+  border-bottom: 2px solid var(--st-color-hr);
+}
+
+.c-news-entry__image-caption {
+  font-size: 0.8rem;
+  display: block;
+}
+
+.c-news-entry__image-author {
+  font-size: 0.8rem;
+  display: block;
+  color: var(--st-color-text-lighter);
 }
 
 .c-news-entry__body {
