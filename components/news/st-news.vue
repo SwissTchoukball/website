@@ -123,6 +123,7 @@ onMounted(() => {
 
 .c-news-entry__title {
   padding-top: var(--st-length-spacing-xs);
+  text-wrap: balance;
 }
 
 .c-news-entry__image {
