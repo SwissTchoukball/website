@@ -75,6 +75,12 @@ defineI18nRoute({
 
 const season = ref<Season | undefined>(seasonsStore.getSeasonBySlug(route.params.season as string));
 
+const navigateToLastPhaseIfNoPhaseOrMatch = async (lastPhasePath: string | undefined) => {
+  if (lastPhasePath && !route.params.matchId && (!route.params.phase || route.params.phase === 'last')) {
+    await navigateTo(lastPhasePath);
+  }
+};
+
 const {
   data: fetchedData,
   status: fetchStatus,
@@ -84,6 +90,7 @@ const {
   rawCompetitionEdition: NationalCompetitionEdition;
   leveradeTournamentData: Await<ReturnType<Leverade['getFullTournament']>>;
   matchesAdditionalData: Record<string, DirectusMatchAdditionalData>;
+  lastPhasePath: string | undefined;
 }>('competitionEdition', async () => {
   const rawCompetitionEditions = await $cmsService.getNationalCompetitionEditions({
     seasonSlug: route.params.season as string,
@@ -145,15 +152,13 @@ const {
     console.error(error);
   }
 
-  // If no phase or match is set, redirect to the last phase
-  if (lastPhasePath && !route.params.matchId && (!route.params.phase || route.params.phase === 'last')) {
-    await navigateTo(lastPhasePath);
-  }
+  navigateToLastPhaseIfNoPhaseOrMatch(lastPhasePath);
 
   return {
     rawCompetitionEdition,
     leveradeTournamentData,
     matchesAdditionalData,
+    lastPhasePath,
   };
 });
 
@@ -332,6 +337,7 @@ watch(route, async (newRoute, oldRoute) => {
   ) {
     await refresh();
   }
+  navigateToLastPhaseIfNoPhaseOrMatch(fetchedData.value?.lastPhasePath);
 });
 </script>
 
