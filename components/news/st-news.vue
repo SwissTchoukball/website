@@ -13,13 +13,13 @@
         :sizes="imgTagSizes"
       />
       <figcaption
-        v-if="newsEntry.main_image_caption || newsEntry.main_image.author_name"
+        v-if="newsEntry.main_image_caption || newsEntry.main_image?.author_name"
         class="c-news-entry__image-figcaption"
       >
         <span v-if="newsEntry.main_image_caption" class="c-news-entry__image-caption">
           {{ newsEntry.main_image_caption }}
         </span>
-        <i v-if="newsEntry.main_image.author_name" class="c-news-entry__image-author"
+        <i v-if="newsEntry.main_image?.author_name" class="c-news-entry__image-author"
           >{{ $t('news.photo') }} : {{ newsEntry.main_image.author_name }}</i
         >
       </figcaption>
