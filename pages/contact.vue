@@ -87,7 +87,7 @@ import VueHcaptcha from '@hcaptcha/vue3-hcaptcha';
 
 defineI18nRoute({
   paths: {
-    fr: '/conatct',
+    fr: '/contact',
     de: '/kontakt',
   },
 });
