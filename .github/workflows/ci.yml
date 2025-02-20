@@ -50,7 +50,7 @@ jobs:
 
     steps:
       - name: Deploy to staging 🚀
-        uses: appleboy/ssh-action@v1.2.0
+        uses: appleboy/ssh-action@v1.2.1
         with:
           host: ${{secrets.SSH_HOST}}
           username: ${{ secrets.SSH_USERNAME }}
@@ -78,7 +78,7 @@ jobs:
 
     steps:
       - name: Deploy to production 🚀
-        uses: appleboy/ssh-action@v1.2.0
+        uses: appleboy/ssh-action@v1.2.1
         with:
           host: ${{secrets.SSH_HOST}}
           username: ${{ secrets.SSH_USERNAME }}
