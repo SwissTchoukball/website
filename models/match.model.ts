@@ -237,6 +237,6 @@ export default class Match {
     }
     const swisssearch = `${this.facility.address}, ${this.facility.postal_code} ${this.facility.city} limit: 1`;
     const bgLayer = 'ch.swisstopo.pixelkarte-farbe';
-    return `//map.geo.admin.ch/embed.html?swisssearch=${swisssearch}&lang=${locale}&bgLayer=${bgLayer}&showTooltip=true`;
+    return `//map.geo.admin.ch/#/embed?swisssearch=${swisssearch}&swisssearch_autoselect=true&lang=${locale}&bgLayer=${bgLayer}&featureInfo=tooltip`;
   }
 }
