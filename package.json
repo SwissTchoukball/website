@@ -49,7 +49,7 @@
   },
   "devDependencies": {
     "@commitlint/cli": "^19.7.1",
-    "@commitlint/config-conventional": "^19.7.1",
+    "@commitlint/config-conventional": "^19.8.0",
     "@nuxt/eslint": "^1.1.0",
     "@nuxtjs/i18n": "^9.2.1",
     "@nuxtjs/stylelint-module": "^5.2.0",
