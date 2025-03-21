@@ -58,7 +58,7 @@ export const useNavigationStore = defineStore('navigation', () => {
       },
       {
         l10nKey: getSecondaryNavigationl10nKey('videos'),
-        href: 'https://youtube.com/tchoukballch',
+        href: 'https://youtube.com/@SwissTchoukball',
         isExternal: true,
       },
       {
