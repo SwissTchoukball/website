@@ -1233,7 +1233,7 @@ export default defineNuxtPlugin(() => {
         ...(startDateAfter ? [{ date_start: { _gte: startDateAfter.toISOString() } }] : []),
         ...(endDateBefore ? [{ date_end: { _lte: endDateBefore.toISOString() } }] : []),
         ...(endDateAfter ? [{ date_end: { _gte: endDateAfter.toISOString() } }] : []),
-        ...(upcoming ? [{ date_start: { _gte: new Date().toISOString() } }] : []),
+        ...(upcoming ? [{ date_end: { _gte: new Date().toISOString() } }] : []),
       ],
     };
 
