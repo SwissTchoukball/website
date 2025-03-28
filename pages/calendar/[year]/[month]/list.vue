@@ -89,19 +89,10 @@ const {
   },
   { default: () => [] },
 );
+const showUpcomingEventsOnly = ref(false);
 
 const upcomingEvents = computed<CalendarEvent[]>(() => {
   return events.value.filter((event) => event.date_end >= new Date());
-});
-
-const showUpcomingEventsOnly = computed<boolean>(() => {
-  const now = new Date();
-  return (
-    arePastEventsThisMonth.value &&
-    upcomingEvents.value.length > 0 &&
-    now.getFullYear() === year.value &&
-    now.getMonth() + 1 === month.value
-  );
 });
 
 const arePastEventsThisMonth = computed<boolean>(() => {
@@ -111,6 +102,13 @@ const arePastEventsThisMonth = computed<boolean>(() => {
 const visibleEvents = computed<CalendarEvent[]>(() => {
   return showUpcomingEventsOnly.value ? upcomingEvents.value : events.value;
 });
+
+const now = new Date();
+showUpcomingEventsOnly.value =
+  arePastEventsThisMonth.value &&
+  upcomingEvents.value.length > 0 &&
+  now.getFullYear() === year.value &&
+  now.getMonth() + 1 === month.value;
 </script>
 
 <style scoped>
