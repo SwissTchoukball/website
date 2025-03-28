@@ -2,7 +2,7 @@
   <section class="l-main-content-section c-event-type-page">
     <st-breadcrumb :items="breadcrumb" />
     <h3 class="t-headline-1">{{ $t('events.eventTypeUpcoming.title', { name: eventTypeName }) }}</h3>
-    <StLoader v-if="fetchPending" main />
+    <StLoader v-if="fetchStatus === 'pending'" main />
     <p v-else-if="fetchError">{{ $t('error.otherError') }} : {{ fetchError.message }}</p>
     <template v-else-if="events.length">
       <st-event-list :events="events" class="c-event-type-page__events" :show-year="true" />
@@ -42,24 +42,24 @@ if (!eventsStore.eventTypes) {
   await eventsStore.loadEventTypes();
 }
 
+const slug = route.params.slug as string;
+if (slug.includes('-')) {
+  eventTypeId.value = parseInt(slug.substring(0, slug.indexOf('-')));
+} else {
+  eventTypeId.value = parseInt(slug);
+}
+
+if (!eventTypeId.value) {
+  throw createError({ message: `Invalid event type ID: ${slug}`, fatal: true });
+}
+
 const {
   data: events,
-  pending: fetchPending,
+  status: fetchStatus,
   error: fetchError,
 } = useAsyncData<CalendarEvent[]>(
   'events',
   async () => {
-    const slug = route.params.slug as string;
-    if (slug.includes('-')) {
-      eventTypeId.value = parseInt(slug.substring(0, slug.indexOf('-')));
-    } else {
-      eventTypeId.value = parseInt(slug);
-    }
-
-    if (!eventTypeId.value) {
-      throw new Error('Invalid event type ID');
-    }
-
     const eventsResult = await $cmsService.getEvents({
       limit: 50,
       typeId: eventTypeId.value,
