@@ -53,7 +53,7 @@ defineProps({
 .c-flickr-album-link__overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(0deg, rgba(0 0 0 / 90%) 0, transparent 50%, transparent);
+  background: linear-gradient(0deg, rgb(0 0 0 / 90%) 0, transparent 50%, transparent);
 }
 
 .c-flickr-album-link__caption {
