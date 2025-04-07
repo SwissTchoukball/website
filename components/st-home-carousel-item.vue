@@ -101,7 +101,7 @@ const imageSrcSet = (assetId: string): string => {
   left: 0;
   right: 0;
   height: 9rem;
-  background: linear-gradient(to bottom, rgba(0 0 0 / 0%), rgba(0 0 0 / 60%));
+  background: linear-gradient(to bottom, rgb(0 0 0 / 0%), rgb(0 0 0 / 60%));
 }
 
 @media (--sm-and-up) {

@@ -76,7 +76,7 @@ defineProps({
 }
 
 .c-match-result:hover {
-  box-shadow: rgba(149 157 165 / 20%) 0 8px 24px;
+  box-shadow: rgb(149 157 165 / 20%) 0 8px 24px;
   transform: translateY(-2px);
 }
 

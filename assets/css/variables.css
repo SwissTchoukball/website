@@ -212,7 +212,7 @@
   --st-breakpoint-l-xl: 1905px;
 
   /* Shadows */
-  --st-shadow-navigation: rgba(100 100 111 / 20%) 0 7px 29px 0;
+  --st-shadow-navigation: rgb(100 100 111 / 20%) 0 7px 29px 0;
 }
 
 @media (color-gamut: p3) {
