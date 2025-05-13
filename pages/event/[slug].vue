@@ -43,7 +43,7 @@ const {
   data: event,
   pending: fetchPending,
   error: fetchError,
-} = useAsyncData<CalendarEvent>('event', async () => {
+} = useAsyncData<CalendarEvent>(`event-${route.params.slug as string}`, async () => {
   const slug = route.params.slug as string;
   let id: number;
   if (slug.includes('-')) {

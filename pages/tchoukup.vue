@@ -53,7 +53,7 @@ const {
   error: fetchError,
   refresh,
 } = useAsyncData<{ tchoukupIssues: Tchoukup[]; totalIssues: number }>(
-  'tchoukups',
+  `tchoukups-${currentPage.value}`,
   async () => {
     const tchoukupResult = await $cmsService.getTchoukups({
       limit: issuesPerPage,

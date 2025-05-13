@@ -39,7 +39,7 @@ const {
   pending: fetchPending,
   error: fetchError,
 } = useAsyncData<Omit<NationalTeamForCompetition, 'competition'>[]>(
-  'teams',
+  'national-teams',
   () => $cmsService.getNationalTeamsForCompetition(props.competition.id),
   { default: () => [] },
 );

@@ -80,7 +80,7 @@ const {
   pending: fetchPending,
   error: fetchError,
 } = useAsyncData<{ pressReleaseList: PressRelease[]; totalPressReleases: number }>(
-  'press-releases',
+  `press-releases-${currentPage.value}`,
   async () => {
     const pressReleasesResult = await $cmsService.getPressReleaseList({
       limit: pressReleasesPerPage,

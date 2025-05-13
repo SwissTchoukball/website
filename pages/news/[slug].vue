@@ -20,7 +20,7 @@ const {
   data: newsEntry,
   pending: fetchPending,
   error: fetchError,
-} = useAsyncData<NewsEntry>('news', async () => {
+} = useAsyncData<NewsEntry>(route.params.slug as string, async () => {
   const slug = route.params.slug as string;
   let id: number;
   if (slug.includes('-')) {

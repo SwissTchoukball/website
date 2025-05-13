@@ -149,7 +149,7 @@ const { data: carouselItems } = useAsyncData<CarouselItem[]>('carouselItems', as
     });
 });
 
-const { data: events } = useAsyncData<CalendarEvent[]>('events', async () => {
+const { data: events } = useAsyncData<CalendarEvent[]>('events-upcoming', async () => {
   const eventsResult = await $cmsService.getEvents({
     limit: amountUpcomingEvents.value,
     page: 1,

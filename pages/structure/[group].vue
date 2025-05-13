@@ -47,19 +47,22 @@ if (route.params?.group !== t('structure.staff.slug') && !Array.isArray(route.pa
   groupSlug.value = route.params?.group;
 }
 
-const { data: group, error: fetchGroupError } = useAsyncData<Group | undefined>('group', async () => {
-  if (groupSlug.value) {
-    return await $cmsService.getGroup({ slug: groupSlug.value });
-  }
-  return undefined;
-});
+const { data: group, error: fetchGroupError } = useAsyncData<Group | undefined>(
+  `group-${groupSlug.value}`,
+  async () => {
+    if (groupSlug.value) {
+      return await $cmsService.getGroup({ slug: groupSlug.value });
+    }
+    return undefined;
+  },
+);
 
 const {
   data: people,
   pending: fetchPeoplePending,
   error: fetchPeopleError,
 } = useAsyncData<Person[]>(
-  'staff',
+  `staff-${groupSlug.value}`,
   async () => {
     return await $cmsService.getStaff({ groupSlug: groupSlug.value });
   },

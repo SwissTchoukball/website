@@ -58,7 +58,7 @@ const {
   status: fetchStatus,
   error: fetchError,
 } = useAsyncData<CalendarEvent[]>(
-  'events',
+  `events-${eventTypeId.value}`,
   async () => {
     const eventsResult = await $cmsService.getEvents({
       limit: 50,

@@ -46,7 +46,7 @@ const {
   pending: fetchPending,
   error: fetchError,
 } = useAsyncData<NationalCompetitionEdition[]>(
-  'nationalCompetitionEditions',
+  `nationalCompetitionEditions-${route.params.season}`,
   async () => {
     try {
       return await $cmsService.getNationalCompetitionEditions({

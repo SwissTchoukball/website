@@ -73,7 +73,7 @@ const {
   error: fetchError,
   refresh,
 } = useAsyncData<{ newsList: NewsEntry[]; totalNewsEntries: number; filteredDomainId: number | undefined }>(
-  'news',
+  `news-list-${route.query.domain}-${newsEntriesPerPage}-${currentPage.value}`,
   async () => {
     let queryDomainId: number | undefined;
     if (typeof route.query.domain === 'string') {

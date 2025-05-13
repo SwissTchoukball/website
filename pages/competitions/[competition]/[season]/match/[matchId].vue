@@ -165,7 +165,7 @@ const { data } = useAsyncData<{
   directusCompetitionEdition: NationalCompetitionEdition | undefined;
   matchAdditionalData: DirectusMatchAdditionalData | null;
   photos: FlickrPhoto[];
-}>('match', async () => {
+}>(route.params.matchId as string, async () => {
   const leveradeMatchData = await $leverade.getMatch(route.params.matchId as string);
   const matchAdditionalData = await $cmsService.getMatchAdditionalData(+route.params.matchId);
 

@@ -73,7 +73,7 @@ const {
   status: fetchStatus,
   error: fetchError,
 } = useAsyncData<CalendarEvent[]>(
-  'events',
+  `events-${yearMonthString.value}-${filteredTypeId.value}`,
   async () => {
     // TODO: Add pagination as currently only the 50 first events in a month are visible
     const eventsResult = await $cmsService.getEvents({

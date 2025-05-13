@@ -41,7 +41,7 @@ const {
   data: competition,
   pending: fetchPending,
   error: fetchError,
-} = useAsyncData<NationalTeamCompetition>('competition', async () => {
+} = useAsyncData<NationalTeamCompetition>(`competition-${route.params.competition as string}`, async () => {
   const competitionSlug = route.params.competition as string;
   return await $cmsService.getNationalTeamCompetition({ slug: competitionSlug });
 });

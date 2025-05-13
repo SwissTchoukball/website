@@ -33,7 +33,7 @@ if (!eventsStore.eventTypes) {
 }
 
 const { data: events } = useAsyncData<CalendarEvent[]>(
-  'events',
+  `events-${year.value}-${month.value}`,
   async () => {
     const firstDayOfMonth = startOfMonth(new Date(year.value, month.value, -1));
     const calendarFirstDay = startOfWeek(firstDayOfMonth, { weekStartsOn: 1 });

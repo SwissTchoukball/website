@@ -49,7 +49,7 @@ const {
   data: team,
   pending: fetchPending,
   error: fetchError,
-} = useAsyncData<NationalTeam>('team', async () => {
+} = useAsyncData<NationalTeam>(`team-${route.params.team as string}`, async () => {
   const teamData = await $cmsService.getTeam(route.params.team as string);
   if (teamData.slug !== route.params.team) {
     // We are likely in a situation where the page was requested in a specific language,

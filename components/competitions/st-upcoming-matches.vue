@@ -86,7 +86,7 @@ const {
   pending: fetchCompetitionEditionPending,
   error: fetchCompetitionEditionError,
 } = useAsyncData<NationalCompetitionEdition[]>(
-  'competitionEditions',
+  currentSeason?.slug || 'undefined-season',
   async () => {
     if (!currentSeason?.leverade_id) {
       // An error is already thrown from the other useAsyncData

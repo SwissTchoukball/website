@@ -39,7 +39,7 @@ const {
   data: resource,
   pending: fetchPending,
   error: fetchError,
-} = useAsyncData<Resource>('resources', async () => {
+} = useAsyncData<Resource>(`resources-${route.params.slug as string}`, async () => {
   const slug = route.params.slug as string;
   let id: number;
   if (slug.includes('-')) {

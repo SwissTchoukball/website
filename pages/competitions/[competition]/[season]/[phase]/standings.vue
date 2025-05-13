@@ -85,7 +85,7 @@ const {
   error: fetchError,
   refresh,
 } = useAsyncData<StandingRow<LeveradeTeam>[]>(
-  'standings',
+  `standings-${props.phase.id}`,
   async () => {
     // If we're not in a league phase (e.g. play-off phase), we redirect to the results
     if (props.phase.type !== LeveradeGroupType.LEAGUE) {

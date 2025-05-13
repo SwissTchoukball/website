@@ -91,7 +91,7 @@ const {
   leveradeTournamentData: Await<ReturnType<Leverade['getFullTournament']>>;
   matchesAdditionalData: Record<string, DirectusMatchAdditionalData>;
   lastPhasePath: string | undefined;
-}>('competitionEdition', async () => {
+}>(`competitionEdition-${route.params.season}-${route.params.competition}`, async () => {
   const rawCompetitionEditions = await $cmsService.getNationalCompetitionEditions({
     seasonSlug: route.params.season as string,
     competitionSlug: route.params.competition as string,

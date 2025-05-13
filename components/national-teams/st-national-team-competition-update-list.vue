@@ -132,7 +132,7 @@ const {
   error: fetchError,
   refresh,
 } = useAsyncData<{ updates: NationalTeamCompetitionUpdate[]; totalUpdates: number }>(
-  'updates',
+  `${props.competitionId}-${filters.value.selectedTeamId}-${currentPage.value}-${filters.value.is_key}-${filters.value.with_image}`,
   async () => {
     if (!props.competitionId) {
       throw new Error('Undefined national team competition ID');
