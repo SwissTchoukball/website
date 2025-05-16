@@ -160,13 +160,13 @@
     "photoOf": "Foto von {name}"
   },
   "referees": {
-    "title": "SchiedsrichterInnen",
+    "title": "Schiedsrichter*innen",
     "level": {
-      "reviewer": "BetrachterInnen",
-      "zero": "SchiedsrichterInnen 0",
-      "i": "SchiedsrichterInnen I",
-      "ii": "SchiedsrichterInnen II",
-      "iii": "SchiedsrichterInnen III"
+      "reviewer": "Betrachter*innen",
+      "zero": "Schiedsrichter*innen 0",
+      "i": "Schiedsrichter*innen I",
+      "ii": "Schiedsrichter*innen II",
+      "iii": "Schiedsrichter*innen III"
     }
   },
   "nationalTeams": {
@@ -296,8 +296,8 @@
       "gdprDisclaimer": "Ihre E-Mail-Adresse wird nur für den Versand der N"
     },
     "instructors": {
-      "headTitle": "LeiterInnen Newsletter",
-      "title": "Informationen für LeiterInnen",
+      "headTitle": "Leiter*innen Newsletter",
+      "title": "Informationen für Leiter*innen",
       "description": "Bleiben Sie auf dem Laufenden mit Informationen von Swiss Tchoukball für LeiterInnen",
       "gdprDisclaimer": "Ihre E-Mail-Adresse wird nur dazu verwendet, Ihnen relevante Informationen für Tchoukball-Leiter zu senden. Sie können jederzeit den in jeder unserer E-Mails integrierten Abmeldelink nutzen."
     },
