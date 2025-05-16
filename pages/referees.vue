@@ -46,7 +46,7 @@
 defineI18nRoute({
   paths: {
     fr: '/arbitres',
-    de: '/schiedsrichter',
+    de: '/schiedsrichter-innen',
   },
 });
 
