@@ -11,5 +11,6 @@
   padding: 0.3rem 0.8rem;
   border-radius: 50rem;
   background-color: var(--st-color-match-additional-info-background);
+  white-space: nowrap;
 }
 </style>
