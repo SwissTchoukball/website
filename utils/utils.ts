@@ -40,6 +40,11 @@ export const parseLeveradeDate = (leveradeDate: string): Date | undefined => {
   return parsedDate || undefined;
 };
 
+export const getStartOfToday = () => {
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+};
+
 export const toISOLocal = (d: Date) => {
   const z = (n: number) => ('0' + n).slice(-2);
   const zz = (n: number) => ('00' + n).slice(-3);

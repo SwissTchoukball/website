@@ -43,7 +43,7 @@ import type {
 } from '~/components/national-teams/st-national-teams.prop';
 import { processRawCoaches, processRawPlayers } from '~/plugins/cms-service/national-teams';
 import type { PressRelease } from '~/components/press-releases/press-releases';
-import { toISOLocal } from '~/utils/utils';
+import { toISOLocal, getStartOfToday } from '~/utils/utils';
 
 export interface ResourceType {
   id: number;
@@ -1233,7 +1233,7 @@ export default defineNuxtPlugin(() => {
         ...(startDateAfter ? [{ date_start: { _gte: startDateAfter.toISOString() } }] : []),
         ...(endDateBefore ? [{ date_end: { _lte: endDateBefore.toISOString() } }] : []),
         ...(endDateAfter ? [{ date_end: { _gte: endDateAfter.toISOString() } }] : []),
-        ...(upcoming ? [{ date_end: { _gte: new Date().toISOString() } }] : []),
+        ...(upcoming ? [{ date_end: { _gte: getStartOfToday().toISOString() } }] : []),
       ],
     };
 
