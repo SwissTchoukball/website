@@ -105,6 +105,7 @@ defineProps({
 
 .c-match-result__team-score:nth-child(1 of .c-match-result__team-score) {
   grid-area: home-team-score;
+  justify-self: end;
 }
 
 .c-match-result__team-score:nth-child(2 of .c-match-result__team-score) {
