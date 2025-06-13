@@ -24,7 +24,12 @@
           {{ $t('events.showUpcomingEventsOnly', { month: monthName }) }}
         </st-link-action>
 
-        <st-event-list v-if="visibleEvents.length" :events="visibleEvents" class="c-calendar-list__events" />
+        <st-event-list
+          v-if="!showUpcomingEventsOnly && pastEvents.length"
+          :events="pastEvents"
+          class="c-calendar-list__events"
+        />
+        <st-event-list :events="upcomingEvents" class="c-calendar-list__events" />
       </template>
     </template>
   </section>
@@ -91,16 +96,16 @@ const {
 );
 const showUpcomingEventsOnly = ref(false);
 
+const pastEvents = computed<CalendarEvent[]>(() => {
+  return events.value.filter((event) => event.date_end < new Date());
+});
+
 const upcomingEvents = computed<CalendarEvent[]>(() => {
   return events.value.filter((event) => event.date_end >= new Date());
 });
 
 const arePastEventsThisMonth = computed<boolean>(() => {
   return events.value.length !== upcomingEvents.value.length;
-});
-
-const visibleEvents = computed<CalendarEvent[]>(() => {
-  return showUpcomingEventsOnly.value ? upcomingEvents.value : events.value;
 });
 
 const now = new Date();
