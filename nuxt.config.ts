@@ -74,7 +74,7 @@ export default defineNuxtConfig({
 
   vue: {
     compilerOptions: {
-      isCustomElement: (tag) => tag.startsWith('swiper-'),
+      isCustomElement: (tag) => tag.startsWith('swiper-') || tag === 'altcha-widget',
     },
   },
 

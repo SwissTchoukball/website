@@ -2,7 +2,11 @@
   <section class="l-main-content-section">
     <h2 class="t-headline-1">{{ $t(`newsletter.${selectedNewsletter}.title`) }}</h2>
     <p class="l-paragraph">{{ $t(`newsletter.${selectedNewsletter}.description`) }}</p>
-    <form method="post" action="https://newsletter.infomaniak.com/external/submit" class="l-form c-newsletter__form">
+    <form
+      method="post"
+      :action="`https://newsletter.infomaniak.com/v3/api/1/newsletters/webforms/${selectedNewsletterParams.id}/submit`"
+      class="l-form c-newsletter__form"
+    >
       <input type="email" name="email" style="display: none" />
       <input type="hidden" name="key" :value="selectedNewsletterParams.key" />
       <input type="hidden" name="webform_id" :value="selectedNewsletterParams.id" />
@@ -21,6 +25,16 @@
       <p class="l-paragraph">
         <small>{{ $t(`newsletter.${selectedNewsletter}.gdprDisclaimer`) }}</small>
       </p>
+      <client-only>
+        <altcha-widget
+          hidelogo
+          hidefooter
+          floating
+          challengeurl="https://newsletter.infomaniak.com/v3/altcha-challenge"
+        >
+          <!-- // eslint-disable-next-line vue/html-self-closing -->
+        </altcha-widget>
+      </client-only>
       <st-button type="submit" variant="primary" class="l-form__submit-button">{{
         $t('newsletter.register')
       }}</st-button>
@@ -34,19 +48,19 @@ const { selectedNewsletter } = useNewsletter();
 
 const newsletterParams = ref<{ [key: string]: { key: string; id: string } }>({
   general: {
-    key: 'eyJpdiI6IjZWTmtncjJqTUh5ZmZ1Y3pmYkw3SXFOdVB0YTV3RkpPM3ZjaFZ1TmVIN2M9IiwidmFsdWUiOiJibmh4Qjl4NnRMSlI0cnJJZmFyK3dNN1FcLzVEU1dLYlpPUkFERGlxR0xkTT0iLCJtYWMiOiJjMDQyOWFlNTZmYTljMjNhZDQ4M2FlZDkyYmQ2NTY0ZjEyMzk2Yzk4ZGU2MWFmMmNlMzhhYjNkNTM2MzlmZDA3In0=',
+    key: 'eyJpdiI6Ilo5SjdlR0JwRHZ6eU03WkcwaGs4M3czOHBRRHFPWkhaNVl4SzhqbkFKdjg9IiwibWFjIjoiYjQzODMwZTRkZjNmY2UzNWE1N2U0NGM0NDBkZGU3ZTJjMTA2ZGIzZTE2MzMzY2RmMDJjOGE0MmMzNTQ2MzlhYiIsInZhbHVlIjoiVEhuZVU2QVgxYWViVmNad2sxMkFVUkhHZndSU3NaOW5yMHlVMjdaZzc2UT0ifQ==',
     id: '239',
   },
   instructors: {
-    key: 'eyJpdiI6IlVIQldOdWVXR1k2YnRYQUJPVUMzVkVtdjFRaVBYNTJiN3h0UVA5Vk91cFE9IiwidmFsdWUiOiJ6WmFZbXVCbVA4emZDcWRcL2RmS0w1U3FuTDRwR3FTYVNRNXUzMTVlQ1BMWT0iLCJtYWMiOiI2NzY1MDU1MjAxNzQyOWYzZWQ2ODA3NTAwZDgzZjNmYzA1YzVhNTM3ZjZmYzU5YmEwMWM4ZWY4MDcxNDhiNjgxIn0=',
+    key: 'eyJpdiI6IkZCVmd4dldnMExzMzgrU2YxazRJeWFoRUlNTElcL2RPRjlFendtWFFWbXlJPSIsIm1hYyI6IjM2OTk5YTU3NDM1Y2Q1ZjdmZTM4YjFiMzdiN2MxZmQ5YTFhMDE3M2I1OGUyYzFhNDJhY2VlMDkzYjZhYjJmM2MiLCJ2YWx1ZSI6IjFQM3FOaURcL0Z3U1RKN214TndZb0UybENEUjNmRVZOd1ZGTnpPOXBzOHY0PSJ9',
     id: '9880',
   },
   'medias-fr': {
-    key: 'eyJpdiI6IkNBWE8rTmZMSUxTMXhLMG9UTXdPVnVXN3o2S3MwV242WmtVOVpkeHFUZDg9IiwidmFsdWUiOiJFVHQycFdVUHNZMVAzNEg3NUM5SDYzZXNJWnFmcHZXY0tRcFNaRkd3NStRPSIsIm1hYyI6ImNiNTYyOTZhYjVkNGRlMjZjNjRiZDg3OTk2ZTdkMDNlZDJiZTJjMDgwOTg2NWMyMTFkNWMyYTY2ZmQ0YTg2NzkifQ==',
+    key: 'eyJpdiI6IkFwcGJBYlkyblViZ0Q3OTJtN1lwRDljVTlMQjhuUjE0ZXlLZG9tR2ZSajQ9IiwibWFjIjoiZmRkMWNlYTM3NzRlNGNjM2IzYTRmNWUzMWY4OGM0MDIyM2UzNTU5OTgxMzc0YTkzMDU4OTI3NmQ1MzM5OTA5OCIsInZhbHVlIjoiXC9vbFJ2b2FRWHdXbWhKM213MXJGRTdLQzhYUjJSeklyckt1alErcktlNDg9In0=',
     id: '14829',
   },
   'medias-de': {
-    key: 'eyJpdiI6IlRtUzAzWTNIcUFzSHFVdFVoeFg2ZnVZV0ZSNklPVXVjakZmZzZJNWtoN0U9IiwidmFsdWUiOiIybVlZZXNMc3hMblF0K3RpQW1FTnE2dU9MS2Y2UzBWejZROFZEUzJcLzVLUT0iLCJtYWMiOiI5ZWE1MWYwY2JhNmNiOGYyMTM0YzlkOTAxMmViMTAzYmIzMzA2ZTcyMTczNTY5NTMwMDhmNDE5ODEwZjJhYjk2In0=',
+    key: 'eyJpdiI6ImpNNXRXRFwvRlRwcnB2WjhuNjZQY25nelVsMkhrVXNNdm51ejZGT0lwOTc0PSIsIm1hYyI6ImI5NGFjNWVlOTE1MjI2Njg1NzU4YzYzZTY4NDBhZTU5NzU0YjZiNGJmYmM4YjJmMmRmOTdiMGZhZjMwNjg3OWIiLCJ2YWx1ZSI6Ikl6eXFHRlpcLzBXTUV0WlArUTZ3TlZ2SE4rUll1a1F5S2UrV0NPc1AxNmN3PSJ9',
     id: '14830',
   },
 });
@@ -60,6 +74,17 @@ useHead(() => {
         hid: 'og:description',
         property: 'og:description',
         content: t(`newsletter.${selectedNewsletter.value}.description`).toString(),
+      },
+    ],
+    script: [
+      {
+        src: 'https://newsletter.storage5.infomaniak.com/mcaptcha/altcha.js',
+        defer: true,
+      },
+      {
+        src: 'https://eu.altcha.org/js/latest/altcha.min.js',
+        type: 'module',
+        defer: true,
       },
     ],
   };
