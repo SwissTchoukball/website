@@ -52,7 +52,7 @@ const newsletterParams = ref<{ [key: string]: { key: string; id: string } }>({
     id: '239',
   },
   instructors: {
-    key: 'eyJpdiI6IkZCVmd4dldnMExzMzgrU2YxazRJeWFoRUlNTElcL2RPRjlFendtWFFWbXlJPSIsIm1hYyI6IjM2OTk5YTU3NDM1Y2Q1ZjdmZTM4YjFiMzdiN2MxZmQ5YTFhMDE3M2I1OGUyYzFhNDJhY2VlMDkzYjZhYjJmM2MiLCJ2YWx1ZSI6IjFQM3FOaURcL0Z3U1RKN214TndZb0UybENEUjNmRVZOd1ZGTnpPOXBzOHY0PSJ9',
+    key: 'eyJpdiI6IkpwRXlBVnBzMWhlZmg0SHZWdU41N0lQUlZvTVwvMHc4THR4VGtFb1N1d1pFPSIsIm1hYyI6Ijc1NDI3ODNmZDg1YTU0YzhkYTZmNjhkMGUxZDBmNmJmMzg3MWY1MTAzZjY0NmUwMjVkMDgzNWQ1Y2QxN2ZlMGYiLCJ2YWx1ZSI6IldpYVRoWWVONkdsUG96aXdyVWpJRjUwcWtjM0R3a1BUZXpDb01MOExcL3dJPSJ9',
     id: '9880',
   },
   'medias-fr': {
