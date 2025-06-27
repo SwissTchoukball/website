@@ -59,7 +59,7 @@
     "lint-staged": "^16.1.2",
     "prettier": "^3.6.1",
     "stylelint": "^16.21.0",
-    "stylelint-config-recommended-vue": "^1.6.0",
+    "stylelint-config-recommended-vue": "^1.6.1",
     "stylelint-config-standard": "^38.0.0"
   }
 }
