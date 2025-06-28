@@ -53,7 +53,14 @@
                 </component>
                 <!-- We first only show the address, if someone only wants to see in which city is the venue. -->
                 <!-- Then clicking on the address opens the map. -->
-                <a :href="mapsUrl" class="c-event__address">{{ event.venue.address }}</a>
+                <div class="c-event__address">{{ event.venue.address }}</div>
+                <i18n-t v-if="event.venue.address" keypath="venue.seeIn" tag="div" class="c-event__address-links">
+                  <template #app>
+                    <a :href="getOpenStreetMapUrl(event.venue.address)">OpenStreetMap</a> /
+                    <a :href="getAppleMapsUrl(event.venue.address)">{{ $t('venue.appleMaps') }}</a> /
+                    <a :href="getGoogleMapsUrl(event.venue.address)">Google Maps</a>
+                  </template>
+                </i18n-t>
               </component>
             </div>
             <time :datetime="event.date_start.toISOString()" class="c-event__time">
@@ -82,7 +89,7 @@ const { t } = useI18n();
 const { $formatDate } = useNuxtApp();
 const { slugify } = useSlugify();
 const eventsStore = useEventsStore();
-const { getAppleMapsUrl } = useMapUrls();
+const { getOpenStreetMapUrl, getAppleMapsUrl, getGoogleMapsUrl } = useMapUrls();
 
 const props = defineProps({
   event: {
@@ -152,13 +159,6 @@ const mainImageSrcSet = computed<string>(() => {
 });
 const mainImageDescription = computed<string>(() => {
   return props.event?.image?.description || eventType.value?.image?.description || '';
-});
-const mapsUrl = computed<string | undefined>(() => {
-  if (!props.event.venue?.address) {
-    return undefined;
-  }
-  // This link will fallback to Google Maps if Apple Maps is not available
-  return getAppleMapsUrl(props.event.venue.address);
 });
 
 const showInfo = () => {
@@ -283,7 +283,13 @@ if (isCancelled.value) {
 .c-event__address {
   white-space: pre-line;
   margin-left: var(--st-length-spacing-xs);
-  display: inline-block;
+  margin-top: var(--st-length-spacing-xs);
+}
+
+.c-event__address-links {
+  margin-left: var(--st-length-spacing-xs);
+  margin-top: var(--st-length-spacing-xxs);
+  font-size: 0.8rem;
 }
 
 .c-event__icon {

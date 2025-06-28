@@ -238,7 +238,8 @@
   },
   "venue": {
     "map": "carte",
-    "openInMaps": "Voir dans Maps",
+    "seeIn": "Voir dans {app}",
+    "appleMaps": "Apple Plans",
     "undefined": "Lieu indéfini"
   },
   "resources": {

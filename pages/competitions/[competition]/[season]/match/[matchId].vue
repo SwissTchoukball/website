@@ -84,9 +84,14 @@
           <strong>{{ match.facility.name }}</strong> <br />
           {{ match.facility.address }}<br />
           {{ match.facility.postal_code }} {{ match.facility.city }}<br />
-          <a v-if="match.addressForMapsUrl" :href="getAppleMapsUrl(match.addressForMapsUrl)">{{
-            $t('venue.openInMaps')
-          }}</a>
+
+          <i18n-t v-if="match.addressForMapsUrl" keypath="venue.seeIn" tag="div">
+            <template #app>
+              <a :href="getOpenStreetMapUrl(match.addressForMapsUrl)">OpenStreetMap</a> /
+              <a :href="getAppleMapsUrl(match.addressForMapsUrl)">{{ $t('venue.appleMaps') }}</a> /
+              <a :href="getGoogleMapsUrl(match.addressForMapsUrl)">Google Maps</a>
+            </template>
+          </i18n-t>
         </div>
       </div>
       <client-only>
@@ -147,8 +152,8 @@ const route = useRoute();
 const router = useRouter();
 const localePath = useLocalePath();
 const { t } = useI18n();
-const { $cmsService, $leverade, $flickr } = useNuxtApp();
-const { getAppleMapsUrl } = useMapUrls();
+const { $cmsService, $leverade, $flickr, $formatDate } = useNuxtApp();
+const { getOpenStreetMapUrl, getAppleMapsUrl, getGoogleMapsUrl } = useMapUrls();
 
 definePageMeta({
   scrollToTop: true,
