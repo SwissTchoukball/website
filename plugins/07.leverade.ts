@@ -314,6 +314,12 @@ const removeAuthorizationHeaders = (headers: any) => {
   delete headers.authorization;
 };
 
+declare module '#app' {
+  interface NuxtApp {
+    $leverade: Leverade;
+  }
+}
+
 export default defineNuxtPlugin(() => {
   const nuxtApp = useNuxtApp();
   const runtimeConfig = useRuntimeConfig();

@@ -54,6 +54,25 @@ export interface FlickrPhotoset {
   };
 }
 
+declare module '#app' {
+  interface NuxtApp {
+    $flickr: {
+      photosets: {
+        getList: (params: {
+          user_id: string;
+          per_page?: number;
+          primary_photo_extras?: string;
+        }) => Promise<{ body: { photosets: { photoset: FlickrPhotoset[] } } }>;
+        getPhotos: (params: {
+          user_id: string;
+          photoset_id: string;
+          extras?: string;
+        }) => Promise<{ body: { photoset: { photo: FlickrPhoto[] } } }>;
+      };
+    };
+  }
+}
+
 export default defineNuxtPlugin(() => {
   const runtimeConfig = useRuntimeConfig();
 

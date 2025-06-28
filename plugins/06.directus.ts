@@ -1,5 +1,5 @@
 /* eslint-disable no-use-before-define */
-import { createDirectus, rest, type DirectusFile } from '@directus/sdk';
+import { createDirectus, rest, type DirectusClient, type DirectusFile, type RestClient } from '@directus/sdk';
 
 interface DirectusGroupTranslation {
   languages_code: string;
@@ -487,6 +487,12 @@ export type DirectusSchema = {
   // TODO: Remove those when the bug will be resolved.
   directus_files: DirectusFile<object>[];
 };
+
+declare module '#app' {
+  interface NuxtApp {
+    $directus: DirectusClient<DirectusSchema> & RestClient<DirectusSchema>;
+  }
+}
 
 export default defineNuxtPlugin(() => {
   const runtimeConfig = useRuntimeConfig();

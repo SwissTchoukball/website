@@ -247,6 +247,12 @@ export interface CMSService {
   getResource: (resourceId: number) => Promise<Resource>;
 }
 
+declare module '#app' {
+  interface NuxtApp {
+    $cmsService: CMSService;
+  }
+}
+
 export default defineNuxtPlugin(() => {
   const nuxtApp = useNuxtApp();
   const currentLocale = nuxtApp.$i18n.locale;
