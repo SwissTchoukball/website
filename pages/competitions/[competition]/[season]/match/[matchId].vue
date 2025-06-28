@@ -84,7 +84,9 @@
           <strong>{{ match.facility.name }}</strong> <br />
           {{ match.facility.address }}<br />
           {{ match.facility.postal_code }} {{ match.facility.city }}<br />
-          <a v-if="match.mapsUrl" :href="match.mapsUrl">{{ $t('venue.openInMaps') }}</a>
+          <a v-if="match.addressForMapsUrl" :href="getAppleMapsUrl(match.addressForMapsUrl)">{{
+            $t('venue.openInMaps')
+          }}</a>
         </div>
       </div>
       <client-only>
@@ -146,6 +148,7 @@ const router = useRouter();
 const localePath = useLocalePath();
 const { t } = useI18n();
 const { $cmsService, $leverade, $flickr } = useNuxtApp();
+const { getAppleMapsUrl } = useMapUrls();
 
 definePageMeta({
   scrollToTop: true,

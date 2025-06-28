@@ -82,6 +82,7 @@ const { t } = useI18n();
 const { $formatDate } = useNuxtApp();
 const { slugify } = useSlugify();
 const eventsStore = useEventsStore();
+const { getAppleMapsUrl } = useMapUrls();
 
 const props = defineProps({
   event: {
@@ -153,11 +154,11 @@ const mainImageDescription = computed<string>(() => {
   return props.event?.image?.description || eventType.value?.image?.description || '';
 });
 const mapsUrl = computed<string | undefined>(() => {
-  if (!props.event.venue) {
+  if (!props.event.venue?.address) {
     return undefined;
   }
   // This link will fallback to Google Maps if Apple Maps is not available
-  return `//maps.apple.com/?q=${props.event.venue.address?.replace('\n', ', ')}`;
+  return getAppleMapsUrl(props.event.venue.address);
 });
 
 const showInfo = () => {

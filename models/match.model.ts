@@ -219,12 +219,11 @@ export default class Match {
     return !!this.home_team_score && !!this.away_team_score && this.home_team_score < this.away_team_score;
   }
 
-  get mapsUrl(): string | null {
+  get addressForMapsUrl(): string | null {
     if (!this.facility) {
       return null;
     }
-    // This link will fallback to Google Maps if Apple Maps is not available
-    return `//maps.apple.com/?q=${this.facility.address},${this.facility.postal_code}+${this.facility.city}`;
+    return `${this.facility.address},${this.facility.postal_code}+${this.facility.city}`;
   }
 
   get hasFacility(): boolean {
