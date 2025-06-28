@@ -1,4 +1,4 @@
-import Flickr from 'flickr-sdk';
+import { createFlickr, type Flickr } from 'flickr-sdk';
 
 export interface FlickrPhoto {
   id: string;
@@ -56,27 +56,14 @@ export interface FlickrPhotoset {
 
 declare module '#app' {
   interface NuxtApp {
-    $flickr: {
-      photosets: {
-        getList: (params: {
-          user_id: string;
-          per_page?: number;
-          primary_photo_extras?: string;
-        }) => Promise<{ body: { photosets: { photoset: FlickrPhotoset[] } } }>;
-        getPhotos: (params: {
-          user_id: string;
-          photoset_id: string;
-          extras?: string;
-        }) => Promise<{ body: { photoset: { photo: FlickrPhoto[] } } }>;
-      };
-    };
+    $flickr: Flickr;
   }
 }
 
 export default defineNuxtPlugin(() => {
   const runtimeConfig = useRuntimeConfig();
 
-  const flickr = new Flickr(runtimeConfig.public.flickr.apiKey);
+  const { flickr } = createFlickr(runtimeConfig.public.flickr.apiKey);
 
   return {
     provide: {

@@ -166,12 +166,12 @@ const { data: tchoukballDescription } = useAsyncData<string>('tchoukballDescript
 
 const { data: latestAlbums } = useAsyncData<FlickrPhotoset[]>('flickrAlbums', async () => {
   // Doc: https://www.flickr.com/services/api/flickr.photosets.getList.html
-  const flickrResponse = await $flickr.photosets.getList({
+  const flickrResponse = await $flickr('flickr.photosets.getList', {
     user_id: runtimeConfig.public.flickr.userId,
-    per_page: 6,
+    per_page: '6',
     primary_photo_extras: 'url_q,url_m',
   });
-  return flickrResponse.body.photosets.photoset;
+  return flickrResponse.photosets.photoset;
 });
 
 useHead(() => {

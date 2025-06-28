@@ -193,12 +193,12 @@ const { data } = useAsyncData<{
   let photos: FlickrPhoto[] = [];
   if (matchAdditionalData?.flickr_photoset_id) {
     // Doc: https://www.flickr.com/services/api/flickr.photosets.getPhotos.html
-    const flickrResponse = await $flickr.photosets.getPhotos({
+    const flickrResponse = await $flickr('flickr.photosets.getPhotos', {
       user_id: runtimeConfig.public.flickr.userId,
       photoset_id: matchAdditionalData.flickr_photoset_id,
       extras: 'url_q,url_m',
     });
-    photos = flickrResponse.body.photoset.photo;
+    photos = flickrResponse.photoset.photo;
   }
 
   return {
