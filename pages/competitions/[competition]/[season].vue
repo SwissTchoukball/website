@@ -63,7 +63,7 @@ const seasonsStore = useSeasonsStore();
 const route = useRoute();
 const localePath = useLocalePath();
 const { t } = useI18n();
-const getRouteBaseName = useRouteBaseName();
+const routeBaseName = useRouteBaseName();
 const { $cmsService, $leverade } = useNuxtApp();
 
 defineI18nRoute({
@@ -135,7 +135,7 @@ const {
     }
 
     let lastPhasePathName = 'competitions-competition-season-phase';
-    const currentRouteName = getRouteBaseName(route);
+    const currentRouteName = routeBaseName(route);
     if (currentRouteName?.startsWith(lastPhasePathName)) {
       lastPhasePathName = currentRouteName;
     }

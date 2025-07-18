@@ -45,7 +45,6 @@ export default defineNuxtConfig({
     defaultLocale: 'fr',
     // TODO: Switch to `prefix_and_default` if it works properly (e.g. when it won't add `/fr/` when it was not present before)
     strategy: 'prefix_except_default',
-    lazy: true,
     detectBrowserLanguage: {
       useCookie: false,
     },
