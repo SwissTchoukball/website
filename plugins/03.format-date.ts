@@ -17,6 +17,7 @@ declare module '#app' {
 
 /**
  * Plugin providing a single function to format a date according to the locale set in context
+ * TODO: Make it a composable instead of a plugin
  */
 export default defineNuxtPlugin(() => {
   const nuxtApp = useNuxtApp();

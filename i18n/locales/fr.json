@@ -5,6 +5,8 @@
   "mainNavigation": "Navigation principale",
   "secondaryNavigation": "Navigation secondaire",
   "otherNavigation": "Navigation pour {name}",
+  "d-minus": "J-{days}",
+  "euro2026dates": "1 au 8 août",
   "breadcrumb": {
     "title": "Fil d'Ariane",
     "home": "Accueil"

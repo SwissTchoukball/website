@@ -5,6 +5,8 @@
   "mainNavigation": "Hauptnavigation",
   "secondaryNavigation": "Unternavigation",
   "otherNavigation": "Navigation für {name}",
+  "d-minus": "T-{days}",
+  "euro2026dates": "1. bis 8. August",
   "breadcrumb": {
     "title": "Brotkrümel",
     "home": "Startseite"

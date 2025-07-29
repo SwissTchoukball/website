@@ -27,6 +27,7 @@
     </header>
     <st-announcements :announcements="announcements" />
     <st-live-stream-banner :live-streams="liveStreams" />
+    <st-euro2026-banner class="c-default__euro2026-banner" />
     <main>
       <slot />
     </main>
@@ -137,6 +138,10 @@ const closeDrawer = () => {
   padding: var(--st-length-spacing-xs);
 }
 
+.c-default__euro2026-banner {
+  margin-top: var(--st-length-spacing-xxs);
+}
+
 @media (--sm-and-up) {
   .c-default__header-lang-switcher {
     display: block;
@@ -176,6 +181,16 @@ const closeDrawer = () => {
   .c-default__burger-button,
   .c-default__drawer {
     display: none;
+  }
+}
+
+@media (--lg-and-up) {
+  .c-default__euro2026-banner {
+    position: absolute;
+    top: var(--st-length-spacing-s);
+    right: calc(var(--st-length-main-content-side-padding) + var(--st-length-spacing-xl));
+    margin: 0;
+    z-index: 3;
   }
 }
 

@@ -11,6 +11,9 @@
   --st-color-red-swiss-tchoukball-dark: #b10000;
   --st-color-red-swiss-tchoukball-very-dark: #620000;
   --st-color-red-swiss-tchoukball-ultra-dark: #270000;
+  --st-color-euro-red-500: rgb(255 0 0);
+  --st-color-euro-blue-500: rgb(0 86 124);
+  --st-color-euro-sky-blue-500: rgb(107 226 228);
 
   /* Greys */
   --st-color-grey-very-dark: #1a1a1a;
