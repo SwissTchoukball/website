@@ -85,10 +85,13 @@ const imageSrcSet = (assetId: string): string => {
   font-size: 2em;
   text-wrap: balance;
 
+  /* FIXME: Refactor the code below to not rely on on deprecated properties */
+
   /* PostCSS doesn't support adding prefix for line-clamp yet: https://github.com/postcss/autoprefixer/issues/1322 */
   /* stylelint-disable-next-line value-no-vendor-prefix */
   display: -webkit-box;
   -webkit-line-clamp: 2; /* That's weird, but the -webkit- prefix works also for Firefox */
+  /* stylelint-disable-next-line property-no-deprecated */
   -webkit-box-orient: vertical;
   line-clamp: 2;
   overflow: hidden;
