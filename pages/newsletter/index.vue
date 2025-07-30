@@ -7,7 +7,7 @@
       :action="`https://newsletter.infomaniak.com/v3/api/1/newsletters/webforms/${selectedNewsletterParams.id}/submit`"
       class="l-form c-newsletter__form"
     >
-      <input type="email" name="email" style="display: none" />
+      <input type="email" name="email" :style="{ display: 'none' }" />
       <input type="hidden" name="key" :value="selectedNewsletterParams.key" />
       <input type="hidden" name="webform_id" :value="selectedNewsletterParams.id" />
 
