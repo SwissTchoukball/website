@@ -34,6 +34,7 @@ const daysUntilEuro2026 = computed(() => {
   font-size: 1.5rem;
   line-height: 1;
   text-decoration: none;
+  white-space: nowrap;
   transition: all 150ms ease-in-out;
   box-shadow: rgb(0 0 0 / 24%) 0 3px 8px;
 }
