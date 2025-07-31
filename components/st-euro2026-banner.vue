@@ -14,7 +14,7 @@ import { differenceInDays } from 'date-fns';
 const daysUntilEuro2026 = computed(() => {
   const today = new Date();
   const euroStartDate = new Date('2026-08-01');
-  return differenceInDays(euroStartDate, today);
+  return differenceInDays(euroStartDate, today) + 1;
 });
 </script>
 
