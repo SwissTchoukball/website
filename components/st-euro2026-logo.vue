@@ -3,8 +3,6 @@
     xmlns="http://www.w3.org/2000/svg"
     class="c-euro2026-logo"
     viewBox="0 0 5000 898"
-    width="100%"
-    height="100%"
     aria-labelledby="Euro 2026 logo"
     role="presentation"
     fill="none"
