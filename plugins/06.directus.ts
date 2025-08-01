@@ -1,4 +1,3 @@
-/* eslint-disable no-use-before-define */
 import { createDirectus, rest, type DirectusClient, type DirectusFile, type RestClient } from '@directus/sdk';
 
 interface DirectusGroupTranslation {
@@ -129,6 +128,7 @@ interface DirectusPageTranslation {
 
 export interface DirectusPage {
   id: number;
+  status: 'published' | 'hidden';
   translations: DirectusPageTranslation[];
   key_roles: DirectusPageRole[];
   resources: DirectusPageResource[];

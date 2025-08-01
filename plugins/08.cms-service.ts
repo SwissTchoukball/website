@@ -300,6 +300,7 @@ export default defineNuxtPlugin(() => {
         filter: { translations: { path: { _eq: pagePath } } },
         fields: [
           'id',
+          'status',
           {
             translations: ['languages_code', 'path', 'title', 'body'],
             key_roles: [
@@ -351,6 +352,10 @@ export default defineNuxtPlugin(() => {
     }
 
     const requestedPage = pages[0];
+
+    if (requestedPage.status !== 'published') {
+      throw new Error('pageNotFound');
+    }
 
     if (!requestedPage.translations?.length || !requestedPage.translations[0]) {
       throw new Error('noData');
