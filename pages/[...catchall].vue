@@ -1,5 +1,11 @@
 <template>
-  <st-simple-page :title="title" :body="body" :key-roles="keyRoles" :resources="resources" />
+  <st-simple-page
+    v-if="page"
+    :title="page.title"
+    :body="page.body"
+    :key-roles="page.key_roles"
+    :resources="page.resources"
+  />
 </template>
 
 <script setup lang="ts">
@@ -11,17 +17,17 @@ import { decode } from 'html-entities';
  * If there's no match, we redirect to the 404 page.
  */
 
-const { fetchPage, title, body, keyRoles, resources } = useCatchAll();
+const { fetchPage, page } = useCatchAll();
 
 useHead(() => {
   return {
-    title: title.value,
+    title: page.value?.title,
     meta: [
-      { property: 'og:title', content: title.value },
+      { property: 'og:title', content: page.value?.title },
       {
         hid: 'og:description',
         property: 'og:description',
-        content: decode((body.value || '').replace(/(<([^>]+)>)/gi, '').substring(0, 250)) + '…',
+        content: decode((page.value?.body || '').replace(/(<([^>]+)>)/gi, '').substring(0, 250)) + '…',
       },
     ],
   };

@@ -1,5 +1,11 @@
 <template>
-  <st-simple-page :title="title" :body="body" :key-roles="keyRoles" :resources="resources">
+  <st-simple-page
+    v-if="page"
+    :title="page.title"
+    :body="page.body"
+    :key-roles="page.key_roles"
+    :resources="page.resources"
+  >
     <template #after-body>
       <st-loader v-if="fetchPending" :main="true" />
       <p v-else-if="fetchError">{{ $t('error.otherError') }} : {{ fetchError.message }}</p>
@@ -21,7 +27,7 @@ const route = useRoute();
 const { t } = useI18n();
 const { $cmsService } = useNuxtApp();
 
-const { fetchPage, title, body, keyRoles, resources } = useCatchAll();
+const { fetchPage, page } = useCatchAll();
 
 const issuesPerPage = 12;
 

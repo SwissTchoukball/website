@@ -1,5 +1,11 @@
 <template>
-  <st-simple-page :title="title" :body="body" :key-roles="keyRoles" :resources="resources">
+  <st-simple-page
+    v-if="page"
+    :title="page.title"
+    :body="page.body"
+    :key-roles="page.key_roles"
+    :resources="page.resources"
+  >
     <template #after-body>
       <h4 class="t-headline-3">{{ $t('categoryDistribution.title', { season: seasonName }) }}</h4>
       <st-category-distribution-table v-if="currentSeasonStartYear" :season-start-year="currentSeasonStartYear" />
@@ -13,7 +19,7 @@ import { decode } from 'html-entities';
 const seasonsStore = useSeasonsStore();
 const { t } = useI18n();
 
-const { fetchPage, title, body, keyRoles, resources } = useCatchAll();
+const { fetchPage, page } = useCatchAll();
 
 defineI18nRoute({
   paths: {
@@ -24,13 +30,13 @@ defineI18nRoute({
 
 useHead(() => {
   return {
-    title: title.value,
+    title: page.value?.title,
     meta: [
-      { property: 'og:title', content: title.value },
+      { property: 'og:title', content: page.value?.title },
       {
         hid: 'og:description',
         property: 'og:description',
-        content: decode((body.value || '').replace(/(<([^>]+)>)/gi, '').substring(0, 250)) + '…',
+        content: decode((page.value?.body || '').replace(/(<([^>]+)>)/gi, '').substring(0, 250)) + '…',
       },
     ],
   };
