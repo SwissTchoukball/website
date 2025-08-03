@@ -104,6 +104,7 @@
   /* Person */
   --st-color-person-sub-name: var(--st-color-grey-dark);
   --st-color-person-detail-icon: var(--st-color-red-swiss-tchoukball);
+  --st-color-person-role-list-marker: var(--st-color-grey);
   --st-color-person-avatar-background: var(--st-color-grey-very-light);
 
   /* Domains */

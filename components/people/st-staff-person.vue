@@ -5,19 +5,29 @@
     :details="details"
   >
     <template #subName>
-      <ul class="u-unstyled-list">
+      <ul v-if="rolesInGroup.length" class="c-staff-person__role-list">
         <li
-          v-for="role of roles"
+          v-for="role of rolesInGroup"
           :key="role.id"
           class="c-staff-person__role"
-          :class="{ 'c-staff-person__role--main': (role.pivot && role.pivot.main) || roles.length === 1 }"
+          :class="{ 'c-staff-person__role--main': (role.pivot && role.pivot.main) || rolesInGroup.length === 1 }"
         >
-          <st-tooltip position="bottom">
-            <template #trigger>{{ getRoleNameForPerson(role, person) }}</template>
-            <template #content>{{ getTooltipForRole(role) }}</template>
-          </st-tooltip>
+          {{ getRoleNameForPerson(role, person) }}
         </li>
       </ul>
+      <component :is="otherRolesWrapperComponent" v-if="rolesNotInGroup.length">
+        <summary v-if="forGroupId" class="c-staff-person__other-roles-title">
+          {{ $t('person.rolesOutsideOf', { groupName: rolesInGroup[0].group?.name }) }}
+        </summary>
+        <ul class="c-staff-person__role-list">
+          <li v-for="role of rolesNotInGroup" :key="role.id" class="c-staff-person__role">
+            <st-tooltip position="bottom" :disabled="!role.group" trigger-as="span">
+              <template #trigger>{{ getRoleNameForPerson(role, person) }}</template>
+              <template #content>{{ getTooltipForRole(role) }}</template>
+            </st-tooltip>
+          </li>
+        </ul>
+      </component>
     </template>
   </st-person>
 </template>
@@ -49,13 +59,15 @@ const details = computed<PersonDetail[]>(() => {
   return details;
 });
 
-const roles = computed<Role[]>(() => {
-  let roles = [...props.person.roles];
-  if (props.forGroupId) {
-    roles = roles.filter((role) => role.group?.id === props.forGroupId);
-  }
-  // Put main role first, then order by group ID
-  roles.sort((roleA, roleB) => {
+const otherRolesWrapperComponent = computed(() => {
+  return props.forGroupId ? 'details' : 'div';
+});
+
+/**
+ * Sorts roles by putting the main role first, then ordering by group ID.
+ */
+const sortRoles = (roles: Role[]) => {
+  return roles.toSorted((roleA, roleB) => {
     if (roleA.pivot?.main) {
       return -1;
     } else if (roleB.pivot?.main) {
@@ -71,8 +83,15 @@ const roles = computed<Role[]>(() => {
     }
     return 0;
   });
-  return roles;
-});
+};
+
+const rolesInGroup = computed(() =>
+  sortRoles([...props.person.roles].filter((role) => role.group?.id && role.group.id === props.forGroupId)),
+);
+
+const rolesNotInGroup = computed(() =>
+  sortRoles([...props.person.roles].filter((role) => !role.group || role.group.id !== props.forGroupId)),
+);
 
 const getRoleNameForPerson = (role: Role, person: Person): string => {
   if (person.gender === Gender.Female) {
@@ -92,6 +111,25 @@ const getTooltipForRole = (role: Role) => {
 </script>
 
 <style scoped>
+.c-staff-person__role-list {
+  list-style-type: '\2726  ';
+  padding-left: var(--st-length-spacing-xs);
+  padding-left: 1rem;
+
+  ::marker {
+    color: var(--st-color-person-role-list-marker);
+  }
+}
+
+.c-staff-person__other-roles-title {
+  margin-top: var(--st-length-spacing-xs);
+  padding-bottom: var(--st-length-spacing-xxs);
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  cursor: pointer;
+}
+
 .c-staff-person__role {
   font-weight: normal;
   margin-bottom: 0.2rem;

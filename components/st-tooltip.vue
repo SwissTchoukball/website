@@ -1,6 +1,7 @@
 <template>
-  <TooltipRoot>
+  <TooltipRoot :disabled="disabled">
     <TooltipTrigger
+      :as="triggerAs"
       class="c-tooltip__trigger u-unstyled-button"
       :class="{ 'c-tooltip__trigger--full-width': fullWidthTrigger }"
     >
@@ -21,7 +22,12 @@ defineProps({
     type: String as PropType<'top' | 'right' | 'bottom' | 'left'>,
     default: 'top',
   },
+  triggerAs: {
+    type: String,
+    default: undefined,
+  },
   fullWidthTrigger: Boolean,
+  disabled: Boolean,
 });
 </script>
 

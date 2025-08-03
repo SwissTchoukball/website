@@ -159,7 +159,8 @@
     "toBeConfirmed": "À confirmer"
   },
   "person": {
-    "photoOf": "Photo de {name}"
+    "photoOf": "Photo de {name}",
+    "rolesOutsideOf": "Rôles en dehors de {groupName}"
   },
   "referees": {
     "title": "Arbitres",
