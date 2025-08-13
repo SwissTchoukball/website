@@ -85,6 +85,8 @@ export default defineNuxtConfig({
     '/wtc2023': { redirect: '/equipes-nationales/competitions/wtc2023' },
     '/wytc2023': { redirect: '/equipes-nationales/competitions/wytc2023' },
     '/etc2022': { redirect: '/equipes-nationales/competitions/etc2022' },
+    '/selections-regionales-m15': { redirect: '/selections-regionales' },
+    '/regionalauswahlen-u15': { redirect: '/regionalauswahlen' },
   },
 
   runtimeConfig: {
