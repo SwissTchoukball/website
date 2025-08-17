@@ -33,7 +33,6 @@
     "lastPage": "Letzte Seite"
   },
   "footer": {
-    "newsletterLink": "Sich für den Newsletter anmelden",
     "partners": "Partner",
     "affiliations": "Mitgliedschaften",
     "logoFrom": "Logo von {orgName}",
@@ -293,6 +292,7 @@
     }
   },
   "newsletter": {
+    "linkCta": "Sich für den Newsletter anmelden",
     "general": {
       "headTitle": "Newsletter",
       "title": "Anmeldung für den Newsletter",

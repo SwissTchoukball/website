@@ -1,6 +1,7 @@
 <template>
   <section class="l-main-content-section">
     <h2 class="t-headline-1">{{ $t('news.title') }}</h2>
+    <st-newsletter-link class="c-news__newsletter-link" />
     <st-loader v-if="fetchPending" :main="true" />
     <p v-else-if="fetchError">{{ $t('error.otherError') }} : {{ fetchError.message }}</p>
     <template v-else>
@@ -112,7 +113,11 @@ watch(
   padding: 0 var(--st-length-spacing-xxs);
 }
 
+.c-news__newsletter-link {
+  margin-top: var(--st-length-spacing-xs);
+}
+
 .c-news__list {
-  margin-top: var(--st-length-spacing-m);
+  margin-top: var(--st-length-spacing-s);
 }
 </style>

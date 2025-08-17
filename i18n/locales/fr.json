@@ -33,7 +33,6 @@
     "lastPage": "Dernière page"
   },
   "footer": {
-    "newsletterLink": "S'inscrire à la newsletter",
     "partners": "Partenaires",
     "affiliations": "Affiliations",
     "logoFrom": "Logo de {orgName}",
@@ -293,6 +292,7 @@
     }
   },
   "newsletter": {
+    "linkCta": "S'inscrire à la newsletter",
     "general": {
       "headTitle": "Newsletter",
       "title": "Inscription à la newsletter",

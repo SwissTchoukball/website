@@ -37,7 +37,7 @@
       </ul>
     </nav>
 
-    <nuxt-link :to="localePath('newsletter')" class="c-footer__newsletter">{{ $t('footer.newsletterLink') }}</nuxt-link>
+    <st-newsletter-link class="c-footer__newsletter-link" />
 
     <section class="l-main-content-section">
       <h2 class="c-footer__heading">{{ $t('footer.partners') }}</h2>
@@ -194,14 +194,8 @@ const secondaryNavigation = computed(() => {
   font-weight: 900;
 }
 
-.c-footer__newsletter {
-  display: inline-block;
+.c-footer__newsletter-link {
   margin-top: var(--st-length-spacing-m);
-  padding: var(--st-length-spacing-xxs);
-  color: var(--st-color-footer-newsletter);
-  font-weight: bold;
-  text-decoration: none;
-  border: 2px solid var(--st-color-footer-newsletter);
 }
 
 .c-footer__newsletter:hover {
