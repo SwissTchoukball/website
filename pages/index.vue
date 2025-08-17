@@ -92,35 +92,35 @@ const tchoukballNavigation = ref([
   {
     name: 'presentation',
     path: {
-      fr: '/fr/presentation',
+      fr: '/presentation',
       de: '/de/vorstellung',
     },
   },
   {
     name: 'rules',
     path: {
-      fr: '/fr/regles',
+      fr: '/regles',
       de: '/de/regeln',
     },
   },
   {
     name: 'charter',
     path: {
-      fr: '/fr/charte',
+      fr: '/charte',
       de: '/de/charta',
     },
   },
   {
     name: 'history',
     path: {
-      fr: '/fr/historique',
+      fr: '/historique',
       de: '/de/geschichte',
     },
   },
   {
     name: 'material',
     path: {
-      fr: '/fr/materiel',
+      fr: '/materiel',
       de: '/de/ausruestung',
     },
   },
