@@ -139,7 +139,7 @@ const closeDrawer = () => {
 }
 
 .c-default__euro2026-banner {
-  margin-top: var(--st-length-spacing-xxs);
+  margin-top: var(--st-length-spacing-s);
 }
 
 @media (--sm-and-up) {
@@ -182,6 +182,10 @@ const closeDrawer = () => {
   .c-default__drawer {
     display: none;
   }
+
+  .c-default__euro2026-banner {
+    margin-bottom: var(--st-length-spacing-s);
+  }
 }
 
 @media (--lg-and-up) {
@@ -191,6 +195,7 @@ const closeDrawer = () => {
     right: calc(var(--st-length-main-content-side-padding) + var(--st-length-spacing-xl));
     margin: 0;
     z-index: 3;
+    margin-bottom: 0;
   }
 }
 
