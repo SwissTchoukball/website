@@ -37,7 +37,7 @@
     "linkify-string": "^4.3.2",
     "linkifyjs": "^4.3.2",
     "nuxt": "^3.19.2",
-    "nuxt-mail": "^5.1.1",
+    "nuxt-mail": "^7.0.1",
     "pinia": "^3.0.3",
     "postcss-custom-media": "^11.0.6",
     "radix-vue": "^1.9.17",
