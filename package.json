@@ -54,7 +54,7 @@
     "@nuxtjs/i18n": "10.0.6",
     "@nuxtjs/stylelint-module": "^5.2.1",
     "@vueuse/core": "^13.8.0",
-    "@vueuse/nuxt": "^13.8.0",
+    "@vueuse/nuxt": "^13.9.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.5",
     "prettier": "^3.6.2",
