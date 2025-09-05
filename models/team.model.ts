@@ -38,6 +38,8 @@ export default class Team {
       slug = 'delemont_blizzard';
     } else if (this.name.includes('Delémont Thunder')) {
       slug = 'delemont_thunder';
+    } else if (this.name.includes('Delémont Storm')) {
+      slug = 'delemont_storm';
     } else if (this.name.includes('Vernier Turtles B')) {
       slug = 'vernier_turtles_b';
     } else if (this.name.includes('Vernier Turtles')) {
