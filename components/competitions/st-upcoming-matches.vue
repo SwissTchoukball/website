@@ -85,19 +85,15 @@ const {
   data: directusCompetitionEditions,
   pending: fetchCompetitionEditionPending,
   error: fetchCompetitionEditionError,
-} = useAsyncData<NationalCompetitionEdition[]>(
-  currentSeason?.slug || 'undefined-season',
-  async () => {
-    if (!currentSeason?.leverade_id) {
-      // An error is already thrown from the other useAsyncData
-      return [];
-    }
-    return await $cmsService.getNationalCompetitionEditions({
-      seasonSlug: currentSeason.slug,
-    });
-  },
-  { default: () => [] },
-);
+} = useAsyncData<NationalCompetitionEdition[]>(currentSeason?.slug || 'undefined-season', async () => {
+  if (!currentSeason?.leverade_id) {
+    // An error is already thrown from the other useAsyncData
+    return [];
+  }
+  return await $cmsService.getNationalCompetitionEditions({
+    seasonSlug: currentSeason.slug,
+  });
+});
 
 const upcomingMatchesData = computed<{ match: Match; edition?: CompetitionEdition }[]>(() => {
   if (!leveradeUpcomingMatchData.value?.included || !directusCompetitionEditions.value) {
