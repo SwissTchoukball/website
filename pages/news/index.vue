@@ -12,7 +12,7 @@
           </template>
         </i18n-t>
         <span class="c-news__domain-filter-info-separator">—</span>
-        <nuxt-link :to="''">{{ $t('news.showAll') }}</nuxt-link>
+        <nuxt-link :to="localePath('news')">{{ $t('news.showAll') }}</nuxt-link>
       </p>
       <st-news-list v-if="data" class="c-news__list" :news="data.newsList" />
     </template>
@@ -26,6 +26,7 @@ import type { NewsEntry } from '~/components/news/st-news';
 const route = useRoute();
 const { t } = useI18n();
 const { $cmsService } = useNuxtApp();
+const localePath = useLocalePath();
 const domainsStore = useDomainsStore();
 
 const newsEntriesPerPage = 12;
