@@ -26,10 +26,6 @@ export default class Team {
       slug = 'geneva_dragons';
     } else if (this.name.includes('Geneva Flames')) {
       slug = 'geneva_flames';
-    } else if (this.name.includes('Val-de-Ruz Flyers')) {
-      slug = 'val-de-ruz_flyers';
-    } else if (this.name.includes('Val-de-Ruz Black Kites')) {
-      slug = 'val-de-ruz_black_kites';
     } else if (this.name.includes('La Chaux-de-Fonds Beehives')) {
       slug = 'la_chaux-de-fonds_beehives';
     } else if (this.name.includes('Nyon Lakers')) {
