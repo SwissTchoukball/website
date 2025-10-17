@@ -173,46 +173,49 @@ const { data } = useAsyncData<{
   directusCompetitionEdition: NationalCompetitionEdition | undefined;
   matchAdditionalData: DirectusMatchAdditionalData | null;
   photos: FlickrPhoto[];
-}>(route.params.matchId as string, async () => {
-  const leveradeMatchData = await $leverade.getMatch(route.params.matchId as string);
-  const matchAdditionalData = await $cmsService.getMatchAdditionalData(+route.params.matchId);
+}>(
+  () => `match-${route.params.matchId}`,
+  async () => {
+    const leveradeMatchData = await $leverade.getMatch(route.params.matchId as string);
+    const matchAdditionalData = await $cmsService.getMatchAdditionalData(+route.params.matchId);
 
-  if (!leveradeMatchData.included) {
-    throw new Error('Missing related match data');
-  }
-
-  // Loading Directus-only data
-  const tournament = leveradeMatchData.included.find((data) => data.type === 'tournament');
-  let directusCompetitionEdition: NationalCompetitionEdition | undefined;
-  if (tournament) {
-    const competitionEditions = await $cmsService.getNationalCompetitionEditions({
-      leveradeIds: [tournament.id],
-    });
-    // There should be only one edition matching the request parameters.
-    if (competitionEditions.length > 1) {
-      console.warn('Multiple competition editions matching the request. Taking the first one.');
+    if (!leveradeMatchData.included) {
+      throw new Error('Missing related match data');
     }
-    directusCompetitionEdition = competitionEditions[0];
-  }
 
-  let photos: FlickrPhoto[] = [];
-  if (matchAdditionalData?.flickr_photoset_id) {
-    // Doc: https://www.flickr.com/services/api/flickr.photosets.getPhotos.html
-    const flickrResponse = await $flickr('flickr.photosets.getPhotos', {
-      user_id: runtimeConfig.public.flickr.userId,
-      photoset_id: matchAdditionalData.flickr_photoset_id,
-      extras: 'url_q,url_m',
-    });
-    photos = flickrResponse.photoset.photo;
-  }
+    // Loading Directus-only data
+    const tournament = leveradeMatchData.included.find((data) => data.type === 'tournament');
+    let directusCompetitionEdition: NationalCompetitionEdition | undefined;
+    if (tournament) {
+      const competitionEditions = await $cmsService.getNationalCompetitionEditions({
+        leveradeIds: [tournament.id],
+      });
+      // There should be only one edition matching the request parameters.
+      if (competitionEditions.length > 1) {
+        console.warn('Multiple competition editions matching the request. Taking the first one.');
+      }
+      directusCompetitionEdition = competitionEditions[0];
+    }
 
-  return {
-    leveradeMatchData,
-    directusCompetitionEdition,
-    matchAdditionalData,
-    photos,
-  };
-});
+    let photos: FlickrPhoto[] = [];
+    if (matchAdditionalData?.flickr_photoset_id) {
+      // Doc: https://www.flickr.com/services/api/flickr.photosets.getPhotos.html
+      const flickrResponse = await $flickr('flickr.photosets.getPhotos', {
+        user_id: runtimeConfig.public.flickr.userId,
+        photoset_id: matchAdditionalData.flickr_photoset_id,
+        extras: 'url_q,url_m',
+      });
+      photos = flickrResponse.photoset.photo;
+    }
+
+    return {
+      leveradeMatchData,
+      directusCompetitionEdition,
+      matchAdditionalData,
+      photos,
+    };
+  },
+);
 
 const distributedMatchData = computed<
   | {

@@ -26,15 +26,14 @@
         class="c-competition-edition__phase-navigation"
         small
       />
-
-      <NuxtPage
-        v-if="season && competitionEdition && currentPhase"
-        :season="season"
-        :competition-edition="competitionEdition"
-        :phase="currentPhase"
-      />
-      <NuxtPage v-else-if="season" :season="season" />
     </template>
+    <!-- This parent div with an ID helps Vue to place the NuxtPage correctly
+         and avoid the content from not rendering when navigating back -->
+    <div id="competition-child-outlet">
+      <!-- Keep a harmless placeholder when props aren’t ready -->
+      <div v-if="Object.keys(childProps).length === 0" aria-hidden="true"></div>
+      <NuxtPage v-else v-bind="childProps" />
+    </div>
   </section>
 </template>
 
@@ -75,57 +74,82 @@ defineI18nRoute({
 
 const season = ref<Season | undefined>(seasonsStore.getSeasonBySlug(route.params.season as string));
 
-const navigateToLastPhaseIfNoPhaseOrMatch = async (lastPhasePath: string | undefined) => {
-  if (lastPhasePath && !route.params.matchId && (!route.params.phase || route.params.phase === 'last')) {
-    await navigateTo(lastPhasePath);
-  }
-};
-
 const {
-  data: fetchedData,
+  data: rawCompetitionEdition,
   status: fetchStatus,
   error: fetchError,
-  refresh,
-} = useAsyncData<{
-  rawCompetitionEdition: NationalCompetitionEdition;
-  leveradeTournamentData: Await<ReturnType<Leverade['getFullTournament']>>;
-  matchesAdditionalData: Record<string, DirectusMatchAdditionalData>;
-  lastPhasePath: string | undefined;
-}>(`competitionEdition-${route.params.season}-${route.params.competition}`, async () => {
-  const rawCompetitionEditions = await $cmsService.getNationalCompetitionEditions({
-    seasonSlug: route.params.season as string,
-    competitionSlug: route.params.competition as string,
-  });
-  if (!rawCompetitionEditions || rawCompetitionEditions.length < 1) {
-    throw new Error('No competition edition found');
-  }
-  // There should be only one edition matching the request parameters.
-  if (rawCompetitionEditions.length > 1) {
-    console.warn('Multiple competition editions matching the request. Taking the first one.');
-  }
+} = useAsyncData<NationalCompetitionEdition>(
+  () => `competitionEdition-${route.params.season}-${route.params.competition}`,
+  async () => {
+    const rawCompetitionEditions = await $cmsService.getNationalCompetitionEditions({
+      seasonSlug: route.params.season as string,
+      competitionSlug: route.params.competition as string,
+    });
+    if (!rawCompetitionEditions || rawCompetitionEditions.length < 1) {
+      throw new Error('No competition edition found');
+    }
+    // There should be only one edition matching the request parameters.
+    if (rawCompetitionEditions.length > 1) {
+      console.warn('Multiple competition editions matching the request. Taking the first one.');
+    }
 
-  if (!rawCompetitionEditions[0].leverade_id) {
-    throw new Error('This competition edition has no Leverade ID');
-  }
-  const rawCompetitionEdition = rawCompetitionEditions[0];
+    if (!rawCompetitionEditions[0].leverade_id) {
+      throw new Error('This competition edition has no Leverade ID');
+    }
+    return rawCompetitionEditions[0];
+  },
+);
 
-  const leveradeTournamentData = await $leverade.getFullTournament(rawCompetitionEdition.leverade_id!);
+const { data: leveradeTournamentData } = useAsyncData<Await<ReturnType<Leverade['getFullTournament']>>>(
+  () =>
+    `leveradeTournamentData-${route.params.season}-${route.params.competition}-${rawCompetitionEdition.value?.leverade_id}`,
+  async () => {
+    if (!rawCompetitionEdition.value) {
+      throw new Error('No competition edition found');
+    }
 
-  if (!leveradeTournamentData.included) {
-    throw new Error('Related data is missing');
-  }
+    return await $leverade.getFullTournament(rawCompetitionEdition.value.leverade_id!);
+  },
+);
 
-  // Retrieve Directus data
-  const matches = leveradeTournamentData.included.filter((entity) => entity.type === 'match') as LeveradeMatch[];
-  const matchesAdditionalData = await $cmsService.getMatchesAdditionalData(matches.map((match) => match.id));
+const { data: matchesAdditionalData } = useAsyncData<Record<string, DirectusMatchAdditionalData>>(
+  () =>
+    `matchesAdditionalData-${route.params.season}-${route.params.competition}-${leveradeTournamentData.value?.data.id}`,
+  async () => {
+    if (!leveradeTournamentData.value) {
+      throw new Error('No Leverade tournament data found');
+    }
 
-  // Sort phases and redirect to the last one if needed
-  const phases = leveradeTournamentData.included.filter((entity) => entity.type === 'group') as LeveradeGroup[];
-  phases.sort((phaseA, phaseB) => phaseA.attributes.order - phaseB.attributes.order);
-  const lastPhase = phases[phases.length - 1];
+    if (!leveradeTournamentData.value.included) {
+      throw new Error('Related data is missing');
+    }
+    // Retrieve Directus data
+    const matches = leveradeTournamentData.value.included.filter(
+      (entity) => entity.type === 'match',
+    ) as LeveradeMatch[];
+    const additionalData = await $cmsService.getMatchesAdditionalData(matches.map((match) => +match.id));
+    if (!additionalData) {
+      throw new Error('Could not retrieve additional match data');
+    }
+    return additionalData;
+  },
+);
 
-  let lastPhasePath: string | undefined;
-  try {
+const { data: lastPhasePath } = useAsyncData<string>(
+  () => `lastPhasePath-${route.params.competition}-${route.params.season}-${leveradeTournamentData.value?.data.id}`,
+  async () => {
+    if (!leveradeTournamentData.value) {
+      throw new Error('No Leverade tournament data found');
+    }
+
+    if (!leveradeTournamentData.value.included) {
+      throw new Error('Related data is missing');
+    }
+    // Sort phases and redirect to the last one if needed
+    const phases = leveradeTournamentData.value.included.filter((entity) => entity.type === 'group') as LeveradeGroup[];
+    phases.sort((phaseA, phaseB) => phaseA.attributes.order - phaseB.attributes.order);
+    const lastPhase = phases[phases.length - 1];
+
     if (!season.value?.leverade_id) {
       throw new Error('Season has no Leverade ID');
     }
@@ -136,11 +160,11 @@ const {
 
     let lastPhasePathName = 'competitions-competition-season-phase';
     const currentRouteName = routeBaseName(route);
-    if (currentRouteName?.startsWith(lastPhasePathName)) {
+    if (typeof currentRouteName === 'string' && currentRouteName?.startsWith(lastPhasePathName)) {
       lastPhasePathName = currentRouteName;
     }
 
-    lastPhasePath = localePath({
+    return localePath({
       name: lastPhasePathName,
       params: {
         competition: route.params.competition,
@@ -148,30 +172,16 @@ const {
         phase: lastPhase.id,
       },
     });
-  } catch (error) {
-    console.error(error);
-  }
-
-  navigateToLastPhaseIfNoPhaseOrMatch(lastPhasePath);
-
-  return {
-    rawCompetitionEdition,
-    leveradeTournamentData,
-    matchesAdditionalData,
-    lastPhasePath,
-  };
-});
+  },
+);
 
 const competitionEdition = computed<CompetitionEdition | undefined>(() => {
-  if (!fetchedData.value?.rawCompetitionEdition || !fetchedData.value?.leveradeTournamentData?.included) {
+  if (!rawCompetitionEdition.value || !leveradeTournamentData.value?.included) {
     return;
   }
-  const competitionEdition = new CompetitionEdition(
-    fetchedData.value?.rawCompetitionEdition,
-    season.value || undefined,
-  );
+  const competitionEdition = new CompetitionEdition(rawCompetitionEdition.value, season.value || undefined);
 
-  const tournament = fetchedData.value?.leveradeTournamentData.data;
+  const tournament = leveradeTournamentData.value?.data;
   const teams: LeveradeTeam[] = [];
   const groups: LeveradeGroup[] = [];
   const rounds: LeveradeRound[] = [];
@@ -179,7 +189,7 @@ const competitionEdition = computed<CompetitionEdition | undefined>(() => {
   const matches: LeveradeMatch[] = [];
   const facilities: LeveradeFacility[] = [];
   const results: LeveradeResult[] = [];
-  fetchedData.value?.leveradeTournamentData.included.forEach((entity) => {
+  leveradeTournamentData.value?.included.forEach((entity) => {
     switch (entity.type) {
       case 'team':
         teams.push(entity);
@@ -209,8 +219,8 @@ const competitionEdition = computed<CompetitionEdition | undefined>(() => {
 
   competitionEdition.addLeveradeData({ tournament, teams, groups, rounds, faceoffs, matches, facilities, results });
 
-  if (fetchedData.value?.matchesAdditionalData) {
-    competitionEdition.addDirectusData(fetchedData.value.matchesAdditionalData);
+  if (matchesAdditionalData.value) {
+    competitionEdition.addDirectusData(matchesAdditionalData.value);
   }
 
   return competitionEdition;
@@ -264,6 +274,22 @@ const currentPhase = computed<Phase | undefined>(() => {
     throw new Error('Unrecognised phase');
   }
   return phase;
+});
+
+const childProps = computed(() => {
+  if (route.name?.toString().startsWith('competitions-competition-season-match-matchId')) {
+    // Match page only needs season
+    return season.value ? { season: season.value } : {};
+  }
+  // Results/planning/standings require all three
+  if (season.value && competitionEdition.value && currentPhase.value) {
+    return {
+      season: season.value,
+      competitionEdition: competitionEdition.value,
+      phase: currentPhase.value,
+    };
+  }
+  return {};
 });
 
 const showPhasesNavigation = computed<boolean>(() => {
@@ -330,14 +356,17 @@ const breadcrumb = computed<BreadcrumbItem[]>(() => {
   return breadcrumb;
 });
 
-watch(route, async (newRoute, oldRoute) => {
-  if (
-    newRoute.params.competition !== oldRoute.params.competition ||
-    newRoute.params.season !== oldRoute.params.season
-  ) {
-    await refresh();
+watch(lastPhasePath, (to) => {
+  if (!to) return;
+  // if on a match route, never auto-redirect
+  if (route.params.matchId) return;
+
+  // redirect only if we are truly on the “phase=last or missing”
+  if (!route.params.phase || route.params.phase === 'last') {
+    if (route.fullPath !== to) {
+      navigateTo(lastPhasePath.value, { replace: true }); // replace avoids new history entry
+    }
   }
-  navigateToLastPhaseIfNoPhaseOrMatch(fetchedData.value?.lastPhasePath);
 });
 </script>
 
