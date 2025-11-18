@@ -51,7 +51,7 @@
     "@commitlint/cli": "^20.1.0",
     "@commitlint/config-conventional": "^20.0.0",
     "@nuxt/eslint": "^1.10.0",
-    "@nuxtjs/i18n": "10.2.0",
+    "@nuxtjs/i18n": "10.2.1",
     "@nuxtjs/stylelint-module": "^5.2.1",
     "@vueuse/core": "^14.0.0",
     "@vueuse/nuxt": "^14.0.0",
