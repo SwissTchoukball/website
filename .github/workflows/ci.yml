@@ -62,6 +62,8 @@ jobs:
             source ~/.nvm/.profile
             source ~/env_vars/website-staging.sh
             nvm install
+            # We still need to install devDependencies for Nuxt builds
+            export NPM_CONFIG_PRODUCTION=false
             npm ci
             npm run build
             npm list -g pm2 || npm install -g pm2
@@ -90,6 +92,8 @@ jobs:
             source ~/.nvm/.profile
             source ~/env_vars/website-prod.sh
             nvm install
+            # We still need to install devDependencies for Nuxt builds
+            export NPM_CONFIG_PRODUCTION=false
             npm ci
             npm run build
             npm list -g pm2 || npm install -g pm2
