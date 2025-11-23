@@ -13,10 +13,6 @@ updates:
       prefix: fix
       prefix-development: chore
       include: scope
-    # Ignoring @nuxtjs/i18n because of issues with defineI18nRoute
-    # https://github.com/nuxt-modules/i18n/issues/3784
-    ignore:
-      - '@nuxtjs/i18n'
   # Fetch and update latest `github-actions` pkgs
   - package-ecosystem: github-actions
     directory: '/'
