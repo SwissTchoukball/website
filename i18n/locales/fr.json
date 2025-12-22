@@ -145,7 +145,7 @@
       "noMatches": "Il n'y a pas encore ou plus de matchs prévus."
     },
     "upcomingMatches": "Prochains matchs",
-    "upcomingMatchesOfCompetition": "Voir les prochains matchs de {competitionName}",
+    "upcomingMatchesOfCompetition": "Voir les prochains matchs de :",
     "noUpcomingMatches": "Il n'y a actuellement pas de matchs planifiés."
   },
   "match": {

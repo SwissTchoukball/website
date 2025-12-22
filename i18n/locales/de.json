@@ -145,7 +145,7 @@
       "noMatches": "Es sind noch keine Spiele vorgesehen oder es hat keine gegeben."
     },
     "upcomingMatches": "Nächste Spiele",
-    "upcomingMatchesOfCompetition": "Die Spiele von {competitionName} ansehen",
+    "upcomingMatchesOfCompetition": "Sieh dir die nächsten Matches von:",
     "noUpcomingMatches": "Es sind aktuell keine Spiele geplant."
   },
   "match": {

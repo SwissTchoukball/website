@@ -14,6 +14,9 @@
       </span>
     </div>
     <div class="c-event__main">
+      <div v-if="context" class="c-event__context">
+        {{ context }}
+      </div>
       <h3 class="c-event__name" :title="name">{{ name }}</h3>
       <div class="c-event__details">
         <time class="c-event__time">{{ startTime }}</time> {{ details }}
@@ -39,6 +42,10 @@ const props = defineProps({
   name: {
     type: String,
     required: true,
+  },
+  context: {
+    type: String,
+    default: undefined,
   },
   details: {
     type: String,
@@ -146,6 +153,13 @@ const startTime = computed<string | null>(() => {
 
 .c-event__name {
   font-size: 1em;
+}
+
+.c-event__context {
+  font-size: 0.6em;
+  text-transform: uppercase;
+  font-weight: bold;
+  color: var(--st-color-event-context);
 }
 
 .c-event__name,

@@ -3,6 +3,7 @@
     v-if="match.parsedDate"
     :start-date="match.parsedDate"
     :name="matchName"
+    :context="competitionEdition?.name"
     :details="details"
     :to="to"
   />

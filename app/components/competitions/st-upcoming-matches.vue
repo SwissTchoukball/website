@@ -27,19 +27,18 @@
           </li>
         </template>
       </ul>
-      <st-link-action
-        v-for="edition of competitionEditions"
-        :key="edition.directus_id"
-        with-arrow
-        :to="getPathToLastPhaseOfEdition(edition)"
-        class="c-upcoming-matches__see-more-link"
-      >
-        {{
-          $t('competitions.upcomingMatchesOfCompetition', {
-            competitionName: edition.name,
-          })
-        }}
-      </st-link-action>
+      <div class="c-upcoming-matches__see-more-links">
+        {{ $t('competitions.upcomingMatchesOfCompetition') }}
+        <st-link-action
+          v-for="edition of competitionEditions"
+          :key="edition.directus_id"
+          with-arrow
+          :to="getPathToLastPhaseOfEdition(edition)"
+          class="c-upcoming-matches__see-more-link"
+        >
+          {{ edition.name }}
+        </st-link-action>
+      </div>
     </template>
     <p v-else class="l-blank-slate-message">
       <!-- This will never be visible as we don't show the section when there are no matches. -->
@@ -191,10 +190,16 @@ const getPathToLastPhaseOfEdition = (edition: CompetitionEdition): string => {
   width: 100%;
 }
 
+.c-upcoming-matches__see-more-links {
+  display: flex;
+  justify-content: end;
+  gap: var(--st-length-spacing-xs);
+  flex-wrap: wrap;
+  margin-top: var(--st-length-spacing-s);
+}
+
 .c-upcoming-matches__see-more-link {
-  display: block;
-  text-align: right;
-  margin-top: var(--st-length-spacing-xs);
+  white-space: nowrap;
 }
 
 @media (--sm-and-up) {

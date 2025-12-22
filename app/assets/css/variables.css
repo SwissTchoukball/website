@@ -125,6 +125,7 @@
   --st-color-event-background: var(--st-color-grey-very-light);
   --st-color-event-foreground-cancelled: var(--st-color-grey-dark);
   --st-color-event-month: var(--st-color-red-swiss-tchoukball);
+  --st-color-event-context: var(--st-color-grey-dark);
   --st-color-event-day-of-week: var(--st-color-grey-dark);
   --st-color-event-type: var(--st-color-red-swiss-tchoukball);
   --st-color-event-icon: var(--st-color-red-swiss-tchoukball);
