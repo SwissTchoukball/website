@@ -51,15 +51,18 @@ export default defineNuxtConfig({
   },
 
   // nuxt-mail module configuration: https://github.com/dword-design/nuxt-mail#usage
-  // @ts-expect-error Module is missing TypeScript support
+  // TypeScript support was added, but it's badly typed. Thus the @ts-expect-error.
+  // See https://github.com/dword-design/nuxt-mail/issues/208#issuecomment-3687233745
   mail: {
+    // @ts-expect-error TypeScript support was added, but it's badly typed.
     message: {
       to: process.env.ST_CONTACT_EMAIL_RECIPIENT,
       from: `Swiss Tchoukball <no-reply@tchoukball.ch>`,
     },
     smtp: {
+      // @ts-expect-error TypeScript support was added, but it's badly typed.
       host: process.env.ST_SMTP_HOST,
-      port: process.env.ST_SMTP_PORT,
+      port: parseInt(process.env.ST_SMTP_PORT || '25'),
       auth: {
         user: process.env.ST_SMTP_USER,
         pass: process.env.ST_SMTP_PASSWORD,
