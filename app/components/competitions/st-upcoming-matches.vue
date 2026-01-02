@@ -174,10 +174,6 @@ const getPathToLastPhaseOfEdition = (edition: CompetitionEdition): string => {
 <style scoped>
 @import url('~/assets/css/media.css');
 
-.c-upcoming-matches {
-  background-color: var(--st-color-main-content-alternative-background);
-}
-
 .c-upcoming-matches__list {
   display: flex;
   flex-direction: column;

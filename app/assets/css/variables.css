@@ -96,11 +96,6 @@
   --st-color-tooltip-foreground: white;
   --st-color-tooltip-background: var(--st-color-grey-very-dark);
 
-  /* Home */
-  --st-color-home-carousel-dot: var(--st-color-grey-light);
-  --st-color-home-carousel-dot-active: var(--st-color-red-swiss-tchoukball);
-  --st-color-home-carousel-title-foreground: white;
-
   /* Person */
   --st-color-person-sub-name: var(--st-color-grey-dark);
   --st-color-person-detail-icon: var(--st-color-red-swiss-tchoukball);
@@ -115,6 +110,7 @@
   --st-color-news-image-background: var(--st-color-grey-very-light);
   --st-color-news-image-foreground: var(--st-color-grey);
   --st-color-news-date-foreground: var(--st-color-grey-dark);
+  --st-color-news-hero-title-foreground: white;
 
   /* Press releases */
   --st-color-press-release-context-background: var(--st-color-red-swiss-tchoukball);

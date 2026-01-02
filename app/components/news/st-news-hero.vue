@@ -1,37 +1,35 @@
 <template>
-  <NuxtLink :to="item.href" class="st-home-carousel-item">
+  <NuxtLink :to="newsLink" class="st-news-hero">
     <img
-      class="st-home-carousel-item__image"
-      :alt="item.image.alt"
-      :src="imageFallbackSrc(item.image.directusAssetId)"
-      :srcset="imageSrcSet(item.image.directusAssetId)"
+      v-if="newsEntry.main_image"
+      class="st-news-hero__image"
+      :alt="newsEntry.main_image.description"
+      :src="imageFallbackSrc(newsEntry.main_image.id)"
+      :srcset="imageSrcSet(newsEntry.main_image.id)"
       :sizes="imgTagSizes"
     />
-    <div class="st-home-carousel-item__title-fade"></div>
-    <h3 class="st-home-carousel-item__title">
-      {{ item.caption }}
-    </h3>
+    <div class="st-news-hero__title-fade"></div>
+    <div class="st-news-hero__overlay">
+      <st-domain-labels :domains="getDomainsFromList(newsEntry.domain_ids)" target-page-name="news" disable-links />
+      <h3 class="st-news-hero__title">
+        {{ newsEntry.title }}
+      </h3>
+    </div>
   </NuxtLink>
 </template>
 
 <script setup lang="ts">
 import { getAssetSrcSet, getAssetURL } from '~/plugins/06.directus';
+import type { NewsEntry } from '~/components/news/st-news';
 
 const runtimeConfig = useRuntimeConfig();
 const appConfig = useAppConfig();
+const localePath = useLocalePath();
+const { getDomainsFromList } = useDomains();
 
-export interface CarouselItem {
-  image: {
-    directusAssetId: string;
-    alt?: string;
-  };
-  caption: string;
-  href: string;
-}
-
-defineProps({
-  item: {
-    type: Object as PropType<CarouselItem>,
+const { newsEntry } = defineProps({
+  newsEntry: {
+    type: Object as PropType<NewsEntry>,
     required: true,
   },
 });
@@ -42,6 +40,10 @@ onMounted(() => {
   const bodyStyles = window.getComputedStyle(document.body);
   const lXlBreakpoint = bodyStyles.getPropertyValue('--st-breakpoint-l-xl');
   imgTagSizes.value = `(min-width: ${lXlBreakpoint}) ${lXlBreakpoint}, 100vw`;
+});
+
+const newsLink = computed<string>(() => {
+  return localePath(`/news/${newsEntry.id}-${newsEntry.slug}`);
 });
 
 const imageFallbackSrc = (assetId: string): string => {
@@ -60,7 +62,7 @@ const imageSrcSet = (assetId: string): string => {
 <style scoped>
 @import url('~/assets/css/media.css');
 
-.st-home-carousel-item__image {
+.st-news-hero__image {
   display: block;
   width: 100%;
   object-fit: cover;
@@ -68,19 +70,26 @@ const imageSrcSet = (assetId: string): string => {
   aspect-ratio: 3 / 2;
 }
 
-.st-home-carousel-item {
+.st-news-hero {
   position: relative;
   display: block;
+  width: 100vw;
+  margin-left: calc(-1 * var(--st-length-main-content-side-padding));
 }
 
-.st-home-carousel-item__title {
+.st-news-hero__overlay {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
   padding: 0 var(--st-length-spacing-xs);
   margin-bottom: var(--st-length-spacing-xs);
-  color: var(--st-color-home-carousel-title-foreground);
+  z-index: 0;
+}
+
+.st-news-hero__title {
+  margin-top: var(--st-length-spacing-xs);
+  color: var(--st-color-news-hero-title-foreground);
   font-weight: 900;
   font-size: 2em;
   text-wrap: balance;
@@ -95,10 +104,9 @@ const imageSrcSet = (assetId: string): string => {
   -webkit-box-orient: vertical;
   line-clamp: 2;
   overflow: hidden;
-  z-index: 0;
 }
 
-.st-home-carousel-item__title-fade {
+.st-news-hero__title-fade {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -108,50 +116,63 @@ const imageSrcSet = (assetId: string): string => {
 }
 
 @media (--sm-and-up) {
-  .st-home-carousel-item__title {
+  .st-news-hero__title {
     font-size: 2.25em;
   }
 
-  .st-home-carousel-item__title-fade {
+  .st-news-hero__title-fade {
     height: 10rem;
   }
 }
 
 @media (--md-and-up) {
-  .st-home-carousel-item__title {
+  .st-news-hero__overlay {
     padding: var(--st-length-spacing-xs) var(--st-length-spacing-s);
+  }
+
+  .st-news-hero__title {
     font-size: 2.5em;
   }
 
-  .st-home-carousel-item__title-fade {
+  .st-news-hero__title-fade {
     height: 11rem;
   }
 }
 
 @media (--lg-and-up) {
-  .st-home-carousel-item__title {
+  .st-news-hero__overlay {
     padding: var(--st-length-spacing-xs) var(--st-length-spacing-m);
+  }
+
+  .st-news-hero__title {
     font-size: 3em;
   }
 
-  .st-home-carousel-item__title-fade {
+  .st-news-hero__title-fade {
     height: 12rem;
   }
 }
 
+@media (--xl-and-up) {
+  .st-news-hero {
+    width: var(--st-breakpoint-l-xl);
+    margin-left: calc(-1 * (var(--st-breakpoint-l-xl) - var(--st-length-main-content-max-width)) / 2);
+  }
+}
+
 @media (orientation: landscape) {
-  .st-home-carousel-item__image {
+  .st-news-hero__image {
     aspect-ratio: 2 / 1;
   }
 
   @supports not (aspect-ratio: 2 / 1) {
-    .st-home-carousel-item__image::before {
+    .st-news-hero__image::before {
       float: left;
       padding-top: 40%;
       content: '';
     }
 
-    .st-home-carousel-item__image::after {
+    .st-news-hero__image::after {
       display: block;
       content: '';
       clear: both;

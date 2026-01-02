@@ -1,7 +1,16 @@
 <template>
   <div>
     <section class="l-main-content-section">
-      <st-home-carousel v-if="carouselItems" :items="carouselItems" class="c-index_carousel" />
+      <st-news-hero v-if="newsEntries && newsEntries[0]" :news-entry="newsEntries[0]" class="c-index__news-hero" />
+      <div class="c-index__news-list-container">
+        <st-news-list
+          v-if="newsEntries"
+          :news="newsEntries.slice(1, 5)"
+          single-row
+          hide-dates
+          class="c-index__news-list"
+        />
+      </div>
       <st-link-action :to="localePath('news')" class="c-index__read-more-news" with-arrow>
         {{ $t('news.readMore') }}
       </st-link-action>
@@ -73,11 +82,11 @@
 </template>
 
 <script setup lang="ts">
-import type { CarouselItem } from '~/components/st-home-carousel-item.vue';
 import type { CalendarEvent } from '~/plugins/08.cms-service';
 import stEventSmall from '~/components/events/st-event-small.vue';
 import stUpcomingMatches from '~/components/competitions/st-upcoming-matches.vue';
 import type { FlickrPhotoset } from '~/plugins/05.flickr';
+import type { NewsEntry } from '~/components/news/st-news';
 
 const runtimeConfig = useRuntimeConfig();
 const localePath = useLocalePath();
@@ -85,7 +94,7 @@ const { locale, t } = useI18n();
 const { slugify } = useSlugify();
 const { $cmsService, $flickr } = useNuxtApp();
 
-const amountNewsInCarousel = ref(5);
+const amountNews = ref(5);
 const amountUpcomingEvents = ref(9);
 // TODO: low prio: Move the navigation data to the CMS.
 const tchoukballNavigation = ref([
@@ -126,27 +135,15 @@ const tchoukballNavigation = ref([
   },
 ]);
 
-const { data: carouselItems } = useAsyncData<CarouselItem[]>('carouselItems', async () => {
+const { data: newsEntries } = useAsyncData<NewsEntry[]>('news-entries', async () => {
   const newsResult = await $cmsService.getNews({
-    limit: amountNewsInCarousel.value,
+    limit: amountNews.value,
     page: 1,
     withImageOnly: true,
     forHomepage: true,
   });
 
-  // TODO: Consider having other entities than news entries in carousel.
-  return newsResult.data
-    .filter((newsEntry) => newsEntry.main_image)
-    .map((newsEntry) => {
-      return {
-        image: {
-          directusAssetId: newsEntry.main_image!.id,
-          alt: newsEntry.main_image!.description,
-        },
-        caption: newsEntry.title,
-        href: localePath(`/news/${newsEntry.id}-${newsEntry.slug}`),
-      };
-    });
+  return newsResult.data;
 });
 
 const { data: events } = useAsyncData<CalendarEvent[]>('events-upcoming', async () => {
@@ -184,8 +181,23 @@ useHead(() => {
 <style scoped>
 @import url('~/assets/css/media.css');
 
-.c-index_carousel {
+.l-main-content-section:nth-child(even) {
+  background-color: var(--st-color-main-content-alternative-background);
+}
+
+.c-index__news-hero {
   margin-top: var(--st-length-spacing-xs);
+}
+
+.c-index__news-list-container {
+  position: relative;
+  width: 100vw;
+  margin-top: var(--st-length-spacing-s);
+  margin-left: calc(-1 * var(--st-length-main-content-side-padding));
+}
+
+.c-index__news-list {
+  padding-inline: var(--st-length-main-content-side-padding);
 }
 
 .c-index__section-title {
@@ -197,10 +209,6 @@ useHead(() => {
   display: block;
   text-align: right;
   margin-top: var(--st-length-spacing-xs);
-}
-
-:not(.c-upcoming-matches) + .c-index__tchoukball {
-  background-color: var(--st-color-main-content-alternative-background);
 }
 
 .c-index__tchoukball-nav {
@@ -266,6 +274,26 @@ useHead(() => {
 }
 
 @media (--md-and-up) {
+  .c-index__news-list-container::before,
+  .c-index__news-list-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: var(--st-length-main-content-side-padding);
+    height: 100%;
+    z-index: 1;
+  }
+
+  .c-index__news-list-container::before {
+    left: 0;
+    background: linear-gradient(to right, white, white 25%, rgb(255 255 255 / 0%));
+  }
+
+  .c-index__news-list-container::after {
+    right: 0;
+    background: linear-gradient(to right, rgb(255 255 255 / 0%), white 75%, white);
+  }
+
   .c-index__flickr-photo {
     max-width: 30%;
   }

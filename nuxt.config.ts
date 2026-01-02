@@ -70,12 +70,6 @@ export default defineNuxtConfig({
     transpile: ['@fortawesome/vue-fontawesome'],
   },
 
-  vue: {
-    compilerOptions: {
-      isCustomElement: (tag) => tag.startsWith('swiper-') || tag === 'altcha-widget',
-    },
-  },
-
   routeRules: {
     '/championnat': { redirect: '/competitions/ligue-a' },
     '/championnat-feminin': { redirect: '/competitions/championnat-feminin' },

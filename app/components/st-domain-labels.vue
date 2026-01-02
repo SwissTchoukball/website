@@ -1,7 +1,8 @@
 <template>
   <ul class="u-unstyled-list">
     <li v-for="domain of domains" :key="`domain-${domain.id}`" class="c-domain-labels__domain">
-      <nuxt-link :to="getNewsDomainLink(domain)" class="c-domain-labels__domain-link">
+      <span v-if="disableLinks" class="c-domain-labels__domain-link">{{ domain.name }}</span>
+      <nuxt-link v-else :to="getNewsDomainLink(domain)" class="c-domain-labels__domain-link">
         {{ domain.name }}
       </nuxt-link>
     </li>
@@ -26,6 +27,7 @@ const props = defineProps({
     type: String,
     default: 'domain',
   },
+  disableLinks: Boolean,
 });
 
 const getNewsDomainLink = (domain: Domain) => {

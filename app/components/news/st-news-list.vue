@@ -1,5 +1,5 @@
 <template>
-  <ul class="c-news-list u-unstyled-list">
+  <ul class="c-news-list u-unstyled-list" :class="{ 'c-news-list--single-row': singleRow }">
     <li v-for="newsEntry of news" :key="`news-${newsEntry.id}`" class="c-news-list__entry">
       <nuxt-link
         class="c-news-list__image-container"
@@ -27,11 +27,13 @@
       <h3 class="c-news-list__title t-headline-2">
         <nuxt-link :to="getNewsLink(newsEntry)"> {{ newsEntry.title }} </nuxt-link>
       </h3>
-      <time :datetime="getNewsCreationDateISO(newsEntry)" class="c-news-list__date">
+      <time v-if="!hideDates" :datetime="getNewsCreationDateISO(newsEntry)" class="c-news-list__date">
         {{ getNewsCreationDate(newsEntry) }}
       </time>
     </li>
-    <li v-for="index in amountSpacerProducts" :key="`spacer-${index}`"></li>
+    <template v-if="!singleRow">
+      <li v-for="index in amountSpacerProducts" :key="`spacer-${index}`"></li>
+    </template>
   </ul>
 </template>
 
@@ -54,6 +56,8 @@ const props = defineProps({
     type: Array as PropType<NewsEntry[]>,
     required: true,
   },
+  hideDates: Boolean,
+  singleRow: Boolean,
 });
 /**
  * The amount of spacer products to insert in the grid to ensure a good looking result with few elements.
@@ -111,6 +115,21 @@ const getDomains = (newsEntry: NewsEntry): Domain[] => {
 .c-news-list__entry {
   width: 100%;
   margin-bottom: var(--st-length-spacing-m);
+}
+
+.c-news-list--single-row {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: var(--st-length-spacing-s);
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.c-news-list--single-row .c-news-list__entry {
+  flex: 0 0 auto;
+  width: 90%;
+  margin-bottom: 0;
 }
 
 .c-news-list__image-container {
@@ -188,6 +207,14 @@ const getDomains = (newsEntry: NewsEntry): Domain[] => {
     margin-bottom: 0;
   }
 
+  .c-news-list--single-row {
+    display: flex;
+  }
+
+  .c-news-list--single-row .c-news-list__entry {
+    width: 45%;
+  }
+
   .c-news-list__image-container--no-image {
     display: block;
   }
@@ -196,6 +223,18 @@ const getDomains = (newsEntry: NewsEntry): Domain[] => {
 @media (--md-and-up) {
   .c-news-list {
     grid-template-columns: repeat(auto-fit, minmax(325px, 1fr));
+  }
+
+  .c-news-list--single-row .c-news-list__entry {
+    width: 30%;
+    min-width: 325px;
+  }
+}
+
+@media (--lg-and-up) {
+  .c-news-list--single-row .c-news-list__entry {
+    width: calc((100% - 3 * var(--st-length-spacing-s)) / 4);
+    min-width: 300px;
   }
 }
 </style>
