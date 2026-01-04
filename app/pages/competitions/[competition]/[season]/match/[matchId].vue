@@ -1,129 +1,134 @@
 <template>
-  <div v-if="match">
-    <nuxt-link class="c-match__phase-round" :to="phaseRoundLink">
-      <span v-if="isPhaseNameVisible && phase">
-        {{ phase.name }}
-      </span>
-      <span v-if="isRoundNameVisible && round">
-        {{ round.name }}
-      </span>
-    </nuxt-link>
-    <h2 class="c-match__name">
-      <span class="c-match__team c-match__team--home" :class="{ 'c-match__team--winner': match.hasHomeTeamWon }">
-        {{ match.homeTeamName }}
-      </span>
-      <span class="c-match__cross">&#9587;</span>
-      <span class="c-match__team c-match__team--away" :class="{ 'c-match__team--winner': match.hasAwayTeamWon }">
-        {{ match.awayTeamName }}
-      </span>
-    </h2>
-    <div class="c-match__avatars-and-score">
-      <img
-        v-if="match.home_team && match.home_team.avatarLargeUrl"
-        :src="match.home_team.avatarLargeUrl"
-        class="c-match__team-avatar"
-      />
-      <div v-else class="c-match__team-avatar"></div>
+  <section class="l-main-content-section">
+    <st-phase-header v-if="competitionEdition && phase" :competition-edition="competitionEdition" :phase="phase" />
+    <div v-if="match">
+      <nuxt-link class="c-match__phase-round" :to="phaseRoundLink">
+        <span v-if="isPhaseNameVisible && phase">
+          {{ phase.name }}
+        </span>
+        <span v-if="isRoundNameVisible && round">
+          {{ round.name }}
+        </span>
+      </nuxt-link>
+      <h2 class="c-match__name">
+        <span class="c-match__team c-match__team--home" :class="{ 'c-match__team--winner': match.hasHomeTeamWon }">
+          {{ match.homeTeamName }}
+        </span>
+        <span class="c-match__cross">&#9587;</span>
+        <span class="c-match__team c-match__team--away" :class="{ 'c-match__team--winner': match.hasAwayTeamWon }">
+          {{ match.awayTeamName }}
+        </span>
+      </h2>
+      <div class="c-match__avatars-and-score">
+        <img
+          v-if="match.home_team && match.home_team.avatarLargeUrl"
+          :src="match.home_team.avatarLargeUrl"
+          class="c-match__team-avatar"
+        />
+        <div v-else class="c-match__team-avatar"></div>
 
-      <div v-if="match.hasScore" class="c-match__score">{{ match.home_team_score }} - {{ match.away_team_score }}</div>
-      <div v-else class="c-match__no-score"></div>
+        <div v-if="match.hasScore" class="c-match__score">
+          {{ match.home_team_score }} - {{ match.away_team_score }}
+        </div>
+        <div v-else class="c-match__no-score"></div>
 
-      <img
-        v-if="match.away_team && match.away_team.avatarLargeUrl"
-        :src="match.away_team.avatarLargeUrl"
-        class="c-match__team-avatar"
-      />
-      <div v-else class="c-match__team-avatar"></div>
-    </div>
-    <div class="c-match__additional-info">
-      <st-chip v-if="match.isOngoing">
-        {{ $t('match.ongoing') }}
-      </st-chip>
-      <st-chip v-else-if="match.toBeConfirmed">
-        {{ $t('match.toBeConfirmed') }}
-      </st-chip>
-    </div>
-    <ul v-if="match.periods" class="c-match__detailed-score u-unstyled-list">
-      <template v-for="period in match.periods">
-        <li v-if="period.home_team_score || period.away_team_score" :key="period.order" class="c-match__period">
-          <st-tooltip position="bottom">
-            <template #trigger>{{ period.home_team_score || 0 }} - {{ period.away_team_score || 0 }}</template>
-            <template #content>{{ period.name }}</template>
-          </st-tooltip>
-        </li>
-      </template>
-    </ul>
-    <div v-if="match.referees && match.referees.length" class="c-match__referees">
-      <st-custom-icon :view-box-width="512" :view-box-height="512" class="c-match__icon">
-        <st-icon-whistle />
-      </st-custom-icon>
-      <ul class="u-unstyled-list c-match__referee-list">
-        <li v-for="referee in match.referees" :key="`${referee.first_name} ${referee.last_name}`">
-          {{ referee.first_name }} {{ referee.last_name }}
-        </li>
+        <img
+          v-if="match.away_team && match.away_team.avatarLargeUrl"
+          :src="match.away_team.avatarLargeUrl"
+          class="c-match__team-avatar"
+        />
+        <div v-else class="c-match__team-avatar"></div>
+      </div>
+      <div class="c-match__additional-info">
+        <st-chip v-if="match.isOngoing">
+          {{ $t('match.ongoing') }}
+        </st-chip>
+        <st-chip v-else-if="match.toBeConfirmed">
+          {{ $t('match.toBeConfirmed') }}
+        </st-chip>
+      </div>
+      <ul v-if="match.periods" class="c-match__detailed-score u-unstyled-list">
+        <template v-for="period in match.periods">
+          <li v-if="period.home_team_score || period.away_team_score" :key="period.order" class="c-match__period">
+            <st-tooltip position="bottom">
+              <template #trigger>{{ period.home_team_score || 0 }} - {{ period.away_team_score || 0 }}</template>
+              <template #content>{{ period.name }}</template>
+            </st-tooltip>
+          </li>
+        </template>
       </ul>
-    </div>
-    <div id="match-details" class="c-match__details">
-      <st-event-date v-if="match.parsedDate" :start-date="match.parsedDate" always-one-line />
-      <div v-if="match.parsedDate">
-        <font-awesome-icon icon="clock" class="c-match__icon" /> {{ $formatDate(match.parsedDate, 'HH:mm') }}
+      <div v-if="match.referees && match.referees.length" class="c-match__referees">
+        <st-custom-icon :view-box-width="512" :view-box-height="512" class="c-match__icon">
+          <st-icon-whistle />
+        </st-custom-icon>
+        <ul class="u-unstyled-list c-match__referee-list">
+          <li v-for="referee in match.referees" :key="`${referee.first_name} ${referee.last_name}`">
+            {{ referee.first_name }} {{ referee.last_name }}
+          </li>
+        </ul>
       </div>
-      <button v-if="match.facility" class="u-unstyled-button c-match__venue" @click="showVenueDetails">
-        <font-awesome-icon icon="location-dot" class="c-match__icon" /> {{ match.facility.name }},
-        {{ match.facility.city }} (<span class="c-match__venue-map-action">{{ $t('venue.map') }}</span
-        >)
-      </button>
-      <div v-else class="c-match__venue c-match__venue--undefined">
-        <font-awesome-icon icon="location-dot" class="c-match__icon" /> {{ $t('venue.undefined') }}
-      </div>
-    </div>
-    <div v-if="venueDetailsVisible" id="venue-details" class="c-match__venue-details">
-      <div class="c-match__address">
-        <font-awesome-icon icon="location-dot" class="c-match__icon" />
-        <div v-if="match.facility">
-          <strong>{{ match.facility.name }}</strong> <br />
-          {{ match.facility.address }}<br />
-          {{ match.facility.postal_code }} {{ match.facility.city }}<br />
-
-          <i18n-t v-if="match.addressForMapsUrl" keypath="venue.seeIn" tag="div">
-            <template #app>
-              <a :href="getOpenStreetMapUrl(match.addressForMapsUrl)">OpenStreetMap</a> /
-              <a :href="getAppleMapsUrl(match.addressForMapsUrl)">{{ $t('venue.appleMaps') }}</a> /
-              <a :href="getGoogleMapsUrl(match.addressForMapsUrl)">Google Maps</a>
-            </template>
-          </i18n-t>
+      <div id="match-details" class="c-match__details">
+        <st-event-date v-if="match.parsedDate" :start-date="match.parsedDate" always-one-line />
+        <div v-if="match.parsedDate">
+          <font-awesome-icon icon="clock" class="c-match__icon" /> {{ $formatDate(match.parsedDate, 'HH:mm') }}
+        </div>
+        <button v-if="match.facility" class="u-unstyled-button c-match__venue" @click="showVenueDetails">
+          <font-awesome-icon icon="location-dot" class="c-match__icon" /> {{ match.facility.name }},
+          {{ match.facility.city }} (<span class="c-match__venue-map-action">{{ $t('venue.map') }}</span
+          >)
+        </button>
+        <div v-else class="c-match__venue c-match__venue--undefined">
+          <font-awesome-icon icon="location-dot" class="c-match__icon" /> {{ $t('venue.undefined') }}
         </div>
       </div>
-      <client-only>
-        <iframe
-          v-if="match.hasFacility"
-          :src="match.getSwisstopoMapUrl($i18n.locale) || ''"
-          frameborder="0"
-          class="c-match__map"
-        ></iframe>
-      </client-only>
-    </div>
+      <div v-if="venueDetailsVisible" id="venue-details" class="c-match__venue-details">
+        <div class="c-match__address">
+          <font-awesome-icon icon="location-dot" class="c-match__icon" />
+          <div v-if="match.facility">
+            <strong>{{ match.facility.name }}</strong> <br />
+            {{ match.facility.address }}<br />
+            {{ match.facility.postal_code }} {{ match.facility.city }}<br />
 
-    <template v-if="data?.matchAdditionalData?.youtube_video_id">
-      <h3 class="t-headline-2 c-match__video-title">{{ $t('match.videoTitle') }}</h3>
-      <div class="c-match__video-wrapper">
-        <iframe
-          class="c-match__video"
-          :src="`https://www.youtube-nocookie.com/embed/${data.matchAdditionalData.youtube_video_id}`"
-          title="YouTube video player"
-          frameborder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          referrerpolicy="strict-origin-when-cross-origin"
-          allowfullscreen
-        ></iframe>
+            <i18n-t v-if="match.addressForMapsUrl" keypath="venue.seeIn" tag="div">
+              <template #app>
+                <a :href="getOpenStreetMapUrl(match.addressForMapsUrl)">OpenStreetMap</a> /
+                <a :href="getAppleMapsUrl(match.addressForMapsUrl)">{{ $t('venue.appleMaps') }}</a> /
+                <a :href="getGoogleMapsUrl(match.addressForMapsUrl)">Google Maps</a>
+              </template>
+            </i18n-t>
+          </div>
+        </div>
+        <client-only>
+          <iframe
+            v-if="match.hasFacility"
+            :src="match.getSwisstopoMapUrl($i18n.locale) || ''"
+            frameborder="0"
+            class="c-match__map"
+          ></iframe>
+        </client-only>
       </div>
-    </template>
 
-    <template v-if="data?.photos.length">
-      <h3 class="t-headline-2 c-match__photos-title">{{ $t('match.photosTitle') }}</h3>
-      <st-flickr-album-gallery :photos="data.photos" class="c-match__photos-gallery" />
-    </template>
-  </div>
+      <template v-if="data?.matchAdditionalData?.youtube_video_id">
+        <h3 class="t-headline-2 c-match__video-title">{{ $t('match.videoTitle') }}</h3>
+        <div class="c-match__video-wrapper">
+          <iframe
+            class="c-match__video"
+            :src="`https://www.youtube-nocookie.com/embed/${data.matchAdditionalData.youtube_video_id}`"
+            title="YouTube video player"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen
+          ></iframe>
+        </div>
+      </template>
+
+      <template v-if="data?.photos.length">
+        <h3 class="t-headline-2 c-match__photos-title">{{ $t('match.photosTitle') }}</h3>
+        <st-flickr-album-gallery :photos="data.photos" class="c-match__photos-gallery" />
+      </template>
+    </div>
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -154,17 +159,13 @@ const localePath = useLocalePath();
 const { t } = useI18n();
 const { $cmsService, $leverade, $flickr, $formatDate } = useNuxtApp();
 const { getOpenStreetMapUrl, getAppleMapsUrl, getGoogleMapsUrl } = useMapUrls();
+const seasonsStore = useSeasonsStore();
 
 definePageMeta({
   scrollToTop: true,
 });
 
-const props = defineProps({
-  season: {
-    type: Object as PropType<Season>,
-    required: true,
-  },
-});
+const season = ref<Season | undefined>(seasonsStore.getSeasonBySlug(route.params.season as string));
 
 const venueDetailsVisible = ref(false);
 
@@ -245,7 +246,10 @@ const distributedMatchData = computed<
   const referees: LeveradeProfile[] = [];
 
   if (data.value.directusCompetitionEdition) {
-    edition = new CompetitionEdition(data.value.directusCompetitionEdition);
+    edition = new CompetitionEdition(
+      data.value.directusCompetitionEdition,
+      seasonsStore.getSeasonBySlug(route.params.season as string),
+    );
   }
 
   data.value.leveradeMatchData.included.forEach((entity) => {
@@ -355,7 +359,7 @@ useHead(() => {
     if (competitionEdition.value && phase.value.name !== competitionEdition.value.name) {
       title += `${competitionEdition.value.name} · `;
     }
-    title += props.season.name;
+    title += season.value?.name;
   }
 
   return {
@@ -386,7 +390,7 @@ useHead(() => {
 }
 
 .c-match__phase-round > *:not(:last-child)::after {
-  content: '-';
+  content: ' · ';
 }
 
 .c-match__name {

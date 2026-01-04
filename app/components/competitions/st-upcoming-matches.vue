@@ -133,18 +133,20 @@ const upcomingMatchesData = computed<{ match: Match; edition?: CompetitionEditio
     }
   });
 
-  return leveradeUpcomingMatchData.value.data.map((rawMatch) => {
-    const match = new Match(rawMatch);
-    match.setTeams(teams);
-    match.setFacility(facilities);
+  return leveradeUpcomingMatchData.value.data
+    .filter((rawMatch) => !rawMatch.attributes.finished)
+    .map((rawMatch) => {
+      const match = new Match(rawMatch);
+      match.setTeams(teams);
+      match.setFacility(facilities);
 
-    const round = rounds.find((round) => round.id === match.round_id);
-    const phase = phases.find((phase) => !!round && phase.id === round.phase_id);
-    const edition = competitionEditions.find(
-      (competitionEdition) => !!phase && competitionEdition.leverade_id === phase.competition_edition_id,
-    );
-    return { match, edition };
-  });
+      const round = rounds.find((round) => round.id === match.round_id);
+      const phase = phases.find((phase) => !!round && phase.id === round.phase_id);
+      const edition = competitionEditions.find(
+        (competitionEdition) => !!phase && competitionEdition.leverade_id === phase.competition_edition_id,
+      );
+      return { match, edition };
+    });
 });
 
 const competitionEditions = computed<CompetitionEdition[]>(() => {
@@ -161,11 +163,10 @@ const getPathToLastPhaseOfEdition = (edition: CompetitionEdition): string => {
     return '';
   }
   return localePath({
-    name: 'competitions-competition-season-phase-planning',
+    name: 'competitions-competition-season-planning',
     params: {
       competition: edition.competition.slug,
       season: edition.season.slug,
-      phase: 'last',
     },
   });
 };

@@ -28,10 +28,6 @@ const loadCompetition = async () => {
     throw new TypeError('Season of last edition is not populated');
   }
 
-  // TODO: Also retrieve the phase data to directly redirect at the correct page
-  //       instead of doing redirect over redirect.
-  //       This would require caching of phases to avoid fetching them twice.
-
   navigateTo(
     localePath({
       name: 'competitions-competition-season',

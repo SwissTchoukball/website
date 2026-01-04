@@ -140,9 +140,6 @@
   /* National teams */
   --st-color-national-team-result-location: var(--st-color-grey-dark);
 
-  /* National competition */
-  --st-color-planning-match-round: var(--st-color-red-swiss-tchoukball);
-
   /* Medals */
 
   --st-color-medal-gold: repeating-conic-gradient(
@@ -180,7 +177,8 @@
   --st-color-match-score: var(--st-color-red-swiss-tchoukball);
   --st-color-match-results-separator: var(--st-color-grey-light);
   --st-color-match-result-background-hover: var(--st-color-grey-very-light);
-  --st-color-match-phase-round: var(--st-color-red-swiss-tchoukball);
+  --st-color-match-phase-round: var(--st-color-grey-dark);
+  --st-color-match-phase-round-play-off: var(--st-color-red-swiss-tchoukball);
   --st-color-match-additional-info-background: var(--st-color-red-swiss-tchoukball-ultra-light);
 
   /* Resources */

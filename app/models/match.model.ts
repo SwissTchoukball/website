@@ -3,6 +3,7 @@ import type Team from '~/models/team.model';
 import { parseLeveradeDate } from '~/utils/utils';
 import type {
   LeveradeFacility,
+  LeveradeGroupType,
   LeveradeMatch,
   LeveradePeriod,
   LeveradeProfile,
@@ -10,6 +11,7 @@ import type {
   LeveradeTeam,
 } from '~/plugins/07.leverade';
 import type { FaceoffWithoutMatches } from '~/models/faceoff.model';
+import type Season from './season.model';
 
 export interface Facility {
   id: string;
@@ -40,6 +42,11 @@ export default class Match {
   id: string;
   datetime: string | null;
   round_id: string;
+  round_name: string | null;
+  phase_name: string | null;
+  phase_type: LeveradeGroupType | null;
+  competition_edition_name: string | null;
+  season?: Season | null;
   faceoff_id: string | null;
   faceoff?: Faceoff | FaceoffWithoutMatches;
   home_team_id: string | null;
@@ -75,6 +82,11 @@ export default class Match {
     this.round_id = match.relationships.round.data.id;
     this.faceoff_id = match.relationships.faceoff.data?.id || null;
     this.facility_id = match.relationships.facility.data?.id || null;
+
+    this.round_name = null;
+    this.phase_name = null;
+    this.phase_type = null;
+    this.competition_edition_name = null;
   }
 
   /**

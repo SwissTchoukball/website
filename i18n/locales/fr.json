@@ -109,22 +109,22 @@
   "competitions": {
     "title": "Compétitions",
     "headTitle": {
-      "standings": "Classement · {phaseName} · {editionName} · {seasonName}",
-      "results": "Résultats · {phaseName} · {editionName} · {seasonName}",
-      "planning": "Programme · {phaseName} · {editionName} · {seasonName}"
+      "phase": "{phaseName} · {editionName} · {seasonName}",
+      "phaseResults": "Résultats · {phaseName} · {editionName} · {seasonName}",
+      "phasePlanning": "Programme · {phaseName} · {editionName} · {seasonName}",
+      "competitionEdition": "{editionName} · {seasonName}",
+      "results": "Résultats · {editionName} · {seasonName}",
+      "planning": "Programme · {editionName} · {seasonName}"
     },
     "description": {
-      "standings": "Classement des équipes pour la compétition",
+      "upcomingGamesAndLastResults": "Prochains matchs et derniers résultats",
+      "standingsWithUpcomingGamesAndLastResults": "Classement, prochains matchs et derniers résultats",
       "results": "Résultats des derniers matchs joués",
       "planning": "Dates, horaires et lieux des matchs à venir",
       "match": "Tous les détails du match"
     },
-    "phaseNavigation": {
-      "standings": "Classement",
-      "results": "Résultats",
-      "planning": "Programme"
-    },
     "standings": {
+      "title": "Classement",
       "header": {
         "team": "Équipe",
         "played": "Joués",
@@ -138,10 +138,17 @@
       }
     },
     "results": {
+      "title": "Résultats",
+      "lastResults": "Derniers résultats",
+      "seeAllResults": "Voir tous les résultats",
+      "showNotFinishedMatches": "Afficher les matchs non terminés",
+      "hideNotFinishedMatches": "Masquer les matchs non terminés",
       "noResults": "Il n'y a pas encore de résultats à afficher.",
       "autoQualified": "{teamName} est automatiquement qualifié."
     },
     "planning": {
+      "title": "Prochains matchs",
+      "seeAllUpcomingMatches": "Voir tous les matchs à venir",
       "noMatches": "Il n'y a pas encore ou plus de matchs prévus."
     },
     "upcomingMatches": "Prochains matchs",

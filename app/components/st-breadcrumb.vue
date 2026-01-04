@@ -7,8 +7,15 @@
           {{ $t('breadcrumb.home') }}
         </nuxt-link>
       </li>
-      <li v-for="item of items" :key="item.pageName" class="c-breadcrumb__item">
-        <nuxt-link :to="localePath(item.pageName)" class="c-breadcrumb__link">{{ item.displayName }}</nuxt-link>
+      <li v-for="item of items" :key="item.pageName || item.displayName" class="c-breadcrumb__item">
+        <nuxt-link
+          v-if="item.pageName"
+          :to="localePath({ name: item.pageName, params: item.pageParams })"
+          class="c-breadcrumb__link"
+        >
+          {{ item.displayName }}
+        </nuxt-link>
+        <span v-else class="c-breadcrumb__link">{{ item.displayName }}</span>
       </li>
     </ol>
   </nav>
@@ -18,7 +25,8 @@
 const localePath = useLocalePath();
 
 export interface BreadcrumbItem {
-  pageName: string;
+  pageName?: string;
+  pageParams?: Record<string, string>;
   displayName: string;
 }
 

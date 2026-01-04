@@ -22,26 +22,43 @@ export default class Phase {
     this.competition_edition_id = leveradeGroup.relationships.tournament.data.id;
   }
 
-  get futureMatches() {
+  get allMatches(): Match[] {
     if (!this.rounds) {
       return [];
     }
-
-    const matches = this.rounds.reduce((matchList, round) => {
+    return this.rounds.reduce((matchList, round) => {
       if (!round.matches) {
         return matchList;
-      } else {
-        return [...matchList, ...round.matches];
       }
+      return [
+        ...matchList,
+        ...round.matches.map((match) => {
+          match.round_name = round.name;
+          match.phase_name = this.name;
+          match.phase_type = this.type;
+          return match;
+        }),
+      ];
     }, [] as Match[]);
+  }
 
-    return matches
-      .filter((match) => {
-        return match.datetime && match.datetime >= new Date().toISOString().split('T')[0]!;
-      })
+  get futureMatches(): Match[] {
+    return this.allMatches
+      .filter((match) => !match.finished && match.datetime && match.datetime >= new Date().toISOString().split('T')[0]!)
       .sort((matchA, matchB) => {
         if (matchA.datetime && matchB.datetime) {
           return matchA.datetime < matchB.datetime ? -1 : matchA.datetime > matchB.datetime ? 1 : 0;
+        }
+        return matchA.datetime ? 1 : matchB.datetime ? -1 : 0;
+      });
+  }
+
+  get lastFinishedMatches(): Match[] {
+    return this.allMatches
+      .filter((match) => match.finished && !match.canceled)
+      .sort((matchA, matchB) => {
+        if (matchA.datetime && matchB.datetime) {
+          return matchA.datetime < matchB.datetime ? 1 : matchA.datetime > matchB.datetime ? -1 : 0;
         }
         return matchA.datetime ? 1 : matchB.datetime ? -1 : 0;
       });

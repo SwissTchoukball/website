@@ -53,16 +53,8 @@ interface StandingRow<T> {
 }
 
 const route = useRoute();
-const localePath = useLocalePath();
 const { t } = useI18n();
 const { $leverade } = useNuxtApp();
-
-defineI18nRoute({
-  paths: {
-    fr: '/competitions/[competition]/[season]/[phase]/classement',
-    de: '/wettbewerbe/[competition]/[season]/[phase]/tabelle',
-  },
-});
 
 const props = defineProps({
   season: {
@@ -76,6 +68,9 @@ const props = defineProps({
   phase: {
     type: Object as PropType<Phase>,
     required: true,
+    validator(value: Phase) {
+      return value.type === LeveradeGroupType.LEAGUE;
+    },
   },
 });
 
@@ -87,14 +82,6 @@ const {
 } = useAsyncData<StandingRow<LeveradeTeam>[]>(
   `standings-${props.phase.id}`,
   async () => {
-    // If we're not in a league phase (e.g. play-off phase), we redirect to the results
-    if (props.phase.type !== LeveradeGroupType.LEAGUE) {
-      const resultsPath = localePath({
-        name: 'competitions-competition-season-phase-results',
-      });
-      navigateTo(resultsPath);
-    }
-
     const teamsResponse = await $leverade.getTeams(props.phase.competition_edition_id);
     const standingsResponse = await $leverade.getStandings(props.phase.id);
     return standingsResponse.meta.standingsrows.map((row) => ({
@@ -105,25 +92,6 @@ const {
   },
   { default: () => [] },
 );
-
-useHead(() => {
-  const title = t('competitions.headTitle.standings', {
-    phaseName: props.phase.name,
-    editionName: props.competitionEdition.name,
-    seasonName: props.season.name,
-  }).toString();
-  return {
-    title,
-    meta: [
-      { property: 'og:title', content: title },
-      {
-        hid: 'og:description',
-        property: 'og:description',
-        content: t('competitions.description.standings').toString(),
-      },
-    ],
-  };
-});
 
 const standingsHeader = computed<string[]>(() => {
   return [

@@ -154,4 +154,44 @@ export default class CompetitionEdition {
 
     return this.phases[this.phases.length - 1];
   }
+
+  get allMatches(): Match[] {
+    if (!this.phases) {
+      return [];
+    }
+    return this.phases.reduce((matchList, phase) => {
+      if (!phase.allMatches.length) {
+        return matchList;
+      }
+      return [
+        ...matchList,
+        ...phase.allMatches.map((match) => {
+          match.competition_edition_name = this.name;
+          return match;
+        }),
+      ];
+    }, [] as Match[]);
+  }
+
+  get futureMatches(): Match[] {
+    return this.allMatches
+      .filter((match) => !match.finished && match.datetime && match.datetime >= new Date().toISOString().split('T')[0]!)
+      .sort((matchA, matchB) => {
+        if (matchA.datetime && matchB.datetime) {
+          return matchA.datetime < matchB.datetime ? -1 : matchA.datetime > matchB.datetime ? 1 : 0;
+        }
+        return matchA.datetime ? 1 : matchB.datetime ? -1 : 0;
+      });
+  }
+
+  get lastFinishedMatches(): Match[] {
+    return this.allMatches
+      .filter((match) => match.finished && !match.canceled)
+      .sort((matchA, matchB) => {
+        if (matchA.datetime && matchB.datetime) {
+          return matchA.datetime < matchB.datetime ? 1 : matchA.datetime > matchB.datetime ? -1 : 0;
+        }
+        return matchA.datetime ? 1 : matchB.datetime ? -1 : 0;
+      });
+  }
 }
