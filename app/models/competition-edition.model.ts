@@ -186,7 +186,7 @@ export default class CompetitionEdition {
 
   get lastFinishedMatches(): Match[] {
     return this.allMatches
-      .filter((match) => match.finished && !match.canceled)
+      .filter((match) => match.finished && !match.canceled && !match.rest)
       .sort((matchA, matchB) => {
         if (matchA.datetime && matchB.datetime) {
           return matchA.datetime < matchB.datetime ? 1 : matchA.datetime > matchB.datetime ? -1 : 0;
