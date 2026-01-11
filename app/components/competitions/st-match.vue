@@ -1,7 +1,7 @@
 <template>
   <nuxt-link
     class="c-match"
-    :class="{ 'c-match--finished': match.finished, 'c-match--play-off': isPlayOff }"
+    :class="{ 'c-match--has-score': match.hasScore, 'c-match--play-off': isPlayOff }"
     :to="localePath({ name: 'competitions-competition-season-match-matchId', params: { matchId: match.id } })"
   >
     <st-event-date v-if="match.parsedDate" :start-date="match.parsedDate" always-one-line />
@@ -158,7 +158,7 @@ const roundName = computed<string>(() => {
     font-size: 1.2rem;
   }
 
-  .c-match--finished & {
+  .c-match--has-score & {
     grid-template-columns: 1fr min-content min-content min-content 1fr;
     grid-template-areas:
       'home-team-avatar home-team-score score-separator away-team-score away-team-avatar'
@@ -175,7 +175,7 @@ const roundName = computed<string>(() => {
   grid-area: cross;
 
   @media (--sm-and-up) {
-    .c-match--finished & {
+    .c-match--has-score & {
       display: none;
     }
   }
@@ -199,13 +199,13 @@ const roundName = computed<string>(() => {
   font-weight: bold;
   text-align: center;
 
-  .c-match:not(.c-match--finished) & {
+  .c-match:not(.c-match--has-score) & {
     display: none;
   }
 }
 
 .c-match__team-name {
-  .c-match--finished &.c-match__team-name--winner {
+  .c-match--has-score &.c-match__team-name--winner {
     font-weight: bold;
   }
 }
