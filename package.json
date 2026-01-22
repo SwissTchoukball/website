@@ -60,6 +60,6 @@
     "prettier": "^3.8.1",
     "stylelint": "^17.1.1",
     "stylelint-config-recommended-vue": "^1.6.1",
-    "stylelint-config-standard": "^39.0.1"
+    "stylelint-config-standard": "^40.0.0"
   }
 }
