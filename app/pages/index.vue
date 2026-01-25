@@ -135,7 +135,7 @@ const tchoukballNavigation = ref([
   },
 ]);
 
-const { data: newsEntries } = useAsyncData<NewsEntry[]>('news-entries', async () => {
+const { data: newsEntries } = useAsyncData<NewsEntry[]>(`news-entries-${locale.value}`, async () => {
   const newsResult = await $cmsService.getNews({
     limit: amountNews.value,
     page: 1,
@@ -146,7 +146,7 @@ const { data: newsEntries } = useAsyncData<NewsEntry[]>('news-entries', async ()
   return newsResult.data;
 });
 
-const { data: events } = useAsyncData<CalendarEvent[]>('events-upcoming', async () => {
+const { data: events } = useAsyncData<CalendarEvent[]>(`events-upcoming-${locale.value}`, async () => {
   const eventsResult = await $cmsService.getEvents({
     limit: amountUpcomingEvents.value,
     page: 1,
@@ -157,7 +157,7 @@ const { data: events } = useAsyncData<CalendarEvent[]>('events-upcoming', async 
   return eventsResult.data;
 });
 
-const { data: tchoukballDescription } = useAsyncData<string>('tchoukballDescription', async () => {
+const { data: tchoukballDescription } = useAsyncData<string>(`tchoukballDescription-${locale.value}`, async () => {
   return (await $cmsService.getText(1))?.body;
 });
 

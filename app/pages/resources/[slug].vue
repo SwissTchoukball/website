@@ -18,7 +18,7 @@ defineI18nRoute({
   },
 });
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const route = useRoute();
 const resourcesStore = useResourcesStore();
 const { $cmsService } = useNuxtApp();
@@ -39,7 +39,7 @@ const {
   data: resource,
   pending: fetchPending,
   error: fetchError,
-} = useAsyncData<Resource>(`resources-${route.params.slug as string}`, async () => {
+} = useAsyncData<Resource>(`resources-${route.params.slug as string}-${locale.value}`, async () => {
   const slug = route.params.slug as string;
   let id: number;
   if (slug.includes('-')) {

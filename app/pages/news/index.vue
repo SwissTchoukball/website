@@ -24,7 +24,7 @@
 import type { NewsEntry } from '~/components/news/st-news';
 
 const route = useRoute();
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const { $cmsService } = useNuxtApp();
 const localePath = useLocalePath();
 const domainsStore = useDomainsStore();
@@ -75,7 +75,7 @@ const {
   error: fetchError,
   refresh,
 } = useAsyncData<{ newsList: NewsEntry[]; totalNewsEntries: number; filteredDomainId: number | undefined }>(
-  `news-list-${route.query.domain}-${newsEntriesPerPage}-${currentPage.value}`,
+  `news-list-${route.query.domain}-${newsEntriesPerPage}-${currentPage.value}-${locale.value}`,
   async () => {
     let queryDomainId: number | undefined;
     if (typeof route.query.domain === 'string') {

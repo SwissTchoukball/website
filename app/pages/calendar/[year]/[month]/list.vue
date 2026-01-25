@@ -40,7 +40,7 @@ import stEventList from '~/components/events/st-event-list.vue';
 import stCalendarNav from '~/components/events/st-calendar-nav.vue';
 import type { CalendarEvent } from '~/plugins/08.cms-service';
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const eventsStore = useEventsStore();
 const { month, year, monthName, yearMonthString } = useMonthParams();
 const { $cmsService } = useNuxtApp();
@@ -78,7 +78,7 @@ const {
   status: fetchStatus,
   error: fetchError,
 } = useAsyncData<CalendarEvent[]>(
-  `events-${yearMonthString.value}-${filteredTypeId.value}`,
+  `events-${yearMonthString.value}-${filteredTypeId.value}-${locale.value}`,
   async () => {
     // TODO: Add pagination as currently only the 50 first events in a month are visible
     const eventsResult = await $cmsService.getEvents({

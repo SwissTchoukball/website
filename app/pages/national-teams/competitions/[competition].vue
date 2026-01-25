@@ -26,7 +26,7 @@ import { getAssetURL } from '~/plugins/06.directus';
 
 const runtimeConfig = useRuntimeConfig();
 const route = useRoute();
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const localePath = useLocalePath();
 const { $cmsService } = useNuxtApp();
 
@@ -41,10 +41,13 @@ const {
   data: competition,
   pending: fetchPending,
   error: fetchError,
-} = useAsyncData<NationalTeamCompetition>(`competition-${route.params.competition as string}`, async () => {
-  const competitionSlug = route.params.competition as string;
-  return await $cmsService.getNationalTeamCompetition({ slug: competitionSlug });
-});
+} = useAsyncData<NationalTeamCompetition>(
+  `competition-${route.params.competition as string}-${locale.value}`,
+  async () => {
+    const competitionSlug = route.params.competition as string;
+    return await $cmsService.getNationalTeamCompetition({ slug: competitionSlug });
+  },
+);
 
 const navigation = computed<MenuItem[]>(() => {
   const possibleTexts = ['live', 'about', 'schedule', 'medias'] as const;

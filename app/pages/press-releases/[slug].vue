@@ -24,7 +24,7 @@ import type { RoleWithPartialGroupAndHolders } from '~/plugins/08.cms-service';
 
 const MEDIA_COORDINATOR_ROLE = 62;
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const route = useRoute();
 const { $cmsService, $formatDate } = useNuxtApp();
 
@@ -46,7 +46,7 @@ const {
   data: pressRelease,
   pending: fetchPending,
   error: fetchError,
-} = useAsyncData<PressRelease>('press-release', async () => {
+} = useAsyncData<PressRelease>(`press-release-${route.params.slug as string}-${locale.value}`, async () => {
   const slug = route.params.slug as string;
   let id: number;
   if (slug.includes('-')) {
@@ -63,7 +63,7 @@ const {
 });
 
 const { data: headOfCommunicationRole } = useAsyncData<RoleWithPartialGroupAndHolders>(
-  'head-of-communication-role',
+  `head-of-communication-role-${locale.value}`,
   async () => {
     return await $cmsService.getRole(MEDIA_COORDINATOR_ROLE);
   },

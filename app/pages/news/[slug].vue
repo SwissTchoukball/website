@@ -15,12 +15,13 @@ const runtimeConfig = useRuntimeConfig();
 const appConfig = useAppConfig();
 const route = useRoute();
 const { $cmsService } = useNuxtApp();
+const { locale } = useI18n();
 
 const {
   data: newsEntry,
   pending: fetchPending,
   error: fetchError,
-} = useAsyncData<NewsEntry>(route.params.slug as string, async () => {
+} = useAsyncData<NewsEntry>(`news-${route.params.slug as string}-${locale.value}`, async () => {
   const slug = route.params.slug as string;
   let id: number;
   if (slug.includes('-')) {

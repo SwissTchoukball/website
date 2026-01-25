@@ -12,6 +12,7 @@ import type {
   NationalTeamForCompetition,
 } from '~/components/national-teams/st-national-teams.prop';
 
+const { locale } = useI18n();
 const { $cmsService } = useNuxtApp();
 const nationalTeamsStore = useNationalTeamsStore();
 
@@ -39,7 +40,7 @@ const {
   pending: fetchPending,
   error: fetchError,
 } = useAsyncData<Omit<NationalTeamForCompetition, 'competition'>[]>(
-  'national-teams',
+  `national-teams-${locale.value}`,
   () => $cmsService.getNationalTeamsForCompetition(props.competition.id),
   { default: () => [] },
 );

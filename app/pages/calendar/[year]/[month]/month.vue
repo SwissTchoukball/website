@@ -17,7 +17,7 @@ import type { CalendarEvent } from '~/plugins/08.cms-service';
 
 const eventsStore = useEventsStore();
 const { $cmsService } = useNuxtApp();
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const { month, year, monthName } = useMonthParams();
 
 defineI18nRoute({
@@ -33,7 +33,7 @@ if (!eventsStore.eventTypes) {
 }
 
 const { data: events } = useAsyncData<CalendarEvent[]>(
-  `events-${year.value}-${month.value}`,
+  `events-${year.value}-${month.value}-${locale.value}`,
   async () => {
     const firstDayOfMonth = startOfMonth(new Date(year.value, month.value, -1));
     const calendarFirstDay = startOfWeek(firstDayOfMonth, { weekStartsOn: 1 });

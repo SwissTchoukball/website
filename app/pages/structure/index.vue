@@ -17,7 +17,7 @@
 import type { Group } from '~/plugins/08.cms-service';
 
 const localePath = useLocalePath();
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const { $cmsService } = useNuxtApp();
 
 defineI18nRoute({
@@ -38,7 +38,7 @@ const {
   data: groups,
   pending: fetchPending,
   error: fetchError,
-} = useAsyncData<Group[]>('groups', async () => {
+} = useAsyncData<Group[]>(`groups-${locale.value}`, async () => {
   return await $cmsService.getGroups();
 });
 

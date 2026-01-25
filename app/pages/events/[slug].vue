@@ -18,7 +18,7 @@ import type { BreadcrumbItem } from '~/components/st-breadcrumb.vue';
 import type { CalendarEvent } from '~/plugins/08.cms-service';
 
 const route = useRoute();
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const { $cmsService } = useNuxtApp();
 const eventsStore = useEventsStore();
 
@@ -58,7 +58,7 @@ const {
   status: fetchStatus,
   error: fetchError,
 } = useAsyncData<CalendarEvent[]>(
-  `events-${eventTypeId.value}`,
+  `events-${eventTypeId.value}-${locale.value}`,
   async () => {
     const eventsResult = await $cmsService.getEvents({
       limit: 50,

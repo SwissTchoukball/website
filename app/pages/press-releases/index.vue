@@ -48,7 +48,7 @@ import type { PressRelease } from '~/components/press-releases/press-releases';
 
 const localePath = useLocalePath();
 const route = useRoute();
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const { $cmsService, $formatDate } = useNuxtApp();
 
 defineI18nRoute({
@@ -80,7 +80,7 @@ const {
   pending: fetchPending,
   error: fetchError,
 } = useAsyncData<{ pressReleaseList: PressRelease[]; totalPressReleases: number }>(
-  `press-releases-${currentPage.value}`,
+  `press-releases-${currentPage.value}-${locale.value}`,
   async () => {
     const pressReleasesResult = await $cmsService.getPressReleaseList({
       limit: pressReleasesPerPage,

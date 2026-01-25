@@ -32,7 +32,7 @@ const runtimeConfig = useRuntimeConfig();
 const appConfig = useAppConfig();
 const route = useRoute();
 const router = useRouter();
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const localePath = useLocalePath();
 const { $cmsService } = useNuxtApp();
 
@@ -49,7 +49,7 @@ const {
   data: team,
   pending: fetchPending,
   error: fetchError,
-} = useAsyncData<NationalTeam>(`team-${route.params.team as string}`, async () => {
+} = useAsyncData<NationalTeam>(`team-${route.params.team as string}-${locale.value}`, async () => {
   const teamData = await $cmsService.getTeam(route.params.team as string);
   if (teamData.slug !== route.params.team) {
     // We are likely in a situation where the page was requested in a specific language,

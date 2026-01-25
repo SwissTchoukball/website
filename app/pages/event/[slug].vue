@@ -15,7 +15,7 @@ import { getAssetURL } from '~/plugins/06.directus';
 
 const runtimeConfig = useRuntimeConfig();
 const appConfig = useAppConfig();
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const route = useRoute();
 const { $cmsService } = useNuxtApp();
 const eventsStore = useEventsStore();
@@ -43,7 +43,7 @@ const {
   data: event,
   pending: fetchPending,
   error: fetchError,
-} = useAsyncData<CalendarEvent>(`event-${route.params.slug as string}`, async () => {
+} = useAsyncData<CalendarEvent>(`event-${route.params.slug as string}-${locale.value}`, async () => {
   const slug = route.params.slug as string;
   let id: number;
   if (slug.includes('-')) {

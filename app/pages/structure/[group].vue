@@ -24,7 +24,7 @@ import type { BreadcrumbItem } from '~/components/st-breadcrumb.vue';
 import type { Group, Person } from '~/plugins/08.cms-service';
 
 const route = useRoute();
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const { $cmsService } = useNuxtApp();
 
 defineI18nRoute({
@@ -48,7 +48,7 @@ if (route.params?.group !== t('structure.staff.slug') && !Array.isArray(route.pa
 }
 
 const { data: group, error: fetchGroupError } = useAsyncData<Group | undefined>(
-  `group-${groupSlug.value}`,
+  `group-${groupSlug.value}-${locale.value}`,
   async () => {
     if (groupSlug.value) {
       return await $cmsService.getGroup({ slug: groupSlug.value });
