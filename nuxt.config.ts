@@ -1,11 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
-  // Global page headers: https://go.nuxtjs.dev/config-head
-  // head: {},
-  // `head` is defined in layouts/default.vue because if we do it here, nuxt-matomo does not work
-  // See https://github.com/nuxt-community/i18n-module/issues/1266#issuecomment-982527874
-
   css: [
     '~/assets/css/variables.css',
     '~/assets/css/typography.css',
