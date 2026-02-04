@@ -69,6 +69,7 @@ export default defineNuxtConfig({
     '/championnat': { redirect: '/competitions/ligue-a' },
     '/championnat-feminin': { redirect: '/competitions/championnat-feminin' },
     '/coupesuisse': { redirect: '/competitions/coupe-suisse' },
+    '/schweizercup': { redirect: '/de/wettbewerbe/schweizer-cup' },
     '/staff': { redirect: '/structure' },
     '/wtc2023': { redirect: '/equipes-nationales/competitions/wtc2023' },
     '/wytc2023': { redirect: '/equipes-nationales/competitions/wytc2023' },
