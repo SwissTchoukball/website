@@ -195,7 +195,6 @@ const closeDrawer = () => {
     right: calc(var(--st-length-main-content-side-padding) + var(--st-length-spacing-xl));
     margin: 0;
     z-index: 3;
-    margin-bottom: 0;
   }
 }
 
