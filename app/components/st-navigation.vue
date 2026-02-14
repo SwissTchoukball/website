@@ -49,7 +49,7 @@
           <li v-for="(subItem, subItemIndex) in item.children" :key="subItemIndex" class="c-navigation__sub-item">
             <nuxt-link
               :to="subItem.href ? localePath(subItem.href) : undefined"
-              :class="{ 'router-link-active': subItem.href && $route.path.includes(localePath(subItem.href)) }"
+              :class="{ 'router-link-active': subItem.href && $route.path.includes(`${localePath(subItem.href)}/`) }"
               @click="onItemClickNative(subItem, subItemIndex)"
             >
               {{ subItem.name ? subItem.name : subItem.l10nKey ? $t(subItem.l10nKey) : '?' }}
