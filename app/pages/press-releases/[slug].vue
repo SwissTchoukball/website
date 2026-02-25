@@ -70,7 +70,14 @@ const { data: headOfCommunicationRole } = useAsyncData<RoleWithPartialGroupAndHo
 );
 
 useHead(() => {
-  const title = pressRelease.value?.title || 'Press release';
+  let title = '';
+  if (pressRelease.value?.context) {
+    title = `${pressRelease.value.context} - `;
+  }
+  if (pressRelease.value?.title) {
+    title += `${pressRelease.value.title} - `;
+  }
+  title += t('pressReleases.name', 1);
   const description = pressRelease.value?.body
     ? decode(pressRelease.value.body.replace(/(<([^>]+)>)/gi, '').substr(0, 250)) + '…'
     : '';
