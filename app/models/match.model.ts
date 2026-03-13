@@ -216,10 +216,12 @@ export default class Match {
   }
 
   get isOngoing(): boolean {
+    // TODO: Replace the check for all periods with score by a check that we are LESS than 3 hours from the start of the match
     return this.hasScore && !this.finished && !this.hasAllPeriodsWithScore;
   }
 
   get toBeConfirmed(): boolean {
+    // TODO: Replace the check for all periods with score by a check that we are MORE than 3 hours from the start of the match
     return this.hasScore && !this.finished && this.hasAllPeriodsWithScore;
   }
 
