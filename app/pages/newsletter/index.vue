@@ -48,19 +48,19 @@ const { selectedNewsletter } = useNewsletter();
 
 const newsletterParams = ref<{ [key: string]: { key: string; id: string } }>({
   general: {
-    key: 'eyJpdiI6Ilo5SjdlR0JwRHZ6eU03WkcwaGs4M3czOHBRRHFPWkhaNVl4SzhqbkFKdjg9IiwibWFjIjoiYjQzODMwZTRkZjNmY2UzNWE1N2U0NGM0NDBkZGU3ZTJjMTA2ZGIzZTE2MzMzY2RmMDJjOGE0MmMzNTQ2MzlhYiIsInZhbHVlIjoiVEhuZVU2QVgxYWViVmNad2sxMkFVUkhHZndSU3NaOW5yMHlVMjdaZzc2UT0ifQ==',
+    key: 'eyJpdiI6InpENTdOTW1reVA5cXZYWm5jeFFPRGpDN3pSTDc0dCtvR01xWHZ0VXRiaVU9IiwibWFjIjoiZmJkNTc2MGNiZTQyOTJkOTE2MGJiOTRjMjgzYzQzMjE2Y2JhZWI5NWU2MzJmOTI2MGU4OGZkMDI0ZjNlNTc2ZiIsInZhbHVlIjoidStZbldTSGVzWGlubDhvMGIyNlIxcEI0S0kybEFicUIzN2VPNit1T2NyTT0ifQ==',
     id: '239',
   },
   instructors: {
-    key: 'eyJpdiI6IkpwRXlBVnBzMWhlZmg0SHZWdU41N0lQUlZvTVwvMHc4THR4VGtFb1N1d1pFPSIsIm1hYyI6Ijc1NDI3ODNmZDg1YTU0YzhkYTZmNjhkMGUxZDBmNmJmMzg3MWY1MTAzZjY0NmUwMjVkMDgzNWQ1Y2QxN2ZlMGYiLCJ2YWx1ZSI6IldpYVRoWWVONkdsUG96aXdyVWpJRjUwcWtjM0R3a1BUZXpDb01MOExcL3dJPSJ9',
+    key: 'eyJpdiI6InVhWEZLRnpUSVdxQlM2ZTFpWlNSMU1EN28zdHZSdENFUFpKWmY0M2ZZZ2c9IiwibWFjIjoiZGFhMTA2MmUzYTc4NGVkNmUzZGEwY2RjNWY4ZWRlZmZmMDI1ZTc5NTA1ZjljYjRhYzM5M2RhNWU4YjRkN2FjZSIsInZhbHVlIjoieXpDK3dMelIrMjNIRWo1eTBRM2lab0JUblB6SXZ3T3Z6UVRCYVliQnU0MD0ifQ==',
     id: '9880',
   },
   'medias-fr': {
-    key: 'eyJpdiI6IkFwcGJBYlkyblViZ0Q3OTJtN1lwRDljVTlMQjhuUjE0ZXlLZG9tR2ZSajQ9IiwibWFjIjoiZmRkMWNlYTM3NzRlNGNjM2IzYTRmNWUzMWY4OGM0MDIyM2UzNTU5OTgxMzc0YTkzMDU4OTI3NmQ1MzM5OTA5OCIsInZhbHVlIjoiXC9vbFJ2b2FRWHdXbWhKM213MXJGRTdLQzhYUjJSeklyckt1alErcktlNDg9In0=',
+    key: 'eyJpdiI6IjRrODAzdldRTEE1bVwvUFA1WGNuQVg4VXlWMUg5VFNlcHYrdmJJUXpWR0JRPSIsIm1hYyI6IjVmYTlkYjRhMjc1MTc3YTVmOGM1ZjExNjZhNmNkY2MwMTlkNzA2YTg3YjM4MjhkYWVmN2M4MzYyOWUxZDRkZGIiLCJ2YWx1ZSI6IktzRURCZmdYdElcL1ZqMndiQUl2OVdXUnhQUHVRSlwvUjViVnBpd1BTT1lXQT0ifQ==',
     id: '14829',
   },
   'medias-de': {
-    key: 'eyJpdiI6ImpNNXRXRFwvRlRwcnB2WjhuNjZQY25nelVsMkhrVXNNdm51ejZGT0lwOTc0PSIsIm1hYyI6ImI5NGFjNWVlOTE1MjI2Njg1NzU4YzYzZTY4NDBhZTU5NzU0YjZiNGJmYmM4YjJmMmRmOTdiMGZhZjMwNjg3OWIiLCJ2YWx1ZSI6Ikl6eXFHRlpcLzBXTUV0WlArUTZ3TlZ2SE4rUll1a1F5S2UrV0NPc1AxNmN3PSJ9',
+    key: 'eyJpdiI6Ik9zenR0TVV3czFuQWpEazV0ZDQ1V2lhekdENmFoUTlRdDM1N1JVY1NvbEU9IiwibWFjIjoiNzdhMWRkYmY0YjQ1OTgyYjk5ZGY0MWZhY2Q0ZWYyOGJhZWFkMjcxNmFiOWRjNjk5NmYxZDY5Zjk0YTRhNDYxZiIsInZhbHVlIjoiYWpaazA4VUk4Yml0OHhRd1wvblZER3k4eWFFUld4U3U1YVpDMW1hcUx4Vjg9In0=',
     id: '14830',
   },
 });
@@ -77,6 +77,9 @@ useHead(() => {
       },
     ],
     script: [
+      {
+        src: 'https://newsletter.infomaniak.com/v3/static/webform_index.js?v=1773689374',
+      },
       {
         src: 'https://newsletter.storage5.infomaniak.com/mcaptcha/altcha.js',
         defer: true,
