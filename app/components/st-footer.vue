@@ -102,12 +102,12 @@ const affiliations = ref([
   {
     name: 'European Tchoukball Federation',
     slug: 'etbf',
-    href: 'http://tchoukball.eu',
+    href: 'https://tchoukball.eu',
   },
   {
     name: 'International Tchoukball Federation',
     slug: 'fitb',
-    href: 'http://tchoukball.org',
+    href: 'https://fitb.org',
   },
 ]);
 
