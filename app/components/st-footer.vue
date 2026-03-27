@@ -40,7 +40,9 @@
     <st-newsletter-link class="c-footer__newsletter-link" />
 
     <section class="l-main-content-section">
-      <h2 class="c-footer__heading">{{ $t('footer.partners') }}</h2>
+      <h2 class="c-footer__heading">
+        <nuxt-link :to="partnersLink">{{ $t('footer.partners') }}</nuxt-link>
+      </h2>
       <div class="c-footer__org-logos">
         <a v-for="partner of partners" :key="partner.slug" :href="partner.href">
           <img
@@ -79,6 +81,10 @@
 const localePath = useLocalePath();
 const { locale } = useI18n();
 const navigationStore = useNavigationStore();
+
+const partnersLink = computed(() => {
+  return locale.value === 'fr' ? '/sponsors-et-partenaires' : '/de/sponsoren-und-partner';
+});
 
 const partners = ref([
   {
@@ -208,6 +214,15 @@ const secondaryNavigation = computed(() => {
   text-transform: uppercase;
   font-size: 1.5em;
   padding: var(--st-length-spacing-l) 0 var(--st-length-spacing-s) 0;
+
+  a {
+    color: inherit;
+    text-decoration: none;
+
+    &:hover {
+      color: var(--st-color-link-hover);
+    }
+  }
 }
 
 .c-footer__org-logos {
