@@ -88,6 +88,11 @@ const partnersLink = computed(() => {
 
 const partners = ref([
   {
+    name: 'Erima',
+    slug: 'erima',
+    href: 'https://erima.ch',
+  },
+  {
     name: 'Tchoukball Promotion',
     slug: 'tchoukball-promotion',
     href: 'http://www.tchouk.com',
