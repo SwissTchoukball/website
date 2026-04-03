@@ -1748,6 +1748,7 @@ export default defineNuxtPlugin(() => {
             ],
           },
         ],
+        sort: ['order'],
         deep: {
           team: { translation: { _filter: { language_code: { _eq: currentLocale.value } } } },
         },

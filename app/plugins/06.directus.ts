@@ -320,6 +320,7 @@ export interface DirectusNationalTeamCompetitionsTeam {
   coaches: {
     people_id: DirectusPerson;
   }[];
+  order: number;
 }
 
 export type DirectusNationalTeamCompetitionUpdateStatus = 'published' | 'draft' | 'archived';
