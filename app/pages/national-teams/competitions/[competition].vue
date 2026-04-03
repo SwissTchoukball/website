@@ -120,7 +120,9 @@ useHead(() => {
 
 .competition-logo {
   margin: auto;
+  margin-top: var(--st-length-spacing-s);
   display: block;
+  max-width: 180px;
 }
 
 .navigation {
@@ -131,6 +133,7 @@ useHead(() => {
 @media (--sm-and-up) {
   .competition-logo {
     float: right;
+    margin-top: 0;
   }
 }
 </style>
