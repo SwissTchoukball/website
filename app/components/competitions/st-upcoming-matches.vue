@@ -23,7 +23,12 @@
             :key="matchData.match.id"
             class="c-upcoming-matches__match"
           >
-            <st-match-event-small :match="matchData.match" :competition-edition="matchData.edition" />
+            <st-match-event-small
+              :match="matchData.match"
+              :competition-edition="matchData.edition"
+              :phase="matchData.phase"
+              :round="matchData.round"
+            />
           </li>
         </template>
       </ul>
@@ -95,65 +100,67 @@ const {
   });
 });
 
-const upcomingMatchesData = computed<{ match: Match; edition?: CompetitionEdition }[]>(() => {
-  if (!leveradeUpcomingMatchData.value?.included || !directusCompetitionEditions.value) {
-    return [];
-  }
-
-  const teams: Team[] = [];
-  const faceoffs: Faceoff[] = [];
-  const phases: Phase[] = [];
-  const rounds: Round[] = [];
-  const competitionEditions: CompetitionEdition[] = [];
-  const facilities: LeveradeFacility[] = [];
-
-  directusCompetitionEditions.value.forEach((edition) => {
-    competitionEditions.push(new CompetitionEdition(edition, seasonsStore.currentSeason));
-  });
-  leveradeUpcomingMatchData.value.included.forEach((entity) => {
-    switch (entity.type) {
-      case 'team':
-        teams.push(new Team(entity));
-        break;
-      case 'faceoff':
-        faceoffs.push(new Faceoff(entity));
-        break;
-      case 'group':
-        phases.push(new Phase(entity));
-        break;
-      case 'round':
-        rounds.push(new Round(entity));
-        break;
-      case 'tournament': {
-        const competitionEdition = competitionEditions.find(
-          (edition) => edition.leverade_id && edition.leverade_id === entity.id,
-        );
-        competitionEdition?.addLeveradeData({ tournament: entity });
-        break;
-      }
-      case 'facility':
-        facilities.push(entity);
-        break;
-      default:
+const upcomingMatchesData = computed<{ match: Match; edition?: CompetitionEdition; phase?: Phase; round?: Round }[]>(
+  () => {
+    if (!leveradeUpcomingMatchData.value?.included || !directusCompetitionEditions.value) {
+      return [];
     }
-  });
 
-  return leveradeUpcomingMatchData.value.data
-    .filter((rawMatch) => !rawMatch.attributes.finished)
-    .map((rawMatch) => {
-      const match = new Match(rawMatch);
-      match.faceoff = faceoffs.find((faceoff) => faceoff.id === match.faceoff_id);
-      match.setTeams(teams);
-      match.setFacility(facilities);
+    const teams: Team[] = [];
+    const faceoffs: Faceoff[] = [];
+    const phases: Phase[] = [];
+    const rounds: Round[] = [];
+    const competitionEditions: CompetitionEdition[] = [];
+    const facilities: LeveradeFacility[] = [];
 
-      const round = rounds.find((round) => round.id === match.round_id);
-      const phase = phases.find((phase) => !!round && phase.id === round.phase_id);
-      const edition = competitionEditions.find(
-        (competitionEdition) => !!phase && competitionEdition.leverade_id === phase.competition_edition_id,
-      );
-      return { match, edition };
+    directusCompetitionEditions.value.forEach((edition) => {
+      competitionEditions.push(new CompetitionEdition(edition, seasonsStore.currentSeason));
     });
-});
+    leveradeUpcomingMatchData.value.included.forEach((entity) => {
+      switch (entity.type) {
+        case 'team':
+          teams.push(new Team(entity));
+          break;
+        case 'faceoff':
+          faceoffs.push(new Faceoff(entity));
+          break;
+        case 'group':
+          phases.push(new Phase(entity));
+          break;
+        case 'round':
+          rounds.push(new Round(entity));
+          break;
+        case 'tournament': {
+          const competitionEdition = competitionEditions.find(
+            (edition) => edition.leverade_id && edition.leverade_id === entity.id,
+          );
+          competitionEdition?.addLeveradeData({ tournament: entity });
+          break;
+        }
+        case 'facility':
+          facilities.push(entity);
+          break;
+        default:
+      }
+    });
+
+    return leveradeUpcomingMatchData.value.data
+      .filter((rawMatch) => !rawMatch.attributes.finished)
+      .map((rawMatch) => {
+        const match = new Match(rawMatch);
+        match.faceoff = faceoffs.find((faceoff) => faceoff.id === match.faceoff_id);
+        match.setTeams(teams);
+        match.setFacility(facilities);
+
+        const round = rounds.find((round) => round.id === match.round_id);
+        const phase = phases.find((phase) => !!round && phase.id === round.phase_id);
+        const edition = competitionEditions.find(
+          (competitionEdition) => !!phase && competitionEdition.leverade_id === phase.competition_edition_id,
+        );
+        return { match, edition, round, phase };
+      });
+  },
+);
 
 const competitionEditions = computed<CompetitionEdition[]>(() => {
   return upcomingMatchesData.value.reduce((editions, matchData) => {

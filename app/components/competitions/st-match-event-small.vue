@@ -3,7 +3,7 @@
     v-if="match.parsedDate"
     :start-date="match.parsedDate"
     :name="matchName"
-    :context="competitionEdition?.name"
+    :context="matchContext"
     :details="details"
     :to="to"
   />
@@ -13,6 +13,8 @@
 import type Match from '~/models/match.model';
 import stEventSmall from '~/components/events/st-event-small.vue';
 import type CompetitionEdition from '~/models/competition-edition.model';
+import type Phase from '~/models/phase.model';
+import type Round from '~/models/round.model';
 
 const localePath = useLocalePath();
 
@@ -23,6 +25,14 @@ const props = defineProps({
   },
   competitionEdition: {
     type: Object as PropType<CompetitionEdition>,
+    default: undefined,
+  },
+  phase: {
+    type: Object as PropType<Phase>,
+    default: undefined,
+  },
+  round: {
+    type: Object as PropType<Round>,
     default: undefined,
   },
 });
@@ -44,5 +54,21 @@ const to = computed<string>(() => {
 
 const matchName = computed<string>(() => {
   return `${props.match.homeTeamName} – ${props.match.awayTeamName}`;
+});
+
+const matchContext = computed<string>(() => {
+  let context = '';
+  if (props.competitionEdition?.name) {
+    context += props.competitionEdition?.name;
+  }
+
+  if (props.round?.name) {
+    if (context) {
+      context += ' · ';
+    }
+    context += props.round.name;
+  }
+
+  return context;
 });
 </script>
