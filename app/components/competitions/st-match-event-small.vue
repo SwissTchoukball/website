@@ -5,6 +5,7 @@
     :name="matchName"
     :context="matchContext"
     :details="details"
+    :is-full-day="hasNoTimeDefined"
     :to="to"
   />
 </template>
@@ -70,5 +71,11 @@ const matchContext = computed<string>(() => {
   }
 
   return context;
+});
+
+const hasNoTimeDefined = computed<boolean>(() => {
+  return (
+    !props.match.parsedDate || (props.match.parsedDate.getHours() === 0 && props.match.parsedDate.getMinutes() === 0)
+  );
 });
 </script>
