@@ -3,6 +3,24 @@
   "less.validate": false,
   "scss.validate": false,
   "i18n-ally.localesPaths": ["i18n/locales"],
-  "cSpell.words": ["Clupik, Leverade, Tchoukup"],
+  "cSpell.words": [
+    "Clupik",
+    "Faceoff",
+    "faceoffs",
+    "Leverade",
+    "matchreferee",
+    "matchreferees",
+    "medias",
+    "nitropack",
+    "periodable",
+    "photoset",
+    "photosets",
+    "refereecategory",
+    "standingsrows",
+    "standingsstats",
+    "Swisstopo",
+    "Tchoukup",
+    "Tchoukups"
+  ],
   "stylelint.validate": ["css", "vue"]
 }

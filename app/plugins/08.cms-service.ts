@@ -1847,7 +1847,7 @@ export default defineNuxtPlugin(() => {
     );
 
     if (!announcementsResponse) {
-      throw new Error('Error when retrieving announcmenets');
+      throw new Error('Error when retrieving announcements');
     }
 
     const announcements = announcementsResponse.reduce((announcements, announcement) => {
