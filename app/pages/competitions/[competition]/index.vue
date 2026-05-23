@@ -16,28 +16,24 @@ defineI18nRoute({
   },
 });
 
-const loadCompetition = async () => {
-  const competition = await $cmsService.getNationalCompetition(route.params.competition as string);
-  const nationalCompetition = new Competition(competition);
+const competition = await $cmsService.getNationalCompetition(route.params.competition as string);
+const nationalCompetition = new Competition(competition);
 
-  if (!nationalCompetition.lastEdition) {
-    throw new Error('Competition has no editions');
-  }
+if (!nationalCompetition.lastEdition) {
+  throw new Error('Competition has no editions');
+}
 
-  if (typeof nationalCompetition.lastEdition.season === 'number') {
-    throw new TypeError('Season of last edition is not populated');
-  }
+if (typeof nationalCompetition.lastEdition.season === 'number') {
+  throw new TypeError('Season of last edition is not populated');
+}
 
-  navigateTo(
-    localePath({
-      name: 'competitions-competition-season',
-      params: {
-        competition: route.params.competition,
-        season: nationalCompetition.lastEdition.season.slug,
-      },
-    }),
-  );
-};
-
-loadCompetition();
+await navigateTo(
+  localePath({
+    name: 'competitions-competition-season',
+    params: {
+      competition: route.params.competition,
+      season: nationalCompetition.lastEdition.season.slug,
+    },
+  }),
+);
 </script>
