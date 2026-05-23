@@ -1,5 +1,7 @@
 <template>
   <section class="l-main-content-section">
+    <st-loader v-if="fetchStatus === 'pending'" :main="true" />
+    <p v-else-if="fetchError">{{ $t('error.otherError') }} : {{ fetchError.message }}</p>
     <st-phase-header v-if="competitionEdition && phase" :competition-edition="competitionEdition" :phase="phase" />
     <div v-if="match">
       <nuxt-link class="c-match__phase-round" :to="phaseRoundLink">
@@ -169,7 +171,11 @@ const season = ref<Season | undefined>(seasonsStore.getSeasonBySlug(route.params
 
 const venueDetailsVisible = ref(false);
 
-const { data } = useAsyncData<{
+const {
+  data,
+  status: fetchStatus,
+  error: fetchError,
+} = useAsyncData<{
   leveradeMatchData: Await<ReturnType<Leverade['getMatch']>>;
   directusCompetitionEdition: NationalCompetitionEdition | undefined;
   matchAdditionalData: DirectusMatchAdditionalData | null;
