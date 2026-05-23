@@ -21,6 +21,7 @@
         :src="match.home_team.avatarMediumUrl"
         class="c-match__team-avatar"
       />
+      <div v-else class="c-match__team-avatar"></div>
       <div v-if="match.hasScore" class="c-match__team-score">{{ match.home_team_score }}</div>
       <div class="c-match__cross">&#9587;</div>
       <div class="c-match__score-separator">-</div>
@@ -30,6 +31,7 @@
         :src="match.away_team.avatarMediumUrl"
         class="c-match__team-avatar"
       />
+      <div v-else class="c-match__team-avatar"></div>
       <div class="c-match__team-name" :class="{ 'c-match__team-name--winner': match.hasAwayTeamWon }">
         {{ match.awayTeamName }}
       </div>
