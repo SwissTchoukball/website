@@ -43,6 +43,6 @@ const to = computed<string>(() => {
 });
 
 const matchName = computed<string>(() => {
-  return `${props.match.home_team?.name} - ${props.match.away_team?.name}`;
+  return `${props.match.homeTeamName} – ${props.match.awayTeamName}`;
 });
 </script>

@@ -284,7 +284,7 @@ export interface Leverade {
   ) => Promise<
     LeveradeResponse<
       LeveradeMatch[],
-      LeveradeRound | LeveradeGroup | LeveradeTournament | LeveradeTeam | LeveradeFacility
+      LeveradeFaceoff | LeveradeRound | LeveradeGroup | LeveradeTournament | LeveradeTeam | LeveradeFacility
     >
   >;
   getMatch: (
@@ -361,7 +361,7 @@ export default defineNuxtPlugin(() => {
     // FIXME: This would need fine tuning to consider daylight saving time.
     const now = nuxtApp.$formatDate(subMinutes(new Date(), 90), "yyyy-MM-dd'T'HH.mm.ss");
     return getCachedQuery(
-      `/matches?filter=datetime>${now},round.group.tournament.season.id:${seasonLeveradeId}&sort=datetime&include=round.group.tournament,teams,facility&page[size]=20`,
+      `/matches?filter=datetime>${now},round.group.tournament.season.id:${seasonLeveradeId}&sort=datetime&include=round.group.tournament,faceoff,teams,facility&page[size]=20`,
     );
   };
 

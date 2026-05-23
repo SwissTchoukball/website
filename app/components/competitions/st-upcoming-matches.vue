@@ -19,7 +19,7 @@
       <ul class="u-unstyled-list c-upcoming-matches__list">
         <template v-for="matchData of upcomingMatchesData">
           <li
-            v-if="matchData.match.home_team && matchData.match.away_team"
+            v-if="matchData.match.homeTeamName && matchData.match.awayTeamName"
             :key="matchData.match.id"
             class="c-upcoming-matches__match"
           >
@@ -58,6 +58,7 @@ import Team from '~/models/team.model';
 import Round from '~/models/round.model';
 import CompetitionEdition from '~/models/competition-edition.model';
 import type { NationalCompetitionEdition } from '~/plugins/08.cms-service';
+import Faceoff from '~/models/faceoff.model';
 
 const localePath = useLocalePath();
 const { $leverade, $cmsService } = useNuxtApp();
@@ -100,6 +101,7 @@ const upcomingMatchesData = computed<{ match: Match; edition?: CompetitionEditio
   }
 
   const teams: Team[] = [];
+  const faceoffs: Faceoff[] = [];
   const phases: Phase[] = [];
   const rounds: Round[] = [];
   const competitionEditions: CompetitionEdition[] = [];
@@ -112,6 +114,9 @@ const upcomingMatchesData = computed<{ match: Match; edition?: CompetitionEditio
     switch (entity.type) {
       case 'team':
         teams.push(new Team(entity));
+        break;
+      case 'faceoff':
+        faceoffs.push(new Faceoff(entity));
         break;
       case 'group':
         phases.push(new Phase(entity));
@@ -137,6 +142,7 @@ const upcomingMatchesData = computed<{ match: Match; edition?: CompetitionEditio
     .filter((rawMatch) => !rawMatch.attributes.finished)
     .map((rawMatch) => {
       const match = new Match(rawMatch);
+      match.faceoff = faceoffs.find((faceoff) => faceoff.id === match.faceoff_id);
       match.setTeams(teams);
       match.setFacility(facilities);
 
