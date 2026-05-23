@@ -50,6 +50,14 @@ defineProps({
 
   .c-announcements__entry {
     border-radius: 10000px;
+    white-space: nowrap;
+    width: min-content;
+  }
+}
+
+@media (--md-and-up) {
+  .c-announcements__entry {
+    margin-top: var(--st-length-spacing-xs);
   }
 }
 </style>
