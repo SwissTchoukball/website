@@ -16,6 +16,14 @@
       </st-link-action>
     </section>
 
+    <!--
+      We render this component client-side only because its rendering does not match server-side rendered content.
+      The reason is that we initially show the component, then hide it if the fetch returns no matches.
+    -->
+    <client-only>
+      <st-ongoing-matches />
+    </client-only>
+
     <section v-if="events?.length" class="l-main-content-section c-index__events">
       <h2 class="t-headline-1">
         <nuxt-link :to="localePath('calendar')" class="c-index__section-title">{{ $t('events.title') }}</nuxt-link>

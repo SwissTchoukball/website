@@ -69,6 +69,8 @@ export default class Match {
   flickr_photoset_id?: string;
   youtube_video_id?: string;
 
+  pathToMatch: string | null;
+
   constructor(match: LeveradeMatch) {
     this.id = match.id;
     this.datetime = match.attributes.datetime;
@@ -87,6 +89,7 @@ export default class Match {
     this.phase_name = null;
     this.phase_type = null;
     this.competition_edition_name = null;
+    this.pathToMatch = null;
   }
 
   /**

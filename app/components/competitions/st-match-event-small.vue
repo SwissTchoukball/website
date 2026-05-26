@@ -6,51 +6,23 @@
     :context="matchContext"
     :details="details"
     :is-full-day="hasNoTimeDefined"
-    :to="to"
+    :to="match.pathToMatch || ''"
   />
 </template>
 
 <script setup lang="ts">
 import type Match from '~/models/match.model';
 import stEventSmall from '~/components/events/st-event-small.vue';
-import type CompetitionEdition from '~/models/competition-edition.model';
-import type Phase from '~/models/phase.model';
-import type Round from '~/models/round.model';
-
-const localePath = useLocalePath();
 
 const props = defineProps({
   match: {
     type: Object as PropType<Match>,
     required: true,
   },
-  competitionEdition: {
-    type: Object as PropType<CompetitionEdition>,
-    default: undefined,
-  },
-  phase: {
-    type: Object as PropType<Phase>,
-    default: undefined,
-  },
-  round: {
-    type: Object as PropType<Round>,
-    default: undefined,
-  },
 });
 
 const details = computed<string>(() => {
   return props.match.facility ? `${props.match.facility.name}, ${props.match.facility.city}` : '';
-});
-
-const to = computed<string>(() => {
-  return localePath({
-    name: 'competitions-competition-season-match-matchId',
-    params: {
-      competition: props.competitionEdition?.competition.slug || '',
-      season: props.competitionEdition?.season?.slug || '',
-      matchId: props.match.id,
-    },
-  });
 });
 
 const matchName = computed<string>(() => {
@@ -59,15 +31,15 @@ const matchName = computed<string>(() => {
 
 const matchContext = computed<string>(() => {
   let context = '';
-  if (props.competitionEdition?.name) {
-    context += props.competitionEdition?.name;
+  if (props.match.competition_edition_name) {
+    context += props.match.competition_edition_name;
   }
 
-  if (props.round?.name) {
+  if (props.match.round_name) {
     if (context) {
       context += ' · ';
     }
-    context += props.round.name;
+    context += props.match.round_name;
   }
 
   return context;

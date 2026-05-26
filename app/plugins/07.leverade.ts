@@ -1,4 +1,4 @@
-import { addMinutes } from 'date-fns';
+import { subMinutes } from 'date-fns';
 import type { NitroFetchOptions } from 'nitropack';
 export interface LeveradeResponse<T, E = unknown, M = unknown> {
   data: T;
@@ -279,6 +279,21 @@ export interface Leverade {
     >
   >;
   getStandings: (groupId: number | string) => Promise<LeveradeResponse<unknown, unknown, LeveradeStandings>>;
+  getOngoingMatches: (
+    seasonLeveradeId: string,
+  ) => Promise<
+    LeveradeResponse<
+      LeveradeMatch[],
+      | LeveradeFaceoff
+      | LeveradeRound
+      | LeveradeGroup
+      | LeveradeTournament
+      | LeveradeTeam
+      | LeveradeResult
+      | LeveradePeriod
+      | LeveradeFacility
+    >
+  >;
   getUpcomingMatches: (
     seasonLeveradeId: string,
   ) => Promise<
@@ -356,11 +371,19 @@ export default defineNuxtPlugin(() => {
     return getCachedQuery(`/groups/${groupId}/standings`);
   };
 
-  const getUpcomingMatches: Leverade['getUpcomingMatches'] = (seasonLeveradeId) => {
-    // We still want to show a match 90 minutes after it started.
-    const in90Minutes = addMinutes(new Date(), 90).toISOString().replaceAll(':', '.');
+  const getOngoingMatches: Leverade['getOngoingMatches'] = (seasonLeveradeId) => {
+    // We want to show a match from its start time until 90 minutes after it started.
+    const ninetyMinutesAgo = subMinutes(new Date(), 90).toISOString().replaceAll(':', '.');
+    const now = new Date().toISOString().replaceAll(':', '.');
     return getCachedQuery(
-      `/matches?filter=datetime>${in90Minutes},round.group.tournament.season.id:${seasonLeveradeId}&sort=datetime&include=round.group.tournament,faceoff,teams,facility&page[size]=20`,
+      `/matches?filter=datetime>${ninetyMinutesAgo},datetime<${now},round.group.tournament.season.id:${seasonLeveradeId}&sort=datetime&include=round.group.tournament,faceoff,teams,results,periods,facility&page[size]=20`,
+    );
+  };
+
+  const getUpcomingMatches: Leverade['getUpcomingMatches'] = (seasonLeveradeId) => {
+    const now = new Date().toISOString().replaceAll(':', '.');
+    return getCachedQuery(
+      `/matches?filter=datetime>${now},round.group.tournament.season.id:${seasonLeveradeId}&sort=datetime&include=round.group.tournament,faceoff,teams,facility&page[size]=20`,
     );
   };
 
@@ -409,6 +432,7 @@ export default defineNuxtPlugin(() => {
       leverade: {
         getFullTournament,
         getStandings,
+        getOngoingMatches,
         getUpcomingMatches,
         getMatch,
         getTeams,

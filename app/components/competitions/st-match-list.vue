@@ -2,7 +2,7 @@
   <ul v-if="matches.length > 0" class="u-unstyled-list">
     <template v-for="match of matches" :key="match.id">
       <li v-if="isMatchVisible(match)" class="c-match-list__match">
-        <st-match :match="match" :phase="phase" :show-round="showRound" :show-phase="showPhase" />
+        <st-match :match="match" :phase="phase" :show-round="showRound" :show-phase="showPhase" :hide-date="hideDate" />
       </li>
     </template>
   </ul>
@@ -18,11 +18,13 @@ const {
   phase = undefined,
   showRound,
   showPhase,
+  hideDate,
 } = defineProps<{
   matches: Match[];
   phase?: Phase;
   showRound?: boolean;
   showPhase?: boolean;
+  hideDate?: boolean;
 }>();
 
 const isMatchVisible = (match: Match): boolean => {

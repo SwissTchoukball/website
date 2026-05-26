@@ -1,35 +1,42 @@
 <template>
-  <section class="l-main-content-section">
-    <st-loader v-if="fetchStatus === 'pending'" :main="true" />
-    <p v-else-if="fetchError">{{ $t('error.otherError') }} : {{ fetchError.message }}</p>
-    <template v-else-if="phase && competitionEdition">
-      <st-phase-header :competition-edition="competitionEdition" :phase="phase" />
-
-      <div class="c-phase__anchor-links">
-        <st-link-action v-if="isLeague && phase.futureMatches.length > 0" to="#future-matches" with-arrow>
-          {{ $t('competitions.planning.title') }}
-        </st-link-action>
-
-        <st-link-action
-          v-if="(isLeague || phase.futureMatches.length > 0) && phase.rounds && phase.lastFinishedMatches.length > 0"
-          to="#last-results"
-          with-arrow
-        >
-          {{ $t('competitions.results.lastResults') }}
-        </st-link-action>
+  <div>
+    <section class="l-main-content-section">
+      <st-loader v-if="fetchStatus === 'pending'" :main="true" />
+      <p v-else-if="fetchError">{{ $t('error.otherError') }} : {{ fetchError.message }}</p>
+    </section>
+    <template v-if="phase && competitionEdition">
+      <div class="c-phase__header">
+        <st-phase-header :competition-edition="competitionEdition" :phase="phase" />
       </div>
 
-      <template v-if="isLeague">
-        <h4 class="t-headline-3">{{ $t('competitions.standings.title') }}</h4>
-        <st-phase-standings
-          v-if="competitionEdition?.season && phase"
-          :season="competitionEdition.season"
-          :competition-edition="competitionEdition"
-          :phase="phase"
-        />
-      </template>
+      <section class="l-main-content-section">
+        <div class="c-phase__anchor-links">
+          <st-link-action v-if="isLeague && phase.futureMatches.length > 0" to="#future-matches" with-arrow>
+            {{ $t('competitions.planning.title') }}
+          </st-link-action>
 
-      <template v-if="phase.futureMatches.length > 0">
+          <st-link-action
+            v-if="(isLeague || phase.futureMatches.length > 0) && phase.rounds && phase.lastFinishedMatches.length > 0"
+            to="#last-results"
+            with-arrow
+          >
+            {{ $t('competitions.results.lastResults') }}
+          </st-link-action>
+        </div>
+
+        <template v-if="isLeague">
+          <h4 class="t-headline-3">{{ $t('competitions.standings.title') }}</h4>
+          <st-phase-standings
+            v-if="competitionEdition?.season && phase"
+            :season="competitionEdition.season"
+            :competition-edition="competitionEdition"
+            :phase="phase"
+            class="c-phase__standings"
+          />
+        </template>
+      </section>
+
+      <section v-if="phase.futureMatches.length > 0" class="l-main-content-section c-phase__section">
         <h4 id="future-matches" class="t-headline-3">{{ $t('competitions.planning.title') }}</h4>
         <st-match-list :matches="phase.futureMatches.slice(0, MAX_FUTURE_MATCHES_TO_SHOW)" :phase="phase" show-round />
         <st-link-action
@@ -39,9 +46,12 @@
         >
           {{ $t('competitions.planning.seeAllUpcomingMatches') }}
         </st-link-action>
-      </template>
+      </section>
 
-      <template v-if="phase.rounds && phase.lastFinishedMatches.length > 0">
+      <section
+        v-if="phase.rounds && phase.lastFinishedMatches.length > 0"
+        class="l-main-content-section c-phase__section"
+      >
         <h4 id="last-results" class="t-headline-3">
           {{
             $t(
@@ -60,9 +70,9 @@
         >
           {{ $t('competitions.results.seeAllResults') }}
         </st-link-action>
-      </template>
+      </section>
     </template>
-  </section>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -136,6 +146,18 @@ watch(
 </script>
 
 <style scoped>
+.c-phase__header {
+  padding-inline: var(--st-length-main-content-side-padding);
+}
+
+.c-phase__section {
+  background-color: var(--st-color-main-content-alternative-background);
+}
+
+.c-phase__standings {
+  padding-bottom: var(--st-length-spacing-s);
+}
+
 .c-phase__anchor-links {
   display: flex;
   gap: var(--st-length-spacing-xs);
@@ -146,5 +168,6 @@ watch(
 .c-phase__link-action {
   display: block;
   text-align: right;
+  margin-top: var(--st-length-spacing-s);
 }
 </style>

@@ -175,6 +175,7 @@
   --st-color-phase-select-border: var(--st-color-grey-light);
   --st-color-phase-select-background-hover: var(--st-color-grey-very-light);
   --st-color-match-score: var(--st-color-red-swiss-tchoukball);
+  --st-color-match-background: white;
   --st-color-match-results-separator: var(--st-color-grey-light);
   --st-color-match-result-background-hover: var(--st-color-grey-very-light);
   --st-color-match-phase-round: var(--st-color-grey-dark);

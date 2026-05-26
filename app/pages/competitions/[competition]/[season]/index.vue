@@ -1,11 +1,18 @@
 <template>
-  <section class="l-main-content-section">
-    <st-loader v-if="fetchStatus === 'pending'" :main="true" />
-    <p v-else-if="fetchError">{{ $t('error.otherError') }} : {{ fetchError.message }}</p>
-    <template v-else-if="competitionEdition">
-      <st-phase-header :competition-edition="competitionEdition" />
+  <div>
+    <section class="l-main-content-section">
+      <st-loader v-if="fetchStatus === 'pending'" :main="true" />
+      <p v-else-if="fetchError">{{ $t('error.otherError') }} : {{ fetchError.message }}</p>
+    </section>
+    <template v-if="competitionEdition">
+      <div class="c-competition-edition__header">
+        <st-phase-header :competition-edition="competitionEdition" />
+      </div>
 
-      <template v-if="competitionEdition.futureMatches.length > 0">
+      <section
+        v-if="competitionEdition.futureMatches.length > 0"
+        class="l-main-content-section c-competition-edition__section"
+      >
         <h4 class="t-headline-3">{{ $t('competitions.planning.title') }}</h4>
         <st-match-list
           :matches="competitionEdition.futureMatches.slice(0, MAX_FUTURE_MATCHES_TO_SHOW)"
@@ -19,9 +26,12 @@
         >
           {{ $t('competitions.planning.seeAllUpcomingMatches') }}
         </st-link-action>
-      </template>
+      </section>
 
-      <template v-if="competitionEdition.lastFinishedMatches.length > 0">
+      <section
+        v-if="competitionEdition.lastFinishedMatches.length > 0"
+        class="l-main-content-section c-competition-edition__section"
+      >
         <h4 class="t-headline-3">{{ $t('competitions.results.lastResults') }}</h4>
         <st-match-list
           :matches="competitionEdition.lastFinishedMatches.slice(0, MAX_RESULTS_TO_SHOW)"
@@ -36,9 +46,9 @@
         >
           {{ $t('competitions.results.seeAllResults') }}
         </st-link-action>
-      </template>
+      </section>
     </template>
-  </section>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -100,8 +110,17 @@ watch(
 </script>
 
 <style scoped>
+.c-competition-edition__header {
+  padding-inline: var(--st-length-main-content-side-padding);
+}
+
+.c-competition-edition__section {
+  background-color: var(--st-color-main-content-alternative-background);
+}
+
 .c-competition-edition__link-action {
   display: block;
   text-align: right;
+  margin-top: var(--st-length-spacing-s);
 }
 </style>

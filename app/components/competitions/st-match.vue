@@ -2,9 +2,12 @@
   <nuxt-link
     class="c-match"
     :class="{ 'c-match--has-score': match.hasScore, 'c-match--play-off': isPlayOff }"
-    :to="localePath({ name: 'competitions-competition-season-match-matchId', params: { matchId: match.id } })"
+    :to="
+      match.pathToMatch ||
+      localePath({ name: 'competitions-competition-season-match-matchId', params: { matchId: match.id } })
+    "
   >
-    <st-event-date v-if="match.parsedDate" :start-date="match.parsedDate" always-one-line />
+    <st-event-date v-if="!hideDate && match.parsedDate" :start-date="match.parsedDate" always-one-line />
 
     <div class="c-match__phase-and-round">
       <template v-if="showPhase">{{ phaseName }}</template>
@@ -75,6 +78,7 @@ const {
   phase?: Phase;
   showPhase?: boolean;
   showRound?: boolean;
+  hideDate?: boolean;
 }>();
 
 const showTime = computed<boolean>(() => {
@@ -112,12 +116,16 @@ const roundName = computed<string>(() => {
   align-items: center;
   padding: var(--st-length-spacing-xs);
   position: relative;
-  margin-top: var(--st-length-spacing-s);
+  margin-block: var(--st-length-spacing-xs);
+  margin-inline: auto;
   width: 100%;
+  max-width: 52rem;
   color: inherit;
   text-decoration: none;
-  border-radius: 5px;
-  transition: all 0.2s ease-in;
+  border-radius: 3rem;
+  transition: all 0.1s ease-in;
+  background-color: var(--st-color-match-background);
+  box-shadow: rgb(149 157 165 / 20%) 0 4px 12px;
 }
 
 .c-match:hover {
