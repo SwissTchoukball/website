@@ -9,7 +9,7 @@ import CompetitionEdition from '~/models/competition-edition.model';
 import type { NationalCompetitionEdition } from '~/plugins/08.cms-service';
 import Faceoff from '~/models/faceoff.model';
 
-export const useMatches = (subset: 'ongoing' | 'upcoming') => {
+export const useMatches = (subset: 'ongoing' | 'upcoming' | 'lastFinished') => {
   const localePath = useLocalePath();
   const { $leverade, $cmsService } = useNuxtApp();
   const seasonsStore = useSeasonsStore();
@@ -17,7 +17,13 @@ export const useMatches = (subset: 'ongoing' | 'upcoming') => {
   const currentSeason: Season | undefined = seasonsStore.currentSeason;
 
   const matchRetrievalMethodName =
-    subset === 'upcoming' ? 'getUpcomingMatches' : subset === 'ongoing' ? 'getOngoingMatches' : undefined;
+    subset === 'upcoming'
+      ? 'getUpcomingMatches'
+      : subset === 'ongoing'
+        ? 'getOngoingMatches'
+        : subset === 'lastFinished'
+          ? 'getLastFinishedMatches'
+          : undefined;
 
   if (!matchRetrievalMethodName) {
     throw new Error(`Invalid subset: ${subset}`);
@@ -27,25 +33,16 @@ export const useMatches = (subset: 'ongoing' | 'upcoming') => {
     data: leveradeMatchesData,
     pending: fetchMatchesPending,
     error: fetchMatchesError,
-  } = useAsyncData<Await<ReturnType<Leverade['getUpcomingMatches' | 'getOngoingMatches']>>>(
-    `matches-${subset}`,
-    async () => {
-      if (!currentSeason) {
-        throw new Error('Current season undefined');
-      }
-      if (!currentSeason.leverade_id) {
-        throw new Error('Current season has no Leverade ID');
-      }
+  } = useAsyncData<Await<ReturnType<Leverade[typeof matchRetrievalMethodName]>>>(`matches-${subset}`, async () => {
+    if (!currentSeason) {
+      throw new Error('Current season undefined');
+    }
+    if (!currentSeason.leverade_id) {
+      throw new Error('Current season has no Leverade ID');
+    }
 
-      if (subset === 'upcoming') {
-        return await $leverade.getUpcomingMatches(currentSeason.leverade_id);
-      } else if (subset === 'ongoing') {
-        return await $leverade.getOngoingMatches(currentSeason.leverade_id);
-      } else {
-        throw new Error(`Invalid subset: ${subset}`);
-      }
-    },
-  );
+    return await $leverade[matchRetrievalMethodName](currentSeason.leverade_id);
+  });
 
   const {
     data: directusCompetitionEditions,
@@ -113,7 +110,7 @@ export const useMatches = (subset: 'ongoing' | 'upcoming') => {
     });
 
     return leveradeMatchesData.value.data
-      .filter((rawMatch) => !rawMatch.attributes.finished)
+      .filter((rawMatch) => (subset !== 'lastFinished' ? !rawMatch.attributes.finished : rawMatch.attributes.finished))
       .map((rawMatch) => {
         const match = new Match(rawMatch);
         match.faceoff = faceoffs.find((faceoff) => faceoff.id === match.faceoff_id);

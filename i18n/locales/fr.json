@@ -155,7 +155,10 @@
     "upcomingMatchesOfCompetition": "Voir les prochains matchs de :",
     "noUpcomingMatches": "Il n'y a actuellement pas de matchs planifiés.",
     "ongoingMatches": "Aucun match en cours | Match en cours | Matchs en cours",
-    "noOngoingMatches": "Il n'y a pas de matchs en cours."
+    "noOngoingMatches": "Il n'y a pas de matchs en cours.",
+    "lastResults": "Derniers résultats",
+    "seePreviousResults": "Voir les résultats précédents",
+    "lastResultsOfCompetition": "Voir les derniers résultats de :"
   },
   "match": {
     "photos": "Photos",

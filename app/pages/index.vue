@@ -56,6 +56,7 @@
     -->
     <client-only>
       <st-upcoming-matches />
+      <st-last-finished-matches />
     </client-only>
 
     <section class="l-main-content-section c-index__tchoukball">

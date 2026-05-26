@@ -17,6 +17,7 @@
               :round="matchData.round"
               show-phase
               show-round
+              show-competition-edition
               hide-date
             />
           </li>

@@ -10,9 +10,7 @@
     <st-event-date v-if="!hideDate && match.parsedDate" :start-date="match.parsedDate" always-one-line />
 
     <div class="c-match__phase-and-round">
-      <template v-if="showPhase">{{ phaseName }}</template>
-      <template v-if="showPhase && showRoundComputed"> · </template>
-      <template v-if="showRoundComputed">{{ roundName }}</template>
+      {{ contextDisplay }}
     </div>
 
     <div v-if="match.homeTeamName || match.awayTeamName" class="c-match__teams">
@@ -72,12 +70,15 @@ const localePath = useLocalePath();
 const {
   match,
   phase = undefined,
+  showPhase,
   showRound,
+  showCompetitionEdition,
 } = defineProps<{
   match: Match;
   phase?: Phase;
   showPhase?: boolean;
   showRound?: boolean;
+  showCompetitionEdition?: boolean;
   hideDate?: boolean;
 }>();
 
@@ -104,6 +105,24 @@ const phaseName = computed<string>(() => {
 
 const roundName = computed<string>(() => {
   return match.round_name || phase?.rounds?.find((round) => round.id === match.round_id)?.name || '';
+});
+
+const competitionEditionName = computed<string>(() => {
+  return match.competition_edition_name || '';
+});
+
+const contextDisplay = computed<string>(() => {
+  const elements: string[] = [];
+  if (showCompetitionEdition) {
+    elements.push(competitionEditionName.value);
+  }
+  if (showPhase) {
+    elements.push(phaseName.value);
+  }
+  if (showRoundComputed.value) {
+    elements.push(roundName.value);
+  }
+  return elements.join(' · ');
 });
 </script>
 

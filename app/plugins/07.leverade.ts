@@ -1,4 +1,4 @@
-import { subMinutes } from 'date-fns';
+import { subMinutes, subWeeks } from 'date-fns';
 import type { NitroFetchOptions } from 'nitropack';
 export interface LeveradeResponse<T, E = unknown, M = unknown> {
   data: T;
@@ -294,6 +294,21 @@ export interface Leverade {
       | LeveradeFacility
     >
   >;
+  getLastFinishedMatches: (
+    seasonLeveradeId: string,
+  ) => Promise<
+    LeveradeResponse<
+      LeveradeMatch[],
+      | LeveradeFaceoff
+      | LeveradeRound
+      | LeveradeGroup
+      | LeveradeTournament
+      | LeveradeTeam
+      | LeveradeResult
+      | LeveradePeriod
+      | LeveradeFacility
+    >
+  >;
   getUpcomingMatches: (
     seasonLeveradeId: string,
   ) => Promise<
@@ -387,6 +402,14 @@ export default defineNuxtPlugin(() => {
     );
   };
 
+  const getLastFinishedMatches: Leverade['getLastFinishedMatches'] = (seasonLeveradeId) => {
+    // We want to show the match results from the last two weeks.
+    const twoWeeksAgo = subWeeks(new Date(), 2).toISOString().replaceAll(':', '.');
+    return getCachedQuery(
+      `/matches?filter=datetime>${twoWeeksAgo},finished:true,round.group.tournament.season.id:${seasonLeveradeId}&sort=-datetime&include=round.group.tournament,faceoff,teams,results,periods,facility&page[size]=20`,
+    );
+  };
+
   const getMatch: Leverade['getMatch'] = async (matchId) => {
     // We use the endpoint to get a list of matches even though we want only one,
     // because `GET /matches/{id}` is behind authentication
@@ -434,6 +457,7 @@ export default defineNuxtPlugin(() => {
         getStandings,
         getOngoingMatches,
         getUpcomingMatches,
+        getLastFinishedMatches,
         getMatch,
         getTeams,
       },
