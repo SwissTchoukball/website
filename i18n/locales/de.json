@@ -167,7 +167,8 @@
     "photosTitle": "Fotos vom Spiel",
     "videoTitle": "Video vom Spiel",
     "ongoing": "Laufend",
-    "toBeConfirmed": "Zu bestätigen"
+    "toBeConfirmed": "Zu bestätigen",
+    "scoreUpdatedLive": "Score aktualisiert in Echtzeit"
   },
   "person": {
     "photoOf": "Foto von {name}",

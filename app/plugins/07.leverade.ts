@@ -319,6 +319,7 @@ export interface Leverade {
   >;
   getMatch: (
     matchId: number | string,
+    options?: { invalidateCache?: boolean },
   ) => Promise<
     LeveradeResponse<
       LeveradeMatch,
@@ -410,7 +411,7 @@ export default defineNuxtPlugin(() => {
     );
   };
 
-  const getMatch: Leverade['getMatch'] = async (matchId) => {
+  const getMatch: Leverade['getMatch'] = async (matchId, { invalidateCache } = { invalidateCache: false }) => {
     // We use the endpoint to get a list of matches even though we want only one,
     // because `GET /matches/{id}` is behind authentication
     const matchResponse = await getCachedQuery<
@@ -430,15 +431,7 @@ export default defineNuxtPlugin(() => {
       >
     >(
       `/matches?filter=id:${matchId}&include=round,round.group,round.group.tournament,faceoff,teams,results,periods,matchreferees.license.profile,periods.results,results,facility`,
-      // {
-      //   transformResponse: (data) => {
-      //     const jsonData = JSON.parse(data);
-      //     return {
-      //       ...jsonData,
-      //       data: jsonData.data[0],
-      //     };
-      //   },
-      // },
+      { invalidateCache },
     );
     return {
       ...matchResponse,

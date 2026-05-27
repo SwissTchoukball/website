@@ -167,7 +167,8 @@
     "photosTitle": "Photos du match",
     "videoTitle": "Vidéo du match",
     "ongoing": "En cours",
-    "toBeConfirmed": "À confirmer"
+    "toBeConfirmed": "À confirmer",
+    "scoreUpdatedLive": "Score mis à jour en direct"
   },
   "person": {
     "photoOf": "Photo de {name}",

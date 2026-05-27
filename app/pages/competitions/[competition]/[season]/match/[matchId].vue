@@ -1,6 +1,6 @@
 <template>
   <section class="l-main-content-section">
-    <st-loader v-if="fetchStatus === 'pending'" :main="true" />
+    <st-loader v-if="!competitionEdition && fetchStatus === 'pending'" :main="true" />
     <p v-else-if="fetchError">{{ $t('error.otherError') }} : {{ fetchError.message }}</p>
     <st-phase-header v-if="competitionEdition && phase" :competition-edition="competitionEdition" :phase="phase" />
     <div v-if="match">
@@ -16,7 +16,15 @@
         <span class="c-match__team c-match__team--home" :class="{ 'c-match__team--winner': match.hasHomeTeamWon }">
           {{ match.homeTeamName }}
         </span>
-        <span class="c-match__cross">&#9587;</span>
+        <span class="c-match__cross">
+          <st-tooltip v-if="match.isOngoing" position="bottom">
+            <template #trigger>
+              <st-live-indicator />
+            </template>
+            <template #content>{{ $t('match.scoreUpdatedLive') }}</template>
+          </st-tooltip>
+          <template v-else>&#9587;</template>
+        </span>
         <span class="c-match__team c-match__team--away" :class="{ 'c-match__team--winner': match.hasAwayTeamWon }">
           {{ match.awayTeamName }}
         </span>
@@ -30,7 +38,13 @@
         <div v-else class="c-match__team-avatar"></div>
 
         <div v-if="match.hasScore" class="c-match__score">
-          {{ match.home_team_score }} - {{ match.away_team_score }}
+          <span class="c-match__score-team" :class="{ 'is-animating': isAnimatingHomeTeamScore }">{{
+            match.home_team_score
+          }}</span>
+          -
+          <span class="c-match__score-team" :class="{ 'is-animating': isAnimatingAwayTeamScore }">{{
+            match.away_team_score
+          }}</span>
         </div>
         <div v-else class="c-match__no-score"></div>
 
@@ -175,6 +189,7 @@ const {
   data,
   status: fetchStatus,
   error: fetchError,
+  refresh,
 } = useAsyncData<{
   leveradeMatchData: Await<ReturnType<Leverade['getMatch']>>;
   directusCompetitionEdition: NationalCompetitionEdition | undefined;
@@ -186,7 +201,7 @@ const {
     if (!route.params.matchId) {
       throw new Error('No match ID provided');
     }
-    const leveradeMatchData = await $leverade.getMatch(route.params.matchId as string);
+    const leveradeMatchData = await $leverade.getMatch(route.params.matchId as string, { invalidateCache: true });
     const matchAdditionalData = await $cmsService.getMatchAdditionalData(+route.params.matchId);
 
     if (!leveradeMatchData.included) {
@@ -226,6 +241,39 @@ const {
     };
   },
 );
+
+const isAnimatingHomeTeamScore = ref(true);
+const isAnimatingAwayTeamScore = ref(true);
+
+onMounted(() => {
+  const matchRefreshInterval = setInterval(async () => {
+    let hasHomeTeamScoreChanged = false;
+    let hasAwayTeamScoreChanged = false;
+
+    if (match.value?.isOngoing) {
+      const scoreBefore = [match.value?.home_team_score, match.value?.away_team_score];
+      await refresh();
+      hasHomeTeamScoreChanged = scoreBefore[0] !== match.value?.home_team_score;
+      hasAwayTeamScoreChanged = scoreBefore[1] !== match.value?.away_team_score;
+    } else {
+      clearInterval(matchRefreshInterval);
+    }
+
+    if (hasHomeTeamScoreChanged) {
+      isAnimatingHomeTeamScore.value = false;
+      setTimeout(() => {
+        isAnimatingHomeTeamScore.value = true;
+      }, 20);
+    }
+
+    if (hasAwayTeamScoreChanged) {
+      isAnimatingAwayTeamScore.value = false;
+      setTimeout(() => {
+        isAnimatingAwayTeamScore.value = true;
+      }, 20);
+    }
+  }, 10000);
+});
 
 const distributedMatchData = computed<
   | {
@@ -382,6 +430,18 @@ useHead(() => {
 });
 </script>
 
+<style>
+:root {
+  --digit-dur: 500ms;
+  --digit-distance: 8px;
+  --digit-stagger: 70ms;
+  --digit-blur: 2px;
+  --digit-ease: cubic-bezier(0.34, 1.45, 0.64, 1);
+  --digit-dir-x: 0;
+  --digit-dir-y: 1;
+}
+</style>
+
 <style scoped>
 @import url('~/assets/css/media.css');
 
@@ -439,11 +499,46 @@ useHead(() => {
 }
 
 .c-match__score {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--st-length-spacing-xxs);
   margin: var(--st-length-spacing-xs);
   color: var(--st-color-match-score);
   font-weight: 900;
   font-size: 1.5em;
   white-space: nowrap;
+}
+
+.c-match__score-team {
+  display: inline-block;
+  will-change: transform, opacity, filter;
+}
+
+.c-match__score-team.is-animating {
+  animation: t-digit-pop-in var(--digit-dur) var(--digit-ease) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .c-match__score .c-match__score-team {
+    animation: none !important;
+  }
+}
+
+@keyframes t-digit-pop-in {
+  0% {
+    transform: translate(
+      calc(var(--digit-distance) * var(--digit-dir-x)),
+      calc(var(--digit-distance) * var(--digit-dir-y))
+    );
+    opacity: 0;
+    filter: blur(var(--digit-blur));
+  }
+
+  100% {
+    transform: translate(0, 0);
+    opacity: 1;
+    filter: blur(0);
+  }
 }
 
 .c-match__no-score {
