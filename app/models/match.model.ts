@@ -12,6 +12,7 @@ import type {
 } from '~/plugins/07.leverade';
 import type { FaceoffWithoutMatches } from '~/models/faceoff.model';
 import type Season from './season.model';
+import { addHours, isAfter, isBefore } from 'date-fns';
 
 export interface Facility {
   id: string;
@@ -218,14 +219,28 @@ export default class Match {
     return this.periods.every((period) => period.home_team_score || period.away_team_score);
   }
 
+  get startedLessThan3HoursAgo(): boolean {
+    if (!this.parsedDate) {
+      return false;
+    }
+    const now = new Date();
+    return isAfter(now, this.parsedDate) && isBefore(now, addHours(this.parsedDate, 3));
+  }
+
+  get startedMoreThan3HoursAgo(): boolean {
+    if (!this.parsedDate) {
+      return false;
+    }
+    const now = new Date();
+    return isAfter(now, addHours(this.parsedDate, 3));
+  }
+
   get isOngoing(): boolean {
-    // TODO: Replace the check for all periods with score by a check that we are LESS than 3 hours from the start of the match
-    return this.hasScore && !this.finished && !this.hasAllPeriodsWithScore;
+    return this.hasScore && !this.finished && this.startedLessThan3HoursAgo;
   }
 
   get toBeConfirmed(): boolean {
-    // TODO: Replace the check for all periods with score by a check that we are MORE than 3 hours from the start of the match
-    return this.hasScore && !this.finished && this.hasAllPeriodsWithScore;
+    return this.hasScore && !this.finished && this.startedMoreThan3HoursAgo;
   }
 
   get hasHomeTeamWon(): boolean {
