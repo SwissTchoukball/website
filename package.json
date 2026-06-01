@@ -47,7 +47,7 @@
     "vue-matomo": "^4.2.0"
   },
   "devDependencies": {
-    "@commitlint/cli": "^21.0.1",
+    "@commitlint/cli": "^21.0.2",
     "@commitlint/config-conventional": "^21.0.1",
     "@nuxt/eslint": "^1.15.2",
     "@nuxtjs/i18n": "10.4.0",
