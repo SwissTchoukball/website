@@ -1,21 +1,23 @@
 <template>
   <a class="c-euro2026-ibiy-banner" href="https://ibiy.net/swisstchoukball">
     <img
-      src="/images/banner-ibiy-euro2026-medium.svg"
+      :src="`/images/banner-ibiy-euro2026-medium-${locale}.svg`"
       loading="lazy"
-      alt="Campagne “I Believe In You” pour soutenir l’organisation des championnats d'Europe 2026 en Suisse"
+      :alt="$t('euro2026ibiyBannerAltText')"
       class="c-euro2026-ibiy-banner__image c-euro2026-ibiy-banner__image--medium"
     />
     <img
-      src="/images/banner-ibiy-euro2026-small.svg"
+      :src="`/images/banner-ibiy-euro2026-small-${locale}.svg`"
       loading="lazy"
-      alt="Campagne “I Believe In You” pour soutenir l’organisation des championnats d'Europe 2026 en Suisse"
+      :alt="$t('euro2026ibiyBannerAltText')"
       class="c-euro2026-ibiy-banner__image c-euro2026-ibiy-banner__image--small"
     />
   </a>
 </template>
 
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+const { locale } = useI18n();
+</script>
 
 <style scoped>
 @import url('~/assets/css/media.css');
