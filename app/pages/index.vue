@@ -25,6 +25,8 @@
     </client-only>
 
     <section v-if="events?.length" class="l-main-content-section c-index__events">
+      <st-euro2026-ibiy-banner v-if="new Date() < new Date('2026-07-20')" />
+
       <h2 class="t-headline-1">
         <nuxt-link :to="localePath('calendar')" class="c-index__section-title">{{ $t('events.title') }}</nuxt-link>
       </h2>
