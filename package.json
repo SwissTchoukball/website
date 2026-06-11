@@ -52,7 +52,7 @@
     "@nuxt/eslint": "^1.16.0",
     "@nuxtjs/i18n": "10.4.0",
     "@nuxtjs/stylelint-module": "^5.2.1",
-    "@types/nodemailer": "^8.0.0",
+    "@types/nodemailer": "^8.0.1",
     "@vueuse/core": "^14.3.0",
     "@vueuse/nuxt": "^14.3.0",
     "husky": "^9.1.7",
