@@ -119,7 +119,7 @@ const contextDisplay = computed<string>(() => {
   if (showPhase) {
     elements.push(phaseName.value);
   }
-  if (showRoundComputed.value) {
+  if (showRoundComputed.value && roundName.value !== phaseName.value) {
     elements.push(roundName.value);
   }
   return elements.join(' · ');
