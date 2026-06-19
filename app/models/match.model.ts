@@ -13,6 +13,7 @@ import type {
 import type { FaceoffWithoutMatches } from '~/models/faceoff.model';
 import type Season from './season.model';
 import { addHours, isAfter, isBefore } from 'date-fns';
+import type { DirectusMatchAdditionalData } from '~/plugins/06.directus';
 
 export interface Facility {
   id: string;
@@ -182,6 +183,11 @@ export default class Match {
         };
       }
     }
+  }
+
+  setAdditionalData(additionalData: DirectusMatchAdditionalData) {
+    this.flickr_photoset_id = additionalData.flickr_photoset_id;
+    this.youtube_video_id = additionalData.youtube_video_id;
   }
 
   get parsedDate(): Date | undefined {

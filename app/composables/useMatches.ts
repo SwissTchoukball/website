@@ -8,6 +8,7 @@ import Round from '~/models/round.model';
 import CompetitionEdition from '~/models/competition-edition.model';
 import type { NationalCompetitionEdition } from '~/plugins/08.cms-service';
 import Faceoff from '~/models/faceoff.model';
+import type { DirectusMatchAdditionalData } from '~/plugins/06.directus';
 
 export const useMatches = (subset: 'ongoing' | 'upcoming' | 'lastFinished') => {
   const localePath = useLocalePath();
@@ -29,19 +30,41 @@ export const useMatches = (subset: 'ongoing' | 'upcoming' | 'lastFinished') => {
     throw new Error(`Invalid subset: ${subset}`);
   }
 
-  const {
-    data: leveradeMatchesData,
-    pending: fetchMatchesPending,
-    error: fetchMatchesError,
-  } = useAsyncData<Await<ReturnType<Leverade[typeof matchRetrievalMethodName]>>>(`matches-${subset}`, async () => {
+  async function fetchLeveradeMatches(): Promise<
+    Await<ReturnType<Leverade['getUpcomingMatches' | 'getOngoingMatches' | 'getLastFinishedMatches']>>
+  > {
     if (!currentSeason) {
       throw new Error('Current season undefined');
     }
     if (!currentSeason.leverade_id) {
       throw new Error('Current season has no Leverade ID');
     }
+    if (!matchRetrievalMethodName) {
+      throw new Error('Invalid match retrieval method name');
+    }
+    return $leverade[matchRetrievalMethodName](currentSeason.leverade_id);
+  }
 
-    return await $leverade[matchRetrievalMethodName](currentSeason.leverade_id);
+  async function fetchMatchesAdditionalData(matchIds: number[]): Promise<Record<string, DirectusMatchAdditionalData>> {
+    const additionalData = await $cmsService.getMatchesAdditionalData(matchIds);
+    if (!additionalData) {
+      throw new Error('Could not retrieve additional match data');
+    }
+    return additionalData;
+  }
+
+  const {
+    data: fetchedMatchesData,
+    pending: fetchMatchesPending,
+    error: fetchMatchesError,
+  } = useAsyncData<{
+    leveradeMatches: Await<ReturnType<Leverade[typeof matchRetrievalMethodName]>>;
+    additionalData: Record<string, DirectusMatchAdditionalData>;
+  }>(`matches-${subset}`, async () => {
+    const leveradeMatches = await fetchLeveradeMatches();
+    const matchsIds = leveradeMatches?.data.map((match) => +match.id) || [];
+    const additionalData = await fetchMatchesAdditionalData(matchsIds);
+    return { leveradeMatches, additionalData };
   });
 
   const {
@@ -59,7 +82,8 @@ export const useMatches = (subset: 'ongoing' | 'upcoming' | 'lastFinished') => {
   });
 
   const matchesData = computed<{ match: Match; edition?: CompetitionEdition; phase?: Phase; round?: Round }[]>(() => {
-    if (!leveradeMatchesData.value?.included || !directusCompetitionEditions.value) {
+    console.log(`computing matches data for subset ${subset}`);
+    if (!fetchedMatchesData.value?.leveradeMatches.included || !directusCompetitionEditions.value) {
       return [];
     }
 
@@ -75,7 +99,7 @@ export const useMatches = (subset: 'ongoing' | 'upcoming' | 'lastFinished') => {
     directusCompetitionEditions.value.forEach((edition) => {
       competitionEditions.push(new CompetitionEdition(edition, seasonsStore.currentSeason));
     });
-    leveradeMatchesData.value.included.forEach((entity) => {
+    fetchedMatchesData.value?.leveradeMatches.included.forEach((entity) => {
       switch (entity.type) {
         case 'team':
           teams.push(new Team(entity));
@@ -109,7 +133,7 @@ export const useMatches = (subset: 'ongoing' | 'upcoming' | 'lastFinished') => {
       }
     });
 
-    return leveradeMatchesData.value.data
+    return fetchedMatchesData.value?.leveradeMatches.data
       .filter((rawMatch) => (subset !== 'lastFinished' ? !rawMatch.attributes.finished : rawMatch.attributes.finished))
       .map((rawMatch) => {
         const match = new Match(rawMatch);
@@ -140,6 +164,12 @@ export const useMatches = (subset: 'ongoing' | 'upcoming' | 'lastFinished') => {
             matchId: match.id,
           },
         });
+
+        const additionalData = fetchedMatchesData.value?.additionalData?.[match.id];
+        if (additionalData) {
+          match.setAdditionalData(additionalData);
+        }
+
         return { match, edition, round, phase };
       });
   });
