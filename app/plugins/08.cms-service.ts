@@ -564,12 +564,11 @@ export default defineNuxtPlugin(() => {
       }),
     );
 
-    let newsList: NewsEntry[] = [];
     if (!newsResponse) {
       throw new Error('Error when retrieving news');
     }
 
-    newsList = newsResponse.reduce((news, directusNewsEntry) => {
+    const newsList: NewsEntry[] = newsResponse.reduce((news, directusNewsEntry) => {
       if (!directusNewsEntry) {
         return news;
       }
@@ -877,7 +876,7 @@ export default defineNuxtPlugin(() => {
   };
 
   const getStaff: CMSService['getStaff'] = async ({ groupId, groupSlug }) => {
-    let filter: any = {};
+    let filter: any;
 
     if (groupId) {
       filter = { roles: { roles_id: { group: { id: groupId } } } };
@@ -1060,12 +1059,11 @@ export default defineNuxtPlugin(() => {
       }),
     );
 
-    let pressReleaseList = [];
     if (!pressReleaseResponse) {
       throw new Error('Error when retrieving press releases');
     }
 
-    pressReleaseList = pressReleaseResponse.reduce((pressReleaseList, directusPressRelease) => {
+    const pressReleaseList = pressReleaseResponse.reduce((pressReleaseList, directusPressRelease) => {
       if (!directusPressRelease) {
         return pressReleaseList;
       }
@@ -1280,12 +1278,11 @@ export default defineNuxtPlugin(() => {
       }),
     );
 
-    let events = [];
     if (!response) {
       throw new Error('Error when retrieving events');
     }
 
-    events = response.reduce((events, directusEvent) => {
+    const events: CalendarEvent[] = response.reduce((events, directusEvent) => {
       let event: CalendarEvent;
       try {
         event = processEvent(directusEvent, currentLocale.value);
@@ -2003,7 +2000,7 @@ export default defineNuxtPlugin(() => {
     seasonSlug,
     leveradeIds,
   }) => {
-    let filter: Query<DirectusSchema, DirectusNationalCompetitionEdition>['filter'] = {};
+    let filter: Query<DirectusSchema, DirectusNationalCompetitionEdition>['filter'];
 
     if (leveradeIds) {
       filter = {
@@ -2172,12 +2169,11 @@ export default defineNuxtPlugin(() => {
       }),
     );
 
-    let tchoukupList = [];
     if (!tchoukupResponse) {
       throw new Error('Error when retrieving Tchoukups');
     }
 
-    tchoukupList = tchoukupResponse.reduce((tchoukups, directusTchoukup) => {
+    const tchoukupList = tchoukupResponse.reduce((tchoukups, directusTchoukup) => {
       if (!directusTchoukup) {
         return tchoukups;
       }

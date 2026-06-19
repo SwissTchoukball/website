@@ -54,7 +54,7 @@ const {
       });
     } catch (error) {
       console.error(error);
-      throw new Error('Could not load the competitions for this season');
+      throw new Error('Could not load the competitions for this season', { cause: error });
     }
   },
   { default: () => [] },
