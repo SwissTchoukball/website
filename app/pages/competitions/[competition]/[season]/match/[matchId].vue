@@ -272,7 +272,7 @@ onMounted(() => {
         isAnimatingAwayTeamScore.value = true;
       }, 20);
     }
-  }, 10000);
+  }, 3000);
 });
 
 const distributedMatchData = computed<
