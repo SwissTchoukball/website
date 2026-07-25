@@ -372,6 +372,7 @@
         "noUpdatesYet": "Il n'y a pas encore de nouvelles à afficher.",
         "noUpdatesMatchingFilters": "Il n'y a pas de nouvelles correspondant aux filtres sélectionnés.",
         "loadingError": "Erreur lors du chargement des dernières nouvelles.",
+        "andXOtherTeams": "et {amount} autres équipes",
         "filters": {
           "keyEvents": "Événements clés",
           "withImage": "Avec image",

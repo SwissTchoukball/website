@@ -1,9 +1,9 @@
 <template>
-  <div>
+  <section class="l-main-content-section">
     <st-loader v-if="fetchPending" :main="true" />
     <p v-else-if="fetchError">{{ $t('error.otherError') }} : {{ fetchError.message }}</p>
     <st-national-team-competition-team-list v-else-if="teams" :teams="teams" />
-  </div>
+  </section>
 </template>
 
 <script setup lang="ts">

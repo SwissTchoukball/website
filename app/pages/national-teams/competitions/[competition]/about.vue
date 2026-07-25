@@ -1,7 +1,9 @@
 <template>
-  <!-- We have to use v-html here as we get html content directly from Directus -->
-  <!-- eslint-disable-next-line vue/no-v-html -->
-  <div class="directus-formatted-content" v-html="competition.about"></div>
+  <section class="l-main-content-section">
+    <!-- We have to use v-html here as we get html content directly from Directus -->
+    <!-- eslint-disable-next-line vue/no-v-html -->
+    <div class="directus-formatted-content" v-html="competition.about"></div>
+  </section>
 </template>
 
 <script setup lang="ts">

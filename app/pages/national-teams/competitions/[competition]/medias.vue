@@ -1,10 +1,10 @@
 <template>
-  <div>
+  <section class="l-main-content-section">
     <h3 class="t-headline-2">{{ $t('internationalCompetition.medias.title') }}</h3>
     <!-- We have to use v-html here as we get html content directly from Directus -->
     <!-- eslint-disable-next-line vue/no-v-html -->
     <div class="directus-formatted-content" v-html="competition.medias"></div>
-  </div>
+  </section>
 </template>
 
 <script setup lang="ts">

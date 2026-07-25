@@ -1,6 +1,6 @@
 <template>
   <div v-if="fetchPending || fetchError || (data.updates && (data.updates.length || !isPast))">
-    <div class="c-national-team-competition-update-list__header">
+    <div v-if="!hideHeader" class="c-national-team-competition-update-list__header">
       <st-tooltip v-if="liveRefresh">
         <template #trigger>
           <st-live-indicator />
@@ -11,6 +11,7 @@
         {{ $t('internationalCompetition.live.updates.title') }}
       </h3>
       <button
+        v-if="!hideFilters"
         class="u-unstyled-button c-national-team-competition-update-list__settings"
         :class="{ 'c-national-team-competition-update-list__settings--open': areFiltersVisible }"
         @click="toggleFilters"
@@ -29,7 +30,11 @@
         {{ $t('internationalCompetition.live.updates.subscribe') }}
       </st-button>
     </div>
-    <ul v-if="areFiltersVisible" class="c-national-team-competition-update-list__filters u-unstyled-list">
+
+    <ul
+      v-if="!hideFilters && areFiltersVisible"
+      class="c-national-team-competition-update-list__filters u-unstyled-list"
+    >
       <li>
         <input id="key-update-toggle" v-model="filters.is_key" type="checkbox" />
         <label for="key-update-toggle">{{ $t('internationalCompetition.live.updates.filters.keyEvents') }}</label>
@@ -49,6 +54,7 @@
         </select>
       </li>
     </ul>
+
     <st-loader v-if="fetchPending" :main="true" />
     <p v-else-if="fetchError">
       {{ $t('internationalCompetition.live.updates.loadingError') }} : {{ fetchError.message }}
@@ -74,7 +80,7 @@
         </template>
       </p>
       <st-pagination
-        v-if="totalPages"
+        v-if="!hidePagination && totalPages"
         class="c-national-team-competition-update-list__pagination"
         :current-page="currentPage"
         :total-pages="totalPages"
@@ -89,7 +95,6 @@ import type { NationalTeamCompetitionUpdate } from '~/components/national-teams/
 const route = useRoute();
 const { $cmsService } = useNuxtApp();
 
-const UPDATES_PER_PAGE = 10;
 const REFRESH_INTERVAL = 30; // In seconds
 
 const props = defineProps({
@@ -105,8 +110,15 @@ const props = defineProps({
     type: String,
     default: undefined,
   },
+  updatesPerPage: {
+    type: Number,
+    default: 10,
+  },
   liveRefresh: Boolean,
   isPast: Boolean,
+  hideHeader: Boolean,
+  hideFilters: Boolean,
+  hidePagination: Boolean,
 });
 
 const areFiltersVisible = ref(false);
@@ -134,12 +146,13 @@ const {
 } = useAsyncData<{ updates: NationalTeamCompetitionUpdate[]; totalUpdates: number }>(
   `${props.competitionId}-${filters.value.selectedTeamId}-${currentPage.value}-${filters.value.is_key}-${filters.value.with_image}`,
   async () => {
+    console.log('useAsyncData');
     if (!props.competitionId) {
       throw new Error('Undefined national team competition ID');
     }
 
     const updateResults = await $cmsService.getNationalTeamCompetitionUpdates(props.competitionId, {
-      limit: UPDATES_PER_PAGE,
+      limit: props.updatesPerPage,
       page: currentPage.value,
       keyOnly: filters.value.is_key,
       withImage: filters.value.with_image,
@@ -158,7 +171,7 @@ const totalPages = computed<number | undefined>(() => {
   if (!data.value?.totalUpdates) {
     return;
   }
-  return Math.ceil(data.value.totalUpdates / UPDATES_PER_PAGE);
+  return Math.ceil(data.value.totalUpdates / props.updatesPerPage);
 });
 
 const amountActiveFilters = computed<number>(() => {
@@ -179,6 +192,7 @@ const amountActiveFilters = computed<number>(() => {
   return amount;
 });
 
+// To retrieve the list when changing page
 watch(
   () => route.query,
   async (newQuery, oldQuery) => {
@@ -188,6 +202,7 @@ watch(
   },
 );
 
+// To retrieve the list when changing filters
 watch(
   filters,
   async () => {
@@ -202,6 +217,7 @@ onMounted(() => {
       return;
     }
     try {
+      console.log('C');
       await refresh();
       hasRefreshError.value = false;
     } catch (error) {
@@ -295,8 +311,6 @@ const toggleFilters = () => {
 
 .c-national-team-competition-update-list__item {
   margin-top: var(--st-length-spacing-s);
-  padding-bottom: var(--st-length-spacing-s);
-  border-bottom: 1px solid var(--st-color-hr);
 }
 
 .c-national-team-competition-update-list__item:first-child {

@@ -1,23 +1,25 @@
 <template>
-  <section class="l-main-content-section">
-    <st-loader v-if="fetchPending" :main="true" />
-    <p v-if="fetchError">{{ $t('error.otherError') }} : {{ fetchError.message }}</p>
-    <template v-else-if="!fetchPending && competition">
-      <img :src="logoSrc" :srcset="logoSrcSet" class="competition-logo" />
+  <div>
+    <section class="l-main-content-section">
+      <st-loader v-if="fetchPending" :main="true" />
+      <p v-if="fetchError">{{ $t('error.otherError') }} : {{ fetchError.message }}</p>
+      <template v-else-if="!fetchPending && competition">
+        <img :src="logoSrc" :srcset="logoSrcSet" class="competition-logo" />
 
-      <h2 class="t-headline-1">{{ fullName }}</h2>
+        <h2 class="t-headline-1">{{ fullName }}</h2>
 
-      <st-navigation
-        :items="navigation"
-        class="navigation"
-        :name="$t('otherNavigation', { name: fullName })"
-        selected-on-exact-active
-        small
-      />
+        <st-navigation
+          :items="navigation"
+          class="navigation"
+          :name="$t('otherNavigation', { name: fullName })"
+          selected-on-exact-active
+          small
+        />
+      </template>
+    </section>
 
-      <NuxtPage :competition="competition" :navigation="navigation" />
-    </template>
-  </section>
+    <NuxtPage :competition="competition" :navigation="navigation" />
+  </div>
 </template>
 
 <script setup lang="ts">

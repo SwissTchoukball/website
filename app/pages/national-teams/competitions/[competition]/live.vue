@@ -2,8 +2,10 @@
   <div>
     <!-- We have to use v-html here as we get html content directly from Directus -->
     <!-- eslint-disable-next-line vue/no-v-html -->
-    <div class="directus-formatted-content" v-html="competition.live"></div>
-    <client-only>
+    <section class="l-main-content-section">
+      <div class="directus-formatted-content" v-html="competition.live"></div>
+    </section>
+    <section class="l-main-content-section c-international-competition-live__updates-section">
       <st-national-team-competition-update-list
         :competition-id="competition.id"
         :teams="competition.teams"
@@ -12,7 +14,7 @@
         :telegram-channel-name="competition.telegram_channel"
         class="c-international-competition-live__updates"
       />
-    </client-only>
+    </section>
   </div>
 </template>
 
@@ -52,8 +54,15 @@ const isCompetitionPast = computed<boolean>(() => {
 </script>
 
 <style scoped>
-.c-international-competition-live__updates {
-  max-width: 45em;
+.c-international-competition-live__updates-section {
   margin-top: var(--st-length-spacing-s);
+  padding-block: var(--st-length-spacing-s);
+  background-color: var(--st-color-main-content-alternative-background);
+}
+
+.c-international-competition-live__updates {
+  max-width: 70ch;
+  margin-top: var(--st-length-spacing-s);
+  margin-inline: auto;
 }
 </style>

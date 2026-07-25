@@ -3,17 +3,6 @@
     class="c-national-team-competition-update"
     :class="{ 'c-national-team-competition-update--key': update.is_key }"
   >
-    <div class="c-national-team-competition-update__header">
-      <time :datetime="update.date_created" class="c-national-team-competition-update__time">
-        {{ formattedDate }}
-      </time>
-      <span v-if="update.teams.length">·</span>
-      <ul class="u-unstyled-list c-national-team-competition-update__teams">
-        <li v-for="team of update.teams" :key="team.name" class="c-national-team-competition-update__team">
-          {{ team.name }}
-        </li>
-      </ul>
-    </div>
     <!-- eslint-disable-next-line vue/no-v-html -->
     <p class="c-national-team-competition-update__body" v-html="formattedBody"></p>
     <img
@@ -24,6 +13,19 @@
       :srcset="imageSrcSet"
       sizes="(min-width: 800px}) 800px, 96vw"
     />
+    <div class="c-national-team-competition-update__metadata">
+      <time :datetime="update.date_created" class="c-national-team-competition-update__time">
+        {{ formattedDate }}
+      </time>
+      <ul class="u-unstyled-list c-national-team-competition-update__teams">
+        <li v-for="team of update.teams.slice(0, 5)" :key="team.name" class="c-national-team-competition-update__team">
+          {{ team.name }}
+        </li>
+        <li v-if="update.teams.length > 5" class="c-national-team-competition-update__team">
+          {{ $t('internationalCompetition.live.updates.andXOtherTeams', { amount: update.teams.length - 5 }) }}
+        </li>
+      </ul>
+    </div>
   </article>
 </template>
 
@@ -51,7 +53,7 @@ const formattedDate = computed<string>(() => {
   if (differenceInDays(new Date(), createdDate.value) < 1) {
     return $formatDateDistanceToNow(new Date(props.update.date_created));
   } else {
-    return $formatDate(new Date(props.update.date_created), 'PPP');
+    return $formatDate(new Date(props.update.date_created), 'PPPp');
   }
 });
 
@@ -80,15 +82,32 @@ const imageSrcSet = computed<string>(() => {
 </script>
 
 <style scoped>
+@import url('~/assets/css/media.css');
+
+.c-national-team-competition-update {
+  background-color: white;
+  padding: var(--st-length-spacing-s);
+  border-radius: var(--st-length-spacing-xs);
+  box-shadow: rgb(149 157 165 / 20%) 0 4px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--st-length-spacing-xxs);
+}
+
 .c-national-team-competition-update--key {
   font-weight: bold;
 }
 
-.c-national-team-competition-update__header {
+.c-national-team-competition-update__metadata {
   display: flex;
+  flex-direction: column;
   gap: var(--st-length-spacing-xxs);
   font-size: 0.8em;
   color: var(--st-color-text-lighter);
+
+  @media (--sm-and-up) {
+    flex-direction: row;
+  }
 }
 
 .c-national-team-competition-update__teams,
@@ -103,6 +122,13 @@ const imageSrcSet = computed<string>(() => {
 
 .c-national-team-competition-update__time {
   white-space: nowrap;
+
+  @media (--sm-and-up) {
+    &:not(:last-child)::after {
+      content: '·';
+      margin-left: 0.25rem;
+    }
+  }
 }
 
 .c-national-team-competition-update__team::after {
@@ -114,7 +140,7 @@ const imageSrcSet = computed<string>(() => {
   content: '';
 }
 
-.c-national-team-competition-update--key .c-national-team-competition-update__header {
+.c-national-team-competition-update--key .c-national-team-competition-update__metadata {
   color: var(--st-color-red-swiss-tchoukball);
 }
 
@@ -123,7 +149,6 @@ const imageSrcSet = computed<string>(() => {
 }
 
 .c-national-team-competition-update__body {
-  margin-top: var(--st-length-spacing-xxs);
   white-space: pre-wrap;
 }
 
