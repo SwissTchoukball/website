@@ -372,6 +372,7 @@
         "noUpdatesYet": "Es gibt noch keine Nachrichten zum Anzeigen.",
         "noUpdatesMatchingFilters": "Es gibt keine Nachrichten, die den ausgewählten Filtern entsprechen.",
         "loadingError": "Fehler beim Laden der letzten Nachrichten.",
+        "seePreviousUpdates": "Vorherige Nachrichten ansehen",
         "andXOtherTeams": "und {amount} weitere Teams",
         "filters": {
           "keyEvents": "Schlüsselereignisse",

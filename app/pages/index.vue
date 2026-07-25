@@ -21,6 +21,7 @@
       The reason is that we initially show the component, then hide it if the fetch returns no matches.
     -->
     <client-only>
+      <st-national-team-competition-update-section />
       <st-ongoing-matches />
     </client-only>
 
