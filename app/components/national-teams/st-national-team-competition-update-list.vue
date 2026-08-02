@@ -146,7 +146,6 @@ const {
 } = useAsyncData<{ updates: NationalTeamCompetitionUpdate[]; totalUpdates: number }>(
   `${props.competitionId}-${filters.value.selectedTeamId}-${currentPage.value}-${filters.value.is_key}-${filters.value.with_image}`,
   async () => {
-    console.log('useAsyncData');
     if (!props.competitionId) {
       throw new Error('Undefined national team competition ID');
     }
@@ -217,7 +216,6 @@ onMounted(() => {
       return;
     }
     try {
-      console.log('C');
       await refresh();
       hasRefreshError.value = false;
     } catch (error) {

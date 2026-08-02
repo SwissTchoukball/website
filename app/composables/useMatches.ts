@@ -82,7 +82,6 @@ export const useMatches = (subset: 'ongoing' | 'upcoming' | 'lastFinished') => {
   });
 
   const matchesData = computed<{ match: Match; edition?: CompetitionEdition; phase?: Phase; round?: Round }[]>(() => {
-    console.log(`computing matches data for subset ${subset}`);
     if (!fetchedMatchesData.value?.leveradeMatches.included || !directusCompetitionEditions.value) {
       return [];
     }
