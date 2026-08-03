@@ -9,6 +9,8 @@ updates:
     open-pull-requests-limit: 10
     assignees:
       - davidsandoz
+    ignore:
+      - dependency-name: '@nuxtjs/i18n'
     commit-message:
       prefix: fix
       prefix-development: chore
