@@ -41,7 +41,7 @@ export interface NationalTeamCompetition {
 export interface NationalTeamCompetitionUpdate {
   id: number;
   body: string;
-  image?: DirectusFile<DirectusSchema>;
+  image?: DirectusFile<DirectusSchema> & { author_name?: string };
   is_key: boolean;
   teams: { id: number; name: string }[];
   date_created: string;

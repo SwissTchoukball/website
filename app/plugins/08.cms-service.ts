@@ -1619,7 +1619,7 @@ export default defineNuxtPlugin(() => {
           'date_updated',
           {
             translations: ['languages_code', 'body'],
-            image: ['id', 'description'],
+            image: ['id', 'description', 'author_name'],
             teams: [
               {
                 team_id: [

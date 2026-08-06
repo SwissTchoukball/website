@@ -333,7 +333,7 @@ interface DirectusNationalTeamCompetitionUpdateTranslation {
 export interface DirectusNationalTeamCompetitionUpdate {
   id: number;
   translations: DirectusNationalTeamCompetitionUpdateTranslation[];
-  image?: DirectusFile<DirectusSchema>;
+  image?: DirectusFile<DirectusSchema> & { author_name: string };
   competition: DirectusNationalTeamCompetition;
   status: DirectusNationalTeamCompetitionUpdateStatus;
   is_key: boolean | null;

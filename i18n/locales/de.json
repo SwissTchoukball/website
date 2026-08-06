@@ -374,6 +374,7 @@
         "loadingError": "Fehler beim Laden der letzten Nachrichten.",
         "seePreviousUpdates": "Vorherige Nachrichten ansehen",
         "andXOtherTeams": "und {amount} weitere Teams",
+        "photo": "Foto",
         "filters": {
           "keyEvents": "Schlüsselereignisse",
           "withImage": "Mit Bild",

@@ -5,14 +5,19 @@
   >
     <!-- eslint-disable-next-line vue/no-v-html -->
     <p class="c-national-team-competition-update__body" v-html="formattedBody"></p>
-    <img
-      v-if="update.image"
-      class="c-national-team-competition-update__image"
-      :alt="update.image.description || undefined"
-      :src="imageFallbackSrc"
-      :srcset="imageSrcSet"
-      sizes="(min-width: 800px}) 800px, 96vw"
-    />
+    <figure>
+      <img
+        v-if="update.image"
+        class="c-national-team-competition-update__image"
+        :alt="update.image.description || undefined"
+        :src="imageFallbackSrc"
+        :srcset="imageSrcSet"
+        sizes="(min-width: 800px}) 800px, 96vw"
+      />
+      <figcaption v-if="update.image?.author_name" class="c-national-team-competition-update__image-figcaption">
+        <i>{{ $t('internationalCompetition.live.updates.photo') }} : {{ update.image.author_name }}</i>
+      </figcaption>
+    </figure>
     <div class="c-national-team-competition-update__metadata">
       <time :datetime="update.date_created" class="c-national-team-competition-update__time">
         {{ formattedDate }}
@@ -156,6 +161,15 @@ const imageSrcSet = computed<string>(() => {
   display: block;
   width: 100%;
   margin-top: var(--st-length-spacing-xs);
+  margin-bottom: 0;
+}
+
+.c-national-team-competition-update__image-figcaption {
+  font-size: 0.6rem;
+  font-weight: normal;
+  color: var(--st-color-text-lighter);
+  text-align: right;
+  margin-top: var(--st-length-spacing-xxs);
   margin-bottom: 0;
 }
 </style>
