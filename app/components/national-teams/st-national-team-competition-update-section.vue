@@ -1,7 +1,9 @@
 <template>
-  <section class="l-main-content-section">
-    <!-- TODO: Make it more competition-agnostic -->
-    <h2 class="t-headline-1">Euro 2026 – {{ $t('internationalCompetition.live.updates.title') }}</h2>
+  <section v-if="config['currentNationalTeamCompetitionSlug']" class="l-main-content-section">
+    <h2 class="t-headline-1">{{ competition?.name }} {{ competition?.year }}</h2>
+    <h3 class="t-headline-2">
+      {{ $t('internationalCompetition.live.updates.title') }}
+    </h3>
     <st-loader v-if="fetchPending" :main="true" />
     <p v-if="fetchError">{{ $t('error.otherError') }} : {{ fetchError.message }}</p>
     <template v-else-if="!fetchPending && competition">
@@ -37,6 +39,7 @@ const route = useRoute();
 const { locale } = useI18n();
 const localePath = useLocalePath();
 const { $cmsService } = useNuxtApp();
+const { config } = useConfigStore();
 
 const {
   data: competition,
@@ -45,8 +48,10 @@ const {
 } = useAsyncData<NationalTeamCompetition>(
   `competition-${route.params.competition as string}-${locale.value}`,
   async () => {
-    // TODO: Make that configurable from Directus
-    return await $cmsService.getNationalTeamCompetition({ slug: 'euro2026' });
+    if (!config['currentNationalTeamCompetitionSlug']) {
+      throw new Error('No competition slug provided in config');
+    }
+    return await $cmsService.getNationalTeamCompetition({ slug: config['currentNationalTeamCompetitionSlug'] });
   },
 );
 

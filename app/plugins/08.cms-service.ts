@@ -3,6 +3,7 @@ import { aggregate, readItem, readItems, type DirectusFile, type Query } from '@
 import type { Await } from '~/types/types.utils';
 import {
   type DirectusAnnouncement,
+  type DirectusConfig,
   type DirectusClub,
   type DirectusDomain,
   type DirectusEvent,
@@ -179,6 +180,7 @@ export interface LiveStream {
 }
 
 export interface CMSService {
+  getConfig: () => Promise<DirectusConfig[]>;
   getMainNavigation: () => Promise<DirectusMenuItem[]>;
   getFooterLinks: () => Promise<DirectusMenuItem[]>;
   getPage: (options: { pagePath: string }) => Promise<SimplePage>;
@@ -219,10 +221,14 @@ export interface CMSService {
   getPlayerPositions: () => Promise<PlayerPositions>;
   getTeam: (teamSlug: string) => Promise<NationalTeam>;
   getNationalTeamCompetition: ({ id, slug }: { id?: number; slug?: string }) => Promise<NationalTeamCompetition>;
-  getNationalTeamCompetitionUpdates: (
-    nationalTeamCompetitionId: number,
-    options: { limit: number; page: number; keyOnly?: boolean; withImage?: boolean; teamId?: number },
-  ) => Promise<{ data: NationalTeamCompetitionUpdate[]; meta: { total: number } }>;
+  getNationalTeamCompetitionUpdates: (options: {
+    competitionId?: number;
+    limit: number;
+    page: number;
+    keyOnly?: boolean;
+    withImage?: boolean;
+    teamId?: number;
+  }) => Promise<{ data: NationalTeamCompetitionUpdate[]; meta: { total: number } }>;
   getNationalTeamsForCompetition: (
     nationalTeamCompetitionId: number,
   ) => Promise<Omit<NationalTeamForCompetition, 'competition'>[]>;
@@ -415,6 +421,14 @@ export default defineNuxtPlugin(() => {
     }
 
     return pageData;
+  };
+
+  const getConfig: CMSService['getConfig'] = async () => {
+    return await nuxtApp.$directus.request<DirectusConfig[]>(
+      readItems('config', {
+        fields: ['id', 'name', 'value'],
+      }),
+    );
   };
 
   const getNavigationTree = async (rootItemId: number): Promise<DirectusMenuItem[]> => {
@@ -1584,16 +1598,21 @@ export default defineNuxtPlugin(() => {
     };
   };
 
-  const getNationalTeamCompetitionUpdates: CMSService['getNationalTeamCompetitionUpdates'] = async (
-    nationalTeamCompetitionId,
-    { limit, page, keyOnly, withImage, teamId },
-  ) => {
+  const getNationalTeamCompetitionUpdates: CMSService['getNationalTeamCompetitionUpdates'] = async ({
+    competitionId,
+    limit,
+    page,
+    keyOnly,
+    withImage,
+    teamId,
+  }) => {
     const filter: any = {
-      competition: {
-        id: nationalTeamCompetitionId,
-      },
       status: 'published',
     };
+
+    if (competitionId) {
+      filter.competition = { id: competitionId };
+    }
 
     if (keyOnly) {
       filter.is_key = true;
@@ -2384,6 +2403,7 @@ export default defineNuxtPlugin(() => {
   return {
     provide: {
       cmsService: {
+        getConfig,
         getMainNavigation,
         getFooterLinks,
         getPage,

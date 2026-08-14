@@ -45,6 +45,12 @@ interface DirectusRolePerson {
   main: boolean;
 }
 
+export interface DirectusConfig {
+  id: number;
+  name: string;
+  value: string;
+}
+
 interface DirectusMenuItemTranslation {
   languages_code: string;
   name: string;
@@ -433,6 +439,7 @@ export type DirectusSchema = {
 	collection name exactly. Typos won't get caught here
 	since SDK will assume it's a custom user collection.
 	*/
+  config: DirectusConfig[];
   menus: DirectusMenuItem[];
   menu_translations: DirectusMenuItemTranslation[];
   pages: DirectusPage[];

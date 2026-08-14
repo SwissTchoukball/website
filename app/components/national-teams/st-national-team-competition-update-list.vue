@@ -100,7 +100,7 @@ const REFRESH_INTERVAL = 30; // In seconds
 const props = defineProps({
   competitionId: {
     type: Number,
-    required: true,
+    default: undefined,
   },
   teams: {
     type: Array as PropType<{ id: number; name: string }[]>,
@@ -144,13 +144,10 @@ const {
   error: fetchError,
   refresh,
 } = useAsyncData<{ updates: NationalTeamCompetitionUpdate[]; totalUpdates: number }>(
-  `${props.competitionId}-${filters.value.selectedTeamId}-${currentPage.value}-${filters.value.is_key}-${filters.value.with_image}`,
+  `${props.competitionId ? props.competitionId : 'all'}-${filters.value.selectedTeamId}-${currentPage.value}-${filters.value.is_key}-${filters.value.with_image}`,
   async () => {
-    if (!props.competitionId) {
-      throw new Error('Undefined national team competition ID');
-    }
-
-    const updateResults = await $cmsService.getNationalTeamCompetitionUpdates(props.competitionId, {
+    const updateResults = await $cmsService.getNationalTeamCompetitionUpdates({
+      competitionId: props.competitionId,
       limit: props.updatesPerPage,
       page: currentPage.value,
       keyOnly: filters.value.is_key,
