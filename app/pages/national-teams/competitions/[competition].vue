@@ -18,7 +18,7 @@
       </template>
     </section>
 
-    <NuxtPage :competition="competition" :navigation="navigation" />
+    <NuxtPage v-if="navigation.length" :competition="competition" :navigation="navigation" />
   </div>
 </template>
 
