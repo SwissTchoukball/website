@@ -245,7 +245,7 @@ export interface CMSService {
     seasonSlug?: string;
     leveradeIds?: string[];
   }) => Promise<NationalCompetitionEdition[]>;
-  getMatchesAdditionalData: (leveradeIds: number[]) => Promise<Record<string, DirectusMatchAdditionalData> | null>;
+  getMatchesAdditionalData: (leveradeIds: number[]) => Promise<Record<string, DirectusMatchAdditionalData>>;
   getMatchAdditionalData: (leveradeId: number) => Promise<DirectusMatchAdditionalData | null>;
   getTchoukups: (options: { limit: number; page: number }) => Promise<{ data: Tchoukup[]; meta: { total: number } }>;
   getResourceTypes: () => Promise<ResourceType[]>;
@@ -2118,6 +2118,9 @@ export default defineNuxtPlugin(() => {
   };
 
   const getMatchesAdditionalData: CMSService['getMatchesAdditionalData'] = async (leveradeIds) => {
+    if (!leveradeIds.length) {
+      return {};
+    }
     const response = await nuxtApp.$directus.request<DirectusMatchAdditionalData[]>(
       readItems('match_additional_data', {
         filter: {
@@ -2137,7 +2140,7 @@ export default defineNuxtPlugin(() => {
 
     if (!response.length) {
       // No additional data for this match
-      return null;
+      return {};
     }
 
     const additionalData: Record<string, DirectusMatchAdditionalData> = {};

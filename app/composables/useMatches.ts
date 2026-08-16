@@ -59,11 +59,16 @@ export const useMatches = (subset: 'ongoing' | 'upcoming' | 'lastFinished') => {
     error: fetchMatchesError,
   } = useAsyncData<{
     leveradeMatches: Await<ReturnType<Leverade[typeof matchRetrievalMethodName]>>;
-    additionalData: Record<string, DirectusMatchAdditionalData>;
+    additionalData?: Record<string, DirectusMatchAdditionalData>;
   }>(`matches-${subset}`, async () => {
     const leveradeMatches = await fetchLeveradeMatches();
     const matchsIds = leveradeMatches?.data.map((match) => +match.id) || [];
-    const additionalData = await fetchMatchesAdditionalData(matchsIds);
+    let additionalData;
+    try {
+      additionalData = await fetchMatchesAdditionalData(matchsIds);
+    } catch (error) {
+      console.warn('Error fetching matches additional data for matches', matchsIds, error);
+    }
     return { leveradeMatches, additionalData };
   });
 
