@@ -4,6 +4,7 @@
     :start-date="match.parsedDate"
     :name="matchName"
     :context="matchContext"
+    :label="match.youtube_video_id ? $t('match.live') : undefined"
     :details="details"
     :is-full-day="hasNoTimeDefined"
     :to="match.pathToMatch || ''"
