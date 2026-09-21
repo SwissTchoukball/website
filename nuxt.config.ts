@@ -25,7 +25,7 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     '@nuxtjs/i18n',
     '@vueuse/nuxt',
-    'radix-vue/nuxt',
+    'reka-ui/nuxt',
     '@nuxt/eslint',
     '@nuxtjs/stylelint-module',
     'nuxt-mail',

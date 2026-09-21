@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { TooltipContent, TooltipRoot, TooltipTrigger } from 'radix-vue';
+import { TooltipContent, TooltipRoot, TooltipTrigger } from 'reka-ui';
 
 defineProps({
   position: {
