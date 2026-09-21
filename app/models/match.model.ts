@@ -250,11 +250,11 @@ export default class Match {
   }
 
   get hasHomeTeamWon(): boolean {
-    return !!this.home_team_score && !!this.away_team_score && this.home_team_score > this.away_team_score;
+    return this.hasScore && this.finished && (this.home_team_score || 0) > (this.away_team_score || 0);
   }
 
   get hasAwayTeamWon(): boolean {
-    return !!this.home_team_score && !!this.away_team_score && this.home_team_score < this.away_team_score;
+    return this.hasScore && this.finished && (this.home_team_score || 0) < (this.away_team_score || 0);
   }
 
   get addressForMapsUrl(): string | null {
