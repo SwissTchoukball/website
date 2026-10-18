@@ -16,12 +16,16 @@ import Round from '~/models/round.model';
 import Faceoff from '~/models/faceoff.model';
 import Match from '~/models/match.model';
 import type Season from '~/models/season.model';
-import type { DirectusMatchAdditionalData } from '~/plugins/06.directus';
+import type {
+  DirectusMatchAdditionalData,
+  DirectusNationalCompetitionEditionFinalStandingsRow,
+} from '~/plugins/06.directus';
 
 export default class CompetitionEdition {
   leverade_id?: string;
   directus_id: number;
   name: string;
+  final_standings?: DirectusNationalCompetitionEditionFinalStandingsRow[] | null;
   gender?: string;
   /** Leverade Season ID */
   season_id?: string;
@@ -41,6 +45,7 @@ export default class CompetitionEdition {
     this.leverade_id = edition.leverade_id?.toString();
     this.directus_id = edition.directus_id;
     this.name = edition.competition.name;
+    this.final_standings = edition.final_standings;
     this.season_id = edition.season.leverade_id?.toString();
     this.season = season;
     this.competition = new Competition(edition.competition);

@@ -9,6 +9,13 @@
         <st-phase-header :competition-edition="competitionEdition" />
       </div>
 
+      <section v-if="finalStandings.length" class="l-main-content-section">
+        <h4 class="t-headline-3">{{ $t('competitions.finalStandings.title') }}</h4>
+        <div class="c-competition-edition__final-standings">
+          <st-standings :rows="finalStandings" />
+        </div>
+      </section>
+
       <section
         v-if="competitionEdition.futureMatches.length > 0"
         class="l-main-content-section c-competition-edition__section"
@@ -52,6 +59,8 @@
 </template>
 
 <script setup lang="ts">
+import type Team from '~/models/team.model';
+
 const route = useRoute();
 const localePath = useLocalePath();
 const { t } = useI18n();
@@ -89,6 +98,26 @@ useHead(() => {
   };
 });
 
+const finalStandings = computed<{ position: number; team: Team | undefined; columns: [] }[]>(() => {
+  if (!competitionEdition.value?.final_standings || !competitionEdition.value.teams) {
+    return [];
+  }
+  return competitionEdition.value.final_standings.map((standingRow, index) => {
+    if (!competitionEdition.value?.teams) {
+      return {
+        position: index + 1,
+        team: undefined,
+        columns: [],
+      };
+    }
+    return {
+      position: index + 1,
+      team: competitionEdition.value.teams.find((team) => Number(team.id) === standingRow.teamId),
+      columns: [],
+    };
+  });
+});
+
 watch(
   () => competitionEdition.value?.phases,
   (newPhases) => {
@@ -116,6 +145,12 @@ watch(
 
 .c-competition-edition__section {
   background-color: var(--st-color-main-content-alternative-background);
+}
+
+.c-competition-edition__final-standings {
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
 .c-competition-edition__link-action {

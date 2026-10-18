@@ -136,6 +136,9 @@
         "points": "Points"
       }
     },
+    "finalStandings": {
+      "title": "Classement final"
+    },
     "results": {
       "title": "Résultats",
       "lastResults": "Derniers résultats",

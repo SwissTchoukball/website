@@ -32,6 +32,7 @@ import {
   type DirectusTeam,
   type DirectusText,
   getTranslatedFields,
+  type DirectusNationalCompetitionEditionFinalStandingsRow,
 } from '~/plugins/06.directus';
 import type { NewsEntry } from '~/components/news/st-news';
 import type { Tchoukup } from '~/components/tchoukup/st-tchoukup';
@@ -153,6 +154,7 @@ export interface NationalCompetitionEdition {
   season: DirectusSeason;
   competition: NationalCompetition;
   leverade_id?: number;
+  final_standings?: DirectusNationalCompetitionEditionFinalStandingsRow[] | null;
 }
 
 export interface NationalCompetition {
@@ -2055,6 +2057,7 @@ export default defineNuxtPlugin(() => {
         fields: [
           'id',
           'leverade_id',
+          'final_standings',
           {
             season: ['id', 'name', 'slug', 'date_start', 'date_end', 'leverade_id'],
             competition: ['id', { translations: ['name', 'slug'] }],
@@ -2112,6 +2115,7 @@ export default defineNuxtPlugin(() => {
           },
           competition,
           leverade_id: rawEdition.leverade_id,
+          final_standings: rawEdition.final_standings,
         },
       ];
     }, [] as NationalCompetitionEdition[]);

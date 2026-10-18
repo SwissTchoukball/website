@@ -2,39 +2,8 @@
   <div>
     <st-loader v-if="fetchPending" :main="true" />
     <p v-else-if="fetchError">{{ $t('error.otherError') }} : {{ fetchError.message }}</p>
-    <div v-else class="c-standings__table-container">
-      <table class="c-standings__table">
-        <thead>
-          <tr>
-            <th
-              v-for="(value, index) of standingsHeader"
-              :key="index"
-              class="c-standings__table-cell c-standings__table-cell--header"
-            >
-              {{ value }}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(standing, index) of standings" :key="standing.team ? standing.team.id : `unknown-${index}`">
-            <td class="c-standings__table-cell">{{ standing.position }}</td>
-            <td v-if="standing.team" class="c-standings__table-cell">
-              <div class="c-standings__team">
-                <img
-                  v-if="standing.team.avatarMediumUrl"
-                  :src="standing.team.avatarMediumUrl"
-                  class="c-standings__team-avatar"
-                />
-                <div v-else class="c-standings__team-avatar c-standings__team-avatar--placeholder"></div>
-                {{ standing.team.name }}
-              </div>
-            </td>
-            <td v-for="statKey of standingsStatKeys" :key="statKey" class="c-standings__table-cell">
-              {{ getStatValueForKey(standing, statKey) }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <div v-else class="c-phase-standings">
+      <st-standings :headers="standingsHeader" :rows="standings" />
     </div>
   </div>
 </template>
@@ -45,12 +14,6 @@ import type Phase from '~/models/phase.model';
 import Team from '~/models/team.model';
 import type CompetitionEdition from '~/models/competition-edition.model';
 import { LeveradeGroupType, type LeveradeStandings, type LeveradeTeam } from '~/plugins/07.leverade';
-
-interface StandingRow<T> {
-  position: number;
-  team: T | undefined;
-  stats: LeveradeStandings['standingsrows'][0]['standingsstats'];
-}
 
 const route = useRoute();
 const { t } = useI18n();
@@ -79,7 +42,13 @@ const {
   pending: fetchPending,
   error: fetchError,
   refresh,
-} = useAsyncData<StandingRow<LeveradeTeam>[]>(
+} = useAsyncData<
+  {
+    position: number;
+    team: LeveradeTeam | undefined;
+    stats: LeveradeStandings['standingsrows'][0]['standingsstats'];
+  }[]
+>(
   `standings-${props.phase.id}`,
   async () => {
     const teamsResponse = await $leverade.getTeams(props.phase.competition_edition_id);
@@ -121,16 +90,25 @@ const standingsStatKeys = computed<string[]>(() => {
   ];
 });
 
-const standings = computed<StandingRow<Team>[]>(() => {
+const standings = computed<
+  {
+    position: number;
+    team: Team | undefined;
+    columns: (string | number)[];
+  }[]
+>(() => {
   return rawStandings.value.map((standingRow) => ({
     position: standingRow.position,
     team: standingRow.team ? new Team(standingRow.team) : undefined,
-    stats: standingRow.stats,
+    columns: standingsStatKeys.value.map((statKey) => getStatValueForKey(standingRow.stats, statKey)),
   }));
 });
 
-const getStatValueForKey = (standing: StandingRow<Team>, statKey: string): number => {
-  return standing.stats.find((stat) => stat.type === statKey)?.value || 0;
+const getStatValueForKey = (
+  stats: LeveradeStandings['standingsrows'][0]['standingsstats'],
+  statKey: string,
+): number => {
+  return stats.find((stat) => stat.type === statKey)?.value || 0;
 };
 
 watch(route, async (newRoute, oldRoute) => {
@@ -145,50 +123,10 @@ watch(route, async (newRoute, oldRoute) => {
 </script>
 
 <style scoped>
-.c-standings__table-container {
+.c-phase-standings {
   width: 100%;
   overflow-x: scroll;
-}
-
-.c-standings__table {
-  margin-top: var(--st-length-spacing-s);
-  border-collapse: collapse;
-  width: 100%;
-}
-
-.c-standings__table-cell {
-  padding: var(--st-length-spacing-xxs);
-  border-bottom: 1px solid grey;
-  text-align: center;
-}
-
-/* Ranking cell */
-.c-standings__table-cell:nth-child(1) {
-  font-weight: bold;
-  width: 2rem;
-}
-
-/* Team name cell */
-.c-standings__table-cell:nth-child(2) {
-  text-align: left;
-  font-weight: bold;
-  white-space: nowrap;
-}
-
-.c-standings__table-cell--header {
-  color: grey;
-  font-weight: bold;
-  font-size: 0.8em;
-}
-
-.c-standings__team {
   display: flex;
-  align-items: center;
-}
-
-.c-standings__team-avatar {
-  width: 50px;
-  height: 50px;
-  margin-right: var(--st-length-spacing-xs);
+  justify-content: center;
 }
 </style>

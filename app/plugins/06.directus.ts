@@ -388,11 +388,17 @@ export interface DirectusLiveStream {
   stream_start: string;
 }
 
+export interface DirectusNationalCompetitionEditionFinalStandingsRow {
+  teamId?: number;
+  teamName?: string;
+}
+
 export interface DirectusNationalCompetitionEdition {
   id: number;
   season: DirectusSeason;
   competition: DirectusNationalCompetition;
   leverade_id?: number;
+  final_standings: DirectusNationalCompetitionEditionFinalStandingsRow[];
 }
 
 export interface DirectusMatchAdditionalData {
