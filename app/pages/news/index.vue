@@ -119,6 +119,6 @@ watch(
 }
 
 .c-news__list {
-  margin-top: var(--st-length-spacing-s);
+  margin-block: var(--st-length-spacing-s);
 }
 </style>

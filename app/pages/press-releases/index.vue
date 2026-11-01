@@ -79,6 +79,7 @@ const {
   data,
   pending: fetchPending,
   error: fetchError,
+  refresh,
 } = useAsyncData<{ pressReleaseList: PressRelease[]; totalPressReleases: number }>(
   `press-releases-${currentPage.value}-${locale.value}`,
   async () => {
@@ -101,11 +102,20 @@ const totalPages = computed<number | undefined>(() => {
   }
   return Math.ceil(data.value.totalPressReleases / pressReleasesPerPage);
 });
+
+watch(
+  () => route.query,
+  async (newQuery, oldQuery) => {
+    if (newQuery !== oldQuery) {
+      await refresh();
+    }
+  },
+);
 </script>
 
 <style scoped>
 .c-press-releases__list {
-  margin-top: var(--st-length-spacing-s);
+  margin-block: var(--st-length-spacing-s);
 }
 
 .c-press-releases__list-item {
