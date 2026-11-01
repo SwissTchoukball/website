@@ -16,7 +16,7 @@
         {{ subName }}
       </p>
       <div v-else-if="$slots.subName" class="c-person__sub-name">
-        <slot name="subName"></slot>
+        <slot name="subName" />
       </div>
       <ul class="c-person__details u-unstyled-list">
         <li v-for="(detail, index) of details" :key="`detail-${index}`" class="c-person__detail">

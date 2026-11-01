@@ -12,7 +12,7 @@
       'c-button--secondary': variant === 'secondary',
     }"
   >
-    <slot></slot>
+    <slot />
   </component>
 </template>
 
