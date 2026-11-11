@@ -121,7 +121,7 @@ const finalStandings = computed<{ position: number; team: Team | undefined; colu
 watch(
   () => competitionEdition.value?.phases,
   (newPhases) => {
-    if (newPhases?.length === 1) {
+    if (newPhases?.length === 1 && !finalStandings.value.length) {
       navigateTo(
         localePath({
           name: 'competitions-competition-season-phase',
