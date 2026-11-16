@@ -139,6 +139,8 @@ watch(
 </script>
 
 <style scoped>
+@import url('~/assets/css/media.css');
+
 .c-competition-edition__header {
   padding-inline: var(--st-length-main-content-side-padding);
 }
@@ -150,7 +152,13 @@ watch(
 .c-competition-edition__final-standings {
   width: 100%;
   display: flex;
-  justify-content: center;
+  justify-content: start;
+}
+
+@media (--sm-and-up) {
+  .c-competition-edition__final-standings {
+    justify-content: center;
+  }
 }
 
 .c-competition-edition__link-action {

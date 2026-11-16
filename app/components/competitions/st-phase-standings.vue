@@ -123,10 +123,18 @@ watch(route, async (newRoute, oldRoute) => {
 </script>
 
 <style scoped>
+@import url('~/assets/css/media.css');
+
 .c-phase-standings {
   width: 100%;
   overflow-x: scroll;
   display: flex;
-  justify-content: center;
+  justify-content: start;
+}
+
+@media (--lg-and-up) {
+  .c-phase-standings {
+    justify-content: center;
+  }
 }
 </style>
